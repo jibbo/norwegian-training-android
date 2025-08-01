@@ -40,7 +40,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NorwegianTrainingTheme {
-                MainView(mainViewModel)
+                MainView(
+                    mainViewModel = mainViewModel, // Add a callback for when timer finishes in composable
+                )
             }
         }
 
@@ -49,13 +51,28 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
-                    UiCommands.INITIAL -> {}
-                    is UiCommands.START_ALARM -> scheduleAlarm(it.triggerTime)
-                    is UiCommands.SHOW_NOTIFICATION->showNotification(it.triggerTime)
-                    UiCommands.STOP_ALARM -> TODO() // We'll need to cancel the notification here too
+                    is UiCommands.START_ALARM -> {
+                        scheduleAlarm(it.triggerTime)
+                        checkNotificationPermission()
+                        showNotification(it.triggerTime)
+                    }
+                    is UiCommands.SHOW_NOTIFICATION -> {
+                        checkNotificationPermission()
+                        showNotification(it.triggerTime)
+                    }
+                    is UiCommands.STOP_ALARM -> {
+                        cancelNotification()
+                    }
+                    is UiCommands.INITIAL -> {
+
+                    }
                 }
             }
         }
+    }
+
+    private fun cancelNotification() {
+        NotificationManagerCompat.from(this).cancel(NOTIFICATION_ID)
     }
 
     private fun scheduleAlarm(triggerTime: Long) {
@@ -72,16 +89,10 @@ class MainActivity : ComponentActivity() {
                 }
             } else {
                 alarmManager?.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-                checkNotificationPermission() // Ensure permission before showing notification
-                showNotification(triggerTime)
             }
         } else {
-            // For older versions, setExact might behave like setExactAndAllowWhileIdle
-            // Consider using setAlarmClock for more precise alarms if needed
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-            checkNotificationPermission()
-            showNotification(triggerTime)
         }
     }
 
@@ -107,8 +118,6 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // Permission not granted, cannot show notification
-            // You might want to log this or inform the user in a different way
             return
         }
 
@@ -120,7 +129,7 @@ class MainActivity : ComponentActivity() {
             .setWhen(triggerTime)
             .setUsesChronometer(true)
             .setChronometerCountDown(true)
-            .setAutoCancel(false) // Dismiss notification when tapped
+            .setAutoCancel(false)
             .setContentIntent(
                 PendingIntent.getActivity(
                     this,
@@ -154,7 +163,7 @@ class MainActivity : ComponentActivity() {
              if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                  mainViewModel.permissionGranted()
              } else {
-                 // Permission denied. Handle appropriately (e.g., show a message)
+                 // Permission denied. Handle appropriately
              }
          }
      }
