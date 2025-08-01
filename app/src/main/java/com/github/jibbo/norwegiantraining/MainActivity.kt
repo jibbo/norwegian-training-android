@@ -121,6 +121,16 @@ class MainActivity : ComponentActivity() {
             return
         }
 
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your notification icon
             .setContentTitle("Norwegian Training Alarm")
@@ -130,16 +140,11 @@ class MainActivity : ComponentActivity() {
             .setUsesChronometer(true)
             .setChronometerCountDown(true)
             .setAutoCancel(false)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    this,
-                    0,
-                    Intent(this, MainActivity::class.java),
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-            )
+            .setContentIntent(pendingIntent)
 
-        NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, builder.build())
+        NotificationManagerCompat
+            .from(this)
+            .notify(NOTIFICATION_ID, builder.build())
     }
 
     private fun createNotificationChannel(context: Context) {
