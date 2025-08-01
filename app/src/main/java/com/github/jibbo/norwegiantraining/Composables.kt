@@ -2,9 +2,13 @@ package com.github.jibbo.norwegiantraining
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,34 +31,47 @@ fun MainView(
     mainViewModel: MainViewModel,
 ) {
     val state by mainViewModel.uiStates.collectAsState()
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-            text = "Welcome!",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = """ We are going to do a classic Norwegian training:\n
-                1.10 minutes of warm-up\n
-                2. 4 Minutes of high intensity cardio (85-95%) max heart rate\n
-                3. 4 Minutes of low intensity cardio (55-65%) max heart rate\n
-                We will repeat step 2 and 3  for 4 times\n.
-                Are you ready?
-            """".trimMargin(),
-        )
-        Button(onClick = { mainViewModel.scheduleNextAlarm() }) {
-            Text(text = if (state.isTimerRunning) "Stop" else "Start")
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Step is ${state.step}")
-        if (state.isTimerRunning) {
-            CountdownDisplay(
-                targetTimeMillis = state.targetTimeMillis,
-                isRunning = state.isTimerRunning, // Pass this to control the effect
-                onFinish = {
-                    mainViewModel.onTimerFinish()
-                }
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp).safeDrawingPadding()
+        ) { // Root element
+            Text(
+                text = "Welcome!",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold
             )
+            Text(
+                text = """ We are going to do a classic Norwegian training:
+
+                1.10 minutes of warm-up
+
+                2. 4 Minutes of high intensity cardio (85-95%) max heart rate
+
+                3. 4 Minutes of low intensity cardio (55-65%) max heart rate
+
+                We will repeat step 2 and 3  for 4 times
+.
+                Are you ready?
+                """.trimMargin(),
+            )
+            Button(onClick = { mainViewModel.scheduleNextAlarm() }) {
+                Text(text = if (state.isTimerRunning) "Stop" else "Start")
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(text = "Step is ${state.step}")
+            if (state.isTimerRunning) {
+                CountdownDisplay(
+                    targetTimeMillis = state.targetTimeMillis,
+                    isRunning = state.isTimerRunning,
+                    onFinish = {
+                        mainViewModel.onTimerFinish()
+                    }
+                )
+            }
         }
     }
 }
@@ -92,15 +109,15 @@ fun CountdownDisplay(
         text = String.format("%02d:%02d", minutes, seconds),
         fontSize = 48.sp,
         fontWeight = FontWeight.Bold
+        // No explicit color needed, should default to onBackground from Surface
     )
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun GreetingPreview() {
     NorwegianTrainingTheme {
-        // Provide dummy values for preview
         MainView(
             mainViewModel = MainViewModel(),
         )

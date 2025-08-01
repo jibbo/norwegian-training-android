@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            NorwegianTrainingTheme {
+            NorwegianTrainingTheme(darkTheme = true) {
                 MainView(
                     mainViewModel = mainViewModel, // Add a callback for when timer finishes in composable
                 )
@@ -124,9 +124,9 @@ class MainActivity : ComponentActivity() {
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your notification icon
             .setContentTitle("Norwegian Training Alarm")
-            .setContentText("Time remaining:")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setWhen(triggerTime)
+            .setShowWhen(true)
             .setUsesChronometer(true)
             .setChronometerCountDown(true)
             .setAutoCancel(false)
