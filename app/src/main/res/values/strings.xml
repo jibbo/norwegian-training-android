@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Norwegian Training</string>
+
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="warmup">Warmup</string>
+    <string name="hit_cardio">Hit Cardio</string>
+    <string name="light_cardio">Light cardio</string>
+    <string name="cooldown">Cooldown</string>
 </resources>

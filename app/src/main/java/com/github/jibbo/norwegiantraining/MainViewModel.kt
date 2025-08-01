@@ -44,7 +44,19 @@ class MainViewModel : ViewModel() {
         data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
     }
 
-    data class UiState(val step: Int = 0, val isTimerRunning: Boolean = false, val targetTimeMillis: Long = 0)
+    data class UiState(
+        val step: Int = 0,
+        val isTimerRunning: Boolean = false,
+        val targetTimeMillis: Long = 10*60*1000){
+
+        fun stepsMessage() = when{
+            step == 0 -> R.string.warmup
+            step % 2 == 1 -> R.string.hit_cardio
+            step % 2 == 0 -> R.string.light_cardio
+            step == 9 -> R.string.cooldown
+            else -> throw IllegalStateException("Steps out of bound")
+        }
+    }
 
     private fun getNextAlarmTime() = System.currentTimeMillis() + when {
         states.value.step == 0 -> 10 * 60 // 10 minutes warmup
