@@ -18,6 +18,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
+import androidx.annotation.StringRes
+import androidx.compose.ui.semantics.text
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -77,10 +79,29 @@ class MainActivity : ComponentActivity() {
                         cancelNotification()
                     }
 
+                    is UiCommands.Speak -> {
+                        speak(it.speakState.message)
+                    }
+
                     is UiCommands.INITIAL -> {
 
                     }
                 }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                mainViewModel.permissionGranted()
+            } else {
+                // Permission denied. Handle appropriately
             }
         }
     }
@@ -97,20 +118,10 @@ class MainActivity : ComponentActivity() {
         showNotification(triggerTime)
 
         // TODO when and what it tells the user
-        tts?.speak(
-            getString(uiState.stepMessage()),
-            TextToSpeech.QUEUE_FLUSH,
-            null,
-            null
-        )
+        speak(uiState.stepMessage(), TextToSpeech.QUEUE_FLUSH)
 
         if (mainViewModel.shouldTalkInstructions(uiState)) {
-            tts?.speak(
-                getString(uiState.description()),
-                TextToSpeech.QUEUE_ADD,
-                null,
-                null
-            )
+           speak(uiState.description())
         }
     }
 
@@ -206,18 +217,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                mainViewModel.permissionGranted()
-            } else {
-                // Permission denied. Handle appropriately
-            }
-        }
+    private fun speak(@StringRes textId: Int, queueMode: Int = TextToSpeech.QUEUE_ADD) {
+        tts?.speak(
+            getString(textId),
+            queueMode, // Adds to the queue, doesn't interrupt
+            null,
+            "countdown_$textId" // Unique utterance ID for this specific announcement
+        )
     }
 }

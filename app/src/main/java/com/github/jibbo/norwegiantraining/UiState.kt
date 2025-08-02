@@ -31,3 +31,21 @@ data class UiState(
         else -> throw IllegalStateException("Steps out of bound")
     }
 }
+
+enum class SpeakState(val message: Int) {
+    ONE_MINUTE_REMAINING(R.string.one_minute_remaining),
+    THREE(R.string.three),
+    TWO(R.string.two),
+    ONE(R.string.one),
+    NOTHING(R.string.empty);
+
+    companion object {
+        fun from(timeRemaining: Int): SpeakState = when (timeRemaining) {
+            -60 -> SpeakState.ONE_MINUTE_REMAINING
+            -3 -> SpeakState.THREE
+            -2 -> SpeakState.TWO
+            -1 -> SpeakState.ONE
+            else -> SpeakState.NOTHING
+        }
+    }
+}

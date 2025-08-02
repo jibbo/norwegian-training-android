@@ -1,8 +1,12 @@
 package com.github.jibbo.norwegiantraining
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     private var currentStep = 0
@@ -15,17 +19,15 @@ class MainViewModel : ViewModel() {
 
     fun mainButtonClicked() {
         val oldValue = states.value
-        if (currentStep > 9 && oldValue.isTimerRunning) { 
-            states.value = UiState(currentStep, false, 0L, 0L) 
+        if (currentStep > 9 && oldValue.isTimerRunning) {
+            states.value = UiState(currentStep, false, 0L, 0L)
             events.value = UiCommands.STOP_ALARM
-        } else if (currentStep > 9) { 
+        } else if (currentStep > 9) {
             currentStep = 0
-            
-            scheduleTimer() 
-        } else if (oldValue.isTimerRunning) { 
+            scheduleTimer()
+        } else if (oldValue.isTimerRunning) {
             stopTimer()
-        } else { 
-            
+        } else {
             scheduleTimer()
         }
     }
@@ -45,31 +47,37 @@ class MainViewModel : ViewModel() {
         onTimerFinish()
     }
 
-    fun onTimerFinish() { 
+    fun onTimerFinish() {
         currentStep++
-        states.value = UiState(step = currentStep, isTimerRunning = false, targetTimeMillis = 0L, remainingTimeOnPauseMillis = 0L)
-        mainButtonClicked() 
+        states.value = UiState(
+            step = currentStep,
+            isTimerRunning = false,
+            targetTimeMillis = 0L,
+            remainingTimeOnPauseMillis = 0L
+        )
+        mainButtonClicked()
     }
 
     fun shouldTalkInstructions(uiState: UiState): Boolean = uiState.step < 3
 
-    private fun stopTimer() { 
+    private fun stopTimer() {
         val oldValue = states.value
-        
-        val remainingMillis = if (oldValue.isTimerRunning && oldValue.targetTimeMillis > System.currentTimeMillis()) {
-            oldValue.targetTimeMillis - System.currentTimeMillis()
-        } else {
-            0L
-        }
-        
+
+        val remainingMillis =
+            if (oldValue.isTimerRunning && oldValue.targetTimeMillis > System.currentTimeMillis()) {
+                oldValue.targetTimeMillis - System.currentTimeMillis()
+            } else {
+                0L
+            }
+
         states.value = UiState(oldValue.step, false, oldValue.targetTimeMillis, remainingMillis)
-        events.value = UiCommands.STOP_ALARM 
+        events.value = UiCommands.STOP_ALARM
     }
 
     private fun scheduleTimer() {
         val oldValue = states.value
         val newTargetTimeMillis: Long
-        
+
         if (!oldValue.isTimerRunning && oldValue.remainingTimeOnPauseMillis > 0L && oldValue.step == currentStep) {
             newTargetTimeMillis = System.currentTimeMillis() + oldValue.remainingTimeOnPauseMillis
             states.value = UiState(currentStep, true, newTargetTimeMillis, 0L)
@@ -78,14 +86,32 @@ class MainViewModel : ViewModel() {
             states.value = UiState(currentStep, true, newTargetTimeMillis, 0L)
         }
         events.value = UiCommands.START_ALARM(newTargetTimeMillis, states.value)
+
+        ticking()
     }
 
-    
+    private fun ticking() {
+        viewModelScope.launch {
+            if (states.value.isTimerRunning) {
+                val remainingTime =
+                    ((System.currentTimeMillis() - states.value.targetTimeMillis) / 1000).toInt()
+                Log.i("ticking", remainingTime.toString())
+                val speakState = SpeakState.from(remainingTime)
+                if(speakState!= SpeakState.NOTHING){
+                    events.value = UiCommands.Speak(speakState)
+                }
+                delay(1000)
+                ticking()
+            }
+        }
+    }
+
+
     private fun getNextAlarmTime(): Long {
         val durationMillis = when (currentStep) {
-            0 -> 10 * 60 * 1000 
-            9 -> 5 * 60 * 1000  
-            else -> 4 * 60 * 1000 
+            0 -> 10 * 60 * 1000
+            9 -> 5 * 60 * 1000
+            else -> 4 * 60 * 1000
         }
         return System.currentTimeMillis() + durationMillis
     }
@@ -95,5 +121,6 @@ class MainViewModel : ViewModel() {
         object STOP_ALARM : UiCommands()
         data class START_ALARM(val triggerTime: Long, val uiState: UiState) : UiCommands()
         data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
+        data class Speak(val speakState: SpeakState) : UiCommands()
     }
 }
