@@ -47,9 +47,6 @@ class MainViewModel : ViewModel() {
 
     fun onTimerFinish() { 
         currentStep++
-        
-        
-        
         states.value = UiState(step = currentStep, isTimerRunning = false, targetTimeMillis = 0L, remainingTimeOnPauseMillis = 0L)
         mainButtonClicked() 
     }
