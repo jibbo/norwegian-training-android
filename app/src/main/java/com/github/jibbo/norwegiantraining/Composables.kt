@@ -1,7 +1,6 @@
 package com.github.jibbo.norwegiantraining
 
 import android.content.res.Configuration
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,8 +23,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,42 +50,58 @@ fun MainView(
                 .safeDrawingPadding()
         ) {
             Text(
-                text = "Welcome!",
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold
+                text = state.stepMessage().localizable(),
+                fontSize = 42.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
+            Text(
+                text = state.description().localizable(),
+                fontSize = 22.sp,
+                lineHeight = 26.sp,
+                modifier = Modifier.fillMaxWidth().alpha(0.8f).padding(16.dp),
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.weight(1f))
             Column(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = state.stepsMessage().localizable(),
-                    fontSize = 32.sp,
-                )
-                CountdownDisplay(
-                    targetTimeMillis = state.targetTimeMillis,
-                    isRunning = state.isTimerRunning,
-                    onFinish = {
-                        mainViewModel.onTimerFinish()
-                    }
-                )
+                if(state.step>=0) {
+                    CountdownDisplay(
+                        targetTimeMillis = state.targetTimeMillis,
+                        isRunning = state.isTimerRunning,
+                        onFinish = {
+                            mainViewModel.onTimerFinish()
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "Next Up >> ${state.nextMessage().localizable()}",
+                fontSize = 22.sp,
+                modifier = Modifier.fillMaxWidth().alpha(0.8f).padding(16.dp),
+                textAlign = TextAlign.Center,
+            )
             Button(
-                onClick = { mainViewModel.scheduleNextAlarm() },
+                onClick = { mainViewModel.mainButtonClicked() },
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()
                     .imePadding()
             ) {
                 val text = if (state.isTimerRunning)
-                    R.string.stop.localizable().uppercase()
+                    R.string.pause.localizable().uppercase()
                 else R.string.start.localizable().uppercase()
                 Text(
                     text = text,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(16.dp)
                 )
             }
         }
@@ -106,8 +123,6 @@ fun CountdownDisplay(
 
     LaunchedEffect(key1 = targetTimeMillis, key2 = isRunning) {
         if (!isRunning) {
-            // If timer is stopped externally, ensure remainingTimeMillis is updated or cleared
-            remainingTimeMillis = 0L // Or keep the last value if preferred
             return@LaunchedEffect
         }
         // Recalculate initial remaining time when targetTimeMillis or isRunning changes to true
