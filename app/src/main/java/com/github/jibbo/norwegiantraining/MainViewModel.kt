@@ -97,7 +97,7 @@ class MainViewModel : ViewModel() {
                     ((System.currentTimeMillis() - states.value.targetTimeMillis) / 1000).toInt()
                 Log.i("ticking", remainingTime.toString())
                 val speakState = SpeakState.from(remainingTime)
-                if(speakState!= SpeakState.NOTHING){
+                if (speakState != SpeakState.NOTHING) {
                     events.value = UiCommands.Speak(speakState)
                 }
                 delay(1000)
