@@ -51,6 +51,8 @@ class MainViewModel : ViewModel() {
         mainButtonClicked() 
     }
 
+    fun shouldTalkInstructions(uiState: UiState): Boolean = uiState.step < 3
+
     private fun stopTimer() { 
         val oldValue = states.value
         
@@ -75,7 +77,7 @@ class MainViewModel : ViewModel() {
             newTargetTimeMillis = getNextAlarmTime()
             states.value = UiState(currentStep, true, newTargetTimeMillis, 0L)
         }
-        events.value = UiCommands.START_ALARM(newTargetTimeMillis) 
+        events.value = UiCommands.START_ALARM(newTargetTimeMillis, states.value)
     }
 
     
@@ -91,7 +93,7 @@ class MainViewModel : ViewModel() {
     sealed class UiCommands {
         object INITIAL : UiCommands()
         object STOP_ALARM : UiCommands()
-        data class START_ALARM(val triggerTime: Long) : UiCommands()
+        data class START_ALARM(val triggerTime: Long, val uiState: UiState) : UiCommands()
         data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
     }
 }

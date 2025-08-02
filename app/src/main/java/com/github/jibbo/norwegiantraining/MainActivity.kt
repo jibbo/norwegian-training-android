@@ -11,6 +11,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,6 +35,8 @@ class MainActivity : ComponentActivity() {
     private val CHANNEL_ID = "alarm_channel"
     private val NOTIFICATION_ID = 1
 
+    private var tts: TextToSpeech? = null
+
     @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,23 +50,33 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        tts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.language = java.util.Locale.getDefault()
+            } else {
+                Log.e("tts", "not working")
+                tts = null
+            }
+        }
+
         createNotificationChannel(this)
 
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
                     is UiCommands.START_ALARM -> {
-                        scheduleAlarm(it.triggerTime)
-                        checkNotificationPermission()
-                        showNotification(it.triggerTime)
+                        startAlarm(it.triggerTime, it.uiState)
                     }
+
                     is UiCommands.SHOW_NOTIFICATION -> {
                         checkNotificationPermission()
                         showNotification(it.triggerTime)
                     }
+
                     is UiCommands.STOP_ALARM -> {
                         cancelNotification()
                     }
+
                     is UiCommands.INITIAL -> {
 
                     }
@@ -70,6 +84,36 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        tts?.stop()
+        tts?.shutdown()
+    }
+
+    private fun startAlarm(triggerTime: Long, uiState: UiState) {
+        scheduleAlarm(triggerTime)
+        checkNotificationPermission()
+        showNotification(triggerTime)
+
+        // TODO when and what it tells the user
+        tts?.speak(
+            getString(uiState.stepMessage()),
+            TextToSpeech.QUEUE_FLUSH,
+            null,
+            null
+        )
+
+        if (mainViewModel.shouldTalkInstructions(uiState)) {
+            tts?.speak(
+                getString(uiState.description()),
+                TextToSpeech.QUEUE_ADD,
+                null,
+                null
+            )
+        }
+    }
+
 
     private fun cancelNotification() {
         NotificationManagerCompat.from(this).cancel(NOTIFICATION_ID)
@@ -162,14 +206,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-         if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS) {
-             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                 mainViewModel.permissionGranted()
-             } else {
-                 // Permission denied. Handle appropriately
-             }
-         }
-     }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                mainViewModel.permissionGranted()
+            } else {
+                // Permission denied. Handle appropriately
+            }
+        }
+    }
 }

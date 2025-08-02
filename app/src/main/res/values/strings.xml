@@ -9,16 +9,16 @@
     <!-- Timer states -->
     <string name="get_ready">Get Ready</string>
     <string name="warmup">Warmup</string>
-    <string name="hit_cardio">Hit Cardio</string>
-    <string name="light_cardio">Light cardio</string>
+    <string name="hit_cardio">Hard phase</string>
+    <string name="light_cardio">Light phase</string>
     <string name="cooldown">Cooldown</string>
     <string name="completed">DONE</string>
 
     <!-- Exercise descriptions -->
     <string name="get_ready_desc">Prepare yourself for the warmup</string>
     <string name="warmup_desc">Exercise lightly: you should be able to talk while you warmup</string>
-    <string name="hit_cardio_desc">Go all in! You\'ve got this! </string>
-    <string name="light_cardio_desc">Exercise lightly: you should be able to talk</string>
-    <string name="cooldown_desc">Breathe, go at a pace that allows you to relax but don\'t stop</string>
+    <string name="hit_cardio_desc">Give everything you\'ve got! You can do this! </string>
+    <string name="light_cardio_desc">Exercise lightly: steady your heartbeat without stopping</string>
+    <string name="cooldown_desc">Breathe, go at slow and relaxed pace that allows you to relax but don\'t stop now</string>
     <string name="completed_desc">Congratulations! You arrived at the end!</string>
 </resources>
