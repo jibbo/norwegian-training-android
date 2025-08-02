@@ -3,7 +3,8 @@ package com.github.jibbo.norwegiantraining
 data class UiState(
     val step: Int = -1,
     val isTimerRunning: Boolean = false,
-    val targetTimeMillis: Long = 0L
+    val targetTimeMillis: Long = 0L,
+    val remainingTimeOnPauseMillis: Long = 0L
 ) {
 
     fun stepMessage() = message(step)
