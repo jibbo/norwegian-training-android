@@ -15,10 +15,10 @@ private val DarkColorScheme = darkColorScheme(
     primary = Primary,
     secondary = White,
     tertiary = White,
-    background = Background,
+    background = Black,
     onBackground = White,
     onSurface = White,
-    surface = Background,
+    surface = Black,
 )
 
 private val LightColorScheme = lightColorScheme(

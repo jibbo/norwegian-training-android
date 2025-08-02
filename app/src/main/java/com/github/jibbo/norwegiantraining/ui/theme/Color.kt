@@ -3,11 +3,9 @@ package com.github.jibbo.norwegiantraining.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // Dark
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
 val Primary = Color(0xFFCFFF04)
 val Background = Color(0xFF333333)
+val Black = Color(0xFF070D0D)
 val White = Color(0xFFFFFFFF)
 
 // Light

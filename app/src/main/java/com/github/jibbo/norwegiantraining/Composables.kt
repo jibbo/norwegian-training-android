@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,10 +28,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 
@@ -49,6 +52,9 @@ fun MainView(
                 .padding(16.dp)
                 .safeDrawingPadding()
         ) {
+            if(!mainViewModel.showCountdown()){
+                Spacer(modifier = Modifier.weight(1f))
+            }
             Text(
                 text = state.stepMessage().localizable(),
                 fontSize = 42.sp,
@@ -64,12 +70,13 @@ fun MainView(
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.weight(1f))
+            if(mainViewModel.showCountdown()) {
             Column(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if(state.step>=0) {
+
                     CountdownDisplay(
                         targetTimeMillis = state.targetTimeMillis,
                         isRunning = state.isTimerRunning,
@@ -79,8 +86,9 @@ fun MainView(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-            }
+
             Spacer(modifier = Modifier.weight(1f))
+            }
             Text(
                 text = "Next Up >> ${state.nextMessage().localizable()}",
                 fontSize = 22.sp,
@@ -103,6 +111,22 @@ fun MainView(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(16.dp)
                 )
+            }
+
+            if(mainViewModel.showSkipButton()) {
+                TextButton(onClick = {
+                    mainViewModel.skipClicked()
+                }) {
+                    Text(
+                        text = R.string.skip.localizable(),
+                        fontSize = 22.sp,
+                        lineHeight = 26.sp,
+                        color = Primary,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.fillMaxWidth().alpha(0.8f).padding(16.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
     }

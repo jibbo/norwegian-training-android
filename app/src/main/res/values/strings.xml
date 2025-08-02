@@ -4,6 +4,7 @@
     <!-- Actions -->
     <string name="start">Start</string>
     <string name="pause">Pause</string>
+    <string name="skip">Skip phase >></string>
 
     <!-- Timer states -->
     <string name="get_ready">Get Ready</string>

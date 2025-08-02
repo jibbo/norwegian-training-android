@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel : ViewModel() {
-    private var currentStep = 0
+    private var currentStep = -1
 
     private val events: MutableStateFlow<UiCommands> = MutableStateFlow(UiCommands.INITIAL)
     val uiEvents = events.asStateFlow()
@@ -15,19 +15,24 @@ class MainViewModel : ViewModel() {
 
     fun mainButtonClicked() {
         val oldValue = states.value
-        if (oldValue.isTimerRunning) {
-            states.value = UiState(oldValue.step, false, oldValue.targetTimeMillis)
+        if(currentStep >= 9){
+            states.value = UiState(currentStep, false, 0L)
             events.value = UiCommands.STOP_ALARM
+        }
+        else if(currentStep > oldValue.step){
+            scheduleTimer()
+        }
+        else if (oldValue.isTimerRunning) {
+            stopTimer()
         } else {
-            val targetTimeMillis = if(System.currentTimeMillis() >= oldValue.targetTimeMillis){
-                getNextAlarmTime()
-            }else{
-                oldValue.targetTimeMillis
-            }
-            states.value = UiState(currentStep, true, targetTimeMillis)
-            events.value = UiCommands.START_ALARM(targetTimeMillis)
+            currentStep++
+            scheduleTimer()
         }
     }
+
+    fun showSkipButton() = currentStep>= 0 && currentStep <= 10
+
+    fun showCountdown() = currentStep >= 0
 
     fun permissionGranted() {
         val oldValue = states.value
@@ -36,11 +41,30 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    sealed class UiCommands {
-        object INITIAL : UiCommands()
-        object STOP_ALARM : UiCommands()
-        data class START_ALARM(val triggerTime: Long) : UiCommands()
-        data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
+    fun skipClicked(){
+        onTimerFinish()
+    }
+
+    fun onTimerFinish() {
+        currentStep++
+        mainButtonClicked()
+    }
+
+    private fun stopTimer() {
+        val oldValue = states.value
+        states.value = UiState(oldValue.step, false, oldValue.targetTimeMillis)
+        events.value = UiCommands.STOP_ALARM
+    }
+
+    private fun scheduleTimer() {
+        val oldValue = states.value
+        val targetTimeMillis = if (System.currentTimeMillis() >= oldValue.targetTimeMillis || currentStep > oldValue.step) {
+            getNextAlarmTime()
+        } else {
+            oldValue.targetTimeMillis
+        }
+        states.value = UiState(currentStep, true, targetTimeMillis)
+        events.value = UiCommands.START_ALARM(targetTimeMillis)
     }
 
     private fun getNextAlarmTime() = System.currentTimeMillis() + when {
@@ -48,8 +72,10 @@ class MainViewModel : ViewModel() {
         else -> 4 * 60 // 4 minutes cardio
     } * 1000
 
-    fun onTimerFinish() {
-        currentStep++
-        mainButtonClicked()
+    sealed class UiCommands {
+        object INITIAL : UiCommands()
+        object STOP_ALARM : UiCommands()
+        data class START_ALARM(val triggerTime: Long) : UiCommands()
+        data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
     }
 }
