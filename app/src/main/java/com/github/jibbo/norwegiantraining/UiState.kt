@@ -23,7 +23,8 @@ data class UiState(
         step < 0 -> R.string.get_ready
         step == 0 -> R.string.warmup
         step == 9 -> R.string.cooldown
-        step > 9 -> R.string.completed
+        step == 10 -> R.string.completed
+        step > 10 -> R.string.warmup
         step % 2 == 1 -> R.string.hit_cardio
         step % 2 == 0 -> R.string.light_cardio
         else -> throw IllegalStateException("Steps out of bound")
