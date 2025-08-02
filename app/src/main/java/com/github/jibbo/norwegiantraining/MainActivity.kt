@@ -19,7 +19,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
-import androidx.compose.ui.semantics.text
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -83,6 +82,10 @@ class MainActivity : ComponentActivity() {
                         speak(it.speakState.message)
                     }
 
+                    is UiCommands.SHOW_SETTINGS -> {
+                        startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+                    }
+
                     is UiCommands.INITIAL -> {
 
                     }
@@ -121,7 +124,7 @@ class MainActivity : ComponentActivity() {
         speak(uiState.stepMessage(), TextToSpeech.QUEUE_FLUSH)
 
         if (mainViewModel.shouldTalkInstructions(uiState)) {
-           speak(uiState.description())
+            speak(uiState.description())
         }
     }
 

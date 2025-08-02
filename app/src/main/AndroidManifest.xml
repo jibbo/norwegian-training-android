@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.SET_ALARM" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NorwegianTraining">
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/Theme.NorwegianTraining" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -28,8 +33,9 @@
             </intent-filter>
         </activity>
 
-
-        <receiver android:name=".AlarmReceiver" android:exported="true" />
+        <receiver
+            android:name=".AlarmReceiver"
+            android:exported="true" />
     </application>
 
 </manifest>

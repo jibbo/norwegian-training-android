@@ -60,6 +60,10 @@ class MainViewModel : ViewModel() {
 
     fun shouldTalkInstructions(uiState: UiState): Boolean = uiState.step < 3
 
+    fun settingsClicked() {
+        events.value = UiCommands.SHOW_SETTINGS
+    }
+
     private fun stopTimer() {
         val oldValue = states.value
 
@@ -119,6 +123,7 @@ class MainViewModel : ViewModel() {
     sealed class UiCommands {
         object INITIAL : UiCommands()
         object STOP_ALARM : UiCommands()
+        object SHOW_SETTINGS : UiCommands()
         data class START_ALARM(val triggerTime: Long, val uiState: UiState) : UiCommands()
         data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
         data class Speak(val speakState: SpeakState) : UiCommands()

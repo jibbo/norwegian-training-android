@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,7 +56,8 @@ fun MainView(
                 .padding(16.dp)
                 .safeDrawingPadding()
         ) {
-            if(!mainViewModel.showCountdown()){
+            Header(viewModel = mainViewModel)
+            if (!mainViewModel.showCountdown()) {
                 Spacer(modifier = Modifier.weight(1f))
             }
             Text(
@@ -66,16 +71,21 @@ fun MainView(
                 text = state.description().localizable(),
                 fontSize = 22.sp,
                 lineHeight = 26.sp,
-                modifier = Modifier.fillMaxWidth().alpha(0.8f).padding(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(0.8f)
+                    .padding(16.dp),
                 textAlign = TextAlign.Center,
             )
             Spacer(modifier = Modifier.weight(1f))
-            if(mainViewModel.showCountdown()) {
-            Column(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            if (mainViewModel.showCountdown()) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
                     CountdownDisplay(
                         targetTimeMillis = state.targetTimeMillis,
@@ -87,12 +97,15 @@ fun MainView(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-            Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
             }
             Text(
                 text = "Next Up >> ${state.nextMessage().localizable()}",
                 fontSize = 22.sp,
-                modifier = Modifier.fillMaxWidth().alpha(0.8f).padding(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(0.8f)
+                    .padding(16.dp),
                 textAlign = TextAlign.Center,
             )
             Button(
@@ -113,7 +126,7 @@ fun MainView(
                 )
             }
 
-            if(mainViewModel.showSkipButton()) {
+            if (mainViewModel.showSkipButton()) {
                 TextButton(onClick = {
                     mainViewModel.skipClicked()
                 }) {
@@ -123,7 +136,10 @@ fun MainView(
                         lineHeight = 26.sp,
                         color = Primary,
                         textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.fillMaxWidth().alpha(0.8f).padding(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .alpha(0.8f)
+                            .padding(16.dp),
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -174,8 +190,29 @@ fun CountdownDisplay(
 }
 
 @Composable
-fun Int.localizable() = stringResource(this)
+fun Header(viewModel: MainViewModel) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = "Welcome",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(onClick = {
+            viewModel.settingsClicked()
+        }) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_settings_24),
+                contentDescription = ""
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(60.dp))
+}
 
+
+@Composable
+fun Int.localizable() = stringResource(this)
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
