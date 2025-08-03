@@ -125,10 +125,11 @@ class MainActivity : ComponentActivity() {
         checkNotificationPermission()
         showNotification(triggerTime)
 
-        // TODO when and what it tells the user
-        speak(uiState.stepMessage(), TextToSpeech.QUEUE_FLUSH)
-
-        if (mainViewModel.shouldTalkInstructions(uiState)) {
+        // TODO move to viewModel these ifs
+        if (mainViewModel.shouldAnnouncePhase()) {
+            speak(uiState.stepMessage(), TextToSpeech.QUEUE_FLUSH)
+        }
+        if (mainViewModel.shouldAnnouncePhaseDesc()) {
             speak(uiState.description())
         }
     }

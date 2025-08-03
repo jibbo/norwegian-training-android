@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.jibbo.norwegiantraining.data.UserPreferencesRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val settingsRepository: UserPreferencesRepo
+) : ViewModel() {
     private var currentStep = 0
 
     private val events: MutableStateFlow<UiCommands> = MutableStateFlow(UiCommands.INITIAL)
@@ -61,7 +64,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
         mainButtonClicked()
     }
 
-    fun shouldTalkInstructions(uiState: UiState): Boolean = uiState.step < 3
+    fun shouldAnnouncePhase() = settingsRepository.getAnnouncePhase()
+    fun shouldAnnouncePhaseDesc() = settingsRepository.getAnnouncePhaseDesc()
 
     fun settingsClicked() {
         events.value = UiCommands.SHOW_SETTINGS
@@ -98,17 +102,19 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun ticking() {
-        viewModelScope.launch {
-            if (states.value.isTimerRunning) {
-                val remainingTime =
-                    ((System.currentTimeMillis() - states.value.targetTimeMillis) / 1000).toInt()
-                Log.i("ticking", remainingTime.toString())
-                val speakState = SpeakState.Companion.from(remainingTime)
-                if (speakState != SpeakState.NOTHING) {
-                    events.value = UiCommands.Speak(speakState)
+        if (settingsRepository.getAnnounceCountdown()) {
+            viewModelScope.launch {
+                if (states.value.isTimerRunning) {
+                    val remainingTime =
+                        ((System.currentTimeMillis() - states.value.targetTimeMillis) / 1000).toInt()
+                    Log.i("ticking", remainingTime.toString())
+                    val speakState = SpeakState.Companion.from(remainingTime)
+                    if (speakState != SpeakState.NOTHING) {
+                        events.value = UiCommands.Speak(speakState)
+                    }
+                    delay(1000)
+                    ticking()
                 }
-                delay(1000)
-                ticking()
             }
         }
     }

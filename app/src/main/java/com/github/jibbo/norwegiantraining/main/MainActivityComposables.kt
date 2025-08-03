@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.UserPreferencesRepo
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import kotlinx.coroutines.delay
@@ -216,7 +217,42 @@ internal fun Header(viewModel: MainViewModel) {
 fun GreetingPreview() {
     NorwegianTrainingTheme {
         MainView(
-            mainViewModel = MainViewModel(),
+            mainViewModel = MainViewModel(FakeUserPreferencesRepo()),
         )
     }
+}
+
+class FakeUserPreferencesRepo : UserPreferencesRepo{
+    override fun setUserName(name: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getUserName(): String? {
+        TODO("Not yet implemented")
+    }
+
+    override fun setAnnouncePhase(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAnnouncePhase(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setAnnouncePhaseDesc(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAnnouncePhaseDesc(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setAnnounceCountdown(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAnnounceCountdown(): Boolean {
+        TODO("Not yet implemented")
+    }
+
 }
