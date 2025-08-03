@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining
+package com.github.jibbo.norwegiantraining.settings
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,7 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 
 class SettingsActivity : ComponentActivity() {
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +35,7 @@ class SettingsActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = "Settings",
         modifier = modifier
     )
 }
