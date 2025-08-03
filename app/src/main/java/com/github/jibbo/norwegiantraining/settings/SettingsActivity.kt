@@ -24,6 +24,7 @@ class SettingsActivity : ComponentActivity() {
             NorwegianTrainingTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     SettingsScreen(
+                        viewModel = viewModel,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

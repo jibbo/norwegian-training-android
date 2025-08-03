@@ -14,12 +14,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,7 +36,7 @@ import kotlin.math.absoluteValue
 
 @Composable
 internal fun SettingsScreen(
-//    viewModel: SettingsViewModel,
+    viewModel: SettingsViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -52,15 +52,16 @@ internal fun SettingsScreen(
             modifier = modifier
         )
 
-        ProfileCard()
+        ProfileCard(viewModel)
 
-        TTSCard()
+        TTSCard(viewModel)
 
     }
 }
 
 @Composable
-private fun TTSCard() {
+private fun TTSCard(viewModel: SettingsViewModel) {
+    val state = viewModel.uiState.collectAsState()
     Card {
         Text(
             text = R.string.title_tts_section.localizable(),
@@ -77,8 +78,8 @@ private fun TTSCard() {
                 style = Typography.bodyMedium,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Switch(checked = false, onCheckedChange = {
-                // TODO
+            Switch(checked = state.value.announcePhase, onCheckedChange = {
+                viewModel.setAnnouncePhase(it)
             })
         }
         Row(
@@ -90,8 +91,8 @@ private fun TTSCard() {
                 style = Typography.bodyMedium,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Switch(checked = false, onCheckedChange = {
-                // TODO
+            Switch(checked = state.value.announcePhaseDesc, onCheckedChange = {
+                viewModel.setAnnouncePhaseDesc(it)
             })
         }
         Row(
@@ -103,16 +104,16 @@ private fun TTSCard() {
                 style = Typography.bodyMedium,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Switch(checked = false, onCheckedChange = {
-                // TODO
+            Switch(checked = state.value.announceCountdown, onCheckedChange = {
+                viewModel.setAnnounceCountdown(it)
             })
         }
-//    HorizontalDivider()
     }
 }
 
 @Composable
-private fun ProfileCard() {
+private fun ProfileCard(viewModel: SettingsViewModel) {
+    val state = viewModel.uiState.collectAsState()
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.Top,
@@ -124,15 +125,17 @@ private fun ProfileCard() {
                 color = Primary
             )
             Spacer(modifier = Modifier.weight(1f))
-            CircleInitialAvatar("Profile Image")
+            CircleInitialAvatar(name = state.value.name ?: "")
         }
 
         TextField(
             placeholder = @Composable {
                 Text(text = R.string.your_name.localizable())
             },
-            value = "",
-            onValueChange = { TODO() },
+            value = state.value.name ?: "",
+            onValueChange = { newValue: String ->
+                viewModel.setName(newValue)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -183,7 +186,7 @@ fun getColorFromName(name: String): Color {
 fun GreetingPreview2() {
     NorwegianTrainingTheme {
         Surface {
-            SettingsScreen()
+//            SettingsScreen() // Needs a ViewModel instance
         }
     }
 }

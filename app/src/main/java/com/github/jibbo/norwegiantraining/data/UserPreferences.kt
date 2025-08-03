@@ -13,10 +13,14 @@ import javax.inject.Singleton
 const val PREFS_KEY = "norwegian_training_prefs";
 
 interface UserPreferencesRepo {
-    fun setUserName(name: String): Unit
+    fun setUserName(name: String?): Unit
     fun getUserName(): String?
-    fun setTTS(enabled: Boolean)
-    fun getTTS(): Boolean
+    fun setAnnouncePhase(enabled: Boolean)
+    fun getAnnouncePhase(): Boolean
+    fun setAnnouncePhaseDesc(enabled: Boolean)
+    fun getAnnouncePhaseDesc(): Boolean
+    fun setAnnounceCountdown(enabled: Boolean)
+    fun getAnnounceCountdown(): Boolean
 }
 
 @Singleton
@@ -26,17 +30,37 @@ class UserPreferencesSharedPrefs @Inject constructor(
 
     val sp = context.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
 
-    override fun setUserName(name: String) {
-        sp.edit { putString("username", name) }
+    override fun setUserName(name: String?) {
+        sp.edit { putString(KEY_USERNAME, name) }
     }
 
-    override fun getUserName(): String? = sp.getString("username", null)
+    override fun getUserName(): String? = sp.getString(KEY_USERNAME, null)
 
-    override fun setTTS(enabled: Boolean) {
-        sp.edit { putBoolean("tts", enabled) }
+
+    override fun setAnnouncePhase(enabled: Boolean) {
+        sp.edit { putBoolean(KEY_ANNOUNCE_PHASE, enabled) }
     }
 
-    override fun getTTS(): Boolean = sp.getBoolean("tts", false)
+    override fun getAnnouncePhase(): Boolean = sp.getBoolean(KEY_ANNOUNCE_PHASE, false)
+
+    override fun setAnnouncePhaseDesc(enabled: Boolean) {
+        sp.edit { putBoolean(KEY_ANNOUNCE_PHASE_DESC, enabled) }
+    }
+
+    override fun getAnnouncePhaseDesc(): Boolean = sp.getBoolean(KEY_ANNOUNCE_PHASE_DESC, false)
+
+    override fun setAnnounceCountdown(enabled: Boolean) {
+        sp.edit { putBoolean(KEY_ANNOUNCE_COUNTDOWN, enabled) }
+    }
+
+    override fun getAnnounceCountdown(): Boolean = sp.getBoolean(KEY_ANNOUNCE_COUNTDOWN, false)
+
+    companion object {
+        const val KEY_ANNOUNCE_PHASE = "announce_phase"
+        const val KEY_USERNAME = "username"
+        const val KEY_ANNOUNCE_PHASE_DESC = "announce_phase_desc"
+        const val KEY_ANNOUNCE_COUNTDOWN = "announce_countdown"
+    }
 
 }
 
