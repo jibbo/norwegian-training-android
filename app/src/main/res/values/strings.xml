@@ -28,5 +28,14 @@
     <string name="two">2</string>
     <string name="one">1</string>
     <string name="empty"></string>
-    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Settings -->
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_profile_section">Profile</string>">
+    <string name="your_name">Your name</string>">
+
+    <string name="title_tts_section">Text-To-Speech</string>">
+    <string name="announce_phase">Announce Phase</string>
+    <string name="announce_phase_description">Announce the description of the current phase</string>
+    <string name="announce_countdown">Announce 3,2,1 before next phase</string>
 </resources>

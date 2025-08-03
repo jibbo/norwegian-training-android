@@ -1,6 +1,5 @@
 package com.github.jibbo.norwegiantraining.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -55,6 +54,7 @@ fun NorwegianTrainingTheme(
     }
 
     MaterialTheme(
+//        colorScheme = colorScheme,
         colorScheme = DarkColorScheme,
         typography = Typography,
         content = content

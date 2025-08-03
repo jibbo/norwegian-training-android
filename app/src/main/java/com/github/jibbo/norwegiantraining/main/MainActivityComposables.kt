@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -37,13 +36,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun MainView(
+internal fun MainView(
     mainViewModel: MainViewModel,
 ) {
     val state by mainViewModel.uiStates.collectAsState()
@@ -150,7 +150,7 @@ fun MainView(
 }
 
 @Composable
-fun CountdownDisplay(
+internal fun CountdownDisplay(
     targetTimeMillis: Long,
     isRunning: Boolean,
     onFinish: () -> Unit,
@@ -191,7 +191,7 @@ fun CountdownDisplay(
 }
 
 @Composable
-fun Header(viewModel: MainViewModel) {
+internal fun Header(viewModel: MainViewModel) {
     Row(verticalAlignment = Alignment.CenterVertically) {
 //        Text(
 //            text = "Welcome",
@@ -210,10 +210,6 @@ fun Header(viewModel: MainViewModel) {
     }
     Spacer(modifier = Modifier.height(100.dp))
 }
-
-
-@Composable
-fun Int.localizable() = stringResource(this)
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
