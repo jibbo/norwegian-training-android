@@ -26,8 +26,10 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.MainViewModel.UiCommands
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()

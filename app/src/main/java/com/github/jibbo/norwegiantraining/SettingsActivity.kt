@@ -14,6 +14,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 
 class SettingsActivity : ComponentActivity() {
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
