@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining
+package com.github.jibbo.norwegiantraining.main
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -103,7 +103,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 val remainingTime =
                     ((System.currentTimeMillis() - states.value.targetTimeMillis) / 1000).toInt()
                 Log.i("ticking", remainingTime.toString())
-                val speakState = SpeakState.from(remainingTime)
+                val speakState = SpeakState.Companion.from(remainingTime)
                 if (speakState != SpeakState.NOTHING) {
                     events.value = UiCommands.Speak(speakState)
                 }

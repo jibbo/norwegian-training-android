@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining
+package com.github.jibbo.norwegiantraining.main
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import kotlinx.coroutines.delay
@@ -192,11 +193,11 @@ fun CountdownDisplay(
 @Composable
 fun Header(viewModel: MainViewModel) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = "Welcome",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-        )
+//        Text(
+//            text = "Welcome",
+//            fontSize = 22.sp,
+//            fontWeight = FontWeight.Bold,
+//        )
         Spacer(modifier = Modifier.weight(1f))
         IconButton(onClick = {
             viewModel.settingsClicked()
@@ -207,7 +208,7 @@ fun Header(viewModel: MainViewModel) {
             )
         }
     }
-    Spacer(modifier = Modifier.height(60.dp))
+    Spacer(modifier = Modifier.height(100.dp))
 }
 
 

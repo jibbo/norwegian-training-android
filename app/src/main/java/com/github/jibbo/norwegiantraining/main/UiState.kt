@@ -1,4 +1,6 @@
-package com.github.jibbo.norwegiantraining
+package com.github.jibbo.norwegiantraining.main
+
+import com.github.jibbo.norwegiantraining.R
 
 data class UiState(
     val step: Int = -1,
@@ -41,11 +43,11 @@ enum class SpeakState(val message: Int) {
 
     companion object {
         fun from(timeRemaining: Int): SpeakState = when (timeRemaining) {
-            -60 -> SpeakState.ONE_MINUTE_REMAINING
-            -3 -> SpeakState.THREE
-            -2 -> SpeakState.TWO
-            -1 -> SpeakState.ONE
-            else -> SpeakState.NOTHING
+            -60 -> ONE_MINUTE_REMAINING
+            -3 -> THREE
+            -2 -> TWO
+            -1 -> ONE
+            else -> NOTHING
         }
     }
 }

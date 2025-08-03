@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining
+package com.github.jibbo.norwegiantraining.main
 
 import android.Manifest
 import android.app.AlarmManager
@@ -24,10 +24,13 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.github.jibbo.norwegiantraining.MainViewModel.UiCommands
+import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.AlarmReceiver
+import com.github.jibbo.norwegiantraining.settings.SettingsActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -55,7 +58,7 @@ class MainActivity : ComponentActivity() {
 
         tts = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                tts?.language = java.util.Locale.getDefault()
+                tts?.language = Locale.getDefault()
             } else {
                 Log.e("tts", "not working")
                 tts = null
@@ -67,28 +70,28 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
-                    is UiCommands.START_ALARM -> {
+                    is MainViewModel.UiCommands.START_ALARM -> {
                         startAlarm(it.triggerTime, it.uiState)
                     }
 
-                    is UiCommands.SHOW_NOTIFICATION -> {
+                    is MainViewModel.UiCommands.SHOW_NOTIFICATION -> {
                         checkNotificationPermission()
                         showNotification(it.triggerTime)
                     }
 
-                    is UiCommands.STOP_ALARM -> {
+                    is MainViewModel.UiCommands.STOP_ALARM -> {
                         cancelNotification()
                     }
 
-                    is UiCommands.Speak -> {
+                    is MainViewModel.UiCommands.Speak -> {
                         speak(it.speakState.message)
                     }
 
-                    is UiCommands.SHOW_SETTINGS -> {
+                    is MainViewModel.UiCommands.SHOW_SETTINGS -> {
                         startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
                     }
 
-                    is UiCommands.INITIAL -> {
+                    is MainViewModel.UiCommands.INITIAL -> {
 
                     }
                 }
@@ -151,7 +154,7 @@ class MainActivity : ComponentActivity() {
                 alarmManager?.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
             }
         } else {
-            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
         }
     }
@@ -217,7 +220,7 @@ class MainActivity : ComponentActivity() {
             }
 
             val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
