@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.android.material)
     implementation(libs.dagger.hilt.android)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -63,4 +65,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     ksp(libs.dagger.hilt.compiler)
+    ksp(libs.room.compiler)
 }
