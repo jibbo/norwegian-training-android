@@ -235,7 +235,7 @@ class FakeSessionRepo : SessionRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun upsertSession(session: Session) {
+    override suspend fun upsertSession(session: Session): Long {
         TODO("Not yet implemented")
     }
 

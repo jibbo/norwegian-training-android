@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
@@ -67,7 +68,6 @@ private fun Month(
     val dateFormat = SimpleDateFormat("MMMM")
     val calendar = Calendar.getInstance()
     calendar.set(Calendar.MONTH, month)
-//    Card(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = dateFormat.format(calendar.time),
             modifier = Modifier.padding(horizontal = 4.dp)
@@ -76,11 +76,10 @@ private fun Month(
             modifier = Modifier.padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            for (i in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+            for (i in 0..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
                 Day(calendar, i, uiState, month)
             }
         }
-//    }
 }
 
 @Composable
@@ -111,9 +110,9 @@ private fun Day(
 
     Box(
         modifier = Modifier
-            .size(30.dp)
+            .size(32.dp)
             .padding(4.dp)
-            .clip(RoundedCornerShape(size = 10.dp))
+            .clip(CircleShape)
             .background(color)
     ) {
 //        Text(index.toString())
@@ -155,53 +154,3 @@ private fun createSessions(sessionCount: Int): List<Session> {
         }
     }
 }
-
-
-/*
-val formatter = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
-
-    LazyRow (modifier = Modifier.padding(innerPadding)) {
-        items(12) { month ->
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 10.dp),
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxWidth()
-                ) {
-                    items(31) { index ->
-                        val calendar = Calendar.getInstance()
-                        calendar.add(Calendar.DAY_OF_YEAR, -index)
-                        calendar.set(Calendar.MONTH, month)
-                        calendar.set(Calendar.HOUR_OF_DAY, 0)
-                        calendar.set(Calendar.MINUTE, 0)
-                        calendar.set(Calendar.SECOND, 0)
-                        calendar.set(Calendar.MILLISECOND, 0)
-                        val boxDate = calendar.time
-                        val item =
-                            uiState.logs[month]?.find { it.date.isSameDay(boxDate) }?.skipCount
-                        val color = when (item) {
-                            in 0..1 -> Primary
-                            in 2..4 -> Color.Yellow
-                            null -> Color.DarkGray
-                            else -> Color.Red
-                        }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .clip(RoundedCornerShape(size = 10.dp))
-                                    .padding()
-                                    .background(color)
-                            ) {
-                                Text(formatter.format(calendar.time))
-                            }
-                        }
-                    }
-                }
-            }
-        }
- */

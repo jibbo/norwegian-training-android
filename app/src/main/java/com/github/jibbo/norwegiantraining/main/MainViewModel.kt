@@ -34,6 +34,8 @@ class MainViewModel @Inject constructor(
             val fetchedSession = sessionRepository.getTodaySession()
             if (fetchedSession != null) {
                 todaySession = fetchedSession
+            } else {
+                updateTodaySession(todaySession)
             }
         }
     }
@@ -50,9 +52,7 @@ class MainViewModel @Inject constructor(
             stopTimer()
         } else {
             scheduleTimer()
-            viewModelScope.launch {
-                sessionRepository.upsertSession(todaySession)
-            }
+            updateTodaySession(todaySession)
         }
     }
 
@@ -68,14 +68,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun skipClicked() {
-        viewModelScope.launch {
-            todaySession =
-                todaySession.copy(skipCount = todaySession.skipCount + 1)
-            sessionRepository.upsertSession(todaySession)
-            if (todaySession.id == 0L) {
-                todaySession = sessionRepository.getTodaySession()!!
-            }
-        }
+        updateTodaySession(todaySession.copy(skipCount = todaySession.skipCount + 1))
         onTimerFinish()
     }
 
@@ -98,6 +91,13 @@ class MainViewModel @Inject constructor(
 
     fun chartsClicked() {
         publishEvent(UiCommands.SHOW_CHARTS)
+    }
+
+    private fun updateTodaySession(session: Session) {
+        viewModelScope.launch {
+            val id = sessionRepository.upsertSession(session)
+            todaySession.copy(id = id)
+        }
     }
 
     private fun stopTimer() {

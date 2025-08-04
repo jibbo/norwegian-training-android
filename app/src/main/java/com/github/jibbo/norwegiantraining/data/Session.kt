@@ -16,9 +16,9 @@ interface SessionDao {
     suspend fun getAll(limit: Int = 10, offset: Int = 0): List<Session>
 
     @Upsert
-    suspend fun upsert(session: Session)
+    suspend fun upsert(session: Session): Long
 
-    @Query("SELECT * FROM session WHERE date(date / 1000, 'unixepoch') = date('now')")
+    @Query("SELECT * FROM session where strftime('%d - %m  - %Y ',date) = strftime('%d - %m  - %Y ', date())")
     suspend fun getTodaySession(): Session?
 }
 

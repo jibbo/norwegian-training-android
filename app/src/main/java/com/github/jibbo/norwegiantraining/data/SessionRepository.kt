@@ -9,7 +9,7 @@ import javax.inject.Singleton
 
 interface SessionRepository {
     suspend fun getSessions(limit: Int = 30, offset: Int = 0): List<Session>
-    suspend fun upsertSession(session: Session)
+    suspend fun upsertSession(session: Session): Long
     suspend fun getTodaySession(): Session?
 }
 
@@ -22,7 +22,7 @@ class PersistentSessionRepository @Inject constructor(
         offset: Int
     ): List<Session> = sessionDao.getAll(limit, offset)
 
-    override suspend fun upsertSession(session: Session) = sessionDao.upsert(session)
+    override suspend fun upsertSession(session: Session): Long = sessionDao.upsert(session)
 
     override suspend fun getTodaySession() = sessionDao.getTodaySession()
 }
