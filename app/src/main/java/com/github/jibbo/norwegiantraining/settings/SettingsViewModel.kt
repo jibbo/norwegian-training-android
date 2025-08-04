@@ -8,9 +8,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(
+internal class SettingsViewModel @Inject constructor(
     private val settingsRepository: UserPreferencesRepo
 ) : ViewModel() {
+
+    private val uiStates = MutableStateFlow(
+        UiState(
+            name = settingsRepository.getUserName(),
+            announcePhase = settingsRepository.getAnnouncePhase(),
+            announcePhaseDesc = settingsRepository.getAnnouncePhaseDesc(),
+            announceCountdown = settingsRepository.getAnnounceCountdown(),
+        )
+    )
+    val uiState = uiStates.asStateFlow()
 
     fun setName(name: String) {
         settingsRepository.setUserName(name)
@@ -31,15 +41,4 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.setAnnounceCountdown(enabled)
         uiStates.value = uiStates.value.copy(announceCountdown = enabled)
     }
-
-    private val uiStates = MutableStateFlow(
-        UiState(
-            name = settingsRepository.getUserName(),
-            announcePhase = settingsRepository.getAnnouncePhase(),
-            announcePhaseDesc = settingsRepository.getAnnouncePhaseDesc(),
-            announceCountdown = settingsRepository.getAnnounceCountdown(),
-        )
-    )
-    val uiState = uiStates.asStateFlow()
-
 }

@@ -10,9 +10,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Database(entities = [Record::class], version = 1)
+@Database(entities = [Session::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun recordDao(): RecordDao
+    abstract fun recordDao(): SessionDao
 }
 
 @Module
