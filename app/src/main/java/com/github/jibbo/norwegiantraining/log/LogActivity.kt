@@ -14,21 +14,15 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.data.Session
-import com.github.jibbo.norwegiantraining.settings.SettingsScreen
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.logging.SimpleFormatter
 import kotlin.random.Random
 
 @AndroidEntryPoint
@@ -80,7 +74,7 @@ class LogActivity : AppCompatActivity() {
     @Preview
     fun Preview() {
         val lol = UiState.Loaded(
-                createSessions(10)
+            createSessions(10)
         )
         NorwegianTrainingTheme {
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -94,7 +88,6 @@ class LogActivity : AppCompatActivity() {
             repeat(sessionCount) { index ->
                 add(
                     Session(
-                        id = index,
                         skipCount = Random.nextInt(0, 101),
                         date = Date()
                     )

@@ -7,27 +7,30 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 import javax.inject.Singleton
 
-interface LogRepository {
-    suspend fun getSessionLogs(limit: Int = 30, offset: Int = 0): List<Session>
+interface SessionRepository {
+    suspend fun getSessions(limit: Int = 30, offset: Int = 0): List<Session>
     suspend fun upsertSession(session: Session)
+    suspend fun getTodaySession(): Session?
 }
 
-class PersistentLogRepository @Inject constructor(
+class PersistentSessionRepository @Inject constructor(
     private val sessionDao: SessionDao
-) : LogRepository {
+) : SessionRepository {
 
-    override suspend fun getSessionLogs(
+    override suspend fun getSessions(
         limit: Int,
         offset: Int
     ): List<Session> = sessionDao.getAll(limit, offset)
 
     override suspend fun upsertSession(session: Session) = sessionDao.upsert(session)
+
+    override suspend fun getTodaySession() = sessionDao.getTodaySession()
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface LogRepositoryModule {
+interface SessionRepositoryModule {
     @Binds
     @Singleton
-    fun bindLogRepository(persistentLogRepository: PersistentLogRepository): LogRepository
+    fun bindSessionRepository(persistentLogRepository: PersistentSessionRepository): SessionRepository
 }

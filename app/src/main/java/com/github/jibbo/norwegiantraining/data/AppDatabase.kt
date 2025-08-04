@@ -20,9 +20,12 @@ abstract class AppDatabase : RoomDatabase() {
 class DatabaseModule {
     @Provides
     @Singleton
-    fun provideDatabase(application: Application): AppDatabase =Room.databaseBuilder(
-            application,
-            AppDatabase::class.java,
-            "norwegiantrainingdb"
-        ).build()
+    fun provideDatabase(application: Application): AppDatabase = Room.databaseBuilder(
+        application,
+        AppDatabase::class.java,
+        "norwegiantrainingdb"
+    ).build()
+
+    @Provides
+    fun provideRecordDao(database: AppDatabase) = database.recordDao()
 }

@@ -13,19 +13,25 @@ import java.util.Date
 @Dao
 interface SessionDao {
     @Query("SELECT * FROM session ORDER BY date DESC LIMIT :limit OFFSET :offset")
-    fun getAll(limit: Int = 10, offset: Int = 0): List<Session>
+    suspend fun getAll(limit: Int = 10, offset: Int = 0): List<Session>
 
     @Upsert
-    fun upsert(session: Session)
+    suspend fun upsert(session: Session)
+
+    @Query("SELECT * FROM session WHERE date(date / 1000, 'unixepoch') = date('now')")
+    suspend fun getTodaySession(): Session?
 }
 
 @Entity
 @TypeConverters(Converters::class)
 data class Session(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0,
     @ColumnInfo(name = "skip_count") val skipCount: Int = 0,
     @ColumnInfo(name = "date") val date: Date = Date()
-)
+) {
+
+}
 
 class Converters {
     @TypeConverter

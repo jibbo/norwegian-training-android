@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.UserPreferencesRepo
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -194,12 +196,15 @@ internal fun CountdownDisplay(
 @Composable
 internal fun Header(viewModel: MainViewModel) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-//        Text(
-//            text = "Welcome",
-//            fontSize = 22.sp,
-//            fontWeight = FontWeight.Bold,
-//        )
         Spacer(modifier = Modifier.weight(1f))
+        IconButton(onClick = {
+            viewModel.chartsClicked()
+        }) {
+            Icon(
+                painter = painterResource(R.drawable.outline_area_chart_24),
+                contentDescription = ""
+            )
+        }
         IconButton(onClick = {
             viewModel.settingsClicked()
         }) {
@@ -217,12 +222,30 @@ internal fun Header(viewModel: MainViewModel) {
 fun GreetingPreview() {
     NorwegianTrainingTheme {
         MainView(
-            mainViewModel = MainViewModel(FakeUserPreferencesRepo()),
+            mainViewModel = MainViewModel(FakeUserPreferencesRepo(), FakeSessionRepo()),
         )
     }
 }
 
-class FakeUserPreferencesRepo : UserPreferencesRepo{
+class FakeSessionRepo : SessionRepository {
+    override suspend fun getSessions(
+        limit: Int,
+        offset: Int
+    ): List<Session> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun upsertSession(session: Session) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getTodaySession(): Session? {
+        TODO("Not yet implemented")
+    }
+
+}
+
+class FakeUserPreferencesRepo : UserPreferencesRepo {
     override fun setUserName(name: String?) {
         TODO("Not yet implemented")
     }

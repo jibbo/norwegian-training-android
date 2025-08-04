@@ -26,6 +26,8 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AlarmReceiver
+import com.github.jibbo.norwegiantraining.log.LogActivity
+import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
 import com.github.jibbo.norwegiantraining.settings.SettingsActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -70,29 +72,29 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
-                    is MainViewModel.UiCommands.START_ALARM -> {
+                    is UiCommands.START_ALARM -> {
                         startAlarm(it.triggerTime, it.uiState)
                     }
 
-                    is MainViewModel.UiCommands.SHOW_NOTIFICATION -> {
+                    is UiCommands.SHOW_NOTIFICATION -> {
                         checkNotificationPermission()
                         showNotification(it.triggerTime)
                     }
 
-                    is MainViewModel.UiCommands.STOP_ALARM -> {
+                    is UiCommands.STOP_ALARM -> {
                         cancelNotification()
                     }
 
-                    is MainViewModel.UiCommands.Speak -> {
+                    is UiCommands.Speak -> {
                         speak(it.speakState.message)
                     }
 
-                    is MainViewModel.UiCommands.SHOW_SETTINGS -> {
+                    is UiCommands.SHOW_SETTINGS -> {
                         startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
                     }
 
-                    is MainViewModel.UiCommands.INITIAL -> {
-
+                    is UiCommands.SHOW_CHARTS -> {
+                        startActivity(Intent(this@MainActivity, LogActivity::class.java))
                     }
                 }
             }

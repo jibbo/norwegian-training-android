@@ -3,32 +3,46 @@ package com.github.jibbo.norwegiantraining.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.jibbo.norwegiantraining.data.SessionDao
+import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.UserPreferencesRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val settingsRepository: UserPreferencesRepo
+    private val settingsRepository: UserPreferencesRepo,
+    private val sessionRepository: SessionRepository
 ) : ViewModel() {
     private var currentStep = 0
+    private var todaySession: Session = Session()
 
-    private val events: MutableStateFlow<UiCommands> = MutableStateFlow(UiCommands.INITIAL)
-    val uiEvents = events.asStateFlow()
+    private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
+    val uiEvents = events.asSharedFlow()
 
     private val states: MutableStateFlow<UiState> = MutableStateFlow(UiState())
     val uiStates = states.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val fetchedSession = sessionRepository.getTodaySession()
+            if (fetchedSession != null) {
+                todaySession = fetchedSession
+            }
+        }
+    }
 
     fun mainButtonClicked() {
         val oldValue = states.value
         if (currentStep > 9 && oldValue.isTimerRunning) {
             states.value = UiState(currentStep, false, 0L, 0L)
-            events.value = UiCommands.STOP_ALARM
+            events.tryEmit(UiCommands.STOP_ALARM)
         } else if (currentStep > 9) {
             currentStep = 0
             scheduleTimer()
@@ -36,6 +50,9 @@ class MainViewModel @Inject constructor(
             stopTimer()
         } else {
             scheduleTimer()
+            viewModelScope.launch {
+                sessionRepository.upsertSession(todaySession)
+            }
         }
     }
 
@@ -46,11 +63,19 @@ class MainViewModel @Inject constructor(
     fun permissionGranted() {
         val oldValue = states.value
         if (oldValue.isTimerRunning && oldValue.targetTimeMillis > System.currentTimeMillis()) {
-            events.value = UiCommands.SHOW_NOTIFICATION(oldValue.targetTimeMillis)
+            publishEvent(UiCommands.SHOW_NOTIFICATION(oldValue.targetTimeMillis))
         }
     }
 
     fun skipClicked() {
+        viewModelScope.launch {
+            todaySession =
+                todaySession.copy(skipCount = todaySession.skipCount + 1)
+            sessionRepository.upsertSession(todaySession)
+            if (todaySession.id == 0L) {
+                todaySession = sessionRepository.getTodaySession()!!
+            }
+        }
         onTimerFinish()
     }
 
@@ -62,14 +87,17 @@ class MainViewModel @Inject constructor(
             targetTimeMillis = 0L,
             remainingTimeOnPauseMillis = 0L
         )
-        mainButtonClicked()
     }
 
     fun shouldAnnouncePhase() = settingsRepository.getAnnouncePhase()
     fun shouldAnnouncePhaseDesc() = settingsRepository.getAnnouncePhaseDesc()
 
     fun settingsClicked() {
-        events.value = UiCommands.SHOW_SETTINGS
+        publishEvent(UiCommands.SHOW_SETTINGS)
+    }
+
+    fun chartsClicked() {
+        publishEvent(UiCommands.SHOW_CHARTS)
     }
 
     private fun stopTimer() {
@@ -83,7 +111,7 @@ class MainViewModel @Inject constructor(
             }
 
         states.value = UiState(oldValue.step, false, oldValue.targetTimeMillis, remainingMillis)
-        events.value = UiCommands.STOP_ALARM
+        publishEvent(UiCommands.STOP_ALARM)
     }
 
     private fun scheduleTimer() {
@@ -97,7 +125,7 @@ class MainViewModel @Inject constructor(
             newTargetTimeMillis = getNextAlarmTime()
             states.value = UiState(currentStep, true, newTargetTimeMillis, 0L)
         }
-        events.value = UiCommands.START_ALARM(newTargetTimeMillis, states.value)
+        publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
 
         ticking()
     }
@@ -111,12 +139,18 @@ class MainViewModel @Inject constructor(
                     Log.i("ticking", remainingTime.toString())
                     val speakState = SpeakState.Companion.from(remainingTime)
                     if (speakState != SpeakState.NOTHING) {
-                        events.value = UiCommands.Speak(speakState)
+                        publishEvent(UiCommands.Speak(speakState))
                     }
                     delay(1000)
                     ticking()
                 }
             }
+        }
+    }
+
+    private fun publishEvent(uiCommand: UiCommands) {
+        viewModelScope.launch {
+            events.emit(uiCommand)
         }
     }
 
@@ -131,9 +165,9 @@ class MainViewModel @Inject constructor(
     }
 
     sealed class UiCommands {
-        object INITIAL : UiCommands()
         object STOP_ALARM : UiCommands()
         object SHOW_SETTINGS : UiCommands()
+        object SHOW_CHARTS : UiCommands()
         data class START_ALARM(val triggerTime: Long, val uiState: UiState) : UiCommands()
         data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
         data class Speak(val speakState: SpeakState) : UiCommands()
