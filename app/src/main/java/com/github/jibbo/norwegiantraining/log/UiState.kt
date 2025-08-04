@@ -4,5 +4,5 @@ import com.github.jibbo.norwegiantraining.data.Session
 
 sealed class UiState {
     object Loading : UiState()
-    class Loaded(val logs: List<Session>): UiState()
+    class Loaded(val logs: Map<Int, List<Session>?>) : UiState()
 }

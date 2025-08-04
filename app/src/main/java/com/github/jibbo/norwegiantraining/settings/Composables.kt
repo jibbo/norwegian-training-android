@@ -144,7 +144,7 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
 }
 
 @Composable
-fun CircleInitialAvatar(
+internal fun CircleInitialAvatar(
     name: String,
     modifier: Modifier = Modifier,
     size: Dp = 50.dp
@@ -167,7 +167,7 @@ fun CircleInitialAvatar(
     }
 }
 
-fun getColorFromName(name: String): Color {
+internal fun getColorFromName(name: String): Color {
     val colors = listOf(
         Color(0xFFB3E5FC), // Light Blue
         Color(0xFFFFF9C4), // Light Yellow

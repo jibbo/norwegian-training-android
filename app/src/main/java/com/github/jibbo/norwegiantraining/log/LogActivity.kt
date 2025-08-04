@@ -51,48 +51,5 @@ class LogActivity : AppCompatActivity() {
         }
     }
 
-    @Composable
-    private fun Logs(
-        innerPadding: PaddingValues,
-        uiState: UiState.Loaded
-    ) {
-        val formatter = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .safeDrawingPadding()
-                .fillMaxSize()
-        ) {
-            items(uiState.logs.size) { index ->
-                val item = uiState.logs[index]
-                Text("${formatter.format(item.date)}: Skipped ${item.skipCount} times")
-            }
-        }
-    }
 
-    @Composable
-    @Preview
-    fun Preview() {
-        val lol = UiState.Loaded(
-            createSessions(10)
-        )
-        NorwegianTrainingTheme {
-            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                Logs(innerPadding, lol)
-            }
-        }
-    }
-
-    fun createSessions(sessionCount: Int): List<Session> {
-        return buildList(capacity = sessionCount) {
-            repeat(sessionCount) { index ->
-                add(
-                    Session(
-                        skipCount = Random.nextInt(0, 101),
-                        date = Date()
-                    )
-                )
-            }
-        }
-    }
 }
