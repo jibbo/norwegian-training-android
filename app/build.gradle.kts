@@ -55,9 +55,7 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
+    implementation(libs.health.connect)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
