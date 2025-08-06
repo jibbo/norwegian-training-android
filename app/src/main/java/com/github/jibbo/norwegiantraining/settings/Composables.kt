@@ -1,42 +1,35 @@
 package com.github.jibbo.norwegiantraining.settings
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeUserPreferencesRepo
-import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
-import kotlin.math.absoluteValue
 
 @Composable
 internal fun SettingsScreen(
@@ -82,9 +75,12 @@ private fun TTSCard(viewModel: SettingsViewModel) {
                 style = Typography.bodyMedium,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Switch(checked = state.value.announcePhase, onCheckedChange = {
-                viewModel.setAnnouncePhase(it)
-            })
+            MySwitch(
+                checked = state.value.announcePhase,
+                onCheckedChange = {
+                    viewModel.setAnnouncePhase(it)
+                },
+            )
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -95,7 +91,7 @@ private fun TTSCard(viewModel: SettingsViewModel) {
                 style = Typography.bodyMedium,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Switch(checked = state.value.announcePhaseDesc, onCheckedChange = {
+            MySwitch(checked = state.value.announcePhaseDesc, onCheckedChange = {
                 viewModel.setAnnouncePhaseDesc(it)
             })
         }
@@ -108,7 +104,7 @@ private fun TTSCard(viewModel: SettingsViewModel) {
                 style = Typography.bodyMedium,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Switch(checked = state.value.announceCountdown, onCheckedChange = {
+            MySwitch(checked = state.value.announceCountdown, onCheckedChange = {
                 viewModel.setAnnounceCountdown(it)
             })
         }
@@ -140,11 +136,24 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                 viewModel.setName(newValue)
             },
             maxLines = 1,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         )
     }
+}
+
+@Composable
+private fun MySwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Switch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        colors = SwitchDefaults.colors(
+            checkedTrackColor = DarkPrimary,
+            checkedThumbColor = Primary,
+        ),
+    )
 }
 
 @Preview(showBackground = true)

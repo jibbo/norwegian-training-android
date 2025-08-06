@@ -101,6 +101,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // TODO move shared preferences to datastore so that this access can be removed
+        mainViewModel.refresh()
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,

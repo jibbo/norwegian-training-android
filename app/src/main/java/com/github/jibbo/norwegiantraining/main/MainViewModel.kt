@@ -44,6 +44,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun refresh() {
+        states.value = uiStates.value.copy(
+            name = settingsRepository.getUserName() ?: ""
+        )
+    }
+
     fun mainButtonClicked() {
         val oldValue = states.value
         if (currentStep > 9 && oldValue.isTimerRunning) {
