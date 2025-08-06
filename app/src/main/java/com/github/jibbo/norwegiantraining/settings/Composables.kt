@@ -23,12 +23,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.FakeUserPreferencesRepo
+import com.github.jibbo.norwegiantraining.ui.theme.Black
+import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
@@ -125,7 +129,6 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                 color = Primary
             )
             Spacer(modifier = Modifier.weight(1f))
-            CircleInitialAvatar(name = state.value.name ?: "")
         }
 
         TextField(
@@ -136,6 +139,7 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
             onValueChange = { newValue: String ->
                 viewModel.setName(newValue)
             },
+            maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -143,50 +147,12 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
     }
 }
 
-@Composable
-internal fun CircleInitialAvatar(
-    name: String,
-    modifier: Modifier = Modifier,
-    size: Dp = 50.dp
-) {
-    val initial = name.trim().firstOrNull()?.uppercase() ?: "?"
-    val backgroundColor = getColorFromName(name)
-
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(size)
-            .clip(CircleShape)
-            .background(backgroundColor)
-    ) {
-        Text(
-            text = initial,
-            style = Typography.labelLarge,
-            color = Color.Black
-        )
-    }
-}
-
-internal fun getColorFromName(name: String): Color {
-    val colors = listOf(
-        Color(0xFFB3E5FC), // Light Blue
-        Color(0xFFFFF9C4), // Light Yellow
-        Color(0xFFC8E6C9), // Light Green
-        Color(0xFFFFCCBC), // Light Orange
-        Color(0xFFD1C4E9), // Light Purple
-        Color(0xFFFFCDD2)  // Light Red
-    )
-
-    val index = (name.hashCode().absoluteValue) % colors.size
-    return colors[index]
-}
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview2() {
     NorwegianTrainingTheme {
         Surface {
-//            SettingsScreen() // Needs a ViewModel instance
+            SettingsScreen(SettingsViewModel(FakeUserPreferencesRepo()))
         }
     }
 }

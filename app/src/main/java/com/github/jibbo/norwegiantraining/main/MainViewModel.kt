@@ -26,7 +26,11 @@ class MainViewModel @Inject constructor(
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
     val uiEvents = events.asSharedFlow()
 
-    private val states: MutableStateFlow<UiState> = MutableStateFlow(UiState())
+    private val states: MutableStateFlow<UiState> = MutableStateFlow(
+        UiState(
+            name = settingsRepository.getUserName() ?: ""
+        )
+    )
     val uiStates = states.asStateFlow()
 
     init {

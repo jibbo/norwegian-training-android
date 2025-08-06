@@ -4,4 +4,4 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 
 @Composable
-fun Int.localizable() = stringResource(this)
+fun Int.localizable(vararg args: Any): String = stringResource(this, *args)

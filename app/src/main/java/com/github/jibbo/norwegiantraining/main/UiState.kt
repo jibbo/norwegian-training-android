@@ -6,7 +6,8 @@ data class UiState(
     val step: Int = -1,
     val isTimerRunning: Boolean = false,
     val targetTimeMillis: Long = 0L,
-    val remainingTimeOnPauseMillis: Long = 0L
+    val remainingTimeOnPauseMillis: Long = 0L,
+    val name: String = "",
 ) {
 
     fun stepMessage() = message(step)

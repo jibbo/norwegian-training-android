@@ -4,7 +4,7 @@
     <!-- Actions -->
     <string name="start">Start</string>
     <string name="pause">Pause</string>
-    <string name="skip">Skip phase >></string>
+    <string name="skip">Skip phase</string>
 
     <!-- Timer states -->
     <string name="get_ready">Get Ready</string>
@@ -13,6 +13,10 @@
     <string name="light_cardio">Light phase</string>
     <string name="cooldown">Cooldown</string>
     <string name="completed">DONE</string>
+
+    <!-- MainActivity -->
+    <string name="welcome">Welcome %1$s</string>
+    <string name="next_up">Next Up >> %1$s</string>
 
     <!-- Exercise descriptions -->
     <string name="get_ready_desc">Prepare yourself for the warmup</string>
