@@ -27,6 +27,7 @@ interface SessionDao {
 data class Session(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
+    @ColumnInfo(name = "phases_ended") val phasesEnded: Int = 0,
     @ColumnInfo(name = "skip_count") val skipCount: Int = 0,
     @ColumnInfo(name = "date") val date: Date = Date()
 )

@@ -15,7 +15,6 @@ class FakeSessionRepo : SessionRepository {
     override suspend fun getTodaySession(): Session? {
         TODO("Not yet implemented")
     }
-
 }
 
 class FakeUserPreferencesRepo : UserPreferencesRepo {
@@ -46,6 +45,28 @@ class FakeUserPreferencesRepo : UserPreferencesRepo {
     }
 
     override fun getAnnounceCountdown(): Boolean {
+        TODO("Not yet implemented")
+    }
+}
+
+class FakeTracker : Analytics {
+    override fun logScreenView(name: String, clazz: Class<*>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun logChangeName() {
+        TODO("Not yet implemented")
+    }
+
+    override fun logAnnouncePhase(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun logAnnounceDescriptionCurrentPhase(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun logAnnounceCountdownBeforeNextPhase(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 

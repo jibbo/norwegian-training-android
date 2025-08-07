@@ -1,6 +1,5 @@
 package com.github.jibbo.norwegiantraining.log
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,8 +23,6 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
-import com.github.jibbo.norwegiantraining.ui.theme.Primary
-import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -52,7 +49,6 @@ internal fun Logs(
             )
         }
         items(12) { month ->
-            Log.i("lol", month.toString())
             Month(month, uiState)
         }
     }
@@ -98,20 +94,14 @@ private fun Day(
     val boxDate = calendar.time
 
     val item =
-        uiState.logs[month]?.find { it.date.isSameDay(boxDate) }?.skipCount
-    val color = when (item) {
-        in 0..1 -> Primary // Assuming Primary is defined elsewhere
-        in 2..4 -> Color.Yellow
-        null -> Color.DarkGray
-        else -> Red
-    }
+        uiState.logs[month]?.find { it.date.isSameDay(boxDate) }
 
     Box(
         modifier = Modifier
             .size(32.dp)
             .padding(4.dp)
             .clip(CircleShape)
-            .background(color)
+            .background(item?.getStatus()?.getColor() ?: Color.DarkGray)
     ) {
 //        Text(index.toString())
     }

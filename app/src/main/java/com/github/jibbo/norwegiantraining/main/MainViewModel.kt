@@ -95,6 +95,7 @@ class MainViewModel @Inject constructor(
             targetTimeMillis = 0L,
             remainingTimeOnPauseMillis = 0L
         )
+        updateTodaySession(todaySession.copy(phasesEnded = todaySession.phasesEnded + 1))
         mainButtonClicked()
     }
 
@@ -112,7 +113,9 @@ class MainViewModel @Inject constructor(
     private fun updateTodaySession(session: Session) {
         viewModelScope.launch {
             val id = sessionRepository.upsertSession(session)
-            todaySession.copy(id = id)
+            if (todaySession.id == 0L) {
+                todaySession = todaySession.copy(id = id)
+            }
         }
     }
 

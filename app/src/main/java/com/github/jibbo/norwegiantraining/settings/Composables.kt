@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeUserPreferencesRepo
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -161,7 +162,7 @@ private fun MySwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
 fun GreetingPreview2() {
     NorwegianTrainingTheme {
         Surface {
-            SettingsScreen(SettingsViewModel(FakeUserPreferencesRepo()))
+            SettingsScreen(SettingsViewModel(FakeUserPreferencesRepo(), FakeTracker()))
         }
     }
 }
