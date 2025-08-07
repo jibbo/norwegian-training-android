@@ -13,11 +13,15 @@ object SessionsBrain {
 
         return when {
             session.phasesEnded == 0 -> SessionStatus.NOT_DONE
-            session.phasesEnded > 3 && session.skipCount <= 1 -> SessionStatus.GOOD
-            session.phasesEnded < 5 && session.skipCount <= 3 -> SessionStatus.ALMOST
+            getScore(session) > 0.8 -> SessionStatus.GOOD
+            getScore(session) > 0.5 -> SessionStatus.ALMOST
             else -> SessionStatus.BAD
         }
     }
+
+    // Max 1
+    private fun getScore(session: Session): Int =
+        1 - (session.skipCount / session.phasesEnded)
 }
 
 enum class SessionStatus {

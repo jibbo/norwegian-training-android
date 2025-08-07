@@ -8,7 +8,9 @@ import androidx.room.Query
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.room.Upsert
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @Dao
 interface SessionDao {
@@ -18,7 +20,7 @@ interface SessionDao {
     @Upsert
     suspend fun upsert(session: Session): Long
 
-    @Query("SELECT * FROM session where strftime('%d - %m  - %Y ',date) = strftime('%d - %m  - %Y ', date())")
+    @Query("SELECT * FROM session where date = strftime('%d-%m-%Y', date())")
     suspend fun getTodaySession(): Session?
 }
 
@@ -34,12 +36,17 @@ data class Session(
 
 class Converters {
     @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
+    fun fromString(value: String?): Date? {
+        return value?.let { formatter.parse(it) }
     }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time?.toLong()
+    fun dateToString(date: Date?): String? {
+        return date?.let { formatter.format(it) }
+    }
+
+    companion object {
+        const val format = "dd-MM-yyyy"
+        val formatter = SimpleDateFormat(format, Locale.getDefault())
     }
 }
