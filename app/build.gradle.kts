@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
 //    implementation(libs.health.connect)
+    implementation(libs.exoplayer.core)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

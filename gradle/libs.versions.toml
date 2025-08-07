@@ -14,6 +14,7 @@ hilt = "2.57"
 hilt-compiler = "2.57"
 room = "2.7.2"
 health = "1.0.0"
+exoplayer = "2.18.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,6 +38,8 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 health-connect = { group = "androidx.health", name = "health-connect-client", version.ref = "health" }
+exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer", version.ref = "exoplayer" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
