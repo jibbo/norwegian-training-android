@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.main
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -54,6 +57,8 @@ import com.github.jibbo.norwegiantraining.data.FakeUserPreferencesRepo
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Oswald
+import com.github.jibbo.norwegiantraining.ui.theme.Primary
+import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
 import com.google.android.exoplayer2.ExoPlayer
@@ -92,8 +97,14 @@ internal fun MainView(
             if (mainViewModel.showCountdown()) {
                 Timer(state, mainViewModel)
             }
+
+            val animatedBackgroundColor by animateColorAsState(
+                targetValue = if (state.isTimerRunning) Red else Primary,
+                label = "ButtonBackgroundColorAnimation"
+            )
             Button(
                 onClick = { mainViewModel.mainButtonClicked() },
+                colors = ButtonDefaults.buttonColors(containerColor = animatedBackgroundColor),
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()
@@ -102,9 +113,11 @@ internal fun MainView(
                 val text = if (state.isTimerRunning)
                     R.string.pause.localizable().uppercase()
                 else R.string.start.localizable().uppercase()
+                val textColor: Color = if (state.isTimerRunning) White else Black
                 Text(
                     text = text,
                     style = Typography.titleLarge,
+                    color = textColor,
                     modifier = Modifier.padding(16.dp)
                 )
             }

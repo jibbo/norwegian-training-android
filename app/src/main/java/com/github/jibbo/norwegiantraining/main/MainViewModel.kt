@@ -80,7 +80,11 @@ class MainViewModel @Inject constructor(
     fun skipClicked() {
         updateTodaySession(todaySession.copy(skipCount = todaySession.skipCount + 1))
         currentStep++
-        mainButtonClicked()
+        if (currentStep < 9) {
+            scheduleTimer()
+        } else {
+            mainButtonClicked()
+        }
     }
 
     fun onTimerFinish() {

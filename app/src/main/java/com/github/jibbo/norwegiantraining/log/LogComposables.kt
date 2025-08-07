@@ -7,14 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +25,7 @@ import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
+import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -68,18 +66,18 @@ private fun Month(
     val dateFormat = SimpleDateFormat("MMMM")
     val calendar = Calendar.getInstance()
     calendar.set(Calendar.MONTH, month)
-        Text(
-            text = dateFormat.format(calendar.time),
-            modifier = Modifier.padding(horizontal = 4.dp)
-        )
-        FlowRow(
-            modifier = Modifier.padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            for (i in 0..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                Day(calendar, i, uiState, month)
-            }
+    Text(
+        text = dateFormat.format(calendar.time),
+        modifier = Modifier.padding(horizontal = 4.dp)
+    )
+    FlowRow(
+        modifier = Modifier.padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        for (i in 0..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+            Day(calendar, i, uiState, month)
         }
+    }
 }
 
 @Composable
@@ -105,7 +103,7 @@ private fun Day(
         in 0..1 -> Primary // Assuming Primary is defined elsewhere
         in 2..4 -> Color.Yellow
         null -> Color.DarkGray
-        else -> Color.Red
+        else -> Red
     }
 
     Box(

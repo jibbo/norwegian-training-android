@@ -29,9 +29,7 @@ data class Session(
     var id: Long = 0,
     @ColumnInfo(name = "skip_count") val skipCount: Int = 0,
     @ColumnInfo(name = "date") val date: Date = Date()
-) {
-
-}
+)
 
 class Converters {
     @TypeConverter
