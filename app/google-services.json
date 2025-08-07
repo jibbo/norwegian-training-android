@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "786303278588",
+    "project_id": "norwegian-training",
+    "storage_bucket": "norwegian-training.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786303278588:android:7aebbffde03a74ebdb2679",
+        "android_client_info": {
+          "package_name": "com.github.jibbo.norwegiantraining"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDejPCgQYykAT-8HuLgDLP5-fVxjZBQrDU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

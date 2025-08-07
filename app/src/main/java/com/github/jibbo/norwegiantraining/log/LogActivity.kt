@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +27,7 @@ import java.util.Locale
 import kotlin.random.Random
 
 @AndroidEntryPoint
-class LogActivity : AppCompatActivity() {
+class LogActivity : BaseActivity() {
 
     private val viewModel: LogViewModel by viewModels()
 
