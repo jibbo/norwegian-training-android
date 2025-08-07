@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -71,15 +73,8 @@ internal fun MainView(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            ExoplayerExample()
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        color = Black.copy(alpha = 0.8f)
-                    )
-            )
+        if (!LocalInspectionMode.current) {
+            VideoBackground()
         }
         Column(
             modifier = Modifier
@@ -92,50 +87,10 @@ internal fun MainView(
             if (!mainViewModel.showCountdown()) {
                 Spacer(modifier = Modifier.weight(1f))
             }
-            Text(
-                text = state.stepMessage().localizable(),
-                style = Typography.headlineLarge,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = state.description().localizable(),
-                style = Typography.headlineSmall,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .alpha(0.8f)
-                    .padding(16.dp),
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                text = R.string.next_up.localizable(state.nextMessage().localizable()),
-                style = Typography.labelLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .alpha(0.8f),
-                textAlign = TextAlign.Center,
-            )
+            Instructions(state)
             Spacer(modifier = Modifier.weight(1f))
             if (mainViewModel.showCountdown()) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    CountdownDisplay(
-                        targetTimeMillis = state.targetTimeMillis,
-                        isRunning = state.isTimerRunning,
-                        onFinish = {
-                            mainViewModel.onTimerFinish()
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
+                Timer(state, mainViewModel)
             }
             Button(
                 onClick = { mainViewModel.mainButtonClicked() },
@@ -175,6 +130,71 @@ internal fun MainView(
 }
 
 @Composable
+private fun ColumnScope.Timer(
+    state: UiState,
+    mainViewModel: MainViewModel
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        CountdownDisplay(
+            targetTimeMillis = state.targetTimeMillis,
+            isRunning = state.isTimerRunning,
+            onFinish = {
+                mainViewModel.onTimerFinish()
+            }
+        )
+    }
+
+    Spacer(modifier = Modifier.weight(1f))
+}
+
+@Composable
+private fun Instructions(state: UiState) {
+    Text(
+        text = state.stepMessage().localizable(),
+        style = Typography.headlineLarge,
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center
+    )
+    Text(
+        text = state.description().localizable(),
+        style = Typography.headlineSmall,
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(0.8f)
+            .padding(16.dp),
+        textAlign = TextAlign.Center,
+    )
+    Text(
+        text = R.string.next_up.localizable(state.nextMessage().localizable()),
+        style = Typography.labelLarge,
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(0.8f),
+        textAlign = TextAlign.Center,
+    )
+}
+
+@Composable
+private fun VideoBackground() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        ExoplayerExample()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = Black.copy(alpha = 0.8f)
+                )
+        )
+    }
+}
+
+@Composable
 internal fun CountdownDisplay(
     targetTimeMillis: Long,
     isRunning: Boolean,
@@ -209,6 +229,7 @@ internal fun CountdownDisplay(
     Text(
         text = String.format("%02d:%02d", minutes, seconds),
         style = Typography.displayLarge,
+        fontSize = 128.sp,
         modifier = modifier
     )
 }

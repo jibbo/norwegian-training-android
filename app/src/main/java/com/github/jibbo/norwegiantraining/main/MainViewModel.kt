@@ -79,7 +79,8 @@ class MainViewModel @Inject constructor(
 
     fun skipClicked() {
         updateTodaySession(todaySession.copy(skipCount = todaySession.skipCount + 1))
-        onTimerFinish()
+        currentStep++
+        mainButtonClicked()
     }
 
     fun onTimerFinish() {
@@ -129,6 +130,7 @@ class MainViewModel @Inject constructor(
         val newTargetTimeMillis: Long
 
         if (!oldValue.isTimerRunning && oldValue.remainingTimeOnPauseMillis > 0L && oldValue.step == currentStep) {
+            // resume from pause
             newTargetTimeMillis = System.currentTimeMillis() + oldValue.remainingTimeOnPauseMillis
             states.value = UiState(currentStep, true, newTargetTimeMillis, 0L)
         } else {
