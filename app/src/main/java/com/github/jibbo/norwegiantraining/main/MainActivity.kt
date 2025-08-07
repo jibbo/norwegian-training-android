@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -36,19 +37,16 @@ import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
-
     private val mainViewModel: MainViewModel by viewModels()
-
     private val REQUEST_CODE_POST_NOTIFICATIONS = 123
     private val CHANNEL_ID = "alarm_channel"
     private val NOTIFICATION_ID = 1
-
     private var tts: TextToSpeech? = null
 
     @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         enableEdgeToEdge()
         setContent {
             NorwegianTrainingTheme(darkTheme = true) {
