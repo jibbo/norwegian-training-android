@@ -13,6 +13,10 @@ import javax.inject.Singleton
 
 interface Analytics {
     fun logScreenView(name: String, clazz: Class<*>)
+    fun logChangeName()
+    fun logAnnouncePhase(enabled: Boolean)
+    fun logAnnounceDescriptionCurrentPhase(enabled: Boolean)
+    fun logAnnounceCountdownBeforeNextPhase(enabled: Boolean)
 }
 
 class FirebaseTracker @Inject constructor(
@@ -28,6 +32,29 @@ class FirebaseTracker @Inject constructor(
             }
         )
     }
+
+    override fun logChangeName() {
+        firebaseAnalytics.logEvent("change_name", null)
+    }
+
+    override fun logAnnouncePhase(enabled: Boolean) {
+        firebaseAnalytics.logEvent("announce_phase", Bundle().apply {
+            putBoolean("enabled", enabled)
+        })
+    }
+
+    override fun logAnnounceDescriptionCurrentPhase(enabled: Boolean) {
+        firebaseAnalytics.logEvent("announce_description_current_phase", Bundle().apply {
+            putBoolean("enabled", enabled)
+        })
+    }
+
+    override fun logAnnounceCountdownBeforeNextPhase(enabled: Boolean) {
+        firebaseAnalytics.logEvent("announce_countdown_next_phase", Bundle().apply {
+            putBoolean("enabled", enabled)
+        })
+    }
+
 }
 
 @Module
