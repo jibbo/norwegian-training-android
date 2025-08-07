@@ -95,6 +95,7 @@ class MainViewModel @Inject constructor(
             targetTimeMillis = 0L,
             remainingTimeOnPauseMillis = 0L
         )
+        mainButtonClicked()
     }
 
     fun shouldAnnouncePhase() = settingsRepository.getAnnouncePhase()
