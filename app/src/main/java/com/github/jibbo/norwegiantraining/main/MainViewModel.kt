@@ -9,6 +9,7 @@ import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.Phase
+import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getNextPhase: MoveToNextPhaseDomainService,
     private val getTodaySession: GetTodaySessionUseCase,
+    private val skipPhase: SkipPhaseUseCase,
     private val getUsername: GetUsername,
     // TODO remove direct access to repos
     private val settingsRepository: UserPreferencesRepo,
@@ -71,6 +73,7 @@ class MainViewModel @Inject constructor(
 
     fun skipClicked() {
         viewModelScope.launch {
+            skipPhase()
             moveToNextPhase(getNextPhase())
         }
     }

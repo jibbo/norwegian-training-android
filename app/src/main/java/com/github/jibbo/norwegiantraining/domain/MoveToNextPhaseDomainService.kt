@@ -8,7 +8,7 @@ class MoveToNextPhaseDomainService @Inject constructor(
 ) {
     suspend operator fun invoke(): Phase {
         val session = getTodaySessionUseCase()
-        val nextStep = session.phasesEnded + 1
+        val nextStep = (session.phasesEnded + session.skipCount) + 1
         val currentPhase = Phase.fromNumber(session.phasesEnded)
         if (currentPhase != Phase.GET_READY) {
             saveTodaySession(session.copy(phasesEnded = nextStep))

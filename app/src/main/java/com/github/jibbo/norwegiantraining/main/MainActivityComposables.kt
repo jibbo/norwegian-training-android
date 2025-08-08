@@ -56,6 +56,7 @@ import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.SaveTodaySession
+import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Oswald
@@ -324,15 +325,15 @@ fun GreetingPreview() {
     NorwegianTrainingTheme {
         val sessionRepository = FakeSessionRepo()
         val settingsRepository = FakeUserPreferencesRepo()
+        val getTodaySession = GetTodaySessionUseCase(sessionRepository)
         MainView(
             mainViewModel = MainViewModel(
                 MoveToNextPhaseDomainService(
-                    GetTodaySessionUseCase(
-                        sessionRepository
-                    ),
+                    getTodaySession,
                     SaveTodaySession(sessionRepository)
                 ),
-                GetTodaySessionUseCase(sessionRepository),
+                getTodaySession,
+                SkipPhaseUseCase(getTodaySession, sessionRepository),
                 GetUsername(settingsRepository),
                 settingsRepository
             ),
