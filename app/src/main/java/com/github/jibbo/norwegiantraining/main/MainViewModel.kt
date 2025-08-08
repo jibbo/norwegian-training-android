@@ -142,7 +142,15 @@ class MainViewModel @Inject constructor(
             targetTimeMillis = newTargetTimeMillis,
             remainingTimeOnPauseMillis = 0L
         )
-        publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
+        if (settingsRepository.getShowTimerNotification()) {
+            publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
+        }
+        if (settingsRepository.getAnnouncePhase()) {
+            UiCommands.Speak(SpeakState.Message(phase.message()), flush = true)
+        }
+        if (settingsRepository.getAnnouncePhaseDesc()) {
+            UiCommands.Speak(SpeakState.Message(phase.description()))
+        }
         ticking()
     }
 
@@ -152,8 +160,8 @@ class MainViewModel @Inject constructor(
                 if (states.value.isTimerRunning) {
                     val remainingTime =
                         (System.currentTimeMillis() - states.value.targetTimeMillis) / 1000
-                    val speakState = SpeakState.Companion.from(remainingTime.toInt())
-                    if (speakState != SpeakState.NOTHING) {
+                    val speakState = SpeakState.Companion.fromSeconds(remainingTime.toInt())
+                    if (speakState != SpeakState.Nothing) {
                         publishEvent(UiCommands.Speak(speakState))
                     }
                     delay(1000)
@@ -175,6 +183,6 @@ class MainViewModel @Inject constructor(
         object SHOW_CHARTS : UiCommands()
         data class START_ALARM(val triggerTime: Long, val uiState: UiState) : UiCommands()
         data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
-        data class Speak(val speakState: SpeakState) : UiCommands()
+        data class Speak(val speakState: SpeakState, val flush: Boolean = false) : UiCommands()
     }
 }

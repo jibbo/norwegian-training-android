@@ -28,6 +28,8 @@ interface SettingsRepository {
     fun getAnalyticsEnabled(): Boolean
     fun setCrashReportingEnabled(enabled: Boolean)
     fun getCrashReportingEnabled(): Boolean
+    fun setShowTimerNotification(enabled: Boolean)
+    fun getShowTimerNotification(): Boolean
 }
 
 @Singleton
@@ -75,6 +77,14 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     override fun getCrashReportingEnabled(): Boolean =
         sp.getBoolean(KEY_CRASHLYTICS_ENABLED, !isEuUser(context))
 
+    // ... inside SharedPreferencesSettingsRepository
+    override fun setShowTimerNotification(enabled: Boolean) {
+        sp.edit { putBoolean(KEY_SHOW_TIMER_NOTIFICATION, enabled) }
+    }
+
+    override fun getShowTimerNotification(): Boolean =
+        sp.getBoolean(KEY_SHOW_TIMER_NOTIFICATION, false)
+
     companion object {
         const val KEY_ANNOUNCE_PHASE = "announce_phase"
         const val KEY_USERNAME = "username"
@@ -82,6 +92,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_ANNOUNCE_COUNTDOWN = "announce_countdown"
         const val KEY_CRASHLYTICS_ENABLED = "crashlytics_enabled"
         const val KEY_ANALYTICS_ENABLED = "analytics_enabled"
+        const val KEY_SHOW_TIMER_NOTIFICATION = "show_timer_notification"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

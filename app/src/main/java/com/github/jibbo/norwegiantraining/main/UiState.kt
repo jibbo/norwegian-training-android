@@ -29,20 +29,21 @@ fun Phase.message() = when (this) {
     Phase.SOFT_PHASE -> R.string.light_cardio
 }
 
-enum class SpeakState(val message: Int) {
-    ONE_MINUTE_REMAINING(R.string.one_minute_remaining),
-    THREE(R.string.three),
-    TWO(R.string.two),
-    ONE(R.string.one),
-    NOTHING(R.string.empty);
+sealed class SpeakState(val message: Int) {
+    object OneMinute : SpeakState(R.string.one_minute_remaining)
+    object ThreeSeconds : SpeakState(R.string.three)
+    object TwoSeconds : SpeakState(R.string.two)
+    object OneSecond : SpeakState(R.string.one)
+    class Message(message: Int) : SpeakState(message)
+    object Nothing : SpeakState(R.string.empty)
 
     companion object {
-        fun from(timeRemaining: Int): SpeakState = when (timeRemaining) {
-            -60 -> ONE_MINUTE_REMAINING
-            -3 -> THREE
-            -2 -> TWO
-            -1 -> ONE
-            else -> NOTHING
+        fun fromSeconds(timeRemaining: Int): SpeakState = when (timeRemaining) {
+            -60 -> OneMinute
+            -3 -> ThreeSeconds
+            -2 -> TwoSeconds
+            -1 -> OneSecond
+            else -> Nothing
         }
     }
 }

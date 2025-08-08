@@ -63,6 +63,14 @@ class FakeSettingsRepository : SettingsRepository {
     override fun getCrashReportingEnabled(): Boolean {
         TODO("Not yet implemented")
     }
+
+    override fun setShowTimerNotification(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getShowTimerNotification(): Boolean {
+        TODO("Not yet implemented")
+    }
 }
 
 class FakeTracker : Analytics {
@@ -83,6 +91,10 @@ class FakeTracker : Analytics {
     }
 
     override fun logAnnounceCountdownBeforeNextPhase(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun logTimerNotificationEnabled(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 

@@ -22,7 +22,8 @@ internal class SettingsViewModel @Inject constructor(
             announcePhaseDesc = settingsRepository.getAnnouncePhaseDesc(),
             announceCountdown = settingsRepository.getAnnounceCountdown(),
             isCrashReportingEnabled = settingsRepository.getCrashReportingEnabled(),
-            isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled()
+            isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled(),
+            isTimerNotificationEnabled = settingsRepository.getShowTimerNotification()
         )
     )
     val uiState = uiStates.asStateFlow()
@@ -61,5 +62,12 @@ internal class SettingsViewModel @Inject constructor(
         FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = enabled
         settingsRepository.setCrashReportingEnabled(enabled)
         uiStates.value = uiStates.value.copy(isCrashReportingEnabled = enabled)
+    }
+
+    fun toggleTimerNotification(enabled: Boolean) {
+        settingsRepository.setShowTimerNotification(enabled)
+        if (settingsRepository.getAnalyticsEnabled()) {
+            analytics.logTimerNotificationEnabled(enabled)
+        }
     }
 }

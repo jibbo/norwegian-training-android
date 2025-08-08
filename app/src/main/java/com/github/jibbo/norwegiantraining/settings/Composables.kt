@@ -55,6 +55,8 @@ internal fun SettingsScreen(
 
         TTSCard(viewModel)
 
+        BetaCard(viewModel)
+
         PrivacyCard(viewModel)
     }
 }
@@ -147,6 +149,48 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                     .fillMaxWidth()
                     .padding(16.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun BetaCard(viewModel: SettingsViewModel) {
+    val state = viewModel.uiState.collectAsState()
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.title_beta_section.localizable(),
+                    style = Typography.bodyMedium,
+                    color = Primary
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Text(
+                text = R.string.beta_section_description.localizable(),
+                style = Typography.labelMedium,
+                color = White.copy(alpha = 0.6f),
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(all = 16.dp)
+            ) {
+                Text(
+                    text = R.string.enable_timer_notification.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                MySwitch(
+                    checked = state.value.isTimerNotificationEnabled,
+                    onCheckedChange = {
+                        viewModel.toggleTimerNotification(it)
+                    },
+                )
+            }
         }
     }
 }

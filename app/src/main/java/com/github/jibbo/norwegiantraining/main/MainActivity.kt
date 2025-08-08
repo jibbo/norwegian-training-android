@@ -78,7 +78,7 @@ class MainActivity : BaseActivity() {
                     }
 
                     is UiCommands.Speak -> {
-                        speak(it.speakState.message)
+                        speak(it.speakState.message, it.flush)
                     }
 
                     is UiCommands.SHOW_SETTINGS -> {
@@ -124,14 +124,6 @@ class MainActivity : BaseActivity() {
         scheduleAlarm(triggerTime)
         checkNotificationPermission()
         AlarmUtils.showNotification(this, triggerTime)
-
-        // TODO move to viewModel these ifs
-        if (mainViewModel.shouldAnnouncePhase()) {
-            speak(uiState.step.message(), TextToSpeech.QUEUE_FLUSH)
-        }
-        if (mainViewModel.shouldAnnouncePhaseDesc()) {
-            speak(uiState.step.description())
-        }
     }
 
     private fun scheduleAlarm(triggerTime: Long) {
@@ -170,12 +162,12 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun speak(@StringRes textId: Int, queueMode: Int = TextToSpeech.QUEUE_ADD) {
+    private fun speak(@StringRes textId: Int, flush: Boolean = false) {
         tts?.speak(
             getString(textId),
-            queueMode, // Adds to the queue, doesn't interrupt
+            if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD,
             null,
-            "countdown_$textId" // Unique utterance ID for this specific announcement
+            "countdown_$textId"
         )
     }
 }

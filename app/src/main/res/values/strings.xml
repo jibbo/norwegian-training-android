@@ -46,6 +46,9 @@
     <string name="enable_analytics_description">It lets us improve the app based on which features and options are popular</string>
     <string name="enable_crash_reporting">Malfunctions Reports</string>
     <string name="enable_crash_reporting_description">It lets us fix bugs and improve the app</string>
+    <string name="title_beta_section">Beta features</string>">
+    <string name="beta_section_description">These features are still experimental and can cause unexpected behavior. Please use at your own risk.</string>
+    <string name="enable_timer_notification">Timer Notification</string>
 
     <!-- Logs -->
     <string name="title_activity_logs">Your Activity</string>
