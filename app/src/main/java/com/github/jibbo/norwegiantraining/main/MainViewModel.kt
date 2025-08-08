@@ -1,10 +1,9 @@
 package com.github.jibbo.norwegiantraining.main
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.Session
-import com.github.jibbo.norwegiantraining.data.UserPreferencesRepo
+import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
@@ -26,7 +25,7 @@ class MainViewModel @Inject constructor(
     private val skipPhase: SkipPhaseUseCase,
     private val getUsername: GetUsername,
     // TODO remove direct access to repos
-    private val settingsRepository: UserPreferencesRepo,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private var todaySession: Session = Session()
 
@@ -153,7 +152,6 @@ class MainViewModel @Inject constructor(
                 if (states.value.isTimerRunning) {
                     val remainingTime =
                         (System.currentTimeMillis() - states.value.targetTimeMillis) / 1000
-                    Log.i("ticking", remainingTime.toString())
                     val speakState = SpeakState.Companion.from(remainingTime.toInt())
                     if (speakState != SpeakState.NOTHING) {
                         publishEvent(UiCommands.Speak(speakState))

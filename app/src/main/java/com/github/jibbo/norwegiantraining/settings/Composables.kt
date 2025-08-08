@@ -1,7 +1,6 @@
 package com.github.jibbo.norwegiantraining.settings
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
-import com.github.jibbo.norwegiantraining.data.FakeUserPreferencesRepo
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -233,7 +232,7 @@ private fun MySwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
 fun GreetingPreview2() {
     NorwegianTrainingTheme {
         Surface {
-            SettingsScreen(SettingsViewModel(FakeUserPreferencesRepo(), FakeTracker()))
+            SettingsScreen(SettingsViewModel(FakeSettingsRepository(), FakeTracker()))
         }
     }
 }

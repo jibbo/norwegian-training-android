@@ -17,7 +17,7 @@ class FakeSessionRepo : SessionRepository {
     }
 }
 
-class FakeUserPreferencesRepo : UserPreferencesRepo {
+class FakeSettingsRepository : SettingsRepository {
     override fun setUserName(name: String?) {
         TODO("Not yet implemented")
     }

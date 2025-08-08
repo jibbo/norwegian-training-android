@@ -2,7 +2,7 @@ package com.github.jibbo.norwegiantraining.settings
 
 import androidx.lifecycle.ViewModel
 import com.github.jibbo.norwegiantraining.data.Analytics
-import com.github.jibbo.norwegiantraining.data.UserPreferencesRepo
+import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class SettingsViewModel @Inject constructor(
-    private val settingsRepository: UserPreferencesRepo,
+    private val settingsRepository: SettingsRepository,
     private val analytics: Analytics,
 ) : ViewModel() {
 

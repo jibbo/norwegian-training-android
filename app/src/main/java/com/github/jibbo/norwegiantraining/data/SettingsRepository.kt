@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 const val PREFS_KEY = "norwegian_training_prefs"
 
-interface UserPreferencesRepo {
+interface SettingsRepository {
     fun setUserName(name: String?): Unit
     fun getUserName(): String?
     fun setAnnouncePhase(enabled: Boolean)
@@ -31,9 +31,9 @@ interface UserPreferencesRepo {
 }
 
 @Singleton
-class UserPreferencesSharedPrefs @Inject constructor(
+class SharedPreferencesSettingsRepository @Inject constructor(
     @ApplicationContext private val context: Context
-) : UserPreferencesRepo {
+) : SettingsRepository {
 
     val sp = context.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
 
@@ -102,5 +102,5 @@ class UserPreferencesSharedPrefs @Inject constructor(
 interface PrefsModule {
     @Binds
     @Singleton
-    fun bindPrefs(impl: UserPreferencesSharedPrefs): UserPreferencesRepo
+    fun bindPrefs(impl: SharedPreferencesSettingsRepository): SettingsRepository
 }
