@@ -7,7 +7,8 @@ import javax.inject.Inject
 class SaveTodaySession @Inject constructor(
     private val sessionRepository: SessionRepository
 ) {
-    suspend operator fun invoke(session: Session) {
+    suspend operator fun invoke(session: Session): Session {
         sessionRepository.upsertSession(session)
+        return session
     }
 }

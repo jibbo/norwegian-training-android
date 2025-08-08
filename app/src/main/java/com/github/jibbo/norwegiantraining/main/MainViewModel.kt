@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
+import com.github.jibbo.norwegiantraining.domain.GetCurrentPhaseUseCase
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.Phase
+import com.github.jibbo.norwegiantraining.domain.SaveTodaySession
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -22,6 +24,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getNextPhase: MoveToNextPhaseDomainService,
     private val getTodaySession: GetTodaySessionUseCase,
+    private val saveTodaySession: SaveTodaySession,
+    private val getCurrentPhase: GetCurrentPhaseUseCase,
     private val skipPhase: SkipPhaseUseCase,
     private val getUsername: GetUsername,
     // TODO remove direct access to repos
@@ -40,11 +44,13 @@ class MainViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             todaySession = getTodaySession()
+            states.value = states.value.copy(
+                //TODO this should be moved to datastore for Flow usage and avoid this workaround
+                name = getUsername(),
+                step = getCurrentPhase()
+            )
         }
-        //TODO this should be moved to datastore for Flow usage and avoid this workaround
-        states.value = states.value.copy(
-            name = getUsername(),
-        )
+
     }
 
     fun mainButtonClicked() {
@@ -54,7 +60,7 @@ class MainViewModel @Inject constructor(
             } else if (states.value.remainingTimeOnPauseMillis > 0) {
                 scheduleTimer(states.value.step, states.value.remainingTimeOnPauseMillis)
             } else {
-                moveToNextPhase(getNextPhase())
+                scheduleTimer(states.value.step, states.value.step.durationMillis!!)
             }
         }
     }
@@ -72,19 +78,18 @@ class MainViewModel @Inject constructor(
 
     fun skipClicked() {
         viewModelScope.launch {
-            skipPhase()
+            todaySession = skipPhase()
             moveToNextPhase(getNextPhase())
         }
     }
 
     fun onTimerFinish() {
         viewModelScope.launch {
+            todaySession =
+                saveTodaySession(todaySession.copy(phasesEnded = todaySession.phasesEnded + 1))
             moveToNextPhase(getNextPhase())
         }
     }
-
-    fun shouldAnnouncePhase() = settingsRepository.getAnnouncePhase()
-    fun shouldAnnouncePhaseDesc() = settingsRepository.getAnnouncePhaseDesc()
 
     fun settingsClicked() {
         publishEvent(UiCommands.SHOW_SETTINGS)

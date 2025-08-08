@@ -19,8 +19,11 @@ object SessionsBrain {
     }
 
     // Max 1
-    private fun getScore(session: Session): Int =
-        (session.phasesEnded / (session.skipCount + 1)) / 10
+    private fun getScore(session: Session): Int = if (session.skipCount > 0) {
+        (session.phasesEnded / session.skipCount) / 10
+    } else {
+        session.phasesEnded / 10
+    }
 }
 
 enum class SessionStatus {

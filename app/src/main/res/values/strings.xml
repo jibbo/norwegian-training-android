@@ -24,7 +24,7 @@
     <string name="hit_cardio_desc">Give everything you\'ve got! You can do this! </string>
     <string name="light_cardio_desc">Exercise lightly: steady your heartbeat without stopping</string>
     <string name="cooldown_desc">Breathe, go at slow and relaxed pace that allows you to relax but don\'t stop now</string>
-    <string name="completed_desc">Congratulations! You arrived at the end!</string>
+    <string name="completed_desc">Congratulations! You arrived at the end of this workout! Come back tomorrow for another one 💪</string>
 
     <!-- TTS -->
     <string name="one_minute_remaining">One minute remaining</string>
