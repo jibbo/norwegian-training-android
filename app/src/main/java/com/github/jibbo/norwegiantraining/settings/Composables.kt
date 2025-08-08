@@ -31,6 +31,7 @@ import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
+import com.github.jibbo.norwegiantraining.ui.theme.White
 
 @Composable
 internal fun SettingsScreen(
@@ -54,6 +55,7 @@ internal fun SettingsScreen(
 
         TTSCard(viewModel)
 
+        PrivacyCard(viewModel)
     }
 }
 
@@ -146,13 +148,54 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
 }
 
 @Composable
+private fun PrivacyCard(viewModel: SettingsViewModel) {
+    val state = viewModel.uiState.collectAsState()
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.Top,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text(
+                text = R.string.title_privacy_section.localizable(),
+                style = Typography.bodyMedium,
+                color = Primary
+            )
+            Spacer(modifier = Modifier.weight(1f))
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(all = 16.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = R.string.enable_analytics.localizable(),
+                    style = Typography.bodyMedium,
+                )
+                Text(
+                    text = R.string.enable_analytics_description.localizable(),
+                    style = Typography.labelMedium,
+                    color = White.copy(alpha = 0.8f),
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            MySwitch(
+                checked = state.value.isAnalyticsEnabled,
+                onCheckedChange = {
+                    viewModel.toggleAnalytics(it)
+                },
+            )
+        }
+    }
+}
+
+@Composable
 private fun MySwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Switch(
         checked = checked,
         onCheckedChange = onCheckedChange,
         colors = SwitchDefaults.colors(
-            checkedTrackColor = DarkPrimary,
-            checkedThumbColor = Primary,
+            checkedTrackColor = Primary,
+            checkedThumbColor = DarkPrimary,
         ),
     )
 }

@@ -20,6 +20,7 @@ internal class SettingsViewModel @Inject constructor(
             announcePhase = settingsRepository.getAnnouncePhase(),
             announcePhaseDesc = settingsRepository.getAnnouncePhaseDesc(),
             announceCountdown = settingsRepository.getAnnounceCountdown(),
+            isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled()
         )
     )
     val uiState = uiStates.asStateFlow()
@@ -46,5 +47,15 @@ internal class SettingsViewModel @Inject constructor(
         settingsRepository.setAnnounceCountdown(enabled)
         uiStates.value = uiStates.value.copy(announceCountdown = enabled)
         analytics.logAnnounceCountdownBeforeNextPhase(enabled)
+    }
+
+    fun toggleAnalytics(enabled: Boolean) {
+        if (enabled) {
+            analytics.enable()
+            settingsRepository.setAnalyticsEnabled(true)
+        } else {
+            analytics.disable()
+            settingsRepository.setAnalyticsEnabled(false)
+        }
     }
 }

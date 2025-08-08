@@ -47,6 +47,14 @@ class FakeUserPreferencesRepo : UserPreferencesRepo {
     override fun getAnnounceCountdown(): Boolean {
         TODO("Not yet implemented")
     }
+
+    override fun setAnalyticsEnabled(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAnalyticsEnabled(): Boolean {
+        TODO("Not yet implemented")
+    }
 }
 
 class FakeTracker : Analytics {
@@ -67,6 +75,14 @@ class FakeTracker : Analytics {
     }
 
     override fun logAnnounceCountdownBeforeNextPhase(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun enable() {
+        TODO("Not yet implemented")
+    }
+
+    override fun disable() {
         TODO("Not yet implemented")
     }
 
