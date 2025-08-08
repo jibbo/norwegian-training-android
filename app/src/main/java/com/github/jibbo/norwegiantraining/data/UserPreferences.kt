@@ -26,6 +26,8 @@ interface UserPreferencesRepo {
     fun getAnnounceCountdown(): Boolean
     fun setAnalyticsEnabled(enabled: Boolean)
     fun getAnalyticsEnabled(): Boolean
+    fun setCrashReportingEnabled(enabled: Boolean)
+    fun getCrashReportingEnabled(): Boolean
 }
 
 @Singleton
@@ -65,12 +67,18 @@ class UserPreferencesSharedPrefs @Inject constructor(
     }
 
     override fun getAnalyticsEnabled() = sp.getBoolean(KEY_ANALYTICS_ENABLED, !isEuUser(context))
+    override fun setCrashReportingEnabled(enabled: Boolean) {
+        sp.edit { putBoolean(KEY_CRASHLYTICS_ENABLED, enabled) }
+    }
+
+    override fun getCrashReportingEnabled(): Boolean = sp.getBoolean(KEY_CRASHLYTICS_ENABLED, true)
 
     companion object {
         const val KEY_ANNOUNCE_PHASE = "announce_phase"
         const val KEY_USERNAME = "username"
         const val KEY_ANNOUNCE_PHASE_DESC = "announce_phase_desc"
         const val KEY_ANNOUNCE_COUNTDOWN = "announce_countdown"
+        const val KEY_CRASHLYTICS_ENABLED = "crashlytics_enabled"
         const val KEY_ANALYTICS_ENABLED = "analytics_enabled"
 
         fun isEuUser(context: Context): Boolean {

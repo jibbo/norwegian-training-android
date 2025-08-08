@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.settings
 import androidx.lifecycle.ViewModel
 import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.UserPreferencesRepo
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +21,7 @@ internal class SettingsViewModel @Inject constructor(
             announcePhase = settingsRepository.getAnnouncePhase(),
             announcePhaseDesc = settingsRepository.getAnnouncePhaseDesc(),
             announceCountdown = settingsRepository.getAnnounceCountdown(),
+            isCrashReportingEnabled = settingsRepository.getCrashReportingEnabled(),
             isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled()
         )
     )
@@ -50,12 +52,12 @@ internal class SettingsViewModel @Inject constructor(
     }
 
     fun toggleAnalytics(enabled: Boolean) {
-        if (enabled) {
-            analytics.enable()
-            settingsRepository.setAnalyticsEnabled(true)
-        } else {
-            analytics.disable()
-            settingsRepository.setAnalyticsEnabled(false)
-        }
+        analytics.enabled(enabled)
+        settingsRepository.setAnalyticsEnabled(enabled)
+    }
+
+    fun toggleCrashReporting(isEnabled: Boolean) {
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = isEnabled
+        settingsRepository.setCrashReportingEnabled(isEnabled)
     }
 }

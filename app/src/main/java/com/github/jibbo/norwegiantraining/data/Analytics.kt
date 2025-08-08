@@ -17,8 +17,7 @@ interface Analytics {
     fun logAnnouncePhase(enabled: Boolean)
     fun logAnnounceDescriptionCurrentPhase(enabled: Boolean)
     fun logAnnounceCountdownBeforeNextPhase(enabled: Boolean)
-    fun enable()
-    fun disable()
+    fun enabled(enabled: Boolean)
 }
 
 class FirebaseTracker @Inject constructor(
@@ -57,12 +56,8 @@ class FirebaseTracker @Inject constructor(
         })
     }
 
-    override fun enable() {
-        firebaseAnalytics.setAnalyticsCollectionEnabled(true)
-    }
-
-    override fun disable() {
-        firebaseAnalytics.setAnalyticsCollectionEnabled(false)
+    override fun enabled(enabled: Boolean) {
+        firebaseAnalytics.setAnalyticsCollectionEnabled(enabled)
     }
 
 }

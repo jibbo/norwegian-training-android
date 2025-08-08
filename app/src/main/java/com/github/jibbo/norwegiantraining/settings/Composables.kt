@@ -76,8 +76,8 @@ private fun TTSCard(viewModel: SettingsViewModel) {
             Text(
                 text = R.string.announce_phase.localizable(),
                 style = Typography.bodyMedium,
+                modifier = Modifier.weight(1f)
             )
-            Spacer(modifier = Modifier.weight(1f))
             MySwitch(
                 checked = state.value.announcePhase,
                 onCheckedChange = {
@@ -92,8 +92,8 @@ private fun TTSCard(viewModel: SettingsViewModel) {
             Text(
                 text = R.string.announce_phase_description.localizable(),
                 style = Typography.bodyMedium,
+                modifier = Modifier.weight(1f)
             )
-            Spacer(modifier = Modifier.weight(1f))
             MySwitch(checked = state.value.announcePhaseDesc, onCheckedChange = {
                 viewModel.setAnnouncePhaseDesc(it)
             })
@@ -105,8 +105,8 @@ private fun TTSCard(viewModel: SettingsViewModel) {
             Text(
                 text = R.string.announce_countdown.localizable(),
                 style = Typography.bodyMedium,
+                modifier = Modifier.weight(1f)
             )
-            Spacer(modifier = Modifier.weight(1f))
             MySwitch(checked = state.value.announceCountdown, onCheckedChange = {
                 viewModel.setAnnounceCountdown(it)
             })
@@ -168,6 +168,28 @@ private fun PrivacyCard(viewModel: SettingsViewModel) {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
+                    text = R.string.enable_crash_reporting.localizable(),
+                    style = Typography.bodyMedium,
+                )
+                Text(
+                    text = R.string.enable_crash_reporting_description.localizable(),
+                    style = Typography.labelMedium,
+                    color = White.copy(alpha = 0.8f),
+                )
+            }
+            MySwitch(
+                checked = state.value.isCrashReportingEnabled,
+                onCheckedChange = {
+                    viewModel.toggleCrashReporting(it)
+                },
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(all = 16.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
                     text = R.string.enable_analytics.localizable(),
                     style = Typography.bodyMedium,
                 )
@@ -177,7 +199,6 @@ private fun PrivacyCard(viewModel: SettingsViewModel) {
                     color = White.copy(alpha = 0.8f),
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
             MySwitch(
                 checked = state.value.isAnalyticsEnabled,
                 onCheckedChange = {

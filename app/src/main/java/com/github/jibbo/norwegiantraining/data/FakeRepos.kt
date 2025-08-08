@@ -55,6 +55,14 @@ class FakeUserPreferencesRepo : UserPreferencesRepo {
     override fun getAnalyticsEnabled(): Boolean {
         TODO("Not yet implemented")
     }
+
+    override fun setCrashReportingEnabled(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCrashReportingEnabled(): Boolean {
+        TODO("Not yet implemented")
+    }
 }
 
 class FakeTracker : Analytics {
@@ -78,11 +86,7 @@ class FakeTracker : Analytics {
         TODO("Not yet implemented")
     }
 
-    override fun enable() {
-        TODO("Not yet implemented")
-    }
-
-    override fun disable() {
+    override fun enabled(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 

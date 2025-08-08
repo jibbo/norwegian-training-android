@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining
 import android.app.Application
 import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.UserPreferencesRepo
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -16,10 +17,8 @@ class NorwegianTrainingApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (settingsRepo.getAnalyticsEnabled()) {
-            analytics.enable()
-        } else {
-            analytics.disable()
-        }
+        analytics.enabled(settingsRepo.getAnalyticsEnabled())
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled =
+            settingsRepo.getCrashReportingEnabled()
     }
 }

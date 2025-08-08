@@ -42,8 +42,10 @@
     <string name="announce_phase_description">Announce the description of the current phase</string>
     <string name="announce_countdown">Announce 3,2,1 before next phase</string>
     <string name="title_privacy_section">Privacy</string>">
-    <string name="enable_analytics">Enable Data Collection</string>
-    <string name="enable_analytics_description">It lets us know which features and options are popular</string>
+    <string name="enable_analytics">Data Collection</string>
+    <string name="enable_analytics_description">It lets us improve the app based on which features and options are popular</string>
+    <string name="enable_crash_reporting">Malfunctions Reports</string>
+    <string name="enable_crash_reporting_description">It lets us fix bugs and improve the app</string>
 
     <!-- Logs -->
     <string name="title_activity_logs">Your Activity</string>
