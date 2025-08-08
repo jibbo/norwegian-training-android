@@ -3,18 +3,24 @@ package com.github.jibbo.norwegiantraining.alarm
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.github.jibbo.norwegiantraining.data.SessionRepository
+import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 
     @Inject
-    lateinit var sessionRepository: SessionRepository
+    lateinit var getNextPhase: MoveToNextPhaseDomainService
 
     override fun onReceive(context: Context, intent: Intent) {
-        AlarmViewModel(sessionRepository).alarmReceived()
+        GlobalScope.launch {
+            val nextPhase = getNextPhase()
+            val triggerTime = System.currentTimeMillis() + nextPhase.durationMillis!!
+            AlarmUtils.showNotification(context, triggerTime)
+        }
 
         // Play alarm sound
 //        val mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound)
