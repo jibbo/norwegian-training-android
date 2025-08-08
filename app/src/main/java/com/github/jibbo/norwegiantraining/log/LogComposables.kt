@@ -66,7 +66,7 @@ private fun Month(
     val calendar = Calendar.getInstance()
     calendar.set(Calendar.MONTH, month)
     Text(
-        text = dateFormat.format(calendar.time),
+        text = dateFormat.format(calendar.time).capitalizeFirstLetter(),
         modifier = Modifier.padding(horizontal = 4.dp)
     )
     FlowRow(
@@ -77,7 +77,11 @@ private fun Month(
             Day(calendar, i, uiState, month)
         }
     }
-    Spacer(modifier = Modifier.fillMaxWidth().height(64.dp))
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+    )
 }
 
 @Composable
@@ -146,3 +150,6 @@ private fun createSessions(sessionCount: Int): List<Session> {
         }
     }
 }
+
+private fun String.capitalizeFirstLetter() =
+    if (this.isNotEmpty()) this[0].uppercase() + this.substring(1) else this
