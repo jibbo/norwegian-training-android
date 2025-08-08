@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
-const val PREFS_KEY = "norwegian_training_prefs";
+const val PREFS_KEY = "norwegian_training_prefs"
 
 interface UserPreferencesRepo {
     fun setUserName(name: String?): Unit
@@ -71,7 +71,7 @@ class UserPreferencesSharedPrefs @Inject constructor(
     override fun setCrashReportingEnabled(enabled: Boolean) {
         sp.edit { putBoolean(KEY_CRASHLYTICS_ENABLED, enabled) }
     }
-    
+
     override fun getCrashReportingEnabled(): Boolean =
         sp.getBoolean(KEY_CRASHLYTICS_ENABLED, !isEuUser(context))
 

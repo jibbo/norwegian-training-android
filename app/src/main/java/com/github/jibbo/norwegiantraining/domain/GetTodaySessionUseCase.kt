@@ -10,6 +10,9 @@ class GetTodaySessionUseCase @Inject constructor(
     suspend operator fun invoke(): Session {
         val session = sessionRepository.getTodaySession() ?: Session()
         val id = sessionRepository.upsertSession(session)
-        return session.copy(id = id)
+        if (id > 0) {
+            return session.copy(id = id)
+        }
+        return session
     }
 }

@@ -9,7 +9,10 @@ class MoveToNextPhaseDomainService @Inject constructor(
     suspend operator fun invoke(): Phase {
         val session = getTodaySessionUseCase()
         val nextStep = session.phasesEnded + 1
-        saveTodaySession(session.copy(phasesEnded = nextStep))
+        val currentPhase = Phase.fromNumber(session.phasesEnded)
+        if (currentPhase != Phase.GET_READY) {
+            saveTodaySession(session.copy(phasesEnded = nextStep))
+        }
         return Phase.fromNumber(nextStep)
     }
 }
@@ -28,8 +31,8 @@ enum class Phase(val durationMillis: Long? = null) {
             number == 1 -> WARMUP
             number == 9 -> REST_PHASE
             number == 10 -> COMPLETED
-            number % 2 == 1 -> HARD_PHASE
-            number % 2 == 0 -> SOFT_PHASE
+            number % 2 == 0 -> HARD_PHASE
+            number % 2 == 1 -> SOFT_PHASE
             else -> throw IllegalArgumentException("Invalid number: $number")
         }
     }

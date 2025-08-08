@@ -50,6 +50,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             if (states.value.isTimerRunning) {
                 pauseTimer()
+            } else if (states.value.remainingTimeOnPauseMillis > 0) {
+                scheduleTimer(states.value.step, states.value.targetTimeMillis)
             } else {
                 moveToNextPhase(getNextPhase())
             }
@@ -135,7 +137,7 @@ class MainViewModel @Inject constructor(
         states.value = states.value.copy(
             step = phase,
             isTimerRunning = true,
-            targetTimeMillis = System.currentTimeMillis(),
+            targetTimeMillis = newTargetTimeMillis,
             remainingTimeOnPauseMillis = 0L
         )
         publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
@@ -147,9 +149,9 @@ class MainViewModel @Inject constructor(
             viewModelScope.launch {
                 if (states.value.isTimerRunning) {
                     val remainingTime =
-                        ((System.currentTimeMillis() - states.value.targetTimeMillis) / 1000).toInt()
+                        (System.currentTimeMillis() - states.value.targetTimeMillis) / 1000
                     Log.i("ticking", remainingTime.toString())
-                    val speakState = SpeakState.Companion.from(remainingTime)
+                    val speakState = SpeakState.Companion.from(remainingTime.toInt())
                     if (speakState != SpeakState.NOTHING) {
                         publishEvent(UiCommands.Speak(speakState))
                     }

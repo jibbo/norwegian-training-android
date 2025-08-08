@@ -12,11 +12,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
     @Inject
     lateinit var sessionRepository: SessionRepository
-    
-    private var viewModel = AlarmViewModel(sessionRepository)
 
     override fun onReceive(context: Context, intent: Intent) {
-        viewModel.alarmReceived()
+        AlarmViewModel(sessionRepository).alarmReceived()
 
         // Play alarm sound
 //        val mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound)
