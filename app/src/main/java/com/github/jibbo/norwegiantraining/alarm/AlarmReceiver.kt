@@ -1,14 +1,23 @@
-package com.github.jibbo.norwegiantraining.components
+package com.github.jibbo.norwegiantraining.alarm
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import com.github.jibbo.norwegiantraining.data.SessionRepository
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 
+    @Inject
+    lateinit var sessionRepository: SessionRepository
+    
+    private var viewModel = AlarmViewModel(sessionRepository)
+
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d("AlarmReceiver", "Alarm received")
+        viewModel.alarmReceived()
+
         // Play alarm sound
 //        val mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound)
 //        mediaPlayer.start()

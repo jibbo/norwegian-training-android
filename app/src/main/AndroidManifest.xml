@@ -41,7 +41,7 @@
         </activity>
 
         <receiver
-            android:name=".components.AlarmReceiver"
+            android:name=".alarm.AlarmReceiver"
             android:exported="true" />
     </application>
 

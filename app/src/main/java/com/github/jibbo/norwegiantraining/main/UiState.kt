@@ -1,38 +1,32 @@
 package com.github.jibbo.norwegiantraining.main
 
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.domain.Phase
 
 data class UiState(
-    val step: Int = -1,
+    val step: Phase = Phase.GET_READY,
     val isTimerRunning: Boolean = false,
     val targetTimeMillis: Long = 0L,
     val remainingTimeOnPauseMillis: Long = 0L,
     val name: String = "",
-) {
+)
 
-    fun stepMessage() = message(step)
-    fun nextMessage() = message(step + 1)
+fun Phase.description() = when (this) {
+    Phase.GET_READY -> R.string.get_ready_desc
+    Phase.WARMUP -> R.string.warmup_desc
+    Phase.REST_PHASE -> R.string.cooldown_desc
+    Phase.COMPLETED -> R.string.completed_desc
+    Phase.HARD_PHASE -> R.string.hit_cardio_desc
+    Phase.SOFT_PHASE -> R.string.light_cardio_desc
+}
 
-    fun description() = when {
-        step < 0 -> R.string.get_ready_desc
-        step == 0 -> R.string.warmup_desc
-        step == 9 -> R.string.cooldown_desc
-        step > 9 -> R.string.completed_desc
-        step % 2 == 1 -> R.string.hit_cardio_desc
-        step % 2 == 0 -> R.string.light_cardio_desc
-        else -> throw IllegalStateException("Steps out of bound")
-    }
-
-    private fun message(step: Int) = when {
-        step < 0 -> R.string.get_ready
-        step == 0 -> R.string.warmup
-        step == 9 -> R.string.cooldown
-        step == 10 -> R.string.completed
-        step > 10 -> R.string.warmup
-        step % 2 == 1 -> R.string.hit_cardio
-        step % 2 == 0 -> R.string.light_cardio
-        else -> throw IllegalStateException("Steps out of bound")
-    }
+fun Phase.message() = when (this) {
+    Phase.GET_READY -> R.string.get_ready
+    Phase.WARMUP -> R.string.warmup
+    Phase.REST_PHASE -> R.string.cooldown
+    Phase.COMPLETED -> R.string.completed
+    Phase.HARD_PHASE -> R.string.hit_cardio
+    Phase.SOFT_PHASE -> R.string.light_cardio
 }
 
 enum class SpeakState(val message: Int) {

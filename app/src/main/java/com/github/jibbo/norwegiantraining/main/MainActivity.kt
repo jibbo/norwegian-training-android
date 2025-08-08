@@ -25,7 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.components.AlarmReceiver
+import com.github.jibbo.norwegiantraining.alarm.AlarmReceiver
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
@@ -79,7 +79,7 @@ class MainActivity : BaseActivity() {
                         showNotification(it.triggerTime)
                     }
 
-                    is UiCommands.STOP_ALARM -> {
+                    is UiCommands.PAUSE_ALARM -> {
                         cancelNotification()
                     }
 
@@ -133,10 +133,10 @@ class MainActivity : BaseActivity() {
 
         // TODO move to viewModel these ifs
         if (mainViewModel.shouldAnnouncePhase()) {
-            speak(uiState.stepMessage(), TextToSpeech.QUEUE_FLUSH)
+            speak(uiState.step.message(), TextToSpeech.QUEUE_FLUSH)
         }
         if (mainViewModel.shouldAnnouncePhaseDesc()) {
-            speak(uiState.description())
+            speak(uiState.step.description())
         }
     }
 

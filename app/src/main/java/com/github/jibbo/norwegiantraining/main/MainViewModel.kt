@@ -4,8 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.Session
-import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.UserPreferencesRepo
+import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
+import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
+import com.github.jibbo.norwegiantraining.domain.Phase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,58 +20,45 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val getNextPhase: MoveToNextPhaseDomainService,
+    private val getTodaySession: GetTodaySessionUseCase,
+    private val getUsername: GetUsername,
+    // TODO remove direct access to repos
     private val settingsRepository: UserPreferencesRepo,
-    private val sessionRepository: SessionRepository
 ) : ViewModel() {
-    private var currentStep = 0
     private var todaySession: Session = Session()
 
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
     val uiEvents = events.asSharedFlow()
 
     private val states: MutableStateFlow<UiState> = MutableStateFlow(
-        UiState(
-            name = settingsRepository.getUserName() ?: ""
-        )
+        UiState(name = getUsername())
     )
     val uiStates = states.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            val fetchedSession = sessionRepository.getTodaySession()
-            if (fetchedSession != null) {
-                todaySession = fetchedSession
-            } else {
-                updateTodaySession(todaySession)
-            }
-        }
-    }
-
     fun refresh() {
-        states.value = uiStates.value.copy(
-            name = settingsRepository.getUserName() ?: ""
+        viewModelScope.launch {
+            todaySession = getTodaySession()
+        }
+        //TODO this should be moved to datastore for Flow usage and avoid this workaround
+        states.value = states.value.copy(
+            name = getUsername(),
         )
     }
 
     fun mainButtonClicked() {
-        val oldValue = states.value
-        if (currentStep > 9 && oldValue.isTimerRunning) {
-            states.value = UiState(currentStep, false, 0L, 0L)
-            events.tryEmit(UiCommands.STOP_ALARM)
-        } else if (currentStep > 9) {
-            currentStep = 0
-            scheduleTimer()
-        } else if (oldValue.isTimerRunning) {
-            stopTimer()
-        } else {
-            scheduleTimer()
-            updateTodaySession(todaySession)
+        viewModelScope.launch {
+            if (states.value.isTimerRunning) {
+                pauseTimer()
+            } else {
+                moveToNextPhase(getNextPhase())
+            }
         }
     }
 
-    fun showSkipButton() = currentStep >= 0 && currentStep < 10
+    fun showSkipButton() = states.value.step != Phase.COMPLETED
 
-    fun showCountdown() = currentStep >= 0 && currentStep < 10
+    fun showCountdown() = states.value.step != Phase.COMPLETED
 
     fun permissionGranted() {
         val oldValue = states.value
@@ -78,25 +68,15 @@ class MainViewModel @Inject constructor(
     }
 
     fun skipClicked() {
-        updateTodaySession(todaySession.copy(skipCount = todaySession.skipCount + 1))
-        currentStep++
-        if (currentStep < 9) {
-            scheduleTimer()
-        } else {
-            mainButtonClicked()
+        viewModelScope.launch {
+            moveToNextPhase(getNextPhase())
         }
     }
 
     fun onTimerFinish() {
-        currentStep++
-        states.value = UiState(
-            step = currentStep,
-            isTimerRunning = false,
-            targetTimeMillis = 0L,
-            remainingTimeOnPauseMillis = 0L
-        )
-        updateTodaySession(todaySession.copy(phasesEnded = todaySession.phasesEnded + 1))
-        mainButtonClicked()
+        viewModelScope.launch {
+            moveToNextPhase(getNextPhase())
+        }
     }
 
     fun shouldAnnouncePhase() = settingsRepository.getAnnouncePhase()
@@ -110,16 +90,33 @@ class MainViewModel @Inject constructor(
         publishEvent(UiCommands.SHOW_CHARTS)
     }
 
-    private fun updateTodaySession(session: Session) {
-        viewModelScope.launch {
-            val id = sessionRepository.upsertSession(session)
-            if (todaySession.id == 0L) {
-                todaySession = todaySession.copy(id = id)
-            }
+    private fun moveToNextPhase(nextPhase: Phase) {
+        when (nextPhase) {
+            Phase.GET_READY -> showGetReady()
+            Phase.COMPLETED -> showCompleted()
+            else -> scheduleTimer(nextPhase, nextPhase.durationMillis!!) // I know it's not null
         }
     }
 
-    private fun stopTimer() {
+    private fun showGetReady() {
+        states.value = UiState(
+            step = Phase.GET_READY,
+            isTimerRunning = false,
+            targetTimeMillis = 0L,
+            remainingTimeOnPauseMillis = 0L
+        )
+    }
+
+    private fun showCompleted() {
+        states.value = UiState(
+            step = Phase.COMPLETED,
+            isTimerRunning = false,
+            targetTimeMillis = 0L,
+            remainingTimeOnPauseMillis = 0L
+        )
+    }
+
+    private fun pauseTimer() {
         val oldValue = states.value
 
         val remainingMillis =
@@ -130,19 +127,17 @@ class MainViewModel @Inject constructor(
             }
 
         states.value = UiState(oldValue.step, false, oldValue.targetTimeMillis, remainingMillis)
-        publishEvent(UiCommands.STOP_ALARM)
+        publishEvent(UiCommands.PAUSE_ALARM)
     }
 
-    private fun scheduleTimer() {
-        val oldValue = states.value
-        val newTargetTimeMillis =
-            if (!oldValue.isTimerRunning && oldValue.remainingTimeOnPauseMillis > 0L && oldValue.step == currentStep) {
-                // resume from pause
-                System.currentTimeMillis() + oldValue.remainingTimeOnPauseMillis
-            } else {
-                getNextAlarmTime()
-            }
-        states.value = oldValue.copy(currentStep, true, newTargetTimeMillis, 0L)
+    private fun scheduleTimer(phase: Phase, duration: Long) {
+        val newTargetTimeMillis = System.currentTimeMillis() + duration
+        states.value = states.value.copy(
+            step = phase,
+            isTimerRunning = true,
+            targetTimeMillis = System.currentTimeMillis(),
+            remainingTimeOnPauseMillis = 0L
+        )
         publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
         ticking()
     }
@@ -171,18 +166,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
-    private fun getNextAlarmTime(): Long {
-        val durationMillis = when (currentStep) {
-            0 -> 10 * 60 * 1000
-            9 -> 5 * 60 * 1000
-            else -> 4 * 60 * 1000
-        }
-        return System.currentTimeMillis() + durationMillis
-    }
-
     sealed class UiCommands {
-        object STOP_ALARM : UiCommands()
+        object PAUSE_ALARM : UiCommands()
         object SHOW_SETTINGS : UiCommands()
         object SHOW_CHARTS : UiCommands()
         data class START_ALARM(val triggerTime: Long, val uiState: UiState) : UiCommands()

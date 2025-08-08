@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -54,6 +52,10 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeUserPreferencesRepo
+import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
+import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
+import com.github.jibbo.norwegiantraining.domain.SaveTodaySession
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Oswald
@@ -167,13 +169,13 @@ private fun ColumnScope.Timer(
 @Composable
 private fun Instructions(state: UiState) {
     Text(
-        text = state.stepMessage().localizable(),
+        text = state.step.message().localizable(),
         style = Typography.headlineLarge,
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center
     )
     Text(
-        text = state.description().localizable(),
+        text = state.step.description().localizable(),
         style = Typography.headlineSmall,
         modifier = Modifier
             .fillMaxWidth()
@@ -181,14 +183,15 @@ private fun Instructions(state: UiState) {
             .padding(16.dp),
         textAlign = TextAlign.Center,
     )
-    Text(
-        text = R.string.next_up.localizable(state.nextMessage().localizable()),
-        style = Typography.labelLarge,
-        modifier = Modifier
-            .fillMaxWidth()
-            .alpha(0.8f),
-        textAlign = TextAlign.Center,
-    )
+// TODO
+//    Text(
+//        text = R.string.next_up.localizable(state.nextMessage().localizable()),
+//        style = Typography.labelLarge,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .alpha(0.8f),
+//        textAlign = TextAlign.Center,
+//    )
 }
 
 @Composable
@@ -319,8 +322,20 @@ fun ExoplayerExample() {
 @Composable
 fun GreetingPreview() {
     NorwegianTrainingTheme {
+        val sessionRepository = FakeSessionRepo()
+        val settingsRepository = FakeUserPreferencesRepo()
         MainView(
-            mainViewModel = MainViewModel(FakeUserPreferencesRepo(), FakeSessionRepo()),
+            mainViewModel = MainViewModel(
+                MoveToNextPhaseDomainService(
+                    GetTodaySessionUseCase(
+                        sessionRepository
+                    ),
+                    SaveTodaySession(sessionRepository)
+                ),
+                GetTodaySessionUseCase(sessionRepository),
+                GetUsername(settingsRepository),
+                settingsRepository
+            ),
         )
     }
 }
