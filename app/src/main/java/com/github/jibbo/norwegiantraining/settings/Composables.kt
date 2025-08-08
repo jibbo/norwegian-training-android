@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.settings
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -63,53 +64,55 @@ internal fun SettingsScreen(
 private fun TTSCard(viewModel: SettingsViewModel) {
     val state = viewModel.uiState.collectAsState()
     Card {
-        Text(
-            text = R.string.title_tts_section.localizable(),
-            style = Typography.bodyMedium,
-            modifier = Modifier.padding(8.dp),
-            color = Primary
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
+        Column(modifier = Modifier.padding(6.dp)) {
             Text(
-                text = R.string.announce_phase.localizable(),
+                text = R.string.title_tts_section.localizable(),
                 style = Typography.bodyMedium,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.padding(8.dp),
+                color = Primary
             )
-            MySwitch(
-                checked = state.value.announcePhase,
-                onCheckedChange = {
-                    viewModel.setAnnouncePhase(it)
-                },
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            Text(
-                text = R.string.announce_phase_description.localizable(),
-                style = Typography.bodyMedium,
-                modifier = Modifier.weight(1f)
-            )
-            MySwitch(checked = state.value.announcePhaseDesc, onCheckedChange = {
-                viewModel.setAnnouncePhaseDesc(it)
-            })
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            Text(
-                text = R.string.announce_countdown.localizable(),
-                style = Typography.bodyMedium,
-                modifier = Modifier.weight(1f)
-            )
-            MySwitch(checked = state.value.announceCountdown, onCheckedChange = {
-                viewModel.setAnnounceCountdown(it)
-            })
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = R.string.announce_phase.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                MySwitch(
+                    checked = state.value.announcePhase,
+                    onCheckedChange = {
+                        viewModel.setAnnouncePhase(it)
+                    },
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = R.string.announce_phase_description.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                MySwitch(checked = state.value.announcePhaseDesc, onCheckedChange = {
+                    viewModel.setAnnouncePhaseDesc(it)
+                })
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = R.string.announce_countdown.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                MySwitch(checked = state.value.announceCountdown, onCheckedChange = {
+                    viewModel.setAnnounceCountdown(it)
+                })
+            }
         }
     }
 }
@@ -118,32 +121,34 @@ private fun TTSCard(viewModel: SettingsViewModel) {
 private fun ProfileCard(viewModel: SettingsViewModel) {
     val state = viewModel.uiState.collectAsState()
     Card(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier.padding(8.dp)
-        ) {
-            Text(
-                text = R.string.title_profile_section.localizable(),
-                style = Typography.bodyMedium,
-                color = Primary
-            )
-            Spacer(modifier = Modifier.weight(1f))
-        }
+        Column(modifier = Modifier.padding(6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.title_profile_section.localizable(),
+                    style = Typography.bodyMedium,
+                    color = Primary
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
 
-        TextField(
-            placeholder = @Composable {
-                Text(text = R.string.your_name.localizable())
-            },
-            value = state.value.name ?: "",
-            onValueChange = { newValue: String ->
-                viewModel.setName(newValue)
-            },
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
+            TextField(
+                placeholder = @Composable {
+                    Text(text = R.string.your_name.localizable())
+                },
+                value = state.value.name ?: "",
+                onValueChange = { newValue: String ->
+                    viewModel.setName(newValue)
+                },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+        }
     }
 }
 
@@ -151,60 +156,62 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
 private fun PrivacyCard(viewModel: SettingsViewModel) {
     val state = viewModel.uiState.collectAsState()
     Card(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier.padding(8.dp)
-        ) {
-            Text(
-                text = R.string.title_privacy_section.localizable(),
-                style = Typography.bodyMedium,
-                color = Primary
-            )
-            Spacer(modifier = Modifier.weight(1f))
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(all = 16.dp)
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.padding(6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
                 Text(
-                    text = R.string.enable_crash_reporting.localizable(),
+                    text = R.string.title_privacy_section.localizable(),
                     style = Typography.bodyMedium,
+                    color = Primary
                 )
-                Text(
-                    text = R.string.enable_crash_reporting_description.localizable(),
-                    style = Typography.labelMedium,
-                    color = White.copy(alpha = 0.8f),
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(all = 16.dp)
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = R.string.enable_crash_reporting.localizable(),
+                        style = Typography.bodyMedium,
+                    )
+                    Text(
+                        text = R.string.enable_crash_reporting_description.localizable(),
+                        style = Typography.labelMedium,
+                        color = White.copy(alpha = 0.6f),
+                    )
+                }
+                MySwitch(
+                    checked = state.value.isCrashReportingEnabled,
+                    onCheckedChange = {
+                        viewModel.toggleCrashReporting(it)
+                    },
                 )
             }
-            MySwitch(
-                checked = state.value.isCrashReportingEnabled,
-                onCheckedChange = {
-                    viewModel.toggleCrashReporting(it)
-                },
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(all = 16.dp)
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = R.string.enable_analytics.localizable(),
-                    style = Typography.bodyMedium,
-                )
-                Text(
-                    text = R.string.enable_analytics_description.localizable(),
-                    style = Typography.labelMedium,
-                    color = White.copy(alpha = 0.8f),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(all = 16.dp)
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = R.string.enable_analytics.localizable(),
+                        style = Typography.bodyMedium,
+                    )
+                    Text(
+                        text = R.string.enable_analytics_description.localizable(),
+                        style = Typography.labelMedium,
+                        color = White.copy(alpha = 0.6f),
+                    )
+                }
+                MySwitch(
+                    checked = state.value.isAnalyticsEnabled,
+                    onCheckedChange = {
+                        viewModel.toggleAnalytics(it)
+                    },
                 )
             }
-            MySwitch(
-                checked = state.value.isAnalyticsEnabled,
-                onCheckedChange = {
-                    viewModel.toggleAnalytics(it)
-                },
-            )
         }
     }
 }

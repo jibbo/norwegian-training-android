@@ -135,18 +135,15 @@ class MainViewModel @Inject constructor(
 
     private fun scheduleTimer() {
         val oldValue = states.value
-        val newTargetTimeMillis: Long
-
-        if (!oldValue.isTimerRunning && oldValue.remainingTimeOnPauseMillis > 0L && oldValue.step == currentStep) {
-            // resume from pause
-            newTargetTimeMillis = System.currentTimeMillis() + oldValue.remainingTimeOnPauseMillis
-            states.value = UiState(currentStep, true, newTargetTimeMillis, 0L)
-        } else {
-            newTargetTimeMillis = getNextAlarmTime()
-            states.value = UiState(currentStep, true, newTargetTimeMillis, 0L)
-        }
+        val newTargetTimeMillis =
+            if (!oldValue.isTimerRunning && oldValue.remainingTimeOnPauseMillis > 0L && oldValue.step == currentStep) {
+                // resume from pause
+                System.currentTimeMillis() + oldValue.remainingTimeOnPauseMillis
+            } else {
+                getNextAlarmTime()
+            }
+        states.value = oldValue.copy(currentStep, true, newTargetTimeMillis, 0L)
         publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
-
         ticking()
     }
 

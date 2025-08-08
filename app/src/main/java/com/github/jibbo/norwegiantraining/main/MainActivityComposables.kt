@@ -89,9 +89,7 @@ internal fun MainView(
                 .safeDrawingPadding()
         ) {
             Header(viewModel = mainViewModel)
-            if (!mainViewModel.showCountdown()) {
-                Spacer(modifier = Modifier.weight(1f))
-            }
+            Spacer(modifier = Modifier.weight(1f))
             Instructions(state)
             Spacer(modifier = Modifier.weight(1f))
             if (mainViewModel.showCountdown()) {
@@ -254,13 +252,12 @@ internal fun Header(viewModel: MainViewModel) {
         Text(
             text = R.string.welcome.localizable(state.name),
             fontFamily = Oswald,
-            fontWeight = FontWeight.Light,
+            fontWeight = FontWeight.ExtraLight,
             fontSize = 24.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.widthIn(max = 300.dp)
+            modifier = Modifier.weight(1f)
         )
-        Spacer(modifier = Modifier.weight(1f))
         IconButton(onClick = {
             viewModel.chartsClicked()
         }) {
@@ -278,7 +275,6 @@ internal fun Header(viewModel: MainViewModel) {
             )
         }
     }
-    Spacer(modifier = Modifier.height(100.dp))
 }
 
 @Composable
