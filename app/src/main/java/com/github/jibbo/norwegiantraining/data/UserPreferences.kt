@@ -67,11 +67,13 @@ class UserPreferencesSharedPrefs @Inject constructor(
     }
 
     override fun getAnalyticsEnabled() = sp.getBoolean(KEY_ANALYTICS_ENABLED, !isEuUser(context))
+
     override fun setCrashReportingEnabled(enabled: Boolean) {
         sp.edit { putBoolean(KEY_CRASHLYTICS_ENABLED, enabled) }
     }
-
-    override fun getCrashReportingEnabled(): Boolean = sp.getBoolean(KEY_CRASHLYTICS_ENABLED, true)
+    
+    override fun getCrashReportingEnabled(): Boolean =
+        sp.getBoolean(KEY_CRASHLYTICS_ENABLED, !isEuUser(context))
 
     companion object {
         const val KEY_ANNOUNCE_PHASE = "announce_phase"

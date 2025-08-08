@@ -54,10 +54,12 @@ internal class SettingsViewModel @Inject constructor(
     fun toggleAnalytics(enabled: Boolean) {
         analytics.enabled(enabled)
         settingsRepository.setAnalyticsEnabled(enabled)
+        uiStates.value = uiStates.value.copy(isAnalyticsEnabled = enabled)
     }
 
-    fun toggleCrashReporting(isEnabled: Boolean) {
-        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = isEnabled
-        settingsRepository.setCrashReportingEnabled(isEnabled)
+    fun toggleCrashReporting(enabled: Boolean) {
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = enabled
+        settingsRepository.setCrashReportingEnabled(enabled)
+        uiStates.value = uiStates.value.copy(isCrashReportingEnabled = enabled)
     }
 }
