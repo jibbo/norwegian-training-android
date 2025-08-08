@@ -51,7 +51,7 @@ class MainViewModel @Inject constructor(
             if (states.value.isTimerRunning) {
                 pauseTimer()
             } else if (states.value.remainingTimeOnPauseMillis > 0) {
-                scheduleTimer(states.value.step, states.value.targetTimeMillis)
+                scheduleTimer(states.value.step, states.value.remainingTimeOnPauseMillis)
             } else {
                 moveToNextPhase(getNextPhase())
             }

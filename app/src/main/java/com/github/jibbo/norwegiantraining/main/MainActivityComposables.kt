@@ -158,7 +158,7 @@ private fun ColumnScope.Timer(
             targetTimeMillis = state.targetTimeMillis,
             isRunning = state.isTimerRunning,
             onFinish = {
-                //mainViewModel.onTimerFinish()
+                mainViewModel.onTimerFinish()
             }
         )
     }
