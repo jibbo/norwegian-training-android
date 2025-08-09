@@ -20,7 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.alarm.AlarmReceiver
-import com.github.jibbo.norwegiantraining.alarm.AlarmUtils
+import com.github.jibbo.norwegiantraining.alarm.NotificationUtils
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
@@ -59,7 +59,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        AlarmUtils.createNotificationChannel(this)
+        NotificationUtils.createNotificationChannel(this)
 
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
@@ -70,11 +70,11 @@ class MainActivity : BaseActivity() {
 
                     is UiCommands.SHOW_NOTIFICATION -> {
                         checkNotificationPermission()
-                        AlarmUtils.showNotification(this@MainActivity, it.triggerTime)
+                        NotificationUtils.showNotification(this@MainActivity, it.triggerTime)
                     }
 
                     is UiCommands.PAUSE_ALARM -> {
-                        AlarmUtils.dismissNotification(this@MainActivity)
+                        NotificationUtils.dismissNotification(this@MainActivity)
                     }
 
                     is UiCommands.Speak -> {
@@ -123,7 +123,7 @@ class MainActivity : BaseActivity() {
     private fun startAlarm(triggerTime: Long, uiState: UiState) {
         scheduleAlarm(triggerTime)
         checkNotificationPermission()
-        AlarmUtils.showNotification(this, triggerTime)
+        NotificationUtils.showNotification(this, triggerTime)
     }
 
     private fun scheduleAlarm(triggerTime: Long) {

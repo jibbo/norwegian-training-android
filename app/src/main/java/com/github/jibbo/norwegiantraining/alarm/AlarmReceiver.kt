@@ -19,7 +19,7 @@ class AlarmReceiver : BroadcastReceiver() {
         GlobalScope.launch {
             val nextPhase = getNextPhase()
             val triggerTime = System.currentTimeMillis() + nextPhase.durationMillis!!
-            AlarmUtils.showNotification(context, triggerTime)
+            NotificationUtils.showNotification(context, triggerTime)
         }
 
         // Play alarm sound

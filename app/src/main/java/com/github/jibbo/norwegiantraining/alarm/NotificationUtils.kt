@@ -15,7 +15,7 @@ import androidx.core.content.ContextCompat
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.main.MainActivity
 
-object AlarmUtils {
+object NotificationUtils {
     private val CHANNEL_ID = "alarm_channel"
     private val NOTIFICATION_ID = 1
 
@@ -54,6 +54,11 @@ object AlarmUtils {
             .from(context)
             .notify(NOTIFICATION_ID, builder.build())
     }
+
+//    private fun updateNotificationContent(title: String, text: String) {
+//        val notification = createNotification(title, text) // Rebuilds with new text
+//        notificationManager.notify(NOTIFICATION_ID, notification)
+//    }
 
     fun dismissNotification(context: Context) {
         NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID)

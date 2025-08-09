@@ -5,10 +5,14 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
-    <uses-permission android:name="android.permission.health.READ_STEPS" />
-    <uses-permission android:name="android.permission.health.WRITE_STEPS" />
+    <!--    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />-->
+    <!--    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />-->
+    <!--    <uses-permission android:name="android.permission.health.READ_STEPS" />-->
+    <!--    <uses-permission android:name="android.permission.health.WRITE_STEPS" />-->
+    <!--    <uses-permission android:name="android.permission.BODY_SENSORS" />-->
+    <!--    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />-->
+    <!--    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />-->
+    <!--    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />-->
 
     <application
         android:name=".NorwegianTrainingApp"
@@ -43,6 +47,11 @@
         <receiver
             android:name=".alarm.AlarmReceiver"
             android:exported="true" />
+
+        <service
+            android:name=".service.TimerService"
+            android:exported="false"
+            android:foregroundServiceType="health" />
     </application>
 
 </manifest>
