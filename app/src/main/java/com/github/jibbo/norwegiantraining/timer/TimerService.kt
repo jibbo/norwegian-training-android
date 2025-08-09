@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining.service
+package com.github.jibbo.norwegiantraining.timer
 
 import android.app.Service
 import android.content.Intent
@@ -9,7 +9,6 @@ import android.hardware.SensorManager
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import com.github.jibbo.norwegiantraining.alarm.NotificationUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

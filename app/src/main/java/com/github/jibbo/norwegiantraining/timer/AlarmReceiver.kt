@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining.alarm
+package com.github.jibbo.norwegiantraining.timer
 
 import android.content.BroadcastReceiver
 import android.content.Context

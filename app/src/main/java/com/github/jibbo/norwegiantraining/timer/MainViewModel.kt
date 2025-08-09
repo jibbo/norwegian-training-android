@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining.main
+package com.github.jibbo.norwegiantraining.timer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

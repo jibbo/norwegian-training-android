@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining.main
+package com.github.jibbo.norwegiantraining.timer
 
 import android.Manifest
 import android.app.AlarmManager
@@ -19,11 +19,8 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.github.jibbo.norwegiantraining.alarm.AlarmReceiver
-import com.github.jibbo.norwegiantraining.alarm.NotificationUtils
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
-import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
 import com.github.jibbo.norwegiantraining.settings.SettingsActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,28 +61,28 @@ class MainActivity : BaseActivity() {
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
-                    is UiCommands.START_ALARM -> {
+                    is MainViewModel.UiCommands.START_ALARM -> {
                         startAlarm(it.triggerTime, it.uiState)
                     }
 
-                    is UiCommands.SHOW_NOTIFICATION -> {
+                    is MainViewModel.UiCommands.SHOW_NOTIFICATION -> {
                         checkNotificationPermission()
                         NotificationUtils.showNotification(this@MainActivity, it.triggerTime)
                     }
 
-                    is UiCommands.PAUSE_ALARM -> {
+                    is MainViewModel.UiCommands.PAUSE_ALARM -> {
                         NotificationUtils.dismissNotification(this@MainActivity)
                     }
 
-                    is UiCommands.Speak -> {
+                    is MainViewModel.UiCommands.Speak -> {
                         speak(it.speakState.message, it.flush)
                     }
 
-                    is UiCommands.SHOW_SETTINGS -> {
+                    is MainViewModel.UiCommands.SHOW_SETTINGS -> {
                         startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
                     }
 
-                    is UiCommands.SHOW_CHARTS -> {
+                    is MainViewModel.UiCommands.SHOW_CHARTS -> {
                         startActivity(Intent(this@MainActivity, LogActivity::class.java))
                     }
                 }

@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining.alarm
+package com.github.jibbo.norwegiantraining.timer
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -13,7 +13,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.main.MainActivity
 
 object NotificationUtils {
     private val CHANNEL_ID = "alarm_channel"

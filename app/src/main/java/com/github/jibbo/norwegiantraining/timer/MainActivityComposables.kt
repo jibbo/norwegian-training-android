@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining.main
+package com.github.jibbo.norwegiantraining.timer
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState

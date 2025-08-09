@@ -1,4 +1,4 @@
-package com.github.jibbo.norwegiantraining.main
+package com.github.jibbo.norwegiantraining.timer
 
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.domain.Phase
