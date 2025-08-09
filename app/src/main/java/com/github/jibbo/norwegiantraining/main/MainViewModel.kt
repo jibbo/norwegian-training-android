@@ -59,8 +59,10 @@ class MainViewModel @Inject constructor(
                 pauseTimer()
             } else if (states.value.remainingTimeOnPauseMillis > 0) {
                 scheduleTimer(states.value.step, states.value.remainingTimeOnPauseMillis)
-            } else {
+            } else if (states.value.step.durationMillis != null) {
                 scheduleTimer(states.value.step, states.value.step.durationMillis!!)
+            } else {
+                moveToNextPhase(getNextPhase())
             }
         }
     }
@@ -79,14 +81,12 @@ class MainViewModel @Inject constructor(
     fun skipClicked() {
         viewModelScope.launch {
             todaySession = skipPhase()
-            moveToNextPhase(getNextPhase())
+            showNextPhase(getNextPhase())
         }
     }
 
     fun onTimerFinish() {
         viewModelScope.launch {
-            todaySession =
-                saveTodaySession(todaySession.copy(phasesEnded = todaySession.phasesEnded + 1))
             moveToNextPhase(getNextPhase())
         }
     }
@@ -100,6 +100,14 @@ class MainViewModel @Inject constructor(
     }
 
     private fun moveToNextPhase(nextPhase: Phase) {
+        viewModelScope.launch {
+            todaySession =
+                saveTodaySession(todaySession.copy(phasesEnded = todaySession.phasesEnded + 1))
+        }
+        showNextPhase(nextPhase)
+    }
+
+    private fun showNextPhase(nextPhase: Phase) {
         when (nextPhase) {
             Phase.GET_READY -> showGetReady()
             Phase.COMPLETED -> showCompleted()

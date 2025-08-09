@@ -11,6 +11,12 @@ class GetCurrentPhaseUseCase @Inject constructor(
         val endedPhases = todaySession?.phasesEnded ?: 0
         val skippedPhases = todaySession?.skipCount ?: 0
         val stepCount = (endedPhases + skippedPhases) % 12
-        return Phase.fromNumber(stepCount)
+        return if (endedPhases == skippedPhases && stepCount == 0) {
+            Phase.GET_READY
+        } else {
+            Phase.fromNumber(
+                stepCount
+            )
+        }
     }
 }
