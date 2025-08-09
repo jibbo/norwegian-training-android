@@ -61,33 +61,44 @@ class MainActivity : BaseActivity() {
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
-                    is MainViewModel.UiCommands.START_ALARM -> {
-                        startAlarm(it.triggerTime, it.uiState)
-                    }
+                    is MainViewModel.UiCommands.START_ALARM -> startTimer(
+                        it.triggerTime,
+                        it.uiState
+                    )
 
                     is MainViewModel.UiCommands.SHOW_NOTIFICATION -> {
                         checkNotificationPermission()
                         NotificationUtils.showNotification(this@MainActivity, it.triggerTime)
                     }
 
-                    is MainViewModel.UiCommands.PAUSE_ALARM -> {
-                        NotificationUtils.dismissNotification(this@MainActivity)
-                    }
+                    is MainViewModel.UiCommands.PAUSE_ALARM -> pauseTimer()
 
-                    is MainViewModel.UiCommands.Speak -> {
+                    is MainViewModel.UiCommands.Speak ->
                         speak(it.speakState.message, it.flush)
-                    }
 
-                    is MainViewModel.UiCommands.SHOW_SETTINGS -> {
-                        startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-                    }
+                    is MainViewModel.UiCommands.SHOW_SETTINGS -> startActivity(
+                        Intent(
+                            this@MainActivity,
+                            SettingsActivity::class.java
+                        )
+                    )
 
-                    is MainViewModel.UiCommands.SHOW_CHARTS -> {
-                        startActivity(Intent(this@MainActivity, LogActivity::class.java))
-                    }
+                    is MainViewModel.UiCommands.SHOW_CHARTS -> startActivity(
+                        Intent(
+                            this@MainActivity,
+                            LogActivity::class.java
+                        )
+                    )
                 }
             }
         }
+    }
+
+    private fun pauseTimer() {
+        val intent = Intent(this@MainActivity, TimerService::class.java).apply {
+            action = TimerService.ACTION_PAUSE
+        }
+        startService(intent)
     }
 
     override fun onResume() {
@@ -117,10 +128,22 @@ class MainActivity : BaseActivity() {
         tts?.shutdown()
     }
 
-    private fun startAlarm(triggerTime: Long, uiState: UiState) {
-        scheduleAlarm(triggerTime)
-        checkNotificationPermission()
-        NotificationUtils.showNotification(this, triggerTime)
+    private fun startTimer(triggerTime: Long, uiState: UiState) {
+//        scheduleAlarm(triggerTime)
+//        checkNotificationPermission()
+//        NotificationUtils.showNotification(this, triggerTime)
+
+
+        val intent = Intent(this, TimerService::class.java).apply {
+            action =
+                TimerService.ACTION_START // Make sure this constant exists in your TimerService
+            putExtra(
+                TimerService.EXTRA_TARGET_TIME_MILLIS,
+                triggerTime
+            ) // Assuming this extra is used
+            // Add any other extras the TimerService might need (e.g., current phase)
+        }
+        startService(intent)
     }
 
     private fun scheduleAlarm(triggerTime: Long) {

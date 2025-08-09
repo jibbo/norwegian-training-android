@@ -12,7 +12,6 @@ import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.SaveTodaySession
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -147,34 +146,34 @@ class MainViewModel @Inject constructor(
             targetTimeMillis = newTargetTimeMillis,
             remainingTimeOnPauseMillis = 0L
         )
-        if (settingsRepository.getShowTimerNotification()) {
-            publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
-        }
+//        if (settingsRepository.getShowTimerNotification()) {
+        publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
+//        }
         if (settingsRepository.getAnnouncePhase()) {
             UiCommands.Speak(SpeakState.Message(phase.message()), flush = true)
         }
         if (settingsRepository.getAnnouncePhaseDesc()) {
             UiCommands.Speak(SpeakState.Message(phase.description()))
         }
-        ticking()
+//        ticking()
     }
 
-    private fun ticking() {
-        if (settingsRepository.getAnnounceCountdown()) {
-            viewModelScope.launch {
-                if (states.value.isTimerRunning) {
-                    val remainingTime =
-                        (System.currentTimeMillis() - states.value.targetTimeMillis) / 1000
-                    val speakState = SpeakState.Companion.fromSeconds(remainingTime.toInt())
-                    if (speakState != SpeakState.Nothing) {
-                        publishEvent(UiCommands.Speak(speakState))
-                    }
-                    delay(1000)
-                    ticking()
-                }
-            }
-        }
-    }
+//    private fun ticking() {
+//        if (settingsRepository.getAnnounceCountdown()) {
+//            viewModelScope.launch {
+//                if (states.value.isTimerRunning) {
+//                    val remainingTime =
+//                        (System.currentTimeMillis() - states.value.targetTimeMillis) / 1000
+//                    val speakState = SpeakState.Companion.fromSeconds(remainingTime.toInt())
+//                    if (speakState != SpeakState.Nothing) {
+//                        publishEvent(UiCommands.Speak(speakState))
+//                    }
+//                    delay(1000)
+//                    ticking()
+//                }
+//            }
+//        }
+//    }
 
     private fun publishEvent(uiCommand: UiCommands) {
         viewModelScope.launch {
