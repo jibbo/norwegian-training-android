@@ -52,11 +52,10 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
-import com.github.jibbo.norwegiantraining.domain.GetCurrentPhaseUseCase
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
-import com.github.jibbo.norwegiantraining.domain.SaveTodaySession
+import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -333,8 +332,8 @@ fun GreetingPreview() {
                     getTodaySession
                 ),
                 getTodaySession,
-                SaveTodaySession(sessionRepository),
-                GetCurrentPhaseUseCase(sessionRepository),
+                PhaseEndedUseCase(getTodaySession, sessionRepository),
+//                GetCurrentPhaseUseCase(sessionRepository),
                 SkipPhaseUseCase(getTodaySession, sessionRepository),
                 GetUsername(settingsRepository),
                 settingsRepository

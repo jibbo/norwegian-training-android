@@ -10,13 +10,7 @@ class GetCurrentPhaseUseCase @Inject constructor(
         val todaySession = sessionRepository.getTodaySession()
         val endedPhases = todaySession?.phasesEnded ?: 0
         val skippedPhases = todaySession?.skipCount ?: 0
-        val stepCount = (endedPhases + skippedPhases) % 12
-        return if (endedPhases == skippedPhases && stepCount == 0) {
-            Phase.GET_READY
-        } else {
-            Phase.fromNumber(
-                stepCount
-            )
-        }
+        val stepCount = (endedPhases + skippedPhases)
+        return Phase.fromNumber(stepCount)
     }
 }

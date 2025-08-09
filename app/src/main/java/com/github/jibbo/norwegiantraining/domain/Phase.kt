@@ -9,15 +9,21 @@ enum class Phase(val durationMillis: Long? = null) {
     COMPLETED();
 
     companion object {
-        // TODO with array
-        fun fromNumber(number: Int) = when {
-            number == 0 -> GET_READY
-            number == 1 -> WARMUP
-            number == 10 -> REST_PHASE
-            number == 11 -> COMPLETED
-            number % 2 == 1 -> HARD_PHASE
-            number % 2 == 0 -> SOFT_PHASE
-            else -> throw IllegalArgumentException("Invalid number: $number")
-        }
+        private val phases = arrayOf(
+            GET_READY,
+            WARMUP,
+            HARD_PHASE,
+            SOFT_PHASE,
+            HARD_PHASE,
+            SOFT_PHASE,
+            HARD_PHASE,
+            SOFT_PHASE,
+            HARD_PHASE,
+            SOFT_PHASE,
+            REST_PHASE,
+            COMPLETED
+        )
+
+        fun fromNumber(number: Int) = phases[number % phases.size]
     }
 }

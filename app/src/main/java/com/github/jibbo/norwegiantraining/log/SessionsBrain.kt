@@ -2,6 +2,7 @@ package com.github.jibbo.norwegiantraining.log
 
 import androidx.compose.ui.graphics.Color
 import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.ui.theme.Orange
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Red
 
@@ -19,10 +20,10 @@ object SessionsBrain {
     }
 
     // Max 1
-    private fun getScore(session: Session): Int = if (session.skipCount > 0) {
-        (session.phasesEnded / session.skipCount) / 10
-    } else {
-        session.phasesEnded / 10
+    private fun getScore(session: Session): Double = when {
+        session.skipCount == 2 -> 0.6
+        session.skipCount < 2 -> 1.0
+        else -> 0.0
     }
 }
 
@@ -39,7 +40,7 @@ fun Session.getStatus(): SessionStatus {
 
 fun SessionStatus.getColor() = when (this) {
     SessionStatus.GOOD -> Primary
-    SessionStatus.ALMOST -> Color.Yellow
+    SessionStatus.ALMOST -> Orange
     SessionStatus.BAD -> Red
     SessionStatus.NOT_DONE -> Color.DarkGray
 }

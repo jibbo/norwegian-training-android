@@ -4,12 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
-import com.github.jibbo.norwegiantraining.domain.GetCurrentPhaseUseCase
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.Phase
-import com.github.jibbo.norwegiantraining.domain.SaveTodaySession
+import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -24,14 +23,17 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getNextPhase: MoveToNextPhaseDomainService,
     private val getTodaySession: GetTodaySessionUseCase,
-    private val saveTodaySession: SaveTodaySession,
-    private val getCurrentPhase: GetCurrentPhaseUseCase,
+    private val phaseEnded: PhaseEndedUseCase,
+//    private val getCurrentPhase: GetCurrentPhaseUseCase,
     private val skipPhase: SkipPhaseUseCase,
     private val getUsername: GetUsername,
     // TODO remove direct access to repos
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private var todaySession: Session = Session()
+
+    // TODO move to foreground service
+    private var currentStep: Int = 0
 
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
     val uiEvents = events.asSharedFlow()
@@ -47,7 +49,6 @@ class MainViewModel @Inject constructor(
             states.value = states.value.copy(
                 //TODO this should be moved to datastore for Flow usage and avoid this workaround
                 name = getUsername(),
-                step = getCurrentPhase()
             )
         }
 
@@ -62,14 +63,16 @@ class MainViewModel @Inject constructor(
             } else if (states.value.step.durationMillis != null) {
                 scheduleTimer(states.value.step, states.value.step.durationMillis!!)
             } else {
-                moveToNextPhase(getNextPhase())
+                showNextPhase(getNextPhase(currentStep))
             }
         }
     }
 
-    fun showSkipButton() = states.value.step != Phase.COMPLETED
+    fun showSkipButton() =
+        states.value.step != Phase.COMPLETED && states.value.step != Phase.GET_READY
 
-    fun showCountdown() = states.value.step != Phase.COMPLETED
+    fun showCountdown() =
+        states.value.step != Phase.COMPLETED && states.value.step != Phase.GET_READY
 
     fun permissionGranted() {
         val oldValue = states.value
@@ -81,13 +84,14 @@ class MainViewModel @Inject constructor(
     fun skipClicked() {
         viewModelScope.launch {
             todaySession = skipPhase()
-            showNextPhase(getNextPhase())
+            showNextPhase(getNextPhase(currentStep))
         }
     }
 
     fun onTimerFinish() {
         viewModelScope.launch {
-            moveToNextPhase(getNextPhase())
+            todaySession = phaseEnded()
+            showNextPhase(getNextPhase(currentStep))
         }
     }
 
@@ -99,20 +103,13 @@ class MainViewModel @Inject constructor(
         publishEvent(UiCommands.SHOW_CHARTS)
     }
 
-    private fun moveToNextPhase(nextPhase: Phase) {
-        viewModelScope.launch {
-            todaySession =
-                saveTodaySession(todaySession.copy(phasesEnded = todaySession.phasesEnded + 1))
-        }
-        showNextPhase(nextPhase)
-    }
-
     private fun showNextPhase(nextPhase: Phase) {
         when (nextPhase) {
             Phase.GET_READY -> showGetReady()
             Phase.COMPLETED -> showCompleted()
             else -> scheduleTimer(nextPhase, nextPhase.durationMillis!!) // I know it's not null
         }
+        currentStep++
     }
 
     private fun showGetReady() {

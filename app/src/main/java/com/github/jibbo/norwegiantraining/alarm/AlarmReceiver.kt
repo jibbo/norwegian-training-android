@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -16,11 +14,11 @@ class AlarmReceiver : BroadcastReceiver() {
     lateinit var getNextPhase: MoveToNextPhaseDomainService
 
     override fun onReceive(context: Context, intent: Intent) {
-        GlobalScope.launch {
-            val nextPhase = getNextPhase()
-            val triggerTime = System.currentTimeMillis() + nextPhase.durationMillis!!
-            AlarmUtils.showNotification(context, triggerTime)
-        }
+//        GlobalScope.launch {
+//            val nextPhase = getNextPhase()
+//            val triggerTime = System.currentTimeMillis() + nextPhase.durationMillis!!
+//            AlarmUtils.showNotification(context, triggerTime)
+//        }
 
         // Play alarm sound
 //        val mediaPlayer = MediaPlayer.create(context, R.raw.alarm_sound)
