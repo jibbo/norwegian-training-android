@@ -333,7 +333,6 @@ fun GreetingPreview() {
                 ),
                 getTodaySession,
                 PhaseEndedUseCase(getTodaySession, sessionRepository),
-//                GetCurrentPhaseUseCase(sessionRepository),
                 SkipPhaseUseCase(getTodaySession, sessionRepository),
                 GetUsername(settingsRepository),
                 settingsRepository

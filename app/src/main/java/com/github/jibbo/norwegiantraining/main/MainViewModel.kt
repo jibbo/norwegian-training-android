@@ -24,7 +24,6 @@ class MainViewModel @Inject constructor(
     private val getNextPhase: MoveToNextPhaseDomainService,
     private val getTodaySession: GetTodaySessionUseCase,
     private val phaseEnded: PhaseEndedUseCase,
-//    private val getCurrentPhase: GetCurrentPhaseUseCase,
     private val skipPhase: SkipPhaseUseCase,
     private val getUsername: GetUsername,
     // TODO remove direct access to repos
