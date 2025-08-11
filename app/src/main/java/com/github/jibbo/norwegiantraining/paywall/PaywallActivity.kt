@@ -76,9 +76,11 @@ class PaywallActivity : BaseActivity() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .safeContentPadding(),
+                .safeContentPadding()
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = "Unlock Norwegian Training",
                 style = Typography.headlineLarge,
@@ -104,7 +106,6 @@ class PaywallActivity : BaseActivity() {
                 onClick = {
                 }, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
                     .height(64.dp)
             ) {
                 Text(
@@ -116,7 +117,7 @@ class PaywallActivity : BaseActivity() {
                 onClick = {
                 }, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(vertical = 16.dp)
                     .height(64.dp)
             ) {
                 Text(
