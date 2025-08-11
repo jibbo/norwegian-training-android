@@ -21,6 +21,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NorwegianTraining">
         <activity
+            android:name=".onboarding.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.NorwegianTraining" />
+        <activity
             android:name=".log.LogActivity"
             android:exported="false" />
         <activity

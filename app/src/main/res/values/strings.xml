@@ -5,6 +5,7 @@
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="skip">Skip phase</string>
+    <string name="continue_btn">Continue</string>
 
     <!-- Timer states -->
     <string name="get_ready">Get Ready</string>
@@ -52,5 +53,14 @@
 
     <!-- Logs -->
     <string name="title_activity_logs">Your Activity</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_step_1_title">Welcome to Norwegian Training!</string>
+    <string name="onboarding_step_1_description">The best companion for your cardio workout</string>
+    <string name="onboarding_step_1_body">\"Now I can focus only on my training!\"</string>
+
+    <string name="onboarding_step_2_title">Welcome to Norwegian Training!</string>
+    <string name="onboarding_step_2_description">The best companion for your cardio workout</string>
+    <string name="onboarding_step_2_body">\"Now I can focus only on my training!\"</string>
 
 </resources>
