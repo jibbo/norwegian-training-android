@@ -36,6 +36,7 @@ import com.github.jibbo.norwegiantraining.components.VideoBackground
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
+import com.github.jibbo.norwegiantraining.ui.theme.White
 
 class PaywallActivity : BaseActivity() {
 
@@ -110,7 +111,8 @@ class PaywallActivity : BaseActivity() {
             ) {
                 Text(
                     text = "0.99 USD / Month",
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = Black
                 )
             }
             Button(
@@ -122,7 +124,8 @@ class PaywallActivity : BaseActivity() {
             ) {
                 Text(
                     text = "2.99 USD Lifetime",
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = Black
                 )
             }
         }

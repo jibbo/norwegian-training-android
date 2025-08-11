@@ -61,7 +61,7 @@
     <string name="onboarding_step_1_handle">\@marksmeister</string>
     <string name="onboarding_step_1_body">Stoked about this new app I found called "Norwegian Training"! If you\'re into the 4x4 protocol, you have to check this out. It handles all the timings and intervals perfectly, so I can focus on my workout instead of my watch. 🏃‍♀️⌚️ Highly recommend! #runningapp #fitness #HIIT #workout</string>
 
-    <string name="onboarding_step_2_title">Automatic Timers Intervals</string>
+    <string name="onboarding_step_2_title">Automatic Timers</string>
     <string name="onboarding_step_2_description">With this app, just press \"START\" to begin the workout.</string>
     <string name="onboarding_step_2_body">No more fiddling required</string>
 

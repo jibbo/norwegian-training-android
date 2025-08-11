@@ -185,7 +185,8 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
         ) {
             Text(
                 text = R.string.continue_btn.localizable().uppercase(),
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = Black
             )
         }
     }
