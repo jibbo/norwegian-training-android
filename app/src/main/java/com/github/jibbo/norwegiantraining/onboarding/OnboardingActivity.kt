@@ -18,20 +18,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,7 +91,11 @@ fun Content() {
                 )
             )
     ) {
-        HorizontalPager(state = pagerState) { page ->
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f),
+            userScrollEnabled = false
+        ) { page ->
             OnBoardingPage(
                 page,
                 pagerState
@@ -94,7 +103,6 @@ fun Content() {
         }
         Row(
             Modifier
-                .wrapContentHeight()
                 .fillMaxWidth()
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -132,17 +140,24 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(22.dp))
-        Text(
-            text = state.description.localizable(),
-            style = Typography.bodyMedium,
-            modifier = Modifier
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center,
-        )
-        if (state.layout == PageLayout.FEEDBACK) {
-            FeedbackPage(state)
-        } else {
-            NormalPage(state)
+        when (state) {
+            is UiState.Normal -> {
+                Text(
+                    text = state.description.localizable(),
+                    style = Typography.bodyLarge,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                )
+                NormalPage(state)
+            }
+
+            is UiState.Feedback -> FeedbackPage(state)
+            is UiState.Questions -> {
+                // TODO move selected inside the questions so that button can answer properly
+                val selected = remember { mutableStateOf(0) }
+                Questions(state, selected)
+            }
         }
         val coroutineScope = rememberCoroutineScope()
         Button(
@@ -164,7 +179,7 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
 }
 
 @Composable
-fun ColumnScope.FeedbackPage(state: UiState, modifier: Modifier = Modifier) {
+fun ColumnScope.FeedbackPage(state: UiState.Feedback, modifier: Modifier = Modifier) {
     Column(modifier = Modifier.weight(1f)) {
         Spacer(modifier = Modifier.weight(1f))
         ElevatedCard(
@@ -190,80 +205,98 @@ fun ColumnScope.FeedbackPage(state: UiState, modifier: Modifier = Modifier) {
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = "Markus R.",
+                        text = state.name.localizable(),
                         style = Typography.bodySmall,
                     )
                     Spacer(modifier = Modifier.width(2.dp))
                     Text(
-                        text = "@themarksmeister",
+                        text = state.description.localizable(),
                         style = Typography.bodySmall,
                         color = White.copy(alpha = 0.6f)
                     )
                 }
 
             }
-            if (state.body != null) {
-                Text(
-                    text = state.body.localizable(),
-                    style = Typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
+            Text(
+                text = state.body.localizable(),
+                style = Typography.bodyLarge,
+                modifier = Modifier.padding(16.dp)
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun ColumnScope.NormalPage(state: UiState, modifier: Modifier = Modifier) {
-    Column(modifier = Modifier.weight(1f)) {
+fun ColumnScope.NormalPage(state: UiState.Normal, modifier: Modifier = Modifier) {
+    Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.weight(1f))
-        ElevatedCard(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 6.dp
-            ),
-            modifier = modifier.fillMaxWidth(),
-        ) {
-            if (state.image != null) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(16.dp),
-                ) {
-                    Image(
-                        painter = painterResource(
-                            id = state.image,
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .width(64.dp)
-                            .height(64.dp)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = "Markus R.",
-                        style = Typography.bodySmall,
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                    Text(
-                        text = "@themarksmeister",
-                        style = Typography.bodySmall,
-                        color = White.copy(alpha = 0.6f)
-                    )
-                }
+        if (state.image != null) {
+            Image(
+                painter = painterResource(
+                    id = state.image,
+                ),
+                contentDescription = null,
+                modifier = Modifier.clip(CircleShape)
+            )
+        }
+        Text(
+            text = state.body.localizable(),
+            style = Typography.bodyLarge,
+            modifier = Modifier.padding(16.dp)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
 
-            }
-            if (state.body != null) {
+@Composable
+fun ColumnScope.Questions(
+    state: UiState.Questions,
+    selectedOption: MutableState<Int>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .selectableGroup(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.weight(1f))
+        if (state.image != null) {
+            Image(
+                painter = painterResource(
+                    id = state.image,
+                ),
+                contentDescription = null,
+                modifier = Modifier.clip(CircleShape)
+            )
+        }
+        for (option in state.options) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = (option == selectedOption.value),
+                        onClick = { selectedOption.value = option }
+                    )
+            ) {
+                RadioButton(
+                    selected = option == selectedOption.value,
+                    onClick = null
+                )
                 Text(
-                    text = state.body.localizable(),
-                    style = Typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
+                    text = option.localizable(),
+                    style = Typography.bodyLarge,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .weight(1f)
                 )
             }
         }
         Spacer(modifier = Modifier.weight(1f))
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

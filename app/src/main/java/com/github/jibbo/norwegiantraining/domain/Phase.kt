@@ -4,7 +4,7 @@ enum class Phase(val durationMillis: Long? = null) {
     GET_READY(),
     WARMUP(10 * 60 * 1000), // 10 minutes
     HARD_PHASE(4 * 60 * 1000), // 4 minutes
-    SOFT_PHASE(4 * 60 * 1000), // 4 minutes
+    SOFT_PHASE(3 * 60 * 1000), // 4 minutes
     REST_PHASE(5 * 60 * 1000), // 5 minutes
     COMPLETED();
 

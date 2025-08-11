@@ -22,7 +22,7 @@
     <!-- Exercise descriptions -->
     <string name="get_ready_desc">Prepare yourself for the warmup</string>
     <string name="warmup_desc">Exercise lightly: you should be able to talk while you warmup</string>
-    <string name="hit_cardio_desc">Give everything you\'ve got! You can do this! </string>
+    <string name="hit_cardio_desc">Go as hard as you can to sustain the whole 4 minutes. You can do this!</string>
     <string name="light_cardio_desc">Exercise lightly: steady your heartbeat without stopping</string>
     <string name="cooldown_desc">Breathe, go at slow and relaxed pace that allows you to relax but don\'t stop now</string>
     <string name="completed_desc">Congratulations! You arrived at the end of this workout! Come back tomorrow for another one 💪</string>
@@ -57,10 +57,21 @@
     <!-- Onboarding -->
     <string name="onboarding_step_1_title">Welcome to Norwegian Training!</string>
     <string name="onboarding_step_1_description">The best companion for your cardio workout</string>
+    <string name="onboarding_step_1_name">Markus R.</string>
+    <string name="onboarding_step_1_handle">\@marksmeister</string>
     <string name="onboarding_step_1_body">Stoked about this new app I found called "Norwegian Training"! If you\'re into the 4x4 protocol, you have to check this out. It handles all the timings and intervals perfectly, so I can focus on my workout instead of my watch. 🏃‍♀️⌚️ Highly recommend! #runningapp #fitness #HIIT #workout</string>
 
-    <string name="onboarding_step_2_title">Welcome to Norwegian Training!</string>
-    <string name="onboarding_step_2_description">The best companion for your cardio workout</string>
-    <string name="onboarding_step_2_body">\"Now I can focus only on my training!\"</string>
+    <string name="onboarding_step_2_title">Automatic Intervals</string>
+    <string name="onboarding_step_2_description">Press \"START\" to begin the workout.</string>
+    <string name="onboarding_step_2_body">No more fiddling required</string>
+
+    <string name="onboarding_step_3_title">Why do you want to start the Norwegian Protocol?</string>
+    <string name="onboarding_step_3_option_1">Improve general health</string>
+    <string name="onboarding_step_3_option_2">Improve my performance</string>
+
+    <string name="onboarding_step_4_title">Yes!</string>
+    <string name="onboarding_step_4_description">The norwegian 4x4 can make your heart 20 years younger</string>
+    <string name="onboarding_step_4_body">Enjoy the benefits already after the first month!</string>
+
 
 </resources>
