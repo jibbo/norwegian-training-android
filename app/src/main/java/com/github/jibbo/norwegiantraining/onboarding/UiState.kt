@@ -46,8 +46,8 @@ object OnboardingStates {
         UiState.Feedback(
             title = R.string.onboarding_step_1_title,
             description = R.string.onboarding_step_1_description,
-            name = R.string.onboarding_step_1_description,
-            handle = R.string.onboarding_step_1_description,
+            name = R.string.onboarding_step_1_name,
+            handle = R.string.onboarding_step_1_handle,
             body = R.string.onboarding_step_1_body,
             image = R.mipmap.profile_pic
         ),

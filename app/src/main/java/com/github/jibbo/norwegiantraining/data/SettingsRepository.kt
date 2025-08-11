@@ -30,6 +30,8 @@ interface SettingsRepository {
     fun getCrashReportingEnabled(): Boolean
     fun setShowTimerNotification(enabled: Boolean)
     fun getShowTimerNotification(): Boolean
+    fun isOnboardingCompleted(): Boolean
+    fun onboardingCompleted(): Unit
 }
 
 @Singleton
@@ -85,6 +87,13 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     override fun getShowTimerNotification(): Boolean =
         sp.getBoolean(KEY_SHOW_TIMER_NOTIFICATION, false)
 
+    override fun isOnboardingCompleted(): Boolean =
+        sp.getBoolean(KEY_ONBOARDING_COMPLETED, false)
+
+    override fun onboardingCompleted() {
+        sp.edit { putBoolean(KEY_ONBOARDING_COMPLETED, true) }
+    }
+
     companion object {
         const val KEY_ANNOUNCE_PHASE = "announce_phase"
         const val KEY_USERNAME = "username"
@@ -93,6 +102,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_CRASHLYTICS_ENABLED = "crashlytics_enabled"
         const val KEY_ANALYTICS_ENABLED = "analytics_enabled"
         const val KEY_SHOW_TIMER_NOTIFICATION = "show_timer_notification"
+        const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

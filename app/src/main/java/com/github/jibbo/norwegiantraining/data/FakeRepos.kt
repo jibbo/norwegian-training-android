@@ -71,6 +71,14 @@ class FakeSettingsRepository : SettingsRepository {
     override fun getShowTimerNotification(): Boolean {
         TODO("Not yet implemented")
     }
+
+    override fun isOnboardingCompleted(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onboardingCompleted() {
+        TODO("Not yet implemented")
+    }
 }
 
 class FakeTracker : Analytics {

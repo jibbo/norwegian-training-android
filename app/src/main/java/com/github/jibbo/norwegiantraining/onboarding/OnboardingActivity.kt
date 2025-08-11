@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.onboarding
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +52,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.SettingsRepository
+import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
+import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -160,8 +165,16 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
             }
         }
         val coroutineScope = rememberCoroutineScope()
+        val current = LocalContext.current
+        val sessionRepository: SettingsRepository = SharedPreferencesSettingsRepository(current)
         Button(
             onClick = {
+                if (page == OnboardingStates.states.size - 1) {
+                    sessionRepository.onboardingCompleted()
+                    val intent = Intent(current, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    current.startActivity(intent)
+                }
                 coroutineScope.launch {
                     pagerState.scrollToPage(page + 1)
                 }
@@ -210,7 +223,7 @@ fun ColumnScope.FeedbackPage(state: UiState.Feedback, modifier: Modifier = Modif
                     )
                     Spacer(modifier = Modifier.width(2.dp))
                     Text(
-                        text = state.description.localizable(),
+                        text = state.handle.localizable(),
                         style = Typography.bodySmall,
                         color = White.copy(alpha = 0.6f)
                     )

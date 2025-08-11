@@ -44,7 +44,9 @@ class MainViewModel @Inject constructor(
 
     fun refresh() {
         viewModelScope.launch {
-            events.emit(UiCommands.SHOW_ONBOARDING) // TODO conditionals logic
+            if (!settingsRepository.isOnboardingCompleted()) {
+                events.emit(UiCommands.SHOW_ONBOARDING)
+            }
             todaySession = getTodaySession()
             states.value = states.value.copy(
                 //TODO this should be moved to datastore for Flow usage and avoid this workaround
