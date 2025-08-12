@@ -99,7 +99,7 @@ fun Content() {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.weight(1f),
-            userScrollEnabled = false
+            userScrollEnabled = true
         ) { page ->
             OnBoardingPage(
                 page,
@@ -126,6 +126,7 @@ fun Content() {
                 )
             }
         }
+        Spacer(Modifier.height(16.dp))
     }
 }
 
@@ -167,27 +168,30 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
         val coroutineScope = rememberCoroutineScope()
         val current = LocalContext.current
         val sessionRepository: SettingsRepository = SharedPreferencesSettingsRepository(current)
-        Button(
-            onClick = {
-                if (page == OnboardingStates.states.size - 1) {
-                    sessionRepository.onboardingCompleted()
-                    val intent = Intent(current, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    current.startActivity(intent)
-                }
-                coroutineScope.launch {
-                    pagerState.scrollToPage(page + 1)
-                }
-            }, modifier = modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .height(64.dp)
-        ) {
-            Text(
-                text = R.string.continue_btn.localizable().uppercase(),
-                fontWeight = FontWeight.SemiBold,
-                color = Black
-            )
+        if (page == OnboardingStates.states.size - 1) {
+            Button(
+                onClick = {
+                    if (page == OnboardingStates.states.size - 1) {
+                        sessionRepository.onboardingCompleted()
+                        val intent = Intent(current, MainActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        current.startActivity(intent)
+                    }
+                    coroutineScope.launch {
+                        pagerState.scrollToPage(page + 1)
+                    }
+                }, modifier = modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(64.dp)
+            ) {
+                Text(
+                    text = R.string.completed.localizable().uppercase(),
+                    fontWeight = FontWeight.SemiBold,
+                    color = Black
+                )
+            }
         }
     }
 }

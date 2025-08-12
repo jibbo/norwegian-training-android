@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.settings
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,11 +16,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +30,7 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
+import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -54,6 +58,8 @@ internal fun SettingsScreen(
         ProfileCard(viewModel)
 
         TTSCard(viewModel)
+
+        OnboardingCard(viewModel)
 
         BetaCard(viewModel)
 
@@ -190,6 +196,36 @@ private fun BetaCard(viewModel: SettingsViewModel) {
                         viewModel.toggleTimerNotification(it)
                     },
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OnboardingCard(viewModel: SettingsViewModel) {
+    val context = LocalContext.current
+    val intent = Intent(
+        context,
+        OnboardingActivity::class.java
+    )
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                TextButton(
+                    onClick = {
+                        context.startActivity(intent)
+                    }
+                ) {
+                    Text(
+                        text = R.string.onboarding_section_title.localizable(),
+                        style = Typography.bodyMedium,
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }

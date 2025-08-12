@@ -18,6 +18,7 @@ interface Analytics {
     fun logAnnounceDescriptionCurrentPhase(enabled: Boolean)
     fun logAnnounceCountdownBeforeNextPhase(enabled: Boolean)
     fun logTimerNotificationEnabled(enabled: Boolean)
+    fun logCrashReporting(enabled: Boolean)
     fun enabled(enabled: Boolean)
 }
 
@@ -59,6 +60,12 @@ class FirebaseTracker @Inject constructor(
 
     override fun logTimerNotificationEnabled(enabled: Boolean) {
         firebaseAnalytics.logEvent("show_timer_notification", Bundle().apply {
+            putBoolean("enabled", enabled)
+        })
+    }
+
+    override fun logCrashReporting(enabled: Boolean) {
+        firebaseAnalytics.logEvent("crash_reporting", Bundle().apply {
             putBoolean("enabled", enabled)
         })
     }

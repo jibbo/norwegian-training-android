@@ -106,6 +106,10 @@ class FakeTracker : Analytics {
         TODO("Not yet implemented")
     }
 
+    override fun logCrashReporting(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     override fun enabled(enabled: Boolean) {
         TODO("Not yet implemented")
     }

@@ -50,6 +50,7 @@
     <string name="title_beta_section">Beta features</string>">
     <string name="beta_section_description">These features are still experimental and can cause unexpected behavior. Please use at your own risk.</string>
     <string name="enable_timer_notification">Timer Notification</string>
+    <string name="onboarding_section_title">Show Onboarding again</string>
 
     <!-- Logs -->
     <string name="title_activity_logs">Your Activity</string>

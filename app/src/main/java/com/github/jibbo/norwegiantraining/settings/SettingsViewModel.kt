@@ -62,10 +62,15 @@ internal class SettingsViewModel @Inject constructor(
         FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = enabled
         settingsRepository.setCrashReportingEnabled(enabled)
         uiStates.value = uiStates.value.copy(isCrashReportingEnabled = enabled)
+        // TODO get rid of this if by having analytics check internally
+        if (settingsRepository.getAnalyticsEnabled()) {
+            analytics.logCrashReporting(enabled)
+        }
     }
 
     fun toggleTimerNotification(enabled: Boolean) {
         settingsRepository.setShowTimerNotification(enabled)
+        uiStates.value = uiStates.value.copy(isTimerNotificationEnabled = enabled)
         if (settingsRepository.getAnalyticsEnabled()) {
             analytics.logTimerNotificationEnabled(enabled)
         }
