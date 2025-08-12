@@ -54,7 +54,7 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
-import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
+import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -170,8 +170,8 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
         Button(
             onClick = {
                 if (page == OnboardingStates.states.size - 1) {
-//                    sessionRepository.onboardingCompleted()
-                    val intent = Intent(current, PaywallActivity::class.java)
+                    sessionRepository.onboardingCompleted()
+                    val intent = Intent(current, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     current.startActivity(intent)
                 }

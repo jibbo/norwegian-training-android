@@ -18,7 +18,6 @@ exoplayer = "2.19.1"
 google-services = "4.4.3"
 firebase = "34.1.0"
 billing = "8.0.0"
-appcompat = "1.7.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
