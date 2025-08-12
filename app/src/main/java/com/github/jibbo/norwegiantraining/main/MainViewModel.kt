@@ -44,13 +44,15 @@ class MainViewModel @Inject constructor(
 
     fun refresh() {
         viewModelScope.launch {
+            if (!settingsRepository.isOnboardingCompleted()) {
+                events.emit(UiCommands.SHOW_ONBOARDING)
+            }
             todaySession = getTodaySession()
             states.value = states.value.copy(
                 //TODO this should be moved to datastore for Flow usage and avoid this workaround
                 name = getUsername(),
             )
         }
-
     }
 
     fun mainButtonClicked() {
@@ -190,6 +192,7 @@ class MainViewModel @Inject constructor(
         object PAUSE_ALARM : UiCommands()
         object SHOW_SETTINGS : UiCommands()
         object SHOW_CHARTS : UiCommands()
+        object SHOW_ONBOARDING : UiCommands()
         data class START_ALARM(val triggerTime: Long, val uiState: UiState) : UiCommands()
         data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
         data class Speak(val speakState: SpeakState, val flush: Boolean = false) : UiCommands()

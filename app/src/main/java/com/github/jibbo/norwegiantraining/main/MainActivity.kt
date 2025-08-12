@@ -24,6 +24,7 @@ import com.github.jibbo.norwegiantraining.alarm.AlarmUtils
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
+import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.settings.SettingsActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,6 +43,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         enableEdgeToEdge()
+
         setContent {
             NorwegianTrainingTheme(darkTheme = true) {
                 MainView(
@@ -64,6 +66,13 @@ class MainActivity : BaseActivity() {
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
+                    is UiCommands.SHOW_ONBOARDING -> {
+                        val newIntent = Intent(this@MainActivity, OnboardingActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(newIntent)
+                    }
+
                     is UiCommands.START_ALARM -> {
                         startAlarm(it.triggerTime, it.uiState)
                     }
