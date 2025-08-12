@@ -51,6 +51,9 @@
     <string name="beta_section_description">These features are still experimental and can cause unexpected behavior. Please use at your own risk.</string>
     <string name="enable_timer_notification">Timer Notification</string>
     <string name="onboarding_section_title">Show Onboarding again</string>
+    <string name="about_dev_section_title">From the developer</string>
+    <string name="about_dev_section_description">Hi! I\'m Gio, and I\'d like to thank you for using my app! As a fellow workout enthusiast, I made this because I got tired of fiddling with complicated timers. I hope you find it as useful as I do!</string>
+    <string name="about_dev_section_cta">Drop Gio an email</string>
 
     <!-- Logs -->
     <string name="title_activity_logs">Your Activity</string>
@@ -70,9 +73,10 @@
     <string name="onboarding_step_3_option_1">Improve general health</string>
     <string name="onboarding_step_3_option_2">Improve my performance</string>
 
-    <string name="onboarding_step_4_title">Yes!</string>
+    <string name="onboarding_step_4_title">Let\'s start!</string>
     <string name="onboarding_step_4_description">The norwegian 4x4 can make your heart 20 years younger</string>
     <string name="onboarding_step_4_body">Enjoy the benefits already after the first month!</string>
+    <string name="onboarding_step_4_cta">Yes!</string>
 
 
 </resources>

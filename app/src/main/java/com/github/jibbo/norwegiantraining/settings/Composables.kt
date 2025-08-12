@@ -1,6 +1,8 @@
 package com.github.jibbo.norwegiantraining.settings
 
+import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -22,10 +26,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
@@ -64,6 +71,8 @@ internal fun SettingsScreen(
         BetaCard(viewModel)
 
         PrivacyCard(viewModel)
+
+        GetInTouch()
     }
 }
 
@@ -202,6 +211,63 @@ private fun BetaCard(viewModel: SettingsViewModel) {
 }
 
 @Composable
+private fun GetInTouch() {
+    val context = LocalContext.current
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.about_dev_section_title.localizable(),
+                    style = Typography.bodyMedium,
+                    color = Primary,
+                    modifier = Modifier.weight(1f)
+                )
+                Image(
+                    painter = painterResource(id = R.mipmap.me),
+                    modifier = Modifier
+                        .clip(shape = CircleShape)
+                        .size(24.dp),
+                    contentDescription = null,
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.about_dev_section_description.localizable(),
+                    style = Typography.bodyMedium,
+                    color = White.copy(alpha = 0.6f)
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Image(
+                    painter = painterResource(id = R.drawable.baseline_email_24),
+                    contentDescription = null,
+                )
+                Spacer(modifier = Modifier.size(6.dp))
+                TextButton(onClick = {
+                    context.composeEmail()
+                }) {
+                    Text(
+                        text = R.string.about_dev_section_cta.localizable(),
+                        style = Typography.bodyMedium,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun OnboardingCard(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     val intent = Intent(
@@ -210,10 +276,10 @@ private fun OnboardingCard(viewModel: SettingsViewModel) {
     )
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(6.dp)) {
+        Column(modifier = Modifier.padding(vertical = 6.dp)) {
             Row(
                 verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 TextButton(
                     onClick = {
@@ -314,5 +380,16 @@ fun GreetingPreview2() {
         Surface {
             SettingsScreen(SettingsViewModel(FakeSettingsRepository(), FakeTracker()))
         }
+    }
+}
+
+fun Context.composeEmail() {
+    val intent = Intent(Intent.ACTION_SENDTO).apply {
+        data = "mailto:".toUri() // Only email apps handle this.
+        putExtra(Intent.EXTRA_EMAIL, arrayOf("info@jibbo.it"))
+        putExtra(Intent.EXTRA_SUBJECT, "Feedback on Norwegian Training - Android")
+    }
+    if (intent.resolveActivity(packageManager) != null) {
+        startActivity(intent)
     }
 }

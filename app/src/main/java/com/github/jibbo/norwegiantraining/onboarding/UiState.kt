@@ -57,13 +57,13 @@ object OnboardingStates {
             body = R.string.onboarding_step_2_body,
             image = R.drawable.working_out_illustration
         ),
-        UiState.Questions(
-            title = R.string.onboarding_step_3_title,
-            options = arrayOf(
-                R.string.onboarding_step_3_option_1,
-                R.string.onboarding_step_3_option_2
-            )
-        ),
+//        UiState.Questions(
+//            title = R.string.onboarding_step_3_title,
+//            options = arrayOf(
+//                R.string.onboarding_step_3_option_1,
+//                R.string.onboarding_step_3_option_2
+//            )
+//        ),
         UiState.Normal(
             title = R.string.onboarding_step_4_title,
             description = R.string.onboarding_step_4_description,

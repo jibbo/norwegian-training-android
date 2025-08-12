@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -162,7 +163,7 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
             is UiState.Questions -> {
                 // TODO move selected inside the questions so that button can answer properly
                 val selected = remember { mutableStateOf(0) }
-                Questions(state, selected)
+                Questions(page, pagerState, state, selected)
             }
         }
         val coroutineScope = rememberCoroutineScope()
@@ -187,7 +188,7 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
                     .height(64.dp)
             ) {
                 Text(
-                    text = R.string.completed.localizable().uppercase(),
+                    text = R.string.onboarding_step_4_cta.localizable().uppercase(),
                     fontWeight = FontWeight.SemiBold,
                     color = Black
                 )
@@ -255,13 +256,18 @@ fun ColumnScope.NormalPage(state: UiState.Normal, modifier: Modifier = Modifier)
                     id = state.image,
                 ),
                 contentDescription = null,
-                modifier = Modifier.clip(CircleShape)
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(width = 256.dp, height = 256.dp)
             )
         }
         Text(
             text = state.body.localizable(),
             style = Typography.bodyLarge,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.weight(1f))
     }
@@ -269,10 +275,13 @@ fun ColumnScope.NormalPage(state: UiState.Normal, modifier: Modifier = Modifier)
 
 @Composable
 fun ColumnScope.Questions(
+    page: Int,
+    pagerState: PagerState,
     state: UiState.Questions,
     selectedOption: MutableState<Int>,
     modifier: Modifier = Modifier
 ) {
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .weight(1f)
@@ -300,7 +309,11 @@ fun ColumnScope.Questions(
             ) {
                 RadioButton(
                     selected = option == selectedOption.value,
-                    onClick = null
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.scrollToPage(page + 1)
+                        }
+                    }
                 )
                 Text(
                     text = option.localizable(),
