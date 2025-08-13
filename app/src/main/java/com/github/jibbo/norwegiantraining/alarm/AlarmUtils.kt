@@ -1,34 +1,28 @@
 package com.github.jibbo.norwegiantraining.alarm
 
-import android.Manifest
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.main.MainActivity
 
 object AlarmUtils {
-    private val CHANNEL_ID = "alarm_channel"
-    private val NOTIFICATION_ID = 1
+    val CHANNEL_ID = "alarm_channel"
+    val NOTIFICATION_ID = 1
 
-    fun showNotification(context: Context, triggerTime: Long) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
 
+    fun showNotification(
+        context: Context,
+        triggerTime: Long? = null,
+        text: String? = null
+    ): Notification {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
@@ -43,16 +37,26 @@ object AlarmUtils {
             .setSmallIcon(R.drawable.ic_launcher_foreground) // Replace with your notification icon
             .setContentTitle("Norwegian Training Alarm")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setWhen(triggerTime)
-            .setShowWhen(true)
-            .setUsesChronometer(true)
-            .setChronometerCountDown(true)
             .setAutoCancel(false)
             .setContentIntent(pendingIntent)
 
-        NotificationManagerCompat
-            .from(context)
-            .notify(NOTIFICATION_ID, builder.build())
+        if (triggerTime != null) {
+            builder.setWhen(triggerTime)
+                .setShowWhen(true)
+                .setUsesChronometer(true)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder.setChronometerCountDown(true)
+            }
+
+        } else if (text != null) {
+            builder
+                .setContentText(text)
+                .setOngoing(true)
+        }
+
+        val notification = builder.build()
+        return notification
     }
 
     fun dismissNotification(context: Context) {

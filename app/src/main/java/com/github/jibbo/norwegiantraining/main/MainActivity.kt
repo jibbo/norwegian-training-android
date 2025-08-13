@@ -15,6 +15,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -77,7 +78,7 @@ class MainActivity : BaseActivity() {
 
                     is UiCommands.SHOW_NOTIFICATION -> {
                         checkNotificationPermission()
-                        AlarmUtils.showNotification(this@MainActivity, it.triggerTime)
+                        showNotification(it.triggerTime)
                     }
 
                     is UiCommands.PAUSE_ALARM -> {
@@ -137,7 +138,7 @@ class MainActivity : BaseActivity() {
     private fun startAlarm(triggerTime: Long, uiState: UiState) {
         scheduleAlarm(triggerTime)
         checkNotificationPermission()
-        AlarmUtils.showNotification(this, triggerTime)
+        showNotification(triggerTime)
     }
 
     private fun scheduleAlarm(triggerTime: Long) {
@@ -183,5 +184,20 @@ class MainActivity : BaseActivity() {
             null,
             "countdown_$textId"
         )
+    }
+
+    private fun showNotification(triggerTime: Long) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        val notification = AlarmUtils.showNotification(this@MainActivity, triggerTime)
+        NotificationManagerCompat
+            .from(this)
+            .notify(AlarmUtils.NOTIFICATION_ID, notification)
     }
 }
