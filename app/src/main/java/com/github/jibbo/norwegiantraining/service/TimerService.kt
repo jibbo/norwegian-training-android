@@ -15,14 +15,10 @@ class TimerService : Service() {
         super.onCreate()
     }
 
-
-    // This is triggered when another android component sends an Intent to this running service
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-// Do the work that the service needs to do here
         when (intent?.action) {
             Actions.START.toString() -> {
-                start() // Call start() to create the notification and start in foreground
+                start()
             }
 
             Actions.STOP.toString() -> stopSelf()
@@ -31,18 +27,16 @@ class TimerService : Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    enum class Actions {
-        START, STOP
-    }
-
     private fun start() {
         val showNotification = AlarmUtils.showNotification(this, text = "Timer is running")
-        // Start the service in the foreground
         startForeground(1, showNotification)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Clean up any resources here
+    }
+
+    enum class Actions {
+        START, STOP
     }
 }

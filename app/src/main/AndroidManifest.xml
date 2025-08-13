@@ -6,6 +6,8 @@
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
     <!--    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />-->
     <!--    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />-->
     <!--    <uses-permission android:name="android.permission.health.READ_STEPS" />-->
@@ -52,6 +54,7 @@
 
         <service
             android:name=".service.TimerService"
+            android:foregroundServiceType="health"
             android:exported="false" />
     </application>
 
