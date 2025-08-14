@@ -2,6 +2,7 @@ package com.github.jibbo.norwegiantraining.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
@@ -46,12 +47,14 @@ class MainViewModel @Inject constructor(
     val uiStates = states.asStateFlow()
 
     fun refresh() {
-        Purchases.sharedInstance.getCustomerInfoWith(
-            onError = {
-                // TODO handle error
-            },
-            onSuccess = purchasedCheck()
-        )
+        if (!BuildConfig.DEBUG) {
+            Purchases.sharedInstance.getCustomerInfoWith(
+                onError = {
+                    // TODO handle error
+                },
+                onSuccess = purchasedCheck()
+            )
+        }
         viewModelScope.launch {
             if (!settingsRepository.isOnboardingCompleted()) {
                 events.emit(UiCommands.SHOW_ONBOARDING)
@@ -67,7 +70,7 @@ class MainViewModel @Inject constructor(
     private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
         val hasPurchased =
             customerInfo.entitlements["gold"]?.isActive == true
-                    && customerInfo.entitlements["platinum"]?.isActive == true
+                    || customerInfo.entitlements["platinum"]?.isActive == true
         if (!hasPurchased) {
             viewModelScope.launch {
                 events.emit(UiCommands.SHOW_PAYWALL)

@@ -51,21 +51,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
+import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.getCustomerInfoWith
 import kotlinx.coroutines.launch
 
 class OnboardingActivity : ComponentActivity() {
+    private var hasPaid = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
+            hasPaid == customerInfo.entitlements["gold"]?.isActive == true || customerInfo.entitlements["platinum"]?.isActive == true
+        }
         enableEdgeToEdge()
         setContent {
             NorwegianTrainingTheme {
@@ -74,15 +83,17 @@ class OnboardingActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Content()
+                    val hasPaid = remember { mutableStateOf(hasPaid) }
+                    Content(hasPaid)
                 }
             }
         }
     }
+
 }
 
 @Composable
-fun Content() {
+fun Content(hasPaid: MutableState<Boolean>) {
     val pagerState = rememberPagerState(pageCount = {
         OnboardingStates.states.size
     })
@@ -104,7 +115,8 @@ fun Content() {
         ) { page ->
             OnBoardingPage(
                 page,
-                pagerState
+                pagerState,
+                hasPaid
             )
         }
         Row(
@@ -132,7 +144,12 @@ fun Content() {
 }
 
 @Composable
-private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier = Modifier) {
+private fun OnBoardingPage(
+    page: Int,
+    pagerState: PagerState,
+    hasPaid: MutableState<Boolean>,
+    modifier: Modifier = Modifier
+) {
     val state = OnboardingStates.states[page]
     Column(
         modifier = modifier
@@ -173,7 +190,10 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
             onClick = {
                 if (page == OnboardingStates.states.size - 1) {
                     sessionRepository.onboardingCompleted()
-                    val intent = Intent(current, PaywallActivity::class.java)
+                    val intent = Intent(
+                        current,
+                        getNextActivity(hasPaid)
+                    )
                     intent.flags =
                         Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     current.startActivity(intent)
@@ -194,6 +214,14 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
         }
     }
 }
+
+private fun getNextActivity(hasPaid: MutableState<Boolean>): Class<out BaseActivity> =
+    if (BuildConfig.DEBUG) {
+        MainActivity::class.java
+    } else if (hasPaid.value) {
+        PaywallActivity::class.java
+    } else MainActivity::class.java
+
 
 @Composable
 fun ColumnScope.FeedbackPage(state: UiState.Feedback, modifier: Modifier = Modifier) {
@@ -332,7 +360,8 @@ fun ColumnScope.Questions(
 fun GreetingPreview() {
     NorwegianTrainingTheme {
         Scaffold { _ ->
-            Content()
+            val hasPaid = remember { mutableStateOf(false) }
+            Content(hasPaid)
         }
     }
 }
