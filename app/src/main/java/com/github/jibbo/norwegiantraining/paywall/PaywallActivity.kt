@@ -24,7 +24,7 @@ class PaywallActivity : BaseActivity() {
                 Scaffold { _ ->
                     Paywall(
                         options = PaywallOptions.Builder(
-                            dismissRequest = {}
+                            dismissRequest = {},
                         )
                             .setListener(
                                 object : PaywallListener {
@@ -37,6 +37,7 @@ class PaywallActivity : BaseActivity() {
                                     override fun onRestoreCompleted(customerInfo: CustomerInfo) {}
                                 }
                             )
+                            .setShouldDisplayDismissButton(false)
                             .build()
                     )
                 }

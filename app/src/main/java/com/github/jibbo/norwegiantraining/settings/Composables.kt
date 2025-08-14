@@ -33,11 +33,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
+import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -73,6 +75,10 @@ internal fun SettingsScreen(
         PrivacyCard(viewModel)
 
         GetInTouch()
+
+        if (BuildConfig.DEBUG) {
+            DebugCard()
+        }
     }
 }
 
@@ -356,6 +362,47 @@ private fun PrivacyCard(viewModel: SettingsViewModel) {
                         viewModel.toggleAnalytics(it)
                     },
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DebugCard() {
+    val context = LocalContext.current
+    val intent = Intent(
+        context,
+        PaywallActivity::class.java
+    )
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(vertical = 6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = "DEBUG - Solo per Gio 🚫",
+                    style = Typography.bodyMedium,
+                    color = Primary
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(vertical = 8.dp)
+            ) {
+                TextButton(
+                    onClick = {
+                        context.startActivity(intent)
+                    }
+                ) {
+                    Text(
+                        text = "Paywall",
+                        style = Typography.bodyMedium,
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }

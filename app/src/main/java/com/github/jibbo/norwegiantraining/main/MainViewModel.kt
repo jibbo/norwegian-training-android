@@ -47,14 +47,12 @@ class MainViewModel @Inject constructor(
     val uiStates = states.asStateFlow()
 
     fun refresh() {
-        if (!BuildConfig.DEBUG) {
-            Purchases.sharedInstance.getCustomerInfoWith(
-                onError = {
-                    // TODO handle error
-                },
-                onSuccess = purchasedCheck()
-            )
-        }
+        Purchases.sharedInstance.getCustomerInfoWith(
+            onError = {
+                // TODO handle error
+            },
+            onSuccess = purchasedCheck()
+        )
         viewModelScope.launch {
             if (!settingsRepository.isOnboardingCompleted()) {
                 events.emit(UiCommands.SHOW_ONBOARDING)
@@ -68,10 +66,8 @@ class MainViewModel @Inject constructor(
     }
 
     private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
-        val hasPurchased =
-            customerInfo.entitlements["gold"]?.isActive == true
-                    || customerInfo.entitlements["platinum"]?.isActive == true
-        if (!hasPurchased) {
+        val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
+        if (hasNotPurchased && !BuildConfig.DEBUG) {
             viewModelScope.launch {
                 events.emit(UiCommands.SHOW_PAYWALL)
             }

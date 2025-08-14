@@ -69,11 +69,11 @@ import com.revenuecat.purchases.getCustomerInfoWith
 import kotlinx.coroutines.launch
 
 class OnboardingActivity : ComponentActivity() {
-    private var hasPaid = false
+    private var hasNotPaid = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
-            hasPaid == customerInfo.entitlements["gold"]?.isActive == true || customerInfo.entitlements["platinum"]?.isActive == true
+            hasNotPaid == customerInfo.entitlements.active.isEmpty()
         }
         enableEdgeToEdge()
         setContent {
@@ -83,7 +83,7 @@ class OnboardingActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val hasPaid = remember { mutableStateOf(hasPaid) }
+                    val hasPaid = remember { mutableStateOf(hasNotPaid) }
                     Content(hasPaid)
                 }
             }
@@ -215,10 +215,10 @@ private fun OnBoardingPage(
     }
 }
 
-private fun getNextActivity(hasPaid: MutableState<Boolean>): Class<out BaseActivity> =
+private fun getNextActivity(hasNotPaid: MutableState<Boolean>): Class<out BaseActivity> =
     if (BuildConfig.DEBUG) {
         MainActivity::class.java
-    } else if (hasPaid.value) {
+    } else if (hasNotPaid.value) {
         PaywallActivity::class.java
     } else MainActivity::class.java
 
