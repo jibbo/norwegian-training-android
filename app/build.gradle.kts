@@ -14,17 +14,26 @@ android {
 
     defaultConfig {
         applicationId = "com.github.jibbo.norwegiantraining"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
         versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "REVENUECAT_API_KEY",
+            "\"${project.properties["REVENUECAT_API_KEY"]}\""
+        )
     }
 
     buildTypes {
-        release {
+        debug {
             isMinifyEnabled = false
+        }
+        release {
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -40,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -62,7 +72,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
-    implementation(libs.billing)
+    implementation(libs.revenuecat.purchases)
+    implementation(libs.revenuecat.purchases.ui)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

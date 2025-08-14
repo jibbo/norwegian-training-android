@@ -55,7 +55,7 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
-import com.github.jibbo.norwegiantraining.main.MainActivity
+import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -169,30 +169,28 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
         val coroutineScope = rememberCoroutineScope()
         val current = LocalContext.current
         val sessionRepository: SettingsRepository = SharedPreferencesSettingsRepository(current)
-        if (page == OnboardingStates.states.size - 1) {
-            Button(
-                onClick = {
-                    if (page == OnboardingStates.states.size - 1) {
-                        sessionRepository.onboardingCompleted()
-                        val intent = Intent(current, MainActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        current.startActivity(intent)
-                    }
-                    coroutineScope.launch {
-                        pagerState.scrollToPage(page + 1)
-                    }
-                }, modifier = modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .height(64.dp)
-            ) {
-                Text(
-                    text = R.string.onboarding_step_4_cta.localizable().uppercase(),
-                    fontWeight = FontWeight.SemiBold,
-                    color = Black
-                )
-            }
+        Button(
+            onClick = {
+                if (page == OnboardingStates.states.size - 1) {
+                    sessionRepository.onboardingCompleted()
+                    val intent = Intent(current, PaywallActivity::class.java)
+                    intent.flags =
+                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    current.startActivity(intent)
+                }
+                coroutineScope.launch {
+                    pagerState.scrollToPage(page + 1)
+                }
+            }, modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .height(64.dp)
+        ) {
+            Text(
+                text = R.string.continue_btn.localizable().uppercase(),
+                fontWeight = FontWeight.SemiBold,
+                color = Black
+            )
         }
     }
 }

@@ -25,6 +25,7 @@ import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
+import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.settings.SettingsActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -96,6 +97,13 @@ class MainActivity : BaseActivity() {
 
                     is UiCommands.SHOW_CHARTS -> {
                         startActivity(Intent(this@MainActivity, LogActivity::class.java))
+                    }
+
+                    is UiCommands.SHOW_PAYWALL -> {
+                        val newIntent = Intent(this@MainActivity, PaywallActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(newIntent)
                     }
                 }
             }
