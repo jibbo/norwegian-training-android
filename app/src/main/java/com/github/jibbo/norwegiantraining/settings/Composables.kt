@@ -398,7 +398,7 @@ private fun DebugCard() {
                     }
                 ) {
                     Text(
-                        text = "Paywall",
+                        text = "Paywall (remove .debug suffix from .gradle)",
                         style = Typography.bodyMedium,
                     )
                 }

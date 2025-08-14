@@ -179,7 +179,7 @@ private fun OnBoardingPage(
             is UiState.Feedback -> FeedbackPage(state)
             is UiState.Questions -> {
                 // TODO move selected inside the questions so that button can answer properly
-                val selected = remember { mutableStateOf(0) }
+                val selected = remember { mutableStateOf(1) }
                 Questions(page, pagerState, state, selected)
             }
         }
