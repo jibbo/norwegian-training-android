@@ -54,6 +54,7 @@
     <string name="about_dev_section_title">From the developer</string>
     <string name="about_dev_section_description">Hi! I\'m Gio, and I\'d like to thank you for using my app! As a fellow workout enthusiast, I made this because I got tired of fiddling with complicated timers. I hope you find it as useful as I do!</string>
     <string name="about_dev_section_cta">Drop Gio an email</string>
+    <string name="credits_section_cta">Credits</string>
 
     <!-- Logs -->
     <string name="title_activity_logs">Your Activity</string>

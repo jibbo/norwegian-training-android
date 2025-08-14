@@ -29,7 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -74,7 +79,9 @@ internal fun SettingsScreen(
 
         PrivacyCard(viewModel)
 
-        GetInTouch()
+        GetInTouchCard()
+
+        CreditsCard()
 
         if (BuildConfig.DEBUG) {
             DebugCard()
@@ -217,7 +224,7 @@ private fun BetaCard(viewModel: SettingsViewModel) {
 }
 
 @Composable
-private fun GetInTouch() {
+private fun GetInTouchCard() {
     val context = LocalContext.current
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(6.dp)) {
@@ -361,6 +368,66 @@ private fun PrivacyCard(viewModel: SettingsViewModel) {
                     onCheckedChange = {
                         viewModel.toggleAnalytics(it)
                     },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CreditsCard() {
+    val context = LocalContext.current
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.credits_section_cta.localizable(),
+                    style = Typography.bodyMedium,
+                    color = Primary,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("Illustrations by ")
+                        withLink(
+                            LinkAnnotation.Url(
+                                "https://twitter.com/ninalimpi",
+                                TextLinkStyles(style = SpanStyle(color = Primary))
+                            )
+                        ) {
+                            append("Katerina Limpitsouni")
+                        }
+                    },
+                    style = Typography.bodyMedium,
+                    color = White.copy(alpha = 0.6f)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("Video by ")
+                        withLink(
+                            LinkAnnotation.Url(
+                                "https://www.pexels.com/video/woman-running-through-the-stairs-3048202/",
+                                TextLinkStyles(style = SpanStyle(color = Primary))
+                            )
+                        ) {
+                            append("Fauxels")
+                        }
+                    },
+                    style = Typography.bodyMedium,
+                    color = White.copy(alpha = 0.6f)
                 )
             }
         }
