@@ -73,7 +73,7 @@ private fun Month(
         modifier = Modifier.padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        for (i in 0..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+        for (i in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
             Day(calendar, i, uiState, month)
         }
     }
@@ -93,7 +93,7 @@ private fun Day(
 ) {
     calendar.set(
         Calendar.DAY_OF_MONTH,
-        index + 1
+        index
     )
     calendar.set(Calendar.HOUR_OF_DAY, 0)
     calendar.set(Calendar.MINUTE, 0)
@@ -104,15 +104,27 @@ private fun Day(
     val item =
         uiState.logs[month]?.find { it.date.isSameDay(boxDate) }
 
+    val modifier = Modifier
+        .size(32.dp)
+        .padding(4.dp)
+        .clip(CircleShape)
+
+    // TODO option to show day numbers?
+//    if (item == null) {
+//        Text(index.toString(), modifier = modifier)
+//    } else {
+//        Box(
+//            modifier = modifier
+//                .background(item.getStatus().getColor())
+//        ) {
+////        Text(index.toString())
+//        }
+//    }
+
     Box(
-        modifier = Modifier
-            .size(32.dp)
-            .padding(4.dp)
-            .clip(CircleShape)
+        modifier = modifier
             .background(item?.getStatus()?.getColor() ?: Color.DarkGray)
-    ) {
-//        Text(index.toString())
-    }
+    )
 }
 
 private fun Date.isSameDay(other: Date): Boolean {
