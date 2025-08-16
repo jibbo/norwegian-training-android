@@ -17,7 +17,7 @@ health = "1.0.0"
 exoplayer = "2.19.1"
 google-services = "4.4.3"
 firebase = "34.1.0"
-billing = "8.0.0"
+revenuecat = "9.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,8 +45,8 @@ exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer", v
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
-billing = { group = "com.android.billingclient", name = "billing", version.ref = "billing" }
-billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
+revenuecat-purchases = { group = "com.revenuecat.purchases", name = "purchases", version.ref = "revenuecat" }
+revenuecat-purchases-ui = { group = "com.revenuecat.purchases", name = "purchases-ui", version.ref = "revenuecat" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

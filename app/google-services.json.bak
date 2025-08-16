@@ -23,25 +23,6 @@
           "other_platform_oauth_client": []
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:786303278588:android:d270c6d2abf1554adb2679",
-        "android_client_info": {
-          "package_name": "com.github.jibbo.norwegiantraining.debug"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDejPCgQYykAT-8HuLgDLP5-fVxjZBQrDU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
     }
   ],
   "configuration_version": "1"

@@ -2,6 +2,7 @@ package com.github.jibbo.norwegiantraining.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
@@ -10,6 +11,9 @@ import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
+import com.revenuecat.purchases.CustomerInfo
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.getCustomerInfoWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,6 +47,12 @@ class MainViewModel @Inject constructor(
     val uiStates = states.asStateFlow()
 
     fun refresh() {
+        Purchases.sharedInstance.getCustomerInfoWith(
+            onError = {
+                // TODO handle error
+            },
+            onSuccess = purchasedCheck()
+        )
         viewModelScope.launch {
             if (!settingsRepository.isOnboardingCompleted()) {
                 events.emit(UiCommands.SHOW_ONBOARDING)
@@ -53,6 +63,16 @@ class MainViewModel @Inject constructor(
                 name = getUsername(),
             )
         }
+    }
+
+    private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
+        val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
+        if (hasNotPurchased && !BuildConfig.DEBUG) {
+            viewModelScope.launch {
+                events.emit(UiCommands.SHOW_PAYWALL)
+            }
+        }
+
     }
 
     fun mainButtonClicked() {
@@ -193,6 +213,7 @@ class MainViewModel @Inject constructor(
         object SHOW_SETTINGS : UiCommands()
         object SHOW_CHARTS : UiCommands()
         object SHOW_ONBOARDING : UiCommands()
+        object SHOW_PAYWALL : UiCommands()
         data class START_ALARM(val triggerTime: Long, val uiState: UiState) : UiCommands()
         data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
         data class Speak(val speakState: SpeakState, val flush: Boolean = false) : UiCommands()

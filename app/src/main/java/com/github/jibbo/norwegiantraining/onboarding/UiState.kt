@@ -43,19 +43,25 @@ sealed class UiState(
 
 object OnboardingStates {
     val states = listOf(
-        UiState.Feedback(
-            title = R.string.onboarding_step_1_title,
-            description = R.string.onboarding_step_1_description,
-            name = R.string.onboarding_step_1_name,
-            handle = R.string.onboarding_step_1_handle,
-            body = R.string.onboarding_step_1_body,
-            image = R.mipmap.profile_pic
-        ),
+//        UiState.Feedback(
+//            title = R.string.onboarding_step_1_title,
+//            description = R.string.onboarding_step_1_description,
+//            name = R.string.onboarding_step_1_name,
+//            handle = R.string.onboarding_step_1_handle,
+//            body = R.string.onboarding_step_1_body,
+//            image = R.mipmap.profile_pic
+//        ),
         UiState.Normal(
             title = R.string.onboarding_step_2_title,
             description = R.string.onboarding_step_2_description,
             body = R.string.onboarding_step_2_body,
             image = R.drawable.working_out_illustration
+        ),
+        UiState.Normal(
+            title = R.string.onboarding_step_5_title,
+            description = R.string.onboarding_step_5_description,
+            body = R.string.onboarding_step_5_body,
+            image = R.drawable.organizing_data_illustration
         ),
 //        UiState.Questions(
 //            title = R.string.onboarding_step_3_title,

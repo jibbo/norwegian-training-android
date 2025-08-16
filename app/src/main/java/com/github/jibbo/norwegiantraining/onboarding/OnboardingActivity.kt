@@ -51,21 +51,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
 import com.github.jibbo.norwegiantraining.main.MainActivity
+import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.getCustomerInfoWith
 import kotlinx.coroutines.launch
 
 class OnboardingActivity : ComponentActivity() {
+    private var hasNotPaid = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
+            hasNotPaid == customerInfo.entitlements.active.isEmpty()
+        }
         enableEdgeToEdge()
         setContent {
             NorwegianTrainingTheme {
@@ -74,15 +83,17 @@ class OnboardingActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Content()
+                    val hasPaid = remember { mutableStateOf(hasNotPaid) }
+                    Content(hasPaid)
                 }
             }
         }
     }
+
 }
 
 @Composable
-fun Content() {
+fun Content(hasPaid: MutableState<Boolean>) {
     val pagerState = rememberPagerState(pageCount = {
         OnboardingStates.states.size
     })
@@ -104,7 +115,8 @@ fun Content() {
         ) { page ->
             OnBoardingPage(
                 page,
-                pagerState
+                pagerState,
+                hasPaid
             )
         }
         Row(
@@ -132,7 +144,12 @@ fun Content() {
 }
 
 @Composable
-private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier = Modifier) {
+private fun OnBoardingPage(
+    page: Int,
+    pagerState: PagerState,
+    hasPaid: MutableState<Boolean>,
+    modifier: Modifier = Modifier
+) {
     val state = OnboardingStates.states[page]
     Column(
         modifier = modifier
@@ -162,40 +179,49 @@ private fun OnBoardingPage(page: Int, pagerState: PagerState, modifier: Modifier
             is UiState.Feedback -> FeedbackPage(state)
             is UiState.Questions -> {
                 // TODO move selected inside the questions so that button can answer properly
-                val selected = remember { mutableStateOf(0) }
+                val selected = remember { mutableStateOf(1) }
                 Questions(page, pagerState, state, selected)
             }
         }
         val coroutineScope = rememberCoroutineScope()
         val current = LocalContext.current
         val sessionRepository: SettingsRepository = SharedPreferencesSettingsRepository(current)
-        if (page == OnboardingStates.states.size - 1) {
-            Button(
-                onClick = {
-                    if (page == OnboardingStates.states.size - 1) {
-                        sessionRepository.onboardingCompleted()
-                        val intent = Intent(current, MainActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        current.startActivity(intent)
-                    }
-                    coroutineScope.launch {
-                        pagerState.scrollToPage(page + 1)
-                    }
-                }, modifier = modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .height(64.dp)
-            ) {
-                Text(
-                    text = R.string.onboarding_step_4_cta.localizable().uppercase(),
-                    fontWeight = FontWeight.SemiBold,
-                    color = Black
-                )
-            }
+        Button(
+            onClick = {
+                if (page == OnboardingStates.states.size - 1) {
+                    sessionRepository.onboardingCompleted()
+                    val intent = Intent(
+                        current,
+                        getNextActivity(hasPaid)
+                    )
+                    intent.flags =
+                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    current.startActivity(intent)
+                }
+                coroutineScope.launch {
+                    pagerState.scrollToPage(page + 1)
+                }
+            }, modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .height(64.dp)
+        ) {
+            Text(
+                text = R.string.continue_btn.localizable().uppercase(),
+                fontWeight = FontWeight.SemiBold,
+                color = Black
+            )
         }
     }
 }
+
+private fun getNextActivity(hasNotPaid: MutableState<Boolean>): Class<out BaseActivity> =
+    if (BuildConfig.DEBUG) {
+        MainActivity::class.java
+    } else if (hasNotPaid.value) {
+        PaywallActivity::class.java
+    } else MainActivity::class.java
+
 
 @Composable
 fun ColumnScope.FeedbackPage(state: UiState.Feedback, modifier: Modifier = Modifier) {
@@ -334,7 +360,8 @@ fun ColumnScope.Questions(
 fun GreetingPreview() {
     NorwegianTrainingTheme {
         Scaffold { _ ->
-            Content()
+            val hasPaid = remember { mutableStateOf(false) }
+            Content(hasPaid)
         }
     }
 }
