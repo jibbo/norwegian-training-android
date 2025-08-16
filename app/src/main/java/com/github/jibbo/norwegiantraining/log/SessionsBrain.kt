@@ -21,9 +21,9 @@ object SessionsBrain {
 
     // Max 1
     private fun getScore(session: Session): Double = when {
-        session.skipCount == 2 -> 0.6
-        session.skipCount < 2 -> 1.0
-        else -> 0.0
+        session.phasesEnded > 0 && session.skipCount == 2 -> 0.6
+        session.phasesEnded > 0 && session.skipCount < 2 -> 1.0
+        else -> (session.phasesEnded / 10).toDouble()
     }
 }
 
