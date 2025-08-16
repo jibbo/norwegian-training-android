@@ -1,32 +1,34 @@
 package com.github.jibbo.norwegiantraining.log
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
-import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -38,20 +40,34 @@ internal fun Logs(
     innerPadding: PaddingValues,
     uiState: UiState.Loaded
 ) {
-    LazyColumn(
+    val listState = rememberLazyListState()
+    Column(
         modifier = Modifier
-            .padding(vertical = innerPadding.calculateTopPadding(), horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        item {
-            Text(
-                text = R.string.title_activity_logs.localizable(),
-                style = Typography.displayLarge,
-                modifier = Modifier.padding(vertical = 16.dp)
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding()
             )
+    ) {
+        AnimatedToolbar(
+            listState,
+            LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+        )
+        Row(
+            modifier = Modifier
+                .testTag("stats")
+                .fillMaxWidth()
+        ) {
+            // Your stats content here
         }
-        items(12) { month ->
-            Month(month, uiState)
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(12) { month ->
+                Month(month, uiState)
+            }
         }
     }
 }

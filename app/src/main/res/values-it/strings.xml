@@ -5,6 +5,7 @@
     <string name="pause">Pausa</string>
     <string name="skip">Salta fase</string>
     <string name="continue_btn">Continua</string>
+    <string name="back">indietro</string>
 
     <string name="get_ready">Preparati</string>
     <string name="warmup">Riscaldamento</string>
@@ -24,10 +25,6 @@
     <string name="completed_desc">Congratulazioni! Sei arrivato alla fine di questo allenamento! Torna domani per un altro 💪</string>
 
     <string name="one_minute_remaining">Manca un minuto</string>
-    <string name="three">3</string>
-    <string name="two">2</string>
-    <string name="one">1</string>
-    <string name="empty"></string>
 
     <string name="title_activity_settings">Impostazioni</string>
     <string name="title_profile_section">Profilo</string>

@@ -6,6 +6,8 @@
     <string name="pause">Pause</string>
     <string name="skip">Skip training phase</string>
     <string name="continue_btn">Continue</string>
+    <string name="back">back</string>
+
 
     <!-- Timer states -->
     <string name="get_ready">Get Ready</string>
@@ -29,10 +31,10 @@
 
     <!-- TTS -->
     <string name="one_minute_remaining">One minute remaining</string>
-    <string name="three">3</string>
-    <string name="two">2</string>
-    <string name="one">1</string>
-    <string name="empty"></string>
+    <string name="three" translatable="false">3</string>
+    <string name="two" translatable="false">2</string>
+    <string name="one" translatable="false">1</string>
+    <string name="empty" translatable="false" />
 
     <!-- Settings -->
     <string name="title_activity_settings">Settings</string>
