@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -33,7 +34,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,7 +52,6 @@ import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
-import com.github.jibbo.norwegiantraining.ui.theme.Oswald
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
@@ -88,7 +87,6 @@ internal fun MainView(
             if (mainViewModel.showCountdown()) {
                 Timer(state, mainViewModel)
             }
-
             val animatedBackgroundColor by animateColorAsState(
                 targetValue = if (state.isTimerRunning) Red else Primary,
                 label = "ButtonBackgroundColorAnimation"
@@ -129,6 +127,8 @@ internal fun MainView(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(64.dp))
         }
     }
 }
@@ -159,6 +159,7 @@ private fun ColumnScope.Timer(
 
 @Composable
 private fun Instructions(state: UiState) {
+    Spacer(modifier = Modifier.height(64.dp))
     Text(
         text = state.step.message().localizable(),
         style = Typography.headlineLarge,
