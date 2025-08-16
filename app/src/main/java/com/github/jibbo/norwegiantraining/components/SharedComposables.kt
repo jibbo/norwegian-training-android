@@ -91,7 +91,9 @@ fun ExoplayerExample() {
 }
 
 @Composable
-fun AnimatedToolbar(listState: LazyListState, backDispatcher: OnBackPressedDispatcher? = null) {
+fun AnimatedToolbar(
+    name: String, listState: LazyListState, backDispatcher: OnBackPressedDispatcher? = null
+) {
     val density = LocalDensity.current
     val initialFontSizeSp = Typography.displayLarge.fontSize.value
     val targetFontSizeSp = 28f // Target font size in sp, e.g., 28.sp
@@ -152,7 +154,7 @@ fun AnimatedToolbar(listState: LazyListState, backDispatcher: OnBackPressedDispa
             }
         }
         Text(
-            text = R.string.title_activity_logs.localizable(),
+            text = name,
             style = Typography.displayLarge.copy( // Apply animated font size and line height
                 fontSize = animatedFontSizeSp.sp,
                 lineHeight = animatedLineHeightSp.sp
