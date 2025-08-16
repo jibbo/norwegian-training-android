@@ -54,7 +54,7 @@ class MainViewModel @Inject constructor(
             onSuccess = purchasedCheck()
         )
         viewModelScope.launch {
-            if (!settingsRepository.isOnboardingCompleted()) {
+            if (!settingsRepository.isOnboardingCompleted() && !BuildConfig.DEBUG) {
                 events.emit(UiCommands.SHOW_ONBOARDING)
             }
             todaySession = getTodaySession()

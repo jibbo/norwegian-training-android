@@ -127,8 +127,6 @@ internal fun MainView(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(64.dp))
         }
     }
 }
