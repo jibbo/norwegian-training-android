@@ -25,7 +25,6 @@ class PaywallActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             NorwegianTrainingTheme {
                 Scaffold { _ ->

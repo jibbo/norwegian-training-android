@@ -2,9 +2,7 @@ package com.github.jibbo.norwegiantraining.onboarding
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -66,14 +64,13 @@ import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
 import kotlinx.coroutines.launch
 
-class OnboardingActivity : ComponentActivity() {
+class OnboardingActivity : BaseActivity() {
     private var hasNotPaid = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
             hasNotPaid == customerInfo.entitlements.active.isEmpty()
         }
-        enableEdgeToEdge()
         setContent {
             NorwegianTrainingTheme {
                 Surface(
