@@ -87,6 +87,8 @@ internal fun SettingsScreen(
             if (BuildConfig.DEBUG) {
                 item { DebugCard() }
             }
+
+            item { Spacer(modifier = Modifier.size(32.dp)) }
         }
     }
 }
