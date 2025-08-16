@@ -20,7 +20,7 @@
     <string name="next_up">Next Up >> %1$s</string>
 
     <!-- Exercise descriptions -->
-    <string name="get_ready_desc">Prepare yourself for the warmup</string>
+    <string name="get_ready_desc">Start with a warmup</string>
     <string name="warmup_desc">Exercise lightly: you should be able to talk while you warmup</string>
     <string name="hit_cardio_desc">Go as hard as you can to sustain the whole 4 minutes. You can do this!</string>
     <string name="light_cardio_desc">Exercise lightly: steady your heartbeat without stopping</string>

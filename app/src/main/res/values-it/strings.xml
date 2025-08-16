@@ -16,7 +16,7 @@
     <string name="welcome">Ciao %1$s</string>
     <string name="next_up">Fasse successiva >> %1$s</string>
 
-    <string name="get_ready_desc">Preparati per il riscaldamento</string>
+    <string name="get_ready_desc">inizia il riscaldamento</string>
     <string name="warmup_desc">Fai esercizio leggero: dovresti essere in grado di parlare durante il riscaldamento</string>
     <string name="hit_cardio_desc">Vai il più forte che puoi per sostenere tutti i 4 minuti. Puoi farcela!</string>
     <string name="light_cardio_desc">Fai esercizio leggero: stabilizza il battito cardiaco senza fermarti</string>
