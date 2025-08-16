@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
+import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -52,9 +52,8 @@ internal fun Logs(
                 bottom = innerPadding.calculateBottomPadding()
             )
     ) {
-        AnimatedToolbar(
+        Toolbar(
             R.string.title_activity_logs.localizable(),
-            listState,
             LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
         )
         Row(

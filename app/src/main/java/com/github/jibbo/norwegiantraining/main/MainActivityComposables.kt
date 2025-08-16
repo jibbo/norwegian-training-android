@@ -11,15 +11,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -67,10 +65,9 @@ internal fun MainView(
     mainViewModel: MainViewModel,
 ) {
     val state by mainViewModel.uiStates.collectAsState()
-    Surface(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    ) { innerPadding ->
         if (!LocalInspectionMode.current) {
             VideoBackground()
         }
@@ -78,8 +75,11 @@ internal fun MainView(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-                .safeDrawingPadding()
+                .padding(
+                    top = innerPadding.calculateTopPadding() + 8.dp,
+                    bottom = innerPadding.calculateBottomPadding()
+                )
+                .padding(horizontal = 16.dp)
         ) {
             Header(viewModel = mainViewModel)
             Spacer(modifier = Modifier.weight(1f))
@@ -222,9 +222,7 @@ internal fun Header(viewModel: MainViewModel) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = R.string.welcome.localizable(state.name),
-            fontFamily = Oswald,
-            fontWeight = FontWeight.ExtraLight,
-            fontSize = 24.sp,
+            style = Typography.headlineSmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)

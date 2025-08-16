@@ -43,6 +43,7 @@ import androidx.core.net.toUri
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
+import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
@@ -68,8 +69,8 @@ internal fun SettingsScreen(
                 bottom = innerPadding.calculateBottomPadding()
             )
     ) {
-        AnimatedToolbar(
-            R.string.title_activity_settings.localizable(), listState,
+        Toolbar(
+            R.string.title_activity_settings.localizable(),
             LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
         )
         LazyColumn(

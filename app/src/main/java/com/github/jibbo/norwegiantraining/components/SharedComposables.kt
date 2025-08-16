@@ -91,6 +91,37 @@ fun ExoplayerExample() {
 }
 
 @Composable
+fun Toolbar(
+    name: String, backDispatcher: OnBackPressedDispatcher? = null
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+    ) {
+        if (backDispatcher != null) {
+            IconButton(onClick = {
+                backDispatcher.onBackPressed()
+            }) {
+                Icon(
+                    painter = painterResource(
+                        id = R.drawable.outline_arrow_back_24
+                    ),
+                    contentDescription = R.string.back.localizable(),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+        Text(
+            text = name,
+            style = Typography.headlineSmall
+        )
+    }
+}
+
+
+@Composable
 fun AnimatedToolbar(
     name: String, listState: LazyListState, backDispatcher: OnBackPressedDispatcher? = null
 ) {
