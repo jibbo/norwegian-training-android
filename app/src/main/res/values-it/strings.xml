@@ -1,0 +1,78 @@
+<resources>
+    <string name="app_name">Allenamento Norvegese</string>
+
+    <string name="start">Inizia</string>
+    <string name="pause">Pausa</string>
+    <string name="skip">Salta fase</string>
+    <string name="continue_btn">Continua</string>
+
+    <string name="get_ready">Preparati</string>
+    <string name="warmup">Riscaldamento</string>
+    <string name="hit_cardio">Fase intensa</string>
+    <string name="light_cardio">Fase leggera</string>
+    <string name="cooldown">Defaticamento</string>
+    <string name="completed">FATTO</string>
+
+    <string name="welcome">Benvenut* %1$s</string>
+    <string name="next_up">Prossima >> %1$s</string>
+
+    <string name="get_ready_desc">Preparati per il riscaldamento</string>
+    <string name="warmup_desc">Fai esercizio leggero: dovresti essere in grado di parlare durante il riscaldamento</string>
+    <string name="hit_cardio_desc">Vai il più forte che puoi per sostenere tutti i 4 minuti. Puoi farcela!</string>
+    <string name="light_cardio_desc">Fai esercizio leggero: stabilizza il battito cardiaco senza fermarti</string>
+    <string name="cooldown_desc">Respira, vai a un ritmo lento e rilassato che ti permetta di rilassarti ma non fermarti adesso</string>
+    <string name="completed_desc">Congratulazioni! Sei arrivato alla fine di questo allenamento! Torna domani per un altro 💪</string>
+
+    <string name="one_minute_remaining">Manca un minuto</string>
+    <string name="three">3</string>
+    <string name="two">2</string>
+    <string name="one">1</string>
+    <string name="empty"></string>
+
+    <string name="title_activity_settings">Impostazioni</string>
+    <string name="title_profile_section">Profilo</string>
+    <string name="your_name">Il tuo nome</string>
+    <string name="title_tts_section">Suggerimenti vocali</string>
+    <string name="announce_phase">Nome della fase</string>
+    <string name="announce_phase_description">Descrizione della fase</string>
+    <string name="announce_countdown">Conto alla rovescia prima della fine della fase</string>
+    <string name="title_privacy_section">Privacy</string>
+    <string name="enable_analytics">Raccolta Dati</string>
+    <string name="enable_analytics_description">Ci permette di migliorare l\'app in base a quali funzionalità e opzioni sono popolari</string>
+    <string name="enable_crash_reporting">Riporta Malfunzionamenti</string>
+    <string name="enable_crash_reporting_description">Ci permette di correggere bug e migliorare l\'app</string>
+    <string name="title_beta_section">Funzionalità beta</string>
+    <string name="beta_section_description">Queste funzionalità sono ancora sperimentali e possono causare comportamenti inattesi. Si prega di usarle a proprio rischio.</string>
+    <string name="enable_timer_notification">Notifica con il timer</string>
+    <string name="onboarding_section_title">Mostra nuovamente l\'Onboarding</string>
+    <string name="about_dev_section_title">Dallo sviluppatore</string>
+    <string name="about_dev_section_description">Ciao! Sono Gio e vorrei ringraziarti per usare la mia app! Essendo un appassionato di allenamento, l\'ho creata perché ero stufo di armeggiare con timer complicati. Spero che tu la possa trovare utile quanto me!</string>
+    <string name="about_dev_section_cta">Scrivi un\'email a Gio</string>
+    <string name="credits_section_cta">Riconoscimenti</string>
+
+    <string name="title_activity_logs">La tua Attività</string>
+
+    <string name="onboarding_step_1_title">Benvenuto nell\'app Allenamento Norvegese!</string>
+    <string name="onboarding_step_1_description">La miglior compagna per il tuo allenamento cardio</string>
+    <string name="onboarding_step_1_name">Markus R.</string>
+    <string name="onboarding_step_1_handle">\@marksmeister</string>
+    <string name="onboarding_step_1_body">Entusiasta di questa nuova app che ho trovato, "Norwegian Training"! Se ti piace il protocollo 4x4, devi provarla. Gestisce perfettamente tutti i tempi e gli intervalli, così posso concentrarmi sul mio allenamento invece che sul mio orologio. 🏃‍♀️⌚️ La consiglio vivamente! #runningapp #fitness #HIIT #workout</string>
+
+    <string name="onboarding_step_2_title">Timer automatici</string>
+    <string name="onboarding_step_2_description">Basta premere \"INIZIA\" per iniziare l\'allenamento.</string>
+    <string name="onboarding_step_2_body">Non c\'è più bisogno di armeggiare con i timer</string>
+
+    <string name="onboarding_step_3_title">Perché vuoi iniziare il Protocollo Norvegese?</string>
+    <string name="onboarding_step_3_option_1">Migliorare la mia salute generale</string>
+    <string name="onboarding_step_3_option_2">Migliorare le mie prestazioni</string>
+
+    <string name="onboarding_step_4_title">Iniziamo!</string>
+    <string name="onboarding_step_4_description">Il 4x4 norvegese può ringiovanire il tuo cuore di 20 anni</string>
+    <string name="onboarding_step_4_body">Goditi i benefici già dopo il primo mese!</string>
+    <string name="onboarding_step_4_cta">Sì!</string>
+
+    <string name="onboarding_step_5_title">I tuoi Progressi</string>
+    <string name="onboarding_step_5_description">Sotto il tuo controllo in qualsiasi momento</string>
+    <string name="onboarding_step_5_body">Niente più incertezze</string>
+
+</resources>
