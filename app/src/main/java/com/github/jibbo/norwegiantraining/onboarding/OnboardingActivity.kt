@@ -55,8 +55,6 @@ import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.components.localizable
-import com.github.jibbo.norwegiantraining.data.SettingsRepository
-import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
 import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
@@ -185,11 +183,9 @@ private fun OnBoardingPage(
         }
         val coroutineScope = rememberCoroutineScope()
         val current = LocalContext.current
-        val sessionRepository: SettingsRepository = SharedPreferencesSettingsRepository(current)
         Button(
             onClick = {
                 if (page == OnboardingStates.states.size - 1) {
-                    sessionRepository.onboardingCompleted()
                     val intent = Intent(
                         current,
                         getNextActivity(hasPaid)

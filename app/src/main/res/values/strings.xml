@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Norwegian Training</string>
+    <string name="app_name">Norwegian Training</string>
 
     <!-- Actions -->
     <string name="start">Start</string>
@@ -45,10 +45,10 @@
     <string name="title_privacy_section">Privacy</string>">
     <string name="enable_analytics">Data Collection</string>
     <string name="enable_analytics_description">It lets us improve the app based on which features and options are popular</string>
-    <string name="enable_crash_reporting">Malfunctions Reports</string>
+    <string name="enable_crash_reporting">Malfunctions Logs</string>
     <string name="enable_crash_reporting_description">It lets us fix bugs and improve the app</string>
     <string name="title_beta_section">Beta features</string>">
-    <string name="beta_section_description">These features are still experimental and can cause unexpected behavior. Please use at your own risk.</string>
+    <string name="beta_section_description">These features are still experimental and can cause unexpected behavior such as loss of workout data.</string>
     <string name="enable_timer_notification">Notification with the timer</string>
     <string name="onboarding_section_title">Show Onboarding again</string>
     <string name="about_dev_section_title">From the developer</string>
@@ -68,7 +68,7 @@
 
     <string name="onboarding_step_2_title">Automatic Timers</string>
     <string name="onboarding_step_2_description">Just press \"START\" to begin the workout.</string>
-    <string name="onboarding_step_2_body">No more fiddling required</string>
+    <string name="onboarding_step_2_body">No more fiddling with multiple timers required</string>
 
     <string name="onboarding_step_3_title">Why do you want to start the Norwegian Protocol?</string>
     <string name="onboarding_step_3_option_1">Improve my general health</string>

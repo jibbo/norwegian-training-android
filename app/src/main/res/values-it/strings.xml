@@ -13,14 +13,14 @@
     <string name="cooldown">Defaticamento</string>
     <string name="completed">FATTO</string>
 
-    <string name="welcome">Benvenut* %1$s</string>
-    <string name="next_up">Prossima >> %1$s</string>
+    <string name="welcome">Ciao %1$s</string>
+    <string name="next_up">Fasse successiva >> %1$s</string>
 
     <string name="get_ready_desc">Preparati per il riscaldamento</string>
     <string name="warmup_desc">Fai esercizio leggero: dovresti essere in grado di parlare durante il riscaldamento</string>
     <string name="hit_cardio_desc">Vai il più forte che puoi per sostenere tutti i 4 minuti. Puoi farcela!</string>
     <string name="light_cardio_desc">Fai esercizio leggero: stabilizza il battito cardiaco senza fermarti</string>
-    <string name="cooldown_desc">Respira, vai a un ritmo lento e rilassato che ti permetta di rilassarti ma non fermarti adesso</string>
+    <string name="cooldown_desc">Respira, vai a un ritmo lento e rilassato che ti permetta di calmare il cuore ma non fermarti adesso</string>
     <string name="completed_desc">Congratulazioni! Sei arrivato alla fine di questo allenamento! Torna domani per un altro 💪</string>
 
     <string name="one_minute_remaining">Manca un minuto</string>
@@ -42,7 +42,7 @@
     <string name="enable_crash_reporting">Riporta Malfunzionamenti</string>
     <string name="enable_crash_reporting_description">Ci permette di correggere bug e migliorare l\'app</string>
     <string name="title_beta_section">Funzionalità beta</string>
-    <string name="beta_section_description">Queste funzionalità sono ancora sperimentali e possono causare comportamenti inattesi. Si prega di usarle a proprio rischio.</string>
+    <string name="beta_section_description">Queste funzionalità sono ancora sperimentali e possono causare comportamenti inattesi come la perdita di dati relativi agli allenamenti</string>
     <string name="enable_timer_notification">Notifica con il timer</string>
     <string name="onboarding_section_title">Mostra nuovamente l\'Onboarding</string>
     <string name="about_dev_section_title">Dallo sviluppatore</string>
@@ -60,7 +60,7 @@
 
     <string name="onboarding_step_2_title">Timer automatici</string>
     <string name="onboarding_step_2_description">Basta premere \"INIZIA\" per iniziare l\'allenamento.</string>
-    <string name="onboarding_step_2_body">Non c\'è più bisogno di armeggiare con i timer</string>
+    <string name="onboarding_step_2_body">Non c\'è più bisogno di perdere tempo con più timer</string>
 
     <string name="onboarding_step_3_title">Perché vuoi iniziare il Protocollo Norvegese?</string>
     <string name="onboarding_step_3_option_1">Migliorare la mia salute generale</string>

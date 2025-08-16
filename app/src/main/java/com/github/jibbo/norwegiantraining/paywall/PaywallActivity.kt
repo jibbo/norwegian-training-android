@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Scaffold
 import com.github.jibbo.norwegiantraining.components.BaseActivity
+import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.revenuecat.purchases.CustomerInfo
@@ -14,10 +15,13 @@ import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIP
 import com.revenuecat.purchases.ui.revenuecatui.Paywall
 import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.revenuecat.purchases.ui.revenuecatui.PaywallOptions
-import kotlin.jvm.java
+import javax.inject.Inject
 
 @OptIn(ExperimentalPreviewRevenueCatUIPurchasesAPI::class)
 class PaywallActivity : BaseActivity() {
+
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,15 +39,11 @@ class PaywallActivity : BaseActivity() {
                                         customerInfo: CustomerInfo,
                                         storeTransaction: StoreTransaction
                                     ) {
-                                        if(customerInfo.entitlements.active.isNotEmpty()){
-                                            startActivity(Intent(this@PaywallActivity, MainActivity::class.java))
-                                        }
+                                        goToMainActivityIfPaid(customerInfo)
                                     }
 
                                     override fun onRestoreCompleted(customerInfo: CustomerInfo) {
-                                        if(customerInfo.entitlements.active.isNotEmpty()){
-                                            startActivity(Intent(this@PaywallActivity, MainActivity::class.java))
-                                        }
+                                        goToMainActivityIfPaid(customerInfo)
                                     }
                                 }
                             )
@@ -52,6 +52,13 @@ class PaywallActivity : BaseActivity() {
                     )
                 }
             }
+        }
+    }
+
+    fun goToMainActivityIfPaid(customerInfo: CustomerInfo) {
+        if (customerInfo.entitlements.active.isNotEmpty()) {
+            settingsRepository.onboardingCompleted()
+            startActivity(Intent(this@PaywallActivity, MainActivity::class.java))
         }
     }
 
