@@ -25,7 +25,7 @@ object SessionsBrain {
         session.phasesEnded > 0 && session.skipCount == 2 -> 0.6
         session.phasesEnded > 0 && session.skipCount <= 2 -> 1.0
         session.phasesEnded <= 0 -> 0.0
-        else -> (session.phasesEnded - session.skipCount) / 10.0
+        else -> ((session.phasesEnded - session.skipCount) % 10) / 10.0
     }
 }
 
