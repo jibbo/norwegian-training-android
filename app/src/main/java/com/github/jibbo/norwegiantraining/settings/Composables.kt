@@ -69,9 +69,10 @@ internal fun SettingsScreen(
                 bottom = innerPadding.calculateBottomPadding()
             )
     ) {
-        Toolbar(
+        AnimatedToolbar(
             R.string.title_activity_settings.localizable(),
-            LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+            listState,
+            null
         )
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),

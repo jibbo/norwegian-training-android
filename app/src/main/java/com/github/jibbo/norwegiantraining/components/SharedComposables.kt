@@ -4,9 +4,12 @@ import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
@@ -165,31 +168,35 @@ fun AnimatedToolbar(
         label = "lineHeightAnimation"
     )
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
-    ) {
-        if (backDispatcher != null) {
-            IconButton(onClick = {
-                backDispatcher.onBackPressed()
-            }) {
-                Icon(
-                    painter = painterResource(
-                        id = R.drawable.outline_arrow_back_24
-                    ),
-                    contentDescription = R.string.back.localizable(),
-                    modifier = Modifier.size(24.dp)
-                )
+    Column {
+        Spacer(modifier = Modifier.height(animatedLineHeightSp.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+        ) {
+            if (backDispatcher != null) {
+                IconButton(onClick = {
+                    backDispatcher.onBackPressed()
+                }) {
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.outline_arrow_back_24
+                        ),
+                        contentDescription = R.string.back.localizable(),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
+            Text(
+                text = name,
+                style = Typography.displayLarge.copy( // Apply animated font size and line height
+                    fontSize = animatedFontSizeSp.sp,
+                    lineHeight = animatedLineHeightSp.sp
+                ),
+            )
         }
-        Text(
-            text = name,
-            style = Typography.displayLarge.copy( // Apply animated font size and line height
-                fontSize = animatedFontSizeSp.sp,
-                lineHeight = animatedLineHeightSp.sp
-            ),
-        )
+
     }
 }

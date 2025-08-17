@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -218,7 +220,7 @@ internal fun CountdownDisplay(
 @Composable
 internal fun Header(viewModel: MainViewModel) {
     val state by viewModel.uiStates.collectAsState()
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.safeDrawingPadding()) {
         Text(
             text = R.string.welcome.localizable(state.name),
             style = Typography.headlineSmall,
