@@ -4,17 +4,11 @@ class FakeSessionRepo : SessionRepository {
     override suspend fun getSessions(
         limit: Int,
         offset: Int
-    ): List<Session> {
-        TODO("Not yet implemented")
-    }
+    ): List<Session> = listOf()
 
-    override suspend fun upsertSession(session: Session): Long {
-        TODO("Not yet implemented")
-    }
+    override suspend fun upsertSession(session: Session): Long = -1
 
-    override suspend fun getTodaySession(): Session? {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getTodaySession(): Session? = null
 }
 
 class FakeSettingsRepository : SettingsRepository {
@@ -28,53 +22,39 @@ class FakeSettingsRepository : SettingsRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getAnnouncePhase(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun getAnnouncePhase(): Boolean = false
 
     override fun setAnnouncePhaseDesc(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 
-    override fun getAnnouncePhaseDesc(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun getAnnouncePhaseDesc(): Boolean = false
 
     override fun setAnnounceCountdown(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 
-    override fun getAnnounceCountdown(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun getAnnounceCountdown(): Boolean = false
 
     override fun setAnalyticsEnabled(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 
-    override fun getAnalyticsEnabled(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun getAnalyticsEnabled(): Boolean = false
 
     override fun setCrashReportingEnabled(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 
-    override fun getCrashReportingEnabled(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun getCrashReportingEnabled(): Boolean = false
 
     override fun setShowTimerNotification(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 
-    override fun getShowTimerNotification(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun getShowTimerNotification(): Boolean = false
 
-    override fun isOnboardingCompleted(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun isOnboardingCompleted(): Boolean = false
 
     override fun onboardingCompleted() {
         TODO("Not yet implemented")

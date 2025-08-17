@@ -5,6 +5,7 @@
     <string name="pause">Pausa</string>
     <string name="skip">Salta fase</string>
     <string name="continue_btn">Continua</string>
+    <string name="back">indietro</string>
 
     <string name="get_ready">Preparati</string>
     <string name="warmup">Riscaldamento</string>
@@ -16,7 +17,7 @@
     <string name="welcome">Ciao %1$s</string>
     <string name="next_up">Fasse successiva >> %1$s</string>
 
-    <string name="get_ready_desc">Preparati per il riscaldamento</string>
+    <string name="get_ready_desc">inizia il riscaldamento</string>
     <string name="warmup_desc">Fai esercizio leggero: dovresti essere in grado di parlare durante il riscaldamento</string>
     <string name="hit_cardio_desc">Vai il più forte che puoi per sostenere tutti i 4 minuti. Puoi farcela!</string>
     <string name="light_cardio_desc">Fai esercizio leggero: stabilizza il battito cardiaco senza fermarti</string>
@@ -24,10 +25,6 @@
     <string name="completed_desc">Congratulazioni! Sei arrivato alla fine di questo allenamento! Torna domani per un altro 💪</string>
 
     <string name="one_minute_remaining">Manca un minuto</string>
-    <string name="three">3</string>
-    <string name="two">2</string>
-    <string name="one">1</string>
-    <string name="empty"></string>
 
     <string name="title_activity_settings">Impostazioni</string>
     <string name="title_profile_section">Profilo</string>
@@ -50,7 +47,7 @@
     <string name="about_dev_section_cta">Scrivi un\'email a Gio</string>
     <string name="credits_section_cta">Riconoscimenti</string>
 
-    <string name="title_activity_logs">La tua Attività</string>
+    <string name="title_activity_logs">La tua attività</string>
 
     <string name="onboarding_step_1_title">Benvenuto nell\'app Allenamento Norvegese!</string>
     <string name="onboarding_step_1_description">La miglior compagna per il tuo allenamento cardio</string>

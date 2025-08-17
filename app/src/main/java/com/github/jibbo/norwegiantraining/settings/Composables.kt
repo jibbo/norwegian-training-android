@@ -2,20 +2,22 @@ package com.github.jibbo.norwegiantraining.settings
 
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -40,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
+import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
@@ -54,37 +58,39 @@ import com.github.jibbo.norwegiantraining.ui.theme.White
 @Composable
 internal fun SettingsScreen(
     viewModel: SettingsViewModel,
-    modifier: Modifier = Modifier
+    innerPadding: PaddingValues
 ) {
+    val listState = rememberLazyListState()
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
-            .safeDrawingPadding()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
+            .padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding()
+            )
     ) {
-        Text(
-            text = R.string.title_activity_settings.localizable(),
-            style = Typography.displayLarge,
-            modifier = modifier
+        AnimatedToolbar(
+            R.string.title_activity_settings.localizable(),
+            listState,
+            null
         )
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            state = listState,
+        ) {
+            item { ProfileCard(viewModel) }
+            item { TTSCard(viewModel) }
+            item { OnboardingCard(viewModel) }
+            item { BetaCard(viewModel) }
+            item { PrivacyCard(viewModel) }
+            item { GetInTouchCard() }
+            item { CreditsCard() }
 
-        ProfileCard(viewModel)
+            if (BuildConfig.DEBUG) {
+                item { DebugCard() }
+            }
 
-        TTSCard(viewModel)
-
-        OnboardingCard(viewModel)
-
-        BetaCard(viewModel)
-
-        PrivacyCard(viewModel)
-
-        GetInTouchCard()
-
-        CreditsCard()
-
-        if (BuildConfig.DEBUG) {
-            DebugCard()
+            item { Spacer(modifier = Modifier.size(32.dp)) }
         }
     }
 }
@@ -492,7 +498,12 @@ private fun MySwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
 fun GreetingPreview2() {
     NorwegianTrainingTheme {
         Surface {
-            SettingsScreen(SettingsViewModel(FakeSettingsRepository(), FakeTracker()))
+            Scaffold { innerPadding ->
+                SettingsScreen(
+                    SettingsViewModel(FakeSettingsRepository(), FakeTracker()),
+                    innerPadding
+                )
+            }
         }
     }
 }

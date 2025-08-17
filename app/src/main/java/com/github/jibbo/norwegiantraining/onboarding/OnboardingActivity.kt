@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
@@ -28,10 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -73,13 +71,12 @@ class OnboardingActivity : BaseActivity() {
         }
         setContent {
             NorwegianTrainingTheme {
-                Surface(
+                Scaffold(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                        .fillMaxSize()
+                ) { innerPadding ->
                     val hasPaid = remember { mutableStateOf(hasNotPaid) }
-                    Content(hasPaid)
+                    Content(hasPaid, innerPadding)
                 }
             }
         }
@@ -88,7 +85,7 @@ class OnboardingActivity : BaseActivity() {
 }
 
 @Composable
-fun Content(hasPaid: MutableState<Boolean>) {
+fun Content(hasPaid: MutableState<Boolean>, innerPadding: PaddingValues) {
     val pagerState = rememberPagerState(pageCount = {
         OnboardingStates.states.size
     })
@@ -102,10 +99,16 @@ fun Content(hasPaid: MutableState<Boolean>) {
                     )
                 )
             )
+            .padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding()
+            )
     ) {
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .padding(top = 8.dp),
             userScrollEnabled = true
         ) { page ->
             OnBoardingPage(
@@ -134,7 +137,6 @@ fun Content(hasPaid: MutableState<Boolean>) {
                 )
             }
         }
-        Spacer(Modifier.height(16.dp))
     }
 }
 
@@ -147,9 +149,7 @@ private fun OnBoardingPage(
 ) {
     val state = OnboardingStates.states[page]
     Column(
-        modifier = modifier
-            .safeDrawingPadding()
-            .padding(16.dp)
+        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         Text(
             text = state.title.localizable(),
@@ -196,7 +196,6 @@ private fun OnBoardingPage(
                 }
             }, modifier = modifier
                 .fillMaxWidth()
-                .padding(16.dp)
                 .height(64.dp)
         ) {
             Text(
@@ -352,9 +351,9 @@ fun ColumnScope.Questions(
 @Composable
 fun GreetingPreview() {
     NorwegianTrainingTheme {
-        Scaffold { _ ->
+        Scaffold { innerPadding ->
             val hasPaid = remember { mutableStateOf(false) }
-            Content(hasPaid)
+            Content(hasPaid, innerPadding)
         }
     }
 }

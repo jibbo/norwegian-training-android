@@ -12,18 +12,20 @@ object SessionsBrain {
             return SessionStatus.NOT_DONE
         }
 
+        val score = getScore(session)
         return when {
-            getScore(session) > 0.8 -> SessionStatus.GOOD
-            getScore(session) > 0.5 -> SessionStatus.ALMOST
+            score > 0.8 -> SessionStatus.GOOD
+            score > 0.5 -> SessionStatus.ALMOST
             else -> SessionStatus.BAD
         }
     }
 
     // Max 1
     private fun getScore(session: Session): Double = when {
-        session.skipCount == 2 -> 0.6
-        session.skipCount < 2 -> 1.0
-        else -> 0.0
+        session.phasesEnded > 0 && session.skipCount == 2 -> 0.6
+        session.phasesEnded > 0 && session.skipCount <= 2 -> 1.0
+        session.phasesEnded <= 0 -> 0.0
+        else -> ((session.phasesEnded - session.skipCount) % 10) / 10.0
     }
 }
 

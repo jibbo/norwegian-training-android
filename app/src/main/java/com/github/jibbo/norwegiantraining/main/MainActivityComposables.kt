@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,8 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,7 +36,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,7 +54,6 @@ import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
-import com.github.jibbo.norwegiantraining.ui.theme.Oswald
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
@@ -67,10 +66,9 @@ internal fun MainView(
     mainViewModel: MainViewModel,
 ) {
     val state by mainViewModel.uiStates.collectAsState()
-    Surface(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    ) { innerPadding ->
         if (!LocalInspectionMode.current) {
             VideoBackground()
         }
@@ -78,8 +76,11 @@ internal fun MainView(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-                .safeDrawingPadding()
+                .padding(
+                    top = innerPadding.calculateTopPadding() + 8.dp,
+                    bottom = innerPadding.calculateBottomPadding()
+                )
+                .padding(horizontal = 16.dp)
         ) {
             Header(viewModel = mainViewModel)
             Spacer(modifier = Modifier.weight(1f))
@@ -88,7 +89,6 @@ internal fun MainView(
             if (mainViewModel.showCountdown()) {
                 Timer(state, mainViewModel)
             }
-
             val animatedBackgroundColor by animateColorAsState(
                 targetValue = if (state.isTimerRunning) Red else Primary,
                 label = "ButtonBackgroundColorAnimation"
@@ -159,6 +159,7 @@ private fun ColumnScope.Timer(
 
 @Composable
 private fun Instructions(state: UiState) {
+    Spacer(modifier = Modifier.height(64.dp))
     Text(
         text = state.step.message().localizable(),
         style = Typography.headlineLarge,
@@ -219,12 +220,10 @@ internal fun CountdownDisplay(
 @Composable
 internal fun Header(viewModel: MainViewModel) {
     val state by viewModel.uiStates.collectAsState()
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.safeDrawingPadding()) {
         Text(
             text = R.string.welcome.localizable(state.name),
-            fontFamily = Oswald,
-            fontWeight = FontWeight.ExtraLight,
-            fontSize = 24.sp,
+            style = Typography.headlineSmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)

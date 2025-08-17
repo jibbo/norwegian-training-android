@@ -6,6 +6,8 @@
     <string name="pause">Pause</string>
     <string name="skip">Skip training phase</string>
     <string name="continue_btn">Continue</string>
+    <string name="back">back</string>
+
 
     <!-- Timer states -->
     <string name="get_ready">Get Ready</string>
@@ -20,7 +22,7 @@
     <string name="next_up">Next Up >> %1$s</string>
 
     <!-- Exercise descriptions -->
-    <string name="get_ready_desc">Prepare yourself for the warmup</string>
+    <string name="get_ready_desc">Start with a warmup</string>
     <string name="warmup_desc">Exercise lightly: you should be able to talk while you warmup</string>
     <string name="hit_cardio_desc">Go as hard as you can to sustain the whole 4 minutes. You can do this!</string>
     <string name="light_cardio_desc">Exercise lightly: steady your heartbeat without stopping</string>
@@ -29,10 +31,10 @@
 
     <!-- TTS -->
     <string name="one_minute_remaining">One minute remaining</string>
-    <string name="three">3</string>
-    <string name="two">2</string>
-    <string name="one">1</string>
-    <string name="empty"></string>
+    <string name="three" translatable="false">3</string>
+    <string name="two" translatable="false">2</string>
+    <string name="one" translatable="false">1</string>
+    <string name="empty" translatable="false" />
 
     <!-- Settings -->
     <string name="title_activity_settings">Settings</string>
