@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
@@ -38,7 +37,6 @@ class MainActivity : BaseActivity() {
 
     private var tts: TextToSpeech? = null
 
-    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

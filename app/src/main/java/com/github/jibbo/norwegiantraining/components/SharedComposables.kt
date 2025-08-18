@@ -95,12 +95,13 @@ fun ExoplayerExample() {
 
 @Composable
 fun Toolbar(
-    name: String, backDispatcher: OnBackPressedDispatcher? = null
+    name: String,
+    backDispatcher: OnBackPressedDispatcher? = null,
+    modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(vertical = 16.dp)
     ) {
         if (backDispatcher != null) {
