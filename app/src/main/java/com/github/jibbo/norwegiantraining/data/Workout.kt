@@ -40,10 +40,10 @@ data class Workout(
     @Ignore
     val totalTime = content.split("-").map {
         if (it.last() == 's') {
-            return@map it.dropLast(1).toInt() / 60
+            return@map it.dropLast(1).toInt()
         }
-        return@map it.dropLast(n = 1).toInt()
-    }.sum()
+        return@map it.dropLast(n = 1).toInt() * 60
+    }.sum().div(60)
 }
 
 enum class Difficulty {
