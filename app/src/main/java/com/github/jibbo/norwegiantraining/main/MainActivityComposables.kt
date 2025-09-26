@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -228,19 +227,9 @@ internal fun Header(viewModel: MainViewModel) {
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
-        IconButton(onClick = {
-            viewModel.chartsClicked()
-        }) {
+        IconButton(onClick = { viewModel.closeWorkout() }) {
             Icon(
-                painter = painterResource(R.drawable.outline_area_chart_24),
-                contentDescription = ""
-            )
-        }
-        IconButton(onClick = {
-            viewModel.settingsClicked()
-        }) {
-            Icon(
-                painter = painterResource(R.drawable.baseline_settings_24),
+                painter = painterResource(R.drawable.outline_close_24),
                 contentDescription = ""
             )
         }
