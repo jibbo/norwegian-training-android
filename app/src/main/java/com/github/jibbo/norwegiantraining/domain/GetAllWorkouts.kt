@@ -5,7 +5,7 @@ import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
 import javax.inject.Inject
 
-class GetWorkouts @Inject constructor(
+class GetAllWorkouts @Inject constructor(
     private val workOutRepository: WorkoutRepository
 ) {
     suspend operator fun invoke(): HashMap<Difficulty, List<Workout>> {

@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
+import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetUsername
-import com.github.jibbo.norwegiantraining.domain.GetWorkouts
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getUsername: GetUsername,
-    private val getWorkouts: GetWorkouts,
+    private val getAllWorkouts: GetAllWorkouts,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
@@ -46,7 +46,7 @@ class HomeViewModel @Inject constructor(
             states.value = states.value.copy(
                 //TODO this should be moved to datastore for Flow usage and avoid this workaround
                 username = getUsername(),
-                workouts = getWorkouts()
+                workouts = getAllWorkouts()
             )
         }
     }

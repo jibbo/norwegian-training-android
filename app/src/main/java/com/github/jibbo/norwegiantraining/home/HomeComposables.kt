@@ -25,8 +25,8 @@ import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
+import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetUsername
-import com.github.jibbo.norwegiantraining.domain.GetWorkouts
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 
@@ -98,11 +98,11 @@ internal fun Streak(viewModel: HomeViewModel) {
 //                                modifier = Modifier.padding(6.dp),
 //                                style = Typography.bodyMedium,
 //                            )
-                            Text(
-                                text = "${workout.totalTime}m",
-                                modifier = Modifier.padding(6.dp),
-                                style = Typography.bodyMedium,
-                            )
+                        Text(
+                            text = "${workout.totalTime}m",
+                            modifier = Modifier.padding(6.dp),
+                            style = Typography.bodyMedium,
+                        )
 //                        }
                         TextButton(onClick = {
                             viewModel.workoutClicked(workout.id)
@@ -129,7 +129,7 @@ fun HomeViewPreview() {
             HomeView(
                 HomeViewModel(
                     GetUsername(settingsRepository),
-                    GetWorkouts(workoutRepository),
+                    GetAllWorkouts(workoutRepository),
                     settingsRepository
                 )
             )
