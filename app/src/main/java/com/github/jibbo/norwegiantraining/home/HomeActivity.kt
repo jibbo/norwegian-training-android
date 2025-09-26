@@ -9,6 +9,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
+import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.settings.SettingsActivity
@@ -36,6 +37,7 @@ class HomeActivity : BaseActivity() {
                     UiCommands.SHOW_SETTINGS -> showSettings()
                     UiCommands.SHOW_CHARTS -> showCharts()
                     UiCommands.SHOW_PAYWALL -> showPaywall()
+                    is UiCommands.SHOW_WORKOUT -> showWorkout(it.id)
                 }
             }
         }
@@ -51,6 +53,12 @@ class HomeActivity : BaseActivity() {
         val newIntent = Intent(this@HomeActivity, OnboardingActivity::class.java)
         intent.flags =
             Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(newIntent)
+    }
+
+    fun showWorkout(id: Long) {
+        val newIntent = Intent(this@HomeActivity, MainActivity::class.java)
+        newIntent.putExtra("id", id)
         startActivity(newIntent)
     }
 

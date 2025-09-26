@@ -26,6 +26,11 @@ android {
             "REVENUECAT_API_KEY",
             "\"${project.properties["REVENUECAT_API_KEY"]}\""
         )
+
+        // Configure Room schema location for KSP
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {

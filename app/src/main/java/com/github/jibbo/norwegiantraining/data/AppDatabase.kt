@@ -19,7 +19,8 @@ import javax.inject.Singleton
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
     ],
-    version = 2
+    version = 2,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recordDao(): SessionDao

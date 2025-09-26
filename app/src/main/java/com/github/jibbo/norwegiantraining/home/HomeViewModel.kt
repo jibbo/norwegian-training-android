@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.domain.GetUsername
-import com.github.jibbo.norwegiantraining.main.UiState
+import com.github.jibbo.norwegiantraining.domain.GetWorkouts
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
@@ -20,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getUsername: GetUsername,
+    private val getWorkouts: GetWorkouts,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
@@ -27,7 +28,7 @@ class HomeViewModel @Inject constructor(
     val uiEvents = events.asSharedFlow()
 
     private val states: MutableStateFlow<UiState> = MutableStateFlow(
-        UiState(name = getUsername())
+        UiState(name = getUsername(), workouts = hashMapOf())
     )
     val uiStates = states.asStateFlow()
 
@@ -45,6 +46,7 @@ class HomeViewModel @Inject constructor(
             states.value = states.value.copy(
                 //TODO this should be moved to datastore for Flow usage and avoid this workaround
                 name = getUsername(),
+                workouts = getWorkouts()
             )
         }
     }
@@ -72,6 +74,12 @@ class HomeViewModel @Inject constructor(
         }
 
     }
+
+    fun workoutClicked(id: Long) {
+        viewModelScope.launch {
+            events.emit(UiCommands.SHOW_WORKOUT(id))
+        }
+    }
 }
 
 sealed class UiCommands {
@@ -79,4 +87,5 @@ sealed class UiCommands {
     object SHOW_CHARTS : UiCommands()
     object SHOW_ONBOARDING : UiCommands()
     object SHOW_PAYWALL : UiCommands()
+    data class SHOW_WORKOUT(val id: Long) : UiCommands()
 }
