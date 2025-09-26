@@ -11,10 +11,13 @@ import androidx.room.TypeConverters
 @Dao
 interface WorkoutDao {
     @Query("SELECT * FROM Workout WHERE difficulty = :difficulty")
-    fun getByDifficulty(difficulty: Int): List<Workout>
+    suspend fun getByDifficulty(difficulty: Difficulty): List<Workout>
 
-    @Query("SELECT DISTINCT difficulty FROM Workout")
-    fun getDifficulties(): List<Difficulty>
+    @Query("SELECT * FROM Workout WHERE id = :id")
+    suspend fun getById(id: Long): Workout?
+
+    @Query("SELECT * FROM Workout")
+    suspend fun getAll(): List<Workout>
 }
 
 @Entity
