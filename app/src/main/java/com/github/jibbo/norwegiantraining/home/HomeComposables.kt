@@ -44,13 +44,13 @@ internal fun HomeView(viewModel: HomeViewModel) {
 
 @Composable
 internal fun Header(viewModel: HomeViewModel) {
-//        val state by viewModel.uiStates.collectAsState()
+    val state = viewModel.uiStates.collectAsState()
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.safeDrawingPadding()
     ) {
         Toolbar(
-            name = R.string.welcome.localizable("TODO"),
+            name = R.string.welcome.localizable(state.value.username),
             modifier = Modifier.weight(1f)
         )
         IconButton(onClick = { viewModel.chartsClicked() }) {
@@ -92,18 +92,18 @@ internal fun Streak(viewModel: HomeViewModel) {
                             modifier = Modifier.padding(6.dp),
                             style = Typography.titleMedium,
                         )
-                        Row {
-                            Text(
-                                text = workout.content,
-                                modifier = Modifier.padding(6.dp),
-                                style = Typography.bodyMedium,
-                            )
+//                        Row {
+//                            Text(
+//                                text = workout.content,
+//                                modifier = Modifier.padding(6.dp),
+//                                style = Typography.bodyMedium,
+//                            )
                             Text(
                                 text = "${workout.totalTime}m",
                                 modifier = Modifier.padding(6.dp),
                                 style = Typography.bodyMedium,
                             )
-                        }
+//                        }
                         TextButton(onClick = {
                             viewModel.workoutClicked(workout.id)
                         }) {

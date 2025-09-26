@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.Ignore
+import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.TypeConverter
@@ -22,6 +23,9 @@ interface WorkoutDao {
 
     @Query("SELECT DISTINCT difficulty FROM Workout")
     suspend fun getDifficulties(): List<Difficulty>
+
+    @Insert
+    suspend fun insert(vararg workout: Workout)
 }
 
 @Entity
@@ -34,7 +38,12 @@ data class Workout(
     @ColumnInfo(name = "content") val content: String,
 ) {
     @Ignore
-    val totalTime = content.split("-").sumOf { it.toInt() }
+    val totalTime = content.split("-").map {
+        if (it.last() == 's') {
+            return@map it.dropLast(1).toInt() / 60
+        }
+        return@map it.dropLast(n = 1).toInt()
+    }.sum()
 }
 
 enum class Difficulty {

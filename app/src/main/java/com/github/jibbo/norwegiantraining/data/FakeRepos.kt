@@ -113,4 +113,12 @@ class FakeWorkoutRepo : WorkoutRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun insert(vararg workouts: Workout) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun insert(workouts: List<Workout>) {
+        TODO("Not yet implemented")
+    }
+
 }

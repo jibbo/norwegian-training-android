@@ -11,40 +11,40 @@ class GetWorkouts @Inject constructor(
     suspend operator fun invoke(): HashMap<Difficulty, List<Workout>> {
         val workouts = workOutRepository.getAll()
         if (workouts.isEmpty()) {
-            return hashMapOf(
-                Difficulty.BEGINNER to listOf(
-                    Workout(
-                        name = "Beginner 1",
-                        difficulty = Difficulty.BEGINNER,
-                        content = "1-1-1-1"
-                    ),
-                    Workout(
-                        name = "Beginner 2",
-                        difficulty = Difficulty.BEGINNER,
-                        content = "2-2-2-2"
-                    )
-                ),
-                Difficulty.INTERMEDIATE to listOf(
-                    Workout(
-                        name = "Intermediate 1",
-                        difficulty = Difficulty.INTERMEDIATE,
-                        content = "3-3-3-3"
-                    ),
-                    Workout(
-                        name = "Intermediate 2",
-                        difficulty = Difficulty.INTERMEDIATE,
-                        content = "4-3-4-3"
-                    )
-                ),
-                Difficulty.EXPERT to listOf(
-                    Workout(
-                        name = "Advanced 1",
-                        difficulty = Difficulty.EXPERT,
-                        content = "4-4-4-4"
-                    )
-                )
-            )
+            workOutRepository.insert(basicWorkouts.values.flatten())
+            return basicWorkouts
         }
         return workouts
+    }
+
+    companion object {
+        private val basicWorkouts = hashMapOf(
+            Difficulty.BEGINNER to listOf(
+                Workout(
+                    name = "Beginner 1",
+                    difficulty = Difficulty.BEGINNER,
+                    content = "10m-30s-15s-30s-15s-30s-15s-30s-15s-10m"
+                ),
+                Workout(
+                    name = "Beginner 2",
+                    difficulty = Difficulty.BEGINNER,
+                    content = "10m-1m-30s-1m-30s-1m-30s-1m-30s-10m"
+                )
+            ),
+            Difficulty.INTERMEDIATE to listOf(
+                Workout(
+                    name = "Intermediate 1",
+                    difficulty = Difficulty.INTERMEDIATE,
+                    content = "10m-3m-3m-3m-3m-3m-3m-3m-3m-10m"
+                ),
+            ),
+            Difficulty.EXPERT to listOf(
+                Workout(
+                    name = "Expert 1",
+                    difficulty = Difficulty.EXPERT,
+                    content = "10m-4m-4m-4m-4m-4m-4m-4m-4m-10m"
+                )
+            )
+        )
     }
 }

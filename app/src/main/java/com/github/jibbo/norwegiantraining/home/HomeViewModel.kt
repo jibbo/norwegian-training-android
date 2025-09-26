@@ -28,7 +28,7 @@ class HomeViewModel @Inject constructor(
     val uiEvents = events.asSharedFlow()
 
     private val states: MutableStateFlow<UiState> = MutableStateFlow(
-        UiState(name = getUsername(), workouts = hashMapOf())
+        UiState(username = getUsername(), workouts = hashMapOf())
     )
     val uiStates = states.asStateFlow()
 
@@ -45,7 +45,7 @@ class HomeViewModel @Inject constructor(
             }
             states.value = states.value.copy(
                 //TODO this should be moved to datastore for Flow usage and avoid this workaround
-                name = getUsername(),
+                username = getUsername(),
                 workouts = getWorkouts()
             )
         }

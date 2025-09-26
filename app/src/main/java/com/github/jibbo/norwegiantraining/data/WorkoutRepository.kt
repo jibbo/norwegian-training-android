@@ -12,11 +12,21 @@ interface WorkoutRepository {
     suspend fun getByDifficulty(difficulty: Difficulty): List<Workout>
     suspend fun getById(id: Long): Workout?
     suspend fun getDifficulties(): List<Difficulty>
+    suspend fun insert(vararg workouts: Workout)
+    suspend fun insert(workouts: List<Workout>)
 }
 
 class PersistentWorkoutRepository @Inject constructor(
     private val workoutDao: WorkoutDao
 ) : WorkoutRepository {
+
+    override suspend fun insert(workouts: List<Workout>) {
+        workoutDao.insert(*workouts.toTypedArray())
+    }
+
+    override suspend fun insert(vararg workouts: Workout) {
+        workoutDao.insert(*workouts)
+    }
 
     override suspend fun getAll(): HashMap<Difficulty, List<Workout>> {
         val raw = workoutDao.getAll()
