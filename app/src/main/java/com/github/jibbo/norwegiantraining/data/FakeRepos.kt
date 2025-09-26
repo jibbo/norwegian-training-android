@@ -97,7 +97,7 @@ class FakeTracker : Analytics {
 }
 
 class FakeWorkoutRepo : WorkoutRepository {
-    override suspend fun getAll(): HashMap<Difficulty, List<Workout>> {
+    override suspend fun getAll(): List<Workout> {
         TODO("Not yet implemented")
     }
 

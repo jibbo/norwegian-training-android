@@ -14,7 +14,12 @@ class GetAllWorkouts @Inject constructor(
             workOutRepository.insert(basicWorkouts.values.flatten())
             return basicWorkouts
         }
-        return workouts
+
+        val out = hashMapOf<Difficulty, List<Workout>>()
+        for (difficulty in Difficulty.entries) {
+            out[difficulty] = workouts.filter { it.difficulty == difficulty }
+        }
+        return out
     }
 
     companion object {

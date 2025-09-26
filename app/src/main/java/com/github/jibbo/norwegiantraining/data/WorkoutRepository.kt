@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface WorkoutRepository {
-    suspend fun getAll(): HashMap<Difficulty, List<Workout>>
+    suspend fun getAll(): List<Workout>
     suspend fun getByDifficulty(difficulty: Difficulty): List<Workout>
     suspend fun getById(id: Long): Workout?
     suspend fun getDifficulties(): List<Difficulty>
@@ -28,14 +28,7 @@ class PersistentWorkoutRepository @Inject constructor(
         workoutDao.insert(*workouts)
     }
 
-    override suspend fun getAll(): HashMap<Difficulty, List<Workout>> {
-        val raw = workoutDao.getAll()
-        val workouts = HashMap<Difficulty, List<Workout>>()
-        for (difficulty in workoutDao.getDifficulties()) {
-            workouts[difficulty] = raw.filter { it.difficulty == difficulty }
-        }
-        return workouts
-    }
+    override suspend fun getAll(): List<Workout> = workoutDao.getAll()
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
         workoutDao.getByDifficulty(difficulty)

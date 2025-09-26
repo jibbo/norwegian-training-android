@@ -54,7 +54,7 @@ enum class Difficulty {
 
 class WorkoutConverters {
     @TypeConverter
-    fun toDifficulty(value: Int) = enumValues<Difficulty>()[value]
+    fun toDifficulty(value: Int) = Difficulty.entries[value]
 
     @TypeConverter
     fun fromDifficulty(value: Difficulty) = value.ordinal
