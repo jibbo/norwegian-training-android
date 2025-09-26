@@ -21,7 +21,7 @@ class PersistentWorkoutRepository @Inject constructor(
     override suspend fun getAll(): HashMap<Difficulty, List<Workout>> {
         val raw = workoutDao.getAll()
         val workouts = HashMap<Difficulty, List<Workout>>()
-        for (difficulty in Difficulty.entries) {
+        for (difficulty in workoutDao.getDifficulties()) {
             workouts[difficulty] = raw.filter { it.difficulty == difficulty }
         }
         return workouts

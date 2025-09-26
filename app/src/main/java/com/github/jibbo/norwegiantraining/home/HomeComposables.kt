@@ -1,16 +1,18 @@
 package com.github.jibbo.norwegiantraining.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -23,10 +25,10 @@ import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
-import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.GetWorkouts
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import com.github.jibbo.norwegiantraining.ui.theme.Typography
 
 @Composable
 internal fun HomeView(viewModel: HomeViewModel) {
@@ -69,35 +71,51 @@ internal fun Header(viewModel: HomeViewModel) {
 @Composable
 internal fun Streak(viewModel: HomeViewModel) {
     val state = viewModel.uiStates.collectAsState()
-    LazyColumn {
-        items(state.value.workouts.entries.size, { it }) { index ->
-            val difficulty = state.value.workouts.entries.elementAt(index)
+    LazyColumn(
+        contentPadding = PaddingValues(all = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        val keys = state.value.workouts.keys.sorted()
+        items(keys.size, { it }) { index ->
+            val difficulty = keys.elementAt(index)
             Text(
-                text = difficulty.key.name,
+                text = difficulty.name
             )
-            LazyRow {
-                items(
-                    state.value.workouts.get<Any, List<Workout>>(difficulty)?.size ?: 0,
-                    { it }) { index ->
-                    val item = state.value.workouts.get<Any, List<Workout>>(difficulty)?.get(index)
-                        ?: return@items
-                    Button(onClick = {
-                        viewModel.workoutClicked(item.id)
-                    }) {
+            val workouts = state.value.workouts[difficulty]?.sortedBy { it.id } ?: listOf()
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                workouts.forEach { workout ->
+                    ElevatedCard {
                         Text(
-                            text = item.name,
+                            text = workout.name,
+                            modifier = Modifier.padding(6.dp),
+                            style = Typography.titleMedium,
                         )
+                        Row {
+                            Text(
+                                text = workout.content,
+                                modifier = Modifier.padding(6.dp),
+                                style = Typography.bodyMedium,
+                            )
+                            Text(
+                                text = "${workout.totalTime}m",
+                                modifier = Modifier.padding(6.dp),
+                                style = Typography.bodyMedium,
+                            )
+                        }
+                        TextButton(onClick = {
+                            viewModel.workoutClicked(workout.id)
+                        }) {
+                            Text(
+                                text = R.string.start.localizable().uppercase(),
+                            )
+                        }
+
                     }
                 }
             }
         }
-    }
-    Button(onClick = {
-        viewModel.workoutClicked(0)
-    }) {
-        Text(
-            text = "START 4x4 WORKOUT",
-        )
     }
 }
 

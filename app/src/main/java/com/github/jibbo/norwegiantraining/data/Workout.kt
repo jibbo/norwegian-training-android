@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.data
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.TypeConverter
@@ -18,6 +19,9 @@ interface WorkoutDao {
 
     @Query("SELECT * FROM Workout")
     suspend fun getAll(): List<Workout>
+
+    @Query("SELECT DISTINCT difficulty FROM Workout")
+    suspend fun getDifficulties(): List<Difficulty>
 }
 
 @Entity
@@ -28,7 +32,10 @@ data class Workout(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "difficulty") val difficulty: Difficulty,
     @ColumnInfo(name = "content") val content: String,
-)
+) {
+    @Ignore
+    val totalTime = content.split("-").sumOf { it.toInt() }
+}
 
 enum class Difficulty {
     BEGINNER,

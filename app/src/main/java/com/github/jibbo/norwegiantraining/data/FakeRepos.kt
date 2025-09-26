@@ -97,30 +97,9 @@ class FakeTracker : Analytics {
 }
 
 class FakeWorkoutRepo : WorkoutRepository {
-    override suspend fun getAll(): HashMap<Difficulty, List<Workout>> =
-        hashMapOf(
-            Difficulty.BEGINNER to listOf(
-                Workout(
-                    name = "Beginner 1",
-                    difficulty = Difficulty.BEGINNER,
-                    content = "1-1-1-1"
-                )
-            ),
-            Difficulty.INTERMEDIATE to listOf(
-                Workout(
-                    name = "Intermediate 1",
-                    difficulty = Difficulty.INTERMEDIATE,
-                    content = "3-3-3-3"
-                )
-            ),
-            Difficulty.EXPERT to listOf(
-                Workout(
-                    name = "Advanced 1",
-                    difficulty = Difficulty.EXPERT,
-                    content = "4-4-4-4"
-                )
-            )
-        )
+    override suspend fun getAll(): HashMap<Difficulty, List<Workout>> {
+        TODO("Not yet implemented")
+    }
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> {
         TODO("Not yet implemented")
