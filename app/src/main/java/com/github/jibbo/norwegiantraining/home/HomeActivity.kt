@@ -1,102 +1,72 @@
 package com.github.jibbo.norwegiantraining.home
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.activity.viewModels
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.github.jibbo.norwegiantraining.R
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.components.BaseActivity
-import com.github.jibbo.norwegiantraining.components.Toolbar
-import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.log.LogActivity
+import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
+import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
+import com.github.jibbo.norwegiantraining.settings.SettingsActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import kotlinx.coroutines.launch
 
 class HomeActivity : BaseActivity() {
+
+    private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             NorwegianTrainingTheme(darkTheme = true) {
                 Scaffold { _ ->
-                    HomeView()
+                    HomeView(homeViewModel)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            homeViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
+                when (it) {
+                    UiCommands.SHOW_ONBOARDING -> showOnboarding()
+                    UiCommands.SHOW_SETTINGS -> showSettings()
+                    UiCommands.SHOW_CHARTS -> showCharts()
+                    UiCommands.SHOW_PAYWALL -> showPaywall()
                 }
             }
         }
     }
 
-    @Composable
-    private fun HomeView() {
-        Column(
-            modifier = Modifier
-                .safeDrawingPadding()
-                .padding(horizontal = 16.dp)
-        ) {
-            Header()
-            Streak()
-        }
+    override fun onResume() {
+        super.onResume()
+        // TODO move shared preferences to datastore so that this access can be removed
+        homeViewModel.refresh()
     }
 
-    @Composable
-    internal fun Header() {
-//        val state by viewModel.uiStates.collectAsState()
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.safeDrawingPadding()
-        ) {
-            Toolbar(
-                name = R.string.welcome.localizable("TODO"),
-                modifier = Modifier.weight(1f)
-            )
-            IconButton(onClick = { TODO() }) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_area_chart_24),
-                    contentDescription = ""
-                )
-            }
-            IconButton(onClick = { TODO() }) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_settings_24),
-                    contentDescription = ""
-                )
-            }
-        }
+    fun showOnboarding() {
+        val newIntent = Intent(this@HomeActivity, OnboardingActivity::class.java)
+        intent.flags =
+            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(newIntent)
     }
 
-    @Composable
-    internal fun Streak() {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Card {
-
-                Text(
-                    text = "Streak",
-                )
-
-            }
-        }
+    private fun showSettings() {
+        startActivity(Intent(this@HomeActivity, SettingsActivity::class.java))
     }
 
-    @Preview
-    @Composable
-    fun HomeViewPreview() {
-        NorwegianTrainingTheme {
-            Scaffold { _ ->
-                HomeView()
-            }
-        }
+    private fun showCharts() {
+        startActivity(Intent(this@HomeActivity, LogActivity::class.java))
+    }
+
+    private fun showPaywall() {
+        val newIntent = Intent(this@HomeActivity, PaywallActivity::class.java)
+        intent.flags =
+            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(newIntent)
     }
 
 }
