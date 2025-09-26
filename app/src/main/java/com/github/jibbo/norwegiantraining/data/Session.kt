@@ -25,7 +25,7 @@ interface SessionDao {
 }
 
 @Entity
-@TypeConverters(Converters::class)
+@TypeConverters(SessionConverters::class)
 data class Session(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
@@ -34,7 +34,7 @@ data class Session(
     @ColumnInfo(name = "date") val date: Date = Date()
 )
 
-class Converters {
+class SessionConverters {
     @TypeConverter
     fun fromString(value: String?): Date? {
         return value?.let { formatter.parse(it) }
