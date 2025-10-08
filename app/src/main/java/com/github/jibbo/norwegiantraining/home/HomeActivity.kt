@@ -24,8 +24,8 @@ class HomeActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             NorwegianTrainingTheme(darkTheme = true) {
-                Scaffold { _ ->
-                    HomeView(homeViewModel)
+                Scaffold { innerPadding ->
+                    HomeView(homeViewModel, innerPadding)
                 }
             }
         }

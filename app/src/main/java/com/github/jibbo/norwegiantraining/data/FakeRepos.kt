@@ -102,7 +102,7 @@ class FakeWorkoutRepo : WorkoutRepository {
     override suspend fun getAll(): List<Workout> = GetAllWorkouts.basicWorkouts.flatMap { it.value }
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
-        GetAllWorkouts.basicWorkouts.get(difficulty).orEmpty()
+        GetAllWorkouts.basicWorkouts[difficulty].orEmpty()
 
     override suspend fun getById(id: Long): Workout? {
         TODO("Not yet implemented")

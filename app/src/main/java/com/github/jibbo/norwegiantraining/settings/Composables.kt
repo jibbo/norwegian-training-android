@@ -2,7 +2,6 @@ package com.github.jibbo.norwegiantraining.settings
 
 import android.content.Context
 import android.content.Intent
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,7 +42,6 @@ import androidx.core.net.toUri
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
-import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
@@ -430,6 +428,26 @@ private fun CreditsCard() {
                             )
                         ) {
                             append("Fauxels")
+                        }
+                    },
+                    style = Typography.bodyMedium,
+                    color = White.copy(alpha = 0.6f)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("Picture by ")
+                        withLink(
+                            LinkAnnotation.Url(
+                                "https://unsplash.com/@silverkblack?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash",
+                                TextLinkStyles(style = SpanStyle(color = Primary))
+                            )
+                        ) {
+                            append("Vitaly Gariev")
                         }
                     },
                     style = Typography.bodyMedium,
