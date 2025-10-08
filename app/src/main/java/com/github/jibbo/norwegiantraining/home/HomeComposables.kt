@@ -8,16 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -29,8 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -51,32 +46,42 @@ import com.github.jibbo.norwegiantraining.ui.theme.Typography
 
 @Composable
 internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(
-        brush = verticalGradient(
-            colors = listOf(
-                Color.DarkGray,
-                Black
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = verticalGradient(
+                    colors = listOf(
+                        Color.DarkGray,
+                        Black
+                    )
+                )
             )
-        )
-    )) {
+    ) {
         Image(
-            painter = painterResource(id = R.drawable.runner),
+            painter = painterResource(id = R.drawable.runner_illustration),
             contentDescription = null,
             contentScale = ContentScale.Fit,
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .width(800.dp)
+                .align(Alignment.BottomEnd)
         )
     }
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .padding(
                 top = innerPadding.calculateTopPadding(),
                 bottom = innerPadding.calculateBottomPadding()
             )
     ) {
         Header(viewModel)
-        Streak(viewModel)
+        Box(
+            modifier = Modifier.safeDrawingPadding(),
+            contentAlignment = Alignment.Center
+        ) {
+            Workouts(viewModel)
+        }
     }
 }
 
@@ -85,7 +90,8 @@ internal fun Header(viewModel: HomeViewModel) {
     val state = viewModel.uiStates.collectAsState()
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.safeDrawingPadding()
+        modifier = Modifier
+            .safeDrawingPadding()
     ) {
         Toolbar(
             name = R.string.welcome.localizable(state.value.username),
@@ -107,7 +113,7 @@ internal fun Header(viewModel: HomeViewModel) {
 }
 
 @Composable
-internal fun Streak(viewModel: HomeViewModel) {
+internal fun Workouts(viewModel: HomeViewModel) {
     val state = viewModel.uiStates.collectAsState()
     LazyColumn(
         contentPadding = PaddingValues(all = 6.dp),
@@ -153,12 +159,12 @@ private fun WorkoutCard(
             style = Typography.titleMedium,
         )
         Text(
-            text = workout.splitText(),
+            text = "${workout.totalTime}m (${workout.restTime()}m rest)",
             modifier = Modifier.padding(8.dp),
             style = Typography.bodyMedium,
         )
         Text(
-            text = "${workout.totalTime}m (${workout.restTime()}m rest)",
+            text = workout.splitText(),
             modifier = Modifier.padding(8.dp),
             style = Typography.bodyMedium,
         )

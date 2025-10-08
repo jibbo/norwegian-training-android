@@ -119,7 +119,8 @@ fun Toolbar(
         }
         Text(
             text = name,
-            style = Typography.headlineSmall
+            style = Typography.headlineSmall,
+            modifier = Modifier.padding(start = 6.dp)
         )
     }
 }
