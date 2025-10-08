@@ -88,7 +88,7 @@ internal fun Streak(viewModel: HomeViewModel) {
             val workouts = state.value.workouts[difficulty]?.sortedBy { it.id } ?: listOf()
             val scrollState = rememberScrollState()
             Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.horizontalScroll(scrollState)
             ) {
                 workouts.forEach { workout ->
@@ -108,13 +108,13 @@ internal fun Streak(viewModel: HomeViewModel) {
                             style = Typography.bodyMedium,
                         )
                         Text(
-                            text = "${workout.totalTime}m (w/ ${workout.restTime()}m",
+                            text = "${workout.totalTime}m (${workout.restTime()}m rest)",
                             modifier = Modifier.padding(6.dp),
                             style = Typography.bodyMedium,
                         )
                         TextButton(onClick = {
                             viewModel.workoutClicked(workout.id)
-                        }) {
+                        }, modifier = Modifier.align(Alignment.End)) {
                             Text(
                                 text = R.string.start.localizable().uppercase(),
                             )

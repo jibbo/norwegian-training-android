@@ -61,17 +61,12 @@ class GetAllWorkouts @Inject constructor(
                 Workout(
                     name = "Intermediate 2",
                     difficulty = Difficulty.INTERMEDIATE,
-                    content = "5m-2m-90s-2m-90s-2m-90s-2m-90s-2m-90s-2m-90s-2m-90s-2m-90s-5m"
-                ),
-                Workout(
-                    name = "Intermediate 4",
-                    difficulty = Difficulty.INTERMEDIATE,
                     content = "5m-3m-2m-3m-2m-3m-2m-3m-2m-5m"
                 ),
                 Workout(
-                    name = "Intermediate 5",
+                    name = "Intermediate 3",
                     difficulty = Difficulty.INTERMEDIATE,
-                    content = "5m-3m-2m-3m-2m-3m-2m-3m-2m-3m-2m-3m-2m-3m-2m-3m-2m-5m"
+                    content = "5m-3m-3m-3m-3m-3m-3m-3m-3m-5m"
                 ),
             ),
             Difficulty.EXPERT to listOf(
@@ -88,7 +83,7 @@ class GetAllWorkouts @Inject constructor(
                 Workout(
                     name = "The true Norwegian",
                     difficulty = Difficulty.EXPERT,
-                    content = "10m-4m-4m-4m-4m-4m-4m-4m-4m-10m"
+                    content = "5m-4m-4m-4m-4m-4m-4m-4m-4m-5m"
                 )
             )
         )

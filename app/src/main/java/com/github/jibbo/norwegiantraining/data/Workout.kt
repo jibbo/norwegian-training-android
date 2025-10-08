@@ -38,11 +38,11 @@ data class Workout(
     @ColumnInfo(name = "content") val content: String,
 ) {
     @Ignore
-    val totalTime = content.split("-").map { return@map it.toTime() }.sum().div(60)
+    val totalTime = content.split("-").map { return@map it.toSeconds() }.sum().div(60)
 
     fun restTime(): Int {
         val tmp = content.split("-")
-        return tmp.first().toTime() + tmp.last().toTime()
+        return (tmp.first().toSeconds() + tmp.last().toSeconds()).div(60)
     }
 
     fun splitText(): String {
@@ -52,7 +52,7 @@ data class Workout(
         return "$split x $split"
     }
 
-    private fun String.toTime(): Int {
+    private fun String.toSeconds(): Int {
         if (last() == 's') {
             return dropLast(1).toInt()
         }
