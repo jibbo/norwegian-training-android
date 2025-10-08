@@ -147,7 +147,7 @@ private fun WorkoutCard(
 ) {
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
-            containerColor = Color.Black
+            containerColor = Black
         ),
         modifier = Modifier
             .width(200.dp)
