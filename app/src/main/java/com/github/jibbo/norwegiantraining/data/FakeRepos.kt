@@ -1,5 +1,7 @@
 package com.github.jibbo.norwegiantraining.data
 
+import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
+
 class FakeSessionRepo : SessionRepository {
     override suspend fun getSessions(
         limit: Int,
@@ -97,21 +99,17 @@ class FakeTracker : Analytics {
 }
 
 class FakeWorkoutRepo : WorkoutRepository {
-    override suspend fun getAll(): List<Workout> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getAll(): List<Workout> = GetAllWorkouts.basicWorkouts.flatMap { it.value }
 
-    override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
+        GetAllWorkouts.basicWorkouts.get(difficulty).orEmpty()
 
     override suspend fun getById(id: Long): Workout? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getDifficulties(): List<Difficulty> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getDifficulties(): List<Difficulty> =
+        GetAllWorkouts.basicWorkouts.keys.toList()
 
     override suspend fun insert(vararg workouts: Workout) {
         TODO("Not yet implemented")

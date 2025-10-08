@@ -38,12 +38,26 @@ data class Workout(
     @ColumnInfo(name = "content") val content: String,
 ) {
     @Ignore
-    val totalTime = content.split("-").map {
-        if (it.last() == 's') {
-            return@map it.dropLast(1).toInt()
+    val totalTime = content.split("-").map { return@map it.toTime() }.sum().div(60)
+
+    fun restTime(): Int {
+        val tmp = content.split("-")
+        return tmp.first().toTime() + tmp.last().toTime()
+    }
+
+    fun splitText(): String {
+        val tmp = content.split("-")
+        val list = tmp.subList(1, tmp.size - 1)
+        val split = list.size / 2
+        return "$split x $split"
+    }
+
+    private fun String.toTime(): Int {
+        if (last() == 's') {
+            return dropLast(1).toInt()
         }
-        return@map it.dropLast(n = 1).toInt() * 60
-    }.sum().div(60)
+        return dropLast(n = 1).toInt() * 60
+    }
 }
 
 enum class Difficulty {
