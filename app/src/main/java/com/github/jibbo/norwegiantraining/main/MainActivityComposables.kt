@@ -46,6 +46,7 @@ import com.github.jibbo.norwegiantraining.components.VideoBackground
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
+import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
@@ -160,13 +161,13 @@ private fun ColumnScope.Timer(
 private fun Instructions(state: UiState) {
     Spacer(modifier = Modifier.height(64.dp))
     Text(
-        text = state.step.message().localizable(),
+        text = state.step.name.message().localizable(),
         style = Typography.headlineLarge,
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center
     )
     Text(
-        text = state.step.description().localizable(),
+        text = state.step.name.description().localizable(),
         style = Typography.headlineSmall,
         modifier = Modifier
             .fillMaxWidth()
@@ -242,12 +243,11 @@ fun GreetingPreview() {
     NorwegianTrainingTheme {
         val sessionRepository = FakeSessionRepo()
         val settingsRepository = FakeSettingsRepository()
+        val workoutRepository = FakeWorkoutRepo()
         val getTodaySession = GetTodaySessionUseCase(sessionRepository)
         MainView(
             mainViewModel = MainViewModel(
-                MoveToNextPhaseDomainService(
-                    getTodaySession
-                ),
+                MoveToNextPhaseDomainService(workoutRepository),
                 getTodaySession,
                 PhaseEndedUseCase(getTodaySession, sessionRepository),
                 SkipPhaseUseCase(getTodaySession, sessionRepository),

@@ -45,17 +45,48 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        tts = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                tts?.language = Locale.getDefault()
-            } else {
-                Log.e("tts", "not working")
-                tts = null
-            }
-        }
+        initTTS()
 
         AlarmUtils.createNotificationChannel(this)
 
+        setId()
+
+        observe()
+    }
+
+    private fun setId() {
+        val workoutId = intent.getLongExtra("workout_id", -1L)
+        mainViewModel.setId(workoutId)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // TODO move shared preferences to datastore so that this access can be removed
+        mainViewModel.refresh()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                mainViewModel.permissionGranted()
+            } else {
+                // Permission denied. Handle appropriately
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        tts?.stop()
+        tts?.shutdown()
+    }
+
+    private fun observe() {
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
@@ -87,31 +118,15 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // TODO move shared preferences to datastore so that this access can be removed
-        mainViewModel.refresh()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                mainViewModel.permissionGranted()
+    private fun initTTS() {
+        tts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.language = Locale.getDefault()
             } else {
-                // Permission denied. Handle appropriately
+                Log.e("tts", "not working")
+                tts = null
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        tts?.stop()
-        tts?.shutdown()
     }
 
     private fun startAlarm(triggerTime: Long, uiState: UiState) {

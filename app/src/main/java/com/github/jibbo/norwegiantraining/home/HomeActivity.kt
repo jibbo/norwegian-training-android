@@ -56,9 +56,9 @@ class HomeActivity : BaseActivity() {
         startActivity(newIntent)
     }
 
-    fun showWorkout(id: Long) {
+    fun showWorkout(workoutId: Long) {
         val newIntent = Intent(this@HomeActivity, MainActivity::class.java)
-        newIntent.putExtra("id", id)
+        newIntent.putExtra("workout_id", workoutId)
         startActivity(newIntent)
     }
 

@@ -145,6 +145,10 @@ private fun WorkoutCard(
     workout: Workout,
     viewModel: HomeViewModel
 ) {
+    val splitSize = workout.splitText(
+        withWarmup = false,
+        withCooldown = false
+    )
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = Black
@@ -164,7 +168,7 @@ private fun WorkoutCard(
             style = Typography.bodyMedium,
         )
         Text(
-            text = workout.splitText(),
+            text = "$splitSize x $splitSize",
             modifier = Modifier.padding(8.dp),
             style = Typography.bodyMedium,
         )

@@ -45,11 +45,18 @@ data class Workout(
         return (tmp.first().toSeconds() + tmp.last().toSeconds()).div(60)
     }
 
-    fun splitText(): String {
-        val tmp = content.split("-")
-        val list = tmp.subList(1, tmp.size - 1)
-        val split = list.size / 2
-        return "$split x $split"
+    fun getSplit(): List<Long> = content.split("-").map { it.toMilliSeconds() }
+
+    fun splitText(withWarmup: Boolean = true, withCooldown: Boolean = true): Int {
+        val split = getSplit()
+        val splitSize = if (!withWarmup && !withCooldown) {
+            split.removeFromSize(2)
+        } else if (!withWarmup || !withCooldown) {
+            split.removeFromSize(1)
+        } else {
+            split.size
+        }
+        return splitSize / 2
     }
 
     private fun String.toSeconds(): Int {
@@ -57,6 +64,19 @@ data class Workout(
             return dropLast(1).toInt()
         }
         return dropLast(n = 1).toInt() * 60
+    }
+
+    private fun String.toMilliSeconds(): Long {
+        if (last() == 's') {
+            return dropLast(1).toLong() * 1000
+        }
+        return dropLast(n = 1).toLong() * 60 * 1000
+    }
+
+    private fun List<Any>.removeFromSize(howMany: Int) = if (size > howMany) {
+        size - howMany
+    } else {
+        0
     }
 }
 
