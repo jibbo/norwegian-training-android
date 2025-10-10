@@ -72,6 +72,11 @@
     <string name="onboarding_step_5_description">Sotto il tuo controllo in qualsiasi momento</string>
     <string name="onboarding_step_5_body">Niente più incertezze</string>
 
+    <string name="onboarding_step_6_title">Allenamenti personalizzati</string>
+    <string name="onboarding_step_6_description">preparati in anticipo per ogni livello di fitness</string>
+    <string name="onboarding_step_6_body">Diventare pro o no è una tua scelta</string>
+
+
     <!-- Home -->
     <string name="workout_time">%1$sm (%2$sm riposo)</string>
     <string name="workout_split">%1$sx%1$s</string>

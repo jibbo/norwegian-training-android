@@ -85,6 +85,10 @@
     <string name="onboarding_step_5_description">Under your control anytime</string>
     <string name="onboarding_step_5_body">No more guesswork</string>
 
+    <string name="onboarding_step_6_title">Tailored workouts</string>
+    <string name="onboarding_step_6_description">pre-made for any fitness level</string>
+    <string name="onboarding_step_6_body">Becoming a pro or not is your choice</string>
+
     <!-- Home -->
     <string name="workout_time">%1$sm (%2$sm rest)</string>
     <string name="workout_split">%1$sx%1$s</string>

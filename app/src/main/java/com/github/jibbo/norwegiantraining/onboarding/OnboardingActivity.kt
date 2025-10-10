@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
@@ -51,7 +52,7 @@ import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.components.localizable
-import com.github.jibbo.norwegiantraining.main.MainActivity
+import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -107,6 +108,7 @@ fun Content(hasPaid: MutableState<Boolean>, innerPadding: PaddingValues) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
+                .safeDrawingPadding()
                 .weight(1f)
                 .padding(top = 8.dp),
             userScrollEnabled = true
@@ -209,10 +211,10 @@ private fun OnBoardingPage(
 
 private fun getNextActivity(hasNotPaid: MutableState<Boolean>): Class<out BaseActivity> =
     if (BuildConfig.DEBUG) {
-        MainActivity::class.java
+        HomeActivity::class.java
     } else if (hasNotPaid.value) {
         PaywallActivity::class.java
-    } else MainActivity::class.java
+    } else HomeActivity::class.java
 
 
 @Composable
@@ -276,7 +278,7 @@ fun ColumnScope.NormalPage(state: UiState.Normal, modifier: Modifier = Modifier)
                 contentDescription = null,
                 modifier = Modifier
                     .clip(CircleShape)
-                    .size(width = 256.dp, height = 256.dp)
+                    .size(width = 300.dp, height = 300.dp)
             )
         }
         Text(
