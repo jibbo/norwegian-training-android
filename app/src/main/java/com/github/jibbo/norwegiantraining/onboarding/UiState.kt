@@ -58,6 +58,12 @@ object OnboardingStates {
             image = R.drawable.working_out_illustration
         ),
         UiState.Normal(
+            title = R.string.onboarding_step_6_title,
+            description = R.string.onboarding_step_6_description,
+            body = R.string.onboarding_step_6_body,
+            image = R.drawable.runner_illustration
+        ),
+        UiState.Normal(
             title = R.string.onboarding_step_5_title,
             description = R.string.onboarding_step_5_description,
             body = R.string.onboarding_step_5_body,

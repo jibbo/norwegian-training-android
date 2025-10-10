@@ -2,31 +2,32 @@ package com.github.jibbo.norwegiantraining.main
 
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.domain.Phase
+import com.github.jibbo.norwegiantraining.domain.PhaseName
 
 data class UiState(
-    val step: Phase = Phase.GET_READY,
+    val step: Phase = Phase(PhaseName.GET_READY, 0L),
     val isTimerRunning: Boolean = false,
     val targetTimeMillis: Long = 0L,
     val remainingTimeOnPauseMillis: Long = 0L,
     val name: String = "",
 )
 
-fun Phase.description() = when (this) {
-    Phase.GET_READY -> R.string.get_ready_desc
-    Phase.WARMUP -> R.string.warmup_desc
-    Phase.REST_PHASE -> R.string.cooldown_desc
-    Phase.COMPLETED -> R.string.completed_desc
-    Phase.HARD_PHASE -> R.string.hit_cardio_desc
-    Phase.SOFT_PHASE -> R.string.light_cardio_desc
+fun PhaseName.description() = when (this) {
+    PhaseName.GET_READY -> R.string.get_ready_desc
+    PhaseName.WARMUP -> R.string.warmup_desc
+    PhaseName.REST_PHASE -> R.string.cooldown_desc
+    PhaseName.COMPLETED -> R.string.completed_desc
+    PhaseName.HARD_PHASE -> R.string.hit_cardio_desc
+    PhaseName.SOFT_PHASE -> R.string.light_cardio_desc
 }
 
-fun Phase.message() = when (this) {
-    Phase.GET_READY -> R.string.get_ready
-    Phase.WARMUP -> R.string.warmup
-    Phase.REST_PHASE -> R.string.cooldown
-    Phase.COMPLETED -> R.string.completed
-    Phase.HARD_PHASE -> R.string.hit_cardio
-    Phase.SOFT_PHASE -> R.string.light_cardio
+fun PhaseName.message() = when (this) {
+    PhaseName.GET_READY -> R.string.get_ready
+    PhaseName.WARMUP -> R.string.warmup
+    PhaseName.REST_PHASE -> R.string.cooldown
+    PhaseName.COMPLETED -> R.string.completed
+    PhaseName.HARD_PHASE -> R.string.hit_cardio
+    PhaseName.SOFT_PHASE -> R.string.light_cardio
 }
 
 sealed class SpeakState(val message: Int) {

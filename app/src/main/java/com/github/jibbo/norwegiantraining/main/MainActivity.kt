@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
@@ -21,11 +20,8 @@ import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.alarm.AlarmReceiver
 import com.github.jibbo.norwegiantraining.alarm.AlarmUtils
 import com.github.jibbo.norwegiantraining.components.BaseActivity
-import com.github.jibbo.norwegiantraining.log.LogActivity
+import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
-import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
-import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
-import com.github.jibbo.norwegiantraining.settings.SettingsActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -38,7 +34,6 @@ class MainActivity : BaseActivity() {
 
     private var tts: TextToSpeech? = null
 
-    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -50,61 +45,18 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        tts = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                tts?.language = Locale.getDefault()
-            } else {
-                Log.e("tts", "not working")
-                tts = null
-            }
-        }
+        initTTS()
 
         AlarmUtils.createNotificationChannel(this)
 
-        lifecycleScope.launch {
-            mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
-                when (it) {
-                    is UiCommands.SHOW_ONBOARDING -> {
-                        val newIntent = Intent(this@MainActivity, OnboardingActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(newIntent)
-                    }
+        setId()
 
-                    is UiCommands.START_ALARM -> {
-                        startAlarm(it.triggerTime, it.uiState)
-                    }
+        observe()
+    }
 
-                    is UiCommands.SHOW_NOTIFICATION -> {
-                        checkNotificationPermission()
-                        AlarmUtils.showNotification(this@MainActivity, it.triggerTime)
-                    }
-
-                    is UiCommands.PAUSE_ALARM -> {
-                        AlarmUtils.dismissNotification(this@MainActivity)
-                    }
-
-                    is UiCommands.Speak -> {
-                        speak(it.speakState.message, it.flush)
-                    }
-
-                    is UiCommands.SHOW_SETTINGS -> {
-                        startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-                    }
-
-                    is UiCommands.SHOW_CHARTS -> {
-                        startActivity(Intent(this@MainActivity, LogActivity::class.java))
-                    }
-
-                    is UiCommands.SHOW_PAYWALL -> {
-                        val newIntent = Intent(this@MainActivity, PaywallActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(newIntent)
-                    }
-                }
-            }
-        }
+    private fun setId() {
+        val workoutId = intent.getLongExtra("workout_id", -1L)
+        mainViewModel.setId(workoutId)
     }
 
     override fun onResume() {
@@ -132,6 +84,49 @@ class MainActivity : BaseActivity() {
         super.onDestroy()
         tts?.stop()
         tts?.shutdown()
+    }
+
+    private fun observe() {
+        lifecycleScope.launch {
+            mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
+                when (it) {
+                    is UiCommands.START_ALARM -> {
+                        startAlarm(it.triggerTime, it.uiState)
+                    }
+
+                    is UiCommands.SHOW_NOTIFICATION -> {
+                        checkNotificationPermission()
+                        AlarmUtils.showNotification(this@MainActivity, it.triggerTime)
+                    }
+
+                    is UiCommands.PAUSE_ALARM -> {
+                        AlarmUtils.dismissNotification(this@MainActivity)
+                    }
+
+                    is UiCommands.Speak -> {
+                        speak(it.speakState.message, it.flush)
+                    }
+
+                    is UiCommands.CLOSE -> {
+                        val intent = Intent(this@MainActivity, HomeActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun initTTS() {
+        tts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.language = Locale.getDefault()
+            } else {
+                Log.e("tts", "not working")
+                tts = null
+            }
+        }
     }
 
     private fun startAlarm(triggerTime: Long, uiState: UiState) {

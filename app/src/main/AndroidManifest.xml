@@ -34,8 +34,14 @@
         <activity
             android:name=".paywall.PaywallActivity"
             android:theme="@style/Theme.NorwegianTraining" />
+
         <activity
             android:name=".main.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NorwegianTraining" />
+
+        <activity
+            android:name=".home.HomeActivity"
             android:exported="true"
             android:theme="@style/Theme.NorwegianTraining">
             <intent-filter>

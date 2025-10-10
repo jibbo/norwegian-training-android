@@ -2,7 +2,6 @@ package com.github.jibbo.norwegiantraining.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
@@ -10,10 +9,8 @@ import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
+import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
-import com.revenuecat.purchases.CustomerInfo
-import com.revenuecat.purchases.Purchases
-import com.revenuecat.purchases.getCustomerInfoWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,6 +30,7 @@ class MainViewModel @Inject constructor(
     // TODO remove direct access to repos
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
+    private var workoutId = 0L
     private var todaySession: Session = Session()
 
     // TODO move to foreground service
@@ -47,16 +45,7 @@ class MainViewModel @Inject constructor(
     val uiStates = states.asStateFlow()
 
     fun refresh() {
-        Purchases.sharedInstance.getCustomerInfoWith(
-            onError = {
-                // TODO handle error
-            },
-            onSuccess = purchasedCheck()
-        )
         viewModelScope.launch {
-            if (!settingsRepository.isOnboardingCompleted() && !BuildConfig.DEBUG) {
-                events.emit(UiCommands.SHOW_ONBOARDING)
-            }
             todaySession = getTodaySession()
             states.value = states.value.copy(
                 //TODO this should be moved to datastore for Flow usage and avoid this workaround
@@ -65,35 +54,25 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
-        val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
-        if (hasNotPurchased && !BuildConfig.DEBUG) {
-            viewModelScope.launch {
-                events.emit(UiCommands.SHOW_PAYWALL)
-            }
-        }
-
-    }
-
     fun mainButtonClicked() {
         viewModelScope.launch {
             if (states.value.isTimerRunning) {
                 pauseTimer()
             } else if (states.value.remainingTimeOnPauseMillis > 0) {
                 scheduleTimer(states.value.step, states.value.remainingTimeOnPauseMillis)
-            } else if (states.value.step.durationMillis != null) {
-                scheduleTimer(states.value.step, states.value.step.durationMillis!!)
+            } else if (states.value.step.durationMillis > 0L) {
+                scheduleTimer(states.value.step, states.value.step.durationMillis)
             } else {
-                showNextPhase(getNextPhase(currentStep))
+                showNextPhase(getNextPhase(workoutId, currentStep))
             }
         }
     }
 
     fun showSkipButton() =
-        states.value.step != Phase.COMPLETED && states.value.step != Phase.GET_READY
+        states.value.step.name != PhaseName.COMPLETED && states.value.step.name != PhaseName.GET_READY
 
     fun showCountdown() =
-        states.value.step != Phase.COMPLETED && states.value.step != Phase.GET_READY
+        states.value.step.name != PhaseName.COMPLETED && states.value.step.name != PhaseName.GET_READY
 
     fun permissionGranted() {
         val oldValue = states.value
@@ -105,37 +84,35 @@ class MainViewModel @Inject constructor(
     fun skipClicked() {
         viewModelScope.launch {
             todaySession = skipPhase()
-            showNextPhase(getNextPhase(currentStep))
+            showNextPhase(getNextPhase(workoutId, currentStep))
         }
     }
 
     fun onTimerFinish() {
         viewModelScope.launch {
             todaySession = phaseEnded()
-            showNextPhase(getNextPhase(currentStep))
+            showNextPhase(getNextPhase(workoutId, currentStep))
         }
     }
 
-    fun settingsClicked() {
-        publishEvent(UiCommands.SHOW_SETTINGS)
-    }
-
-    fun chartsClicked() {
-        publishEvent(UiCommands.SHOW_CHARTS)
+    fun closeWorkout() {
+        viewModelScope.launch {
+            events.emit(UiCommands.CLOSE)
+        }
     }
 
     private fun showNextPhase(nextPhase: Phase) {
-        when (nextPhase) {
-            Phase.GET_READY -> showGetReady()
-            Phase.COMPLETED -> showCompleted()
-            else -> scheduleTimer(nextPhase, nextPhase.durationMillis!!) // I know it's not null
+        when (nextPhase.name) {
+            PhaseName.GET_READY -> showGetReady()
+            PhaseName.COMPLETED -> showCompleted()
+            else -> scheduleTimer(nextPhase, nextPhase.durationMillis)
         }
         currentStep++
     }
 
     private fun showGetReady() {
         states.value = UiState(
-            step = Phase.GET_READY,
+            step = Phase(PhaseName.GET_READY, 0L),
             isTimerRunning = false,
             targetTimeMillis = 0L,
             remainingTimeOnPauseMillis = 0L
@@ -144,7 +121,7 @@ class MainViewModel @Inject constructor(
 
     private fun showCompleted() {
         states.value = UiState(
-            step = Phase.COMPLETED,
+            step = Phase(PhaseName.COMPLETED, 0L),
             isTimerRunning = false,
             targetTimeMillis = 0L,
             remainingTimeOnPauseMillis = 0L
@@ -177,10 +154,10 @@ class MainViewModel @Inject constructor(
             publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
         }
         if (settingsRepository.getAnnouncePhase()) {
-            UiCommands.Speak(SpeakState.Message(phase.message()), flush = true)
+            UiCommands.Speak(SpeakState.Message(phase.name.message()), flush = true)
         }
         if (settingsRepository.getAnnouncePhaseDesc()) {
-            UiCommands.Speak(SpeakState.Message(phase.description()))
+            UiCommands.Speak(SpeakState.Message(phase.name.description()))
         }
         ticking()
     }
@@ -208,12 +185,18 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun setId(id: Long) {
+        if (id == -1L) {
+            closeWorkout()
+            return
+        }
+        workoutId = id
+        refresh()
+    }
+
     sealed class UiCommands {
         object PAUSE_ALARM : UiCommands()
-        object SHOW_SETTINGS : UiCommands()
-        object SHOW_CHARTS : UiCommands()
-        object SHOW_ONBOARDING : UiCommands()
-        object SHOW_PAYWALL : UiCommands()
+        object CLOSE : UiCommands()
         data class START_ALARM(val triggerTime: Long, val uiState: UiState) : UiCommands()
         data class SHOW_NOTIFICATION(val triggerTime: Long) : UiCommands()
         data class Speak(val speakState: SpeakState, val flush: Boolean = false) : UiCommands()
