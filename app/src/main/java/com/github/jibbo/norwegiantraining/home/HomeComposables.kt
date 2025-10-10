@@ -137,6 +137,17 @@ internal fun Workouts(viewModel: HomeViewModel) {
             }
         }
     }
+//    LazyVerticalGrid(
+//        columns = GridCells.Adaptive(minSize = 150.dp),
+//        verticalArrangement = Arrangement.spacedBy(6.dp),
+//        horizontalArrangement = Arrangement.spacedBy(6.dp),
+//        modifier = Modifier.padding(horizontal = 6.dp)
+//    ) {
+//        val workouts = state.value.workouts.flatMap { it.value }.sortedBy { it.id }
+//        items(workouts.size, { it }) { index ->
+//            WorkoutCard(workouts[index], viewModel)
+//        }
+//    }
 }
 
 @Composable
