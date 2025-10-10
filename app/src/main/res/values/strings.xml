@@ -85,5 +85,9 @@
     <string name="onboarding_step_5_description">Under your control anytime</string>
     <string name="onboarding_step_5_body">No more guesswork</string>
 
+    <!-- Home -->
+    <string name="workout_time">%1$sm (%2$sm rest)</string>
+    <string name="workout_split">%1$sx%1$s</string>
+
 
 </resources>

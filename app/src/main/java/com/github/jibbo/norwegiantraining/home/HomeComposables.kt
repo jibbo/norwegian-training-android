@@ -21,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -155,7 +154,10 @@ private fun WorkoutCard(
         ),
         modifier = Modifier
             .width(200.dp)
-            .height(150.dp)
+            .height(125.dp),
+        onClick = {
+            viewModel.workoutClicked(workout.id)
+        }
     ) {
         Text(
             text = workout.name,
@@ -163,22 +165,22 @@ private fun WorkoutCard(
             style = Typography.titleMedium,
         )
         Text(
-            text = "${workout.totalTime}m (${workout.restTime()}m rest)",
+            text = R.string.workout_time.localizable(workout.totalTime, workout.restTime()),
             modifier = Modifier.padding(8.dp),
             style = Typography.bodyMedium,
         )
         Text(
-            text = "$splitSize x $splitSize",
+            text = R.string.workout_split.localizable(splitSize),
             modifier = Modifier.padding(8.dp),
             style = Typography.bodyMedium,
         )
-        TextButton(onClick = {
-            viewModel.workoutClicked(workout.id)
-        }, modifier = Modifier.align(Alignment.End)) {
-            Text(
-                text = R.string.start.localizable().uppercase(),
-            )
-        }
+//        TextButton(onClick = {
+//            viewModel.workoutClicked(workout.id)
+//        }, modifier = Modifier.align(Alignment.End)) {
+//            Text(
+//                text = R.string.start.localizable().uppercase(),
+//            )
+//        }
     }
 }
 

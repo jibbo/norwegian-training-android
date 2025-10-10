@@ -72,4 +72,9 @@
     <string name="onboarding_step_5_description">Sotto il tuo controllo in qualsiasi momento</string>
     <string name="onboarding_step_5_body">Niente più incertezze</string>
 
+    <!-- Home -->
+    <string name="workout_time">%1$sm (%2$sm riposo)</string>
+    <string name="workout_split">%1$sx%1$s</string>
+
+
 </resources>
