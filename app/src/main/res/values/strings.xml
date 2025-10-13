@@ -92,6 +92,9 @@
     <!-- Home -->
     <string name="workout_time">%1$sm (%2$sm rest)</string>
     <string name="workout_split">%1$sx%1$s</string>
+    <string name="workout_category_beginner">Beginner</string>
+    <string name="workout_category_intermediate">Intermediate</string>
+    <string name="workout_category_expert">Expert</string>
 
 
 </resources>

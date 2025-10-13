@@ -122,7 +122,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
         items(keys.size, { it }) { index ->
             val difficulty = keys.elementAt(index)
             Text(
-                text = difficulty.name,
+                text = difficulty.printableName().localizable(),
                 modifier = Modifier.padding(bottom = 12.dp),
             )
             val workouts = state.value.workouts[difficulty]?.sortedBy { it.id } ?: listOf()

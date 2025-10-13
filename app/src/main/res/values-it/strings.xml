@@ -80,6 +80,9 @@
     <!-- Home -->
     <string name="workout_time">%1$sm (%2$sm riposo)</string>
     <string name="workout_split">%1$sx%1$s</string>
+    <string name="workout_category_beginner">Principiante</string>
+    <string name="workout_category_intermediate">Esordiente</string>
+    <string name="workout_category_expert">Pro</string>
 
 
 </resources>
