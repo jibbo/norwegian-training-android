@@ -7,7 +7,7 @@ import com.github.jibbo.norwegiantraining.data.Workout
 
 data class UiState(
     val username: String = "",
-    val workouts: HashMap<Difficulty, List<Workout>>
+    val workouts: Map<Difficulty, List<Workout>>
 )
 
 @StringRes

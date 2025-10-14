@@ -95,6 +95,17 @@
     <string name="workout_category_beginner">Beginner</string>
     <string name="workout_category_intermediate">Intermediate</string>
     <string name="workout_category_expert">Expert</string>
+    <string name="workout_first_steps">🐾 First steps</string>
+    <string name="workout_beginner_1">👣 Beginner 1</string>
+    <string name="workout_beginner_2">🦶 Beginner 2</string>
+    <string name="workout_beginner_3">🦶🦶 Beginner 3</string>
+    <string name="workout_not_so_beginner">👟 Not so beginner</string>
+    <string name="workout_intermediate_1">🎽 Intermediate 1</string>
+    <string name="workout_intermediate_2">💨 Intermediate 2</string>
+    <string name="workout_intermediate_3">🧠 Intermediate 3</string>
+    <string name="workout_true_norwegian">🇳🇴 True Norwegian 4x4</string>
+    <string name="workout_expert_1">🏃‍♀️ Expert 1</string>
+    <string name="workout_expert_2">💪 Expert 2</string>
 
 
 </resources>

@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.revenuecat.purchases)
     implementation(libs.revenuecat.purchases.ui)
+    implementation(libs.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
