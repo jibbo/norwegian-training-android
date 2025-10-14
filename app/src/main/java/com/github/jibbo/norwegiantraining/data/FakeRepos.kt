@@ -1,5 +1,7 @@
 package com.github.jibbo.norwegiantraining.data
 
+import kotlinx.coroutines.flow.Flow
+
 class FakeSessionRepo : SessionRepository {
     override suspend fun getSessions(
         limit: Int,
@@ -97,8 +99,9 @@ class FakeTracker : Analytics {
 }
 
 class FakeWorkoutRepo : WorkoutRepository {
-    override suspend fun getAll(): List<Workout> =
+    override fun getAll(): Flow<List<Workout>> {
         TODO("Not yet implemented")
+    }
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
         TODO("Not yet implemented")

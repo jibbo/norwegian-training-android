@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getUsername: GetUsername,
-    private val getAllWorkouts: GetAllWorkouts,
+    getAllWorkouts: GetAllWorkouts,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
@@ -28,9 +28,17 @@ class HomeViewModel @Inject constructor(
     val uiEvents = events.asSharedFlow()
 
     private val states: MutableStateFlow<UiState> = MutableStateFlow(
-        UiState(username = getUsername(), workouts = hashMapOf())
+        UiState(username = getUsername(), workouts = emptyMap())
     )
     val uiStates = states.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            getAllWorkouts().collect { workoutsMap ->
+                states.value = states.value.copy(workouts = workoutsMap)
+            }
+        }
+    }
 
     fun refresh() {
         Purchases.sharedInstance.getCustomerInfoWith(
@@ -44,9 +52,7 @@ class HomeViewModel @Inject constructor(
                 events.emit(UiCommands.SHOW_ONBOARDING)
             }
             states.value = states.value.copy(
-                //TODO this should be moved to datastore for Flow usage and avoid this workaround
-                username = getUsername(),
-                workouts = getAllWorkouts()
+                username = getUsername()
             )
         }
     }

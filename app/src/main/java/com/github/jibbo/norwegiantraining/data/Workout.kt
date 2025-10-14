@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WorkoutDao {
@@ -19,7 +20,7 @@ interface WorkoutDao {
     suspend fun getById(id: Long): Workout?
 
     @Query("SELECT * FROM Workout")
-    suspend fun getAll(): List<Workout>
+    fun getAll(): Flow<List<Workout>>
 
     @Query("SELECT DISTINCT difficulty FROM Workout")
     suspend fun getDifficulties(): List<Difficulty>
