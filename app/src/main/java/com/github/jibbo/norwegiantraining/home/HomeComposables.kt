@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,7 +27,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,18 +40,20 @@ import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.ui.theme.Black
+import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 
 @Composable
 internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
+    val state = viewModel.uiStates.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = verticalGradient(
                     colors = listOf(
-                        Color.DarkGray,
+                        DarkPrimary,
                         Black
                     )
                 )
@@ -74,26 +76,31 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
                 bottom = innerPadding.calculateBottomPadding()
             )
     ) {
-        Header(viewModel)
-        Box(
-            modifier = Modifier.safeDrawingPadding(),
-            contentAlignment = Alignment.Center
-        ) {
-            Workouts(viewModel)
+        if (state.value is UiState.Loading) {
+            CircularProgressIndicator()
+        } else {
+            Header(viewModel)
+            Box(
+                modifier = Modifier.safeDrawingPadding(),
+                contentAlignment = Alignment.Center
+            ) {
+                Workouts(viewModel)
+            }
         }
+
     }
 }
 
 @Composable
 internal fun Header(viewModel: HomeViewModel) {
-    val state = viewModel.uiStates.collectAsState()
+    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .safeDrawingPadding()
     ) {
         Toolbar(
-            name = R.string.welcome.localizable(state.value.username),
+            name = R.string.welcome.localizable(state.username ?: ""),
             modifier = Modifier.weight(1f)
         )
         IconButton(onClick = { viewModel.chartsClicked() }) {
@@ -113,19 +120,19 @@ internal fun Header(viewModel: HomeViewModel) {
 
 @Composable
 internal fun Workouts(viewModel: HomeViewModel) {
-    val state = viewModel.uiStates.collectAsState()
+    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
     LazyColumn(
         contentPadding = PaddingValues(all = 6.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        val keys = state.value.workouts.keys.sorted()
+        val keys = state.workouts.keys.sorted()
         items(keys.size, { it }) { index ->
             val difficulty = keys.elementAt(index)
             Text(
-                text = difficulty.name,
+                text = difficulty.printableName().localizable(),
                 modifier = Modifier.padding(bottom = 12.dp),
             )
-            val workouts = state.value.workouts[difficulty]?.sortedBy { it.id } ?: listOf()
+            val workouts = state.workouts[difficulty]?.sortedBy { it.id } ?: listOf()
             val scrollState = rememberScrollState()
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),

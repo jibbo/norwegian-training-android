@@ -80,6 +80,20 @@
     <!-- Home -->
     <string name="workout_time">%1$sm (%2$sm riposo)</string>
     <string name="workout_split">%1$sx%1$s</string>
+    <string name="workout_category_beginner">Principiante</string>
+    <string name="workout_category_intermediate">Esordiente</string>
+    <string name="workout_category_expert">Pro</string>
+    <string name="workout_first_steps">🐾 Primi passi</string>
+    <string name="workout_beginner_1">👣 Principiante 1</string>
+    <string name="workout_beginner_2">🦶 Principiante 2</string>
+    <string name="workout_beginner_3">🦶🦶 Principiante 3</string>
+    <string name="workout_not_so_beginner">👟 Non più principiante</string>
+    <string name="workout_intermediate_1">🎽 Esordiente 1</string>
+    <string name="workout_intermediate_2">💨 Esordiente 2</string>
+    <string name="workout_intermediate_3">🧠 Esordiente 3</string>
+    <string name="workout_true_norwegian">🇳🇴 Vero 4x4 Norvegese</string>
+    <string name="workout_expert_1">🏃‍♀️ Pro 1</string>
+    <string name="workout_expert_2">💪 Pro 2</string>
 
 
 </resources>

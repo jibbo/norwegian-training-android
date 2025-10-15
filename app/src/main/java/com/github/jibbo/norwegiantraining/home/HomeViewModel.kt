@@ -3,7 +3,9 @@ package com.github.jibbo.norwegiantraining.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.BuildConfig
+import com.github.jibbo.norwegiantraining.data.Difficulty
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
+import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.revenuecat.purchases.CustomerInfo
@@ -20,17 +22,23 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getUsername: GetUsername,
-    private val getAllWorkouts: GetAllWorkouts,
+    getAllWorkouts: GetAllWorkouts,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
     val uiEvents = events.asSharedFlow()
 
-    private val states: MutableStateFlow<UiState> = MutableStateFlow(
-        UiState(username = getUsername(), workouts = hashMapOf())
-    )
+    private val states: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiStates = states.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            getAllWorkouts().collect { workoutsMap ->
+                showWorkouts(workoutsMap)
+            }
+        }
+    }
 
     fun refresh() {
         Purchases.sharedInstance.getCustomerInfoWith(
@@ -43,11 +51,7 @@ class HomeViewModel @Inject constructor(
             if (!settingsRepository.isOnboardingCompleted() && !BuildConfig.DEBUG) {
                 events.emit(UiCommands.SHOW_ONBOARDING)
             }
-            states.value = states.value.copy(
-                //TODO this should be moved to datastore for Flow usage and avoid this workaround
-                username = getUsername(),
-                workouts = getAllWorkouts()
-            )
+            refreshUsername()
         }
     }
 
@@ -57,6 +61,12 @@ class HomeViewModel @Inject constructor(
 
     fun chartsClicked() {
         publishEvent(UiCommands.SHOW_CHARTS)
+    }
+
+    fun workoutClicked(id: Long) {
+        viewModelScope.launch {
+            events.emit(UiCommands.SHOW_WORKOUT(id))
+        }
     }
 
     private fun publishEvent(uiCommand: UiCommands) {
@@ -72,12 +82,33 @@ class HomeViewModel @Inject constructor(
                 events.emit(UiCommands.SHOW_PAYWALL)
             }
         }
-
     }
 
-    fun workoutClicked(id: Long) {
-        viewModelScope.launch {
-            events.emit(UiCommands.SHOW_WORKOUT(id))
+    private fun showWorkouts(workouts: Map<Difficulty, List<Workout>>) {
+        val value = states.value
+        when (value) {
+            is UiState.Loaded -> {
+                states.value = value.copy(workouts = workouts)
+            }
+
+            else -> states.value = UiState.Loaded(
+                username = getUsername(),
+                workouts = workouts
+            )
+        }
+    }
+
+    private fun refreshUsername() {
+        val value = states.value
+        when (value) {
+            is UiState.Loaded -> {
+                states.value = value.copy(username = getUsername())
+            }
+
+            else -> states.value = UiState.Loaded(
+                username = getUsername(),
+                workouts = mapOf()
+            )
         }
     }
 }

@@ -18,6 +18,7 @@ exoplayer = "2.19.1"
 google-services = "4.4.3"
 firebase = "34.1.0"
 revenuecat = "9.2.0"
+gson = "2.13.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,7 @@ firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 revenuecat-purchases = { group = "com.revenuecat.purchases", name = "purchases", version.ref = "revenuecat" }
 revenuecat-purchases-ui = { group = "com.revenuecat.purchases", name = "purchases-ui", version.ref = "revenuecat" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

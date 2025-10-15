@@ -4,11 +4,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 interface WorkoutRepository {
-    suspend fun getAll(): List<Workout>
+    fun getAll(): Flow<List<Workout>>
     suspend fun getByDifficulty(difficulty: Difficulty): List<Workout>
     suspend fun getById(id: Long): Workout?
     suspend fun getDifficulties(): List<Difficulty>
@@ -28,7 +29,7 @@ class PersistentWorkoutRepository @Inject constructor(
         workoutDao.insert(*workouts)
     }
 
-    override suspend fun getAll(): List<Workout> = workoutDao.getAll()
+    override fun getAll(): Flow<List<Workout>> = workoutDao.getAll()
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
         workoutDao.getByDifficulty(difficulty)
