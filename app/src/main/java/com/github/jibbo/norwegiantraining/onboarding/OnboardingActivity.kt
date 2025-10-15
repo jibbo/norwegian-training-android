@@ -52,6 +52,8 @@ import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
+import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
@@ -61,9 +63,16 @@ import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class OnboardingActivity : BaseActivity() {
+
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
+
     private var hasNotPaid = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +86,7 @@ class OnboardingActivity : BaseActivity() {
                         .fillMaxSize()
                 ) { innerPadding ->
                     val hasPaid = remember { mutableStateOf(hasNotPaid) }
-                    Content(hasPaid, innerPadding)
+                    Content(innerPadding, hasPaid, settingsRepository)
                 }
             }
         }
@@ -86,7 +95,11 @@ class OnboardingActivity : BaseActivity() {
 }
 
 @Composable
-fun Content(hasPaid: MutableState<Boolean>, innerPadding: PaddingValues) {
+fun Content(
+    innerPadding: PaddingValues,
+    hasPaid: MutableState<Boolean>,
+    settingsRepository: SettingsRepository
+) {
     val pagerState = rememberPagerState(pageCount = {
         OnboardingStates.states.size
     })
@@ -116,7 +129,8 @@ fun Content(hasPaid: MutableState<Boolean>, innerPadding: PaddingValues) {
             OnBoardingPage(
                 page,
                 pagerState,
-                hasPaid
+                hasPaid,
+                settingsRepository
             )
         }
         Row(
@@ -147,7 +161,8 @@ private fun OnBoardingPage(
     page: Int,
     pagerState: PagerState,
     hasPaid: MutableState<Boolean>,
-    modifier: Modifier = Modifier
+    settingsRepository: SettingsRepository,
+    modifier: Modifier = Modifier,
 ) {
     val state = OnboardingStates.states[page]
     Column(
@@ -187,7 +202,7 @@ private fun OnBoardingPage(
                 if (page == OnboardingStates.states.size - 1) {
                     val intent = Intent(
                         current,
-                        getNextActivity(hasPaid)
+                        getNextActivity(hasPaid, settingsRepository)
                     )
                     intent.flags =
                         Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -209,12 +224,18 @@ private fun OnBoardingPage(
     }
 }
 
-private fun getNextActivity(hasNotPaid: MutableState<Boolean>): Class<out BaseActivity> =
+private fun getNextActivity(
+    hasNotPaid: MutableState<Boolean>,
+    settingsRepository: SettingsRepository
+): Class<out BaseActivity> =
     if (BuildConfig.DEBUG) {
         HomeActivity::class.java
     } else if (hasNotPaid.value) {
         PaywallActivity::class.java
-    } else HomeActivity::class.java
+    } else {
+        settingsRepository.onboardingCompleted()
+        HomeActivity::class.java
+    }
 
 
 @Composable
@@ -355,7 +376,8 @@ fun GreetingPreview() {
     NorwegianTrainingTheme {
         Scaffold { innerPadding ->
             val hasPaid = remember { mutableStateOf(false) }
-            Content(hasPaid, innerPadding)
+            val settingsRepository = FakeSettingsRepository()
+            Content(innerPadding, hasPaid, settingsRepository)
         }
     }
 }
