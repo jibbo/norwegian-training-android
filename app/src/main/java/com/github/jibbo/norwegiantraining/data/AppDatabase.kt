@@ -7,8 +7,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.jibbo.norwegiantraining.R
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,7 +37,65 @@ abstract class AppDatabase : RoomDatabase() {
     class PrepopulateCallback @Inject constructor(
         @ApplicationContext private val context: Context,
         private val workoutDaoProvider: Provider<WorkoutDao>
-    ) : RoomDatabase.Callback() {
+    ) : Callback() {
+
+        val workouts = listOf(
+            Workout(
+                name = context.getString(R.string.workout_first_steps),
+                difficulty = Difficulty.BEGINNER,
+                content = "5m-30s-15s-30s-15s-30s-15s-30s-15s-30s-15s-30s-15s-30s-15s-30s-15s-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_beginner_1),
+                difficulty = Difficulty.BEGINNER,
+                content = "5m-1m-30s-1m-30s-1m-30s-1m-30s-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_beginner_2),
+                difficulty = Difficulty.BEGINNER,
+                content = "5m-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_beginner_3),
+                difficulty = Difficulty.BEGINNER,
+                content = "5m-90s-1m-90s-1m-90s-1m-90s-1m-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_not_so_beginner),
+                difficulty = Difficulty.BEGINNER,
+                content = "5m-90s-1m-90s-1m-90s-1m-90s-1m-90s-1m-90s-1m-90s-1m-90s-1m-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_intermediate_1),
+                difficulty = Difficulty.INTERMEDIATE,
+                content = "5m-2m-90s-2m-90s-2m-90s-2m-90s-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_intermediate_2),
+                difficulty = Difficulty.INTERMEDIATE,
+                content = "5m-3m-2m-3m-2m-3m-2m-3m-2m-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_intermediate_3),
+                difficulty = Difficulty.INTERMEDIATE,
+                content = "5m-3m-3m-3m-3m-3m-3m-3m-3m-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_true_norwegian),
+                difficulty = Difficulty.EXPERT,
+                content = "5m-4m-4m-4m-4m-4m-4m-4m-4m-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_expert_1),
+                difficulty = Difficulty.EXPERT,
+                content = "5m-3m-3m-3m-3m-3m-3m-3m-3m-5m"
+            ),
+            Workout(
+                name = context.getString(R.string.workout_expert_2),
+                difficulty = Difficulty.EXPERT,
+                content = "5m-198s-198s-198s-198s-198s-198s-198s-198s-5m"
+            )
+        )
 
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
@@ -49,32 +105,10 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         private suspend fun prepopulateWorkouts() {
-            val workoutDao = workoutDaoProvider.get()
-            val jsonString = context.resources.openRawResource(R.raw.workouts).bufferedReader()
-                .use { it.readText() }
-            val gson = Gson()
-            val workoutDataType = object : TypeToken<List<WorkoutData>>() {}.type
-            val workoutData: List<WorkoutData> = gson.fromJson(jsonString, workoutDataType)
-
-            val workouts = workoutData.map { data ->
-                val nameResId =
-                    context.resources.getIdentifier(data.name_res_id, "string", context.packageName)
-                Workout(
-                    name = context.getString(nameResId),
-                    difficulty = Difficulty.valueOf(data.difficulty),
-                    content = data.content
-                )
-            }.toTypedArray()
-            workoutDao.insert(*workouts)
+            workoutDaoProvider.get().insert(*workouts.toTypedArray())
         }
     }
 }
-
-data class WorkoutData(
-    val name_res_id: String,
-    val difficulty: String,
-    val content: String
-)
 
 @Module
 @InstallIn(SingletonComponent::class)
