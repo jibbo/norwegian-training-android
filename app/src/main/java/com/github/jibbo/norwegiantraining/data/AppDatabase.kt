@@ -104,6 +104,14 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        override fun onOpen(db: SupportSQLiteDatabase) {
+            super.onOpen(db)
+            CoroutineScope(Dispatchers.IO).launch {
+                if (workoutDaoProvider.get().syncGetAll().isEmpty())
+                    prepopulateWorkouts()
+            }
+        }
+
         private suspend fun prepopulateWorkouts() {
             workoutDaoProvider.get().insert(*workouts.toTypedArray())
         }
