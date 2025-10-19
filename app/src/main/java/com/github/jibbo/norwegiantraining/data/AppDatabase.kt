@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.data
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
@@ -97,18 +98,19 @@ abstract class AppDatabase : RoomDatabase() {
             )
         )
 
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            super.onCreate(db)
-            CoroutineScope(Dispatchers.IO).launch {
-                prepopulateWorkouts()
-            }
-        }
-
         override fun onOpen(db: SupportSQLiteDatabase) {
             super.onOpen(db)
             CoroutineScope(Dispatchers.IO).launch {
-                if (workoutDaoProvider.get().syncGetAll().isEmpty())
+                // TODO clean and use a Single source
+                val sharedPreferences =
+                    context.getSharedPreferences(
+                        "norwegian_training_prefs",
+                        Context.MODE_PRIVATE
+                    )
+                if (sharedPreferences.getString("prepopulate", null) == null) {
                     prepopulateWorkouts()
+                    sharedPreferences.edit { putString("prepopulate", "done") }
+                }
             }
         }
 
