@@ -22,6 +22,9 @@ interface WorkoutDao {
     @Query("SELECT * FROM Workout")
     fun getAll(): Flow<List<Workout>>
 
+    @Query("SELECT * FROM Workout LIMIT 1")
+    fun firstWorkout(): Workout?
+
     @Query("SELECT DISTINCT difficulty FROM Workout")
     suspend fun getDifficulties(): List<Difficulty>
 

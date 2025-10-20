@@ -71,10 +71,6 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(
-                top = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding()
-            )
     ) {
         if (state.value is UiState.Loading) {
             CircularProgressIndicator()
