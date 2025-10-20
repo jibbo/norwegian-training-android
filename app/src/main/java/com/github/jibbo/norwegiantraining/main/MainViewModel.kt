@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
-import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.GetWorkoutName
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
@@ -26,7 +26,7 @@ class MainViewModel @Inject constructor(
     private val getTodaySession: GetTodaySessionUseCase,
     private val phaseEnded: PhaseEndedUseCase,
     private val skipPhase: SkipPhaseUseCase,
-    private val getUsername: GetUsername,
+    private val getWorkoutName: GetWorkoutName,
     // TODO remove direct access to repos
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
@@ -40,7 +40,7 @@ class MainViewModel @Inject constructor(
     val uiEvents = events.asSharedFlow()
 
     private val states: MutableStateFlow<UiState> = MutableStateFlow(
-        UiState(name = getUsername())
+        UiState(workoutName = "")
     )
     val uiStates = states.asStateFlow()
 
@@ -49,7 +49,7 @@ class MainViewModel @Inject constructor(
             todaySession = getTodaySession()
             states.value = states.value.copy(
                 //TODO this should be moved to datastore for Flow usage and avoid this workaround
-                name = getUsername(),
+                workoutName = getWorkoutName(workoutId) ?: "",
             )
         }
     }

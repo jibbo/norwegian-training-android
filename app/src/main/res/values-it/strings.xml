@@ -14,7 +14,7 @@
     <string name="cooldown">Defaticamento</string>
     <string name="completed">FATTO</string>
 
-    <string name="welcome">Ciao %1$s</string>
+    <string name="home_workout_name">%1$s</string>
     <string name="next_up">Fasse successiva >> %1$s</string>
 
     <string name="get_ready_desc">inizia il riscaldamento</string>
@@ -78,6 +78,7 @@
 
 
     <!-- Home -->
+    <string name="welcome">Ciao %1$s</string>
     <string name="workout_time">%1$sm (%2$sm riposo)</string>
     <string name="workout_split">%1$sx%1$s</string>
     <string name="workout_category_beginner">Principiante</string>

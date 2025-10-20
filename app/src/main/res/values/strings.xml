@@ -18,7 +18,7 @@
     <string name="completed">DONE</string>
 
     <!-- MainActivity -->
-    <string name="welcome">Welcome %1$s</string>
+    <string name="home_workout_name">%1$s</string>
     <string name="next_up">Next Up >> %1$s</string>
 
     <!-- Exercise descriptions -->
@@ -90,6 +90,7 @@
     <string name="onboarding_step_6_body">Becoming a pro or not is your choice</string>
 
     <!-- Home -->
+    <string name="welcome">Welcome %1$s</string>
     <string name="workout_time">%1$sm (%2$sm rest)</string>
     <string name="workout_split">%1$sx%1$s</string>
     <string name="workout_category_beginner">Beginner</string>
