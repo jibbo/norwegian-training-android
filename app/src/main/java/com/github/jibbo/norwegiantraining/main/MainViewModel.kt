@@ -142,6 +142,8 @@ class MainViewModel @Inject constructor(
         publishEvent(UiCommands.PAUSE_ALARM)
     }
 
+    var lastSpeak: SpeakState = SpeakState.Nothing
+
     private fun scheduleTimer(phase: Phase, duration: Long) {
         val newTargetTimeMillis = System.currentTimeMillis() + duration
         states.value = states.value.copy(
@@ -154,11 +156,12 @@ class MainViewModel @Inject constructor(
             publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
         }
         if (settingsRepository.getAnnouncePhase()) {
-            UiCommands.Speak(SpeakState.Message(phase.name.message()), flush = true)
+            publishEvent(UiCommands.Speak(SpeakState.Message(phase.name.message()), flush = true))
         }
         if (settingsRepository.getAnnouncePhaseDesc()) {
-            UiCommands.Speak(SpeakState.Message(phase.name.description()))
+            publishEvent(UiCommands.Speak(SpeakState.Message(phase.name.description())))
         }
+        lastSpeak = SpeakState.Nothing
         ticking()
     }
 
@@ -169,8 +172,9 @@ class MainViewModel @Inject constructor(
                     val remainingTime =
                         (System.currentTimeMillis() - states.value.targetTimeMillis) / 1000
                     val speakState = SpeakState.Companion.fromSeconds(remainingTime.toInt())
-                    if (speakState != SpeakState.Nothing) {
+                    if (speakState != SpeakState.Nothing && speakState != lastSpeak) {
                         publishEvent(UiCommands.Speak(speakState))
+                        lastSpeak = speakState
                     }
                     delay(1000)
                     ticking()
