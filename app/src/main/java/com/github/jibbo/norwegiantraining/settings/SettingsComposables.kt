@@ -2,6 +2,7 @@ package com.github.jibbo.norwegiantraining.settings
 
 import android.content.Context
 import android.content.Intent
+import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,7 +57,8 @@ import com.github.jibbo.norwegiantraining.ui.theme.White
 @Composable
 internal fun SettingsScreen(
     viewModel: SettingsViewModel,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    backDispatcher: OnBackPressedDispatcher?
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -70,7 +72,7 @@ internal fun SettingsScreen(
         AnimatedToolbar(
             R.string.title_activity_settings.localizable(),
             listState,
-            null
+            backDispatcher = backDispatcher
         )
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -100,13 +102,13 @@ private fun TTSCard(viewModel: SettingsViewModel) {
         Column(modifier = Modifier.padding(6.dp)) {
             Text(
                 text = R.string.title_tts_section.localizable(),
-                style = Typography.bodyMedium,
+                style = Typography.bodyLarge,
                 modifier = Modifier.padding(8.dp),
                 color = Primary
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 Text(
                     text = R.string.announce_phase.localizable(),
@@ -122,7 +124,7 @@ private fun TTSCard(viewModel: SettingsViewModel) {
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 Text(
                     text = R.string.announce_phase_description.localizable(),
@@ -135,7 +137,7 @@ private fun TTSCard(viewModel: SettingsViewModel) {
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 Text(
                     text = R.string.announce_countdown.localizable(),
@@ -161,7 +163,7 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
             ) {
                 Text(
                     text = R.string.title_profile_section.localizable(),
-                    style = Typography.bodyMedium,
+                    style = Typography.bodyLarge,
                     color = Primary
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -179,7 +181,7 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(8.dp)
             )
         }
     }
@@ -196,7 +198,7 @@ private fun BetaCard(viewModel: SettingsViewModel) {
             ) {
                 Text(
                     text = R.string.title_beta_section.localizable(),
-                    style = Typography.bodyMedium,
+                    style = Typography.bodyLarge,
                     color = Primary
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -209,7 +211,7 @@ private fun BetaCard(viewModel: SettingsViewModel) {
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(all = 16.dp)
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
             ) {
                 Text(
                     text = R.string.enable_timer_notification.localizable(),
@@ -238,7 +240,7 @@ private fun GetInTouchCard() {
             ) {
                 Text(
                     text = R.string.about_dev_section_title.localizable(),
-                    style = Typography.bodyMedium,
+                    style = Typography.bodyLarge,
                     color = Primary,
                     modifier = Modifier.weight(1f)
                 )
@@ -276,7 +278,7 @@ private fun GetInTouchCard() {
                 }) {
                     Text(
                         text = R.string.about_dev_section_cta.localizable(),
-                        style = Typography.bodyMedium,
+                        style = Typography.bodyLarge,
                     )
                 }
             }
@@ -305,7 +307,7 @@ private fun OnboardingCard(viewModel: SettingsViewModel) {
                 ) {
                     Text(
                         text = R.string.onboarding_section_title.localizable(),
-                        style = Typography.bodyMedium,
+                        style = Typography.bodyLarge,
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -325,14 +327,14 @@ private fun PrivacyCard(viewModel: SettingsViewModel) {
             ) {
                 Text(
                     text = R.string.title_privacy_section.localizable(),
-                    style = Typography.bodyMedium,
+                    style = Typography.bodyLarge,
                     color = Primary
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(all = 16.dp)
+                modifier = Modifier.padding(all = 8.dp)
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -354,7 +356,7 @@ private fun PrivacyCard(viewModel: SettingsViewModel) {
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(all = 16.dp)
+                modifier = Modifier.padding(all = 8.dp)
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -389,7 +391,7 @@ private fun CreditsCard() {
             ) {
                 Text(
                     text = R.string.credits_section_cta.localizable(),
-                    style = Typography.bodyMedium,
+                    style = Typography.bodyLarge,
                     color = Primary,
                     modifier = Modifier.weight(1f)
                 )
@@ -519,7 +521,8 @@ fun GreetingPreview2() {
             Scaffold { innerPadding ->
                 SettingsScreen(
                     SettingsViewModel(FakeSettingsRepository(), FakeTracker()),
-                    innerPadding
+                    innerPadding,
+                    null
                 )
             }
         }
