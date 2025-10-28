@@ -37,7 +37,8 @@ class SettingsActivity : BaseActivity() {
                 ) { innerPadding ->
                     SettingsScreen(
                         viewModel = viewModel,
-                        innerPadding
+                        innerPadding = innerPadding,
+                        backDispatcher = null
                     )
                 }
             }

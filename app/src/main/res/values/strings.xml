@@ -18,13 +18,13 @@
     <string name="completed">DONE</string>
 
     <!-- MainActivity -->
-    <string name="welcome">Welcome %1$s</string>
+    <string name="home_workout_name">%1$s</string>
     <string name="next_up">Next Up >> %1$s</string>
 
     <!-- Exercise descriptions -->
     <string name="get_ready_desc">Start with a warmup</string>
     <string name="warmup_desc">Exercise lightly: you should be able to talk while you warmup</string>
-    <string name="hit_cardio_desc">Go as hard as you can to sustain the whole 4 minutes. You can do this!</string>
+    <string name="hit_cardio_desc">Go as hard as you can to sustain the whole time. You can do this!</string>
     <string name="light_cardio_desc">Exercise lightly: steady your heartbeat without stopping</string>
     <string name="cooldown_desc">Breathe, go at slow and relaxed pace that allows you to calm down your heartrate but don\'t stop now</string>
     <string name="completed_desc">Congratulations! You arrived at the end of this workout! Come back tomorrow for another one 💪</string>
@@ -90,6 +90,7 @@
     <string name="onboarding_step_6_body">Becoming a pro or not is your choice</string>
 
     <!-- Home -->
+    <string name="welcome">Welcome %1$s</string>
     <string name="workout_time">%1$sm (%2$sm rest)</string>
     <string name="workout_split">%1$sx%1$s</string>
     <string name="workout_category_beginner">Beginner</string>

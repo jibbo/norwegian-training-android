@@ -14,12 +14,12 @@
     <string name="cooldown">Defaticamento</string>
     <string name="completed">FATTO</string>
 
-    <string name="welcome">Ciao %1$s</string>
+    <string name="home_workout_name">%1$s</string>
     <string name="next_up">Fasse successiva >> %1$s</string>
 
     <string name="get_ready_desc">inizia il riscaldamento</string>
     <string name="warmup_desc">Fai esercizio leggero: dovresti essere in grado di parlare durante il riscaldamento</string>
-    <string name="hit_cardio_desc">Vai il più forte che puoi per sostenere tutti i 4 minuti. Puoi farcela!</string>
+    <string name="hit_cardio_desc">Vai il più forte che puoi per sostenere tutto il tempo. Puoi farcela!</string>
     <string name="light_cardio_desc">Fai esercizio leggero: stabilizza il battito cardiaco senza fermarti</string>
     <string name="cooldown_desc">Respira, vai a un ritmo lento e rilassato che ti permetta di calmare il cuore ma non fermarti adesso</string>
     <string name="completed_desc">Congratulazioni! Sei arrivato alla fine di questo allenamento! Torna domani per un altro 💪</string>
@@ -78,6 +78,7 @@
 
 
     <!-- Home -->
+    <string name="welcome">Ciao %1$s</string>
     <string name="workout_time">%1$sm (%2$sm riposo)</string>
     <string name="workout_split">%1$sx%1$s</string>
     <string name="workout_category_beginner">Principiante</string>

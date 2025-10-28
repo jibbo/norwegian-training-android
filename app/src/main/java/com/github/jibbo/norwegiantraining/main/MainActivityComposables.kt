@@ -49,6 +49,7 @@ import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
 import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.GetWorkoutName
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
@@ -222,8 +223,8 @@ internal fun Header(viewModel: MainViewModel) {
     val state by viewModel.uiStates.collectAsState()
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.safeDrawingPadding()) {
         Text(
-            text = R.string.welcome.localizable(state.name),
-            style = Typography.headlineSmall,
+            text = R.string.home_workout_name.localizable(state.workoutName),
+            style = Typography.headlineLarge,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
@@ -251,7 +252,7 @@ fun GreetingPreview() {
                 getTodaySession,
                 PhaseEndedUseCase(getTodaySession, sessionRepository),
                 SkipPhaseUseCase(getTodaySession, sessionRepository),
-                GetUsername(settingsRepository),
+                GetWorkoutName(workoutRepository),
                 settingsRepository
             ),
         )

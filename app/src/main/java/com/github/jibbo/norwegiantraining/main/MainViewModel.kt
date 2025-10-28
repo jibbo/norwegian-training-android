@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
-import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.GetWorkoutName
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
@@ -26,7 +26,7 @@ class MainViewModel @Inject constructor(
     private val getTodaySession: GetTodaySessionUseCase,
     private val phaseEnded: PhaseEndedUseCase,
     private val skipPhase: SkipPhaseUseCase,
-    private val getUsername: GetUsername,
+    private val getWorkoutName: GetWorkoutName,
     // TODO remove direct access to repos
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
@@ -40,7 +40,7 @@ class MainViewModel @Inject constructor(
     val uiEvents = events.asSharedFlow()
 
     private val states: MutableStateFlow<UiState> = MutableStateFlow(
-        UiState(name = getUsername())
+        UiState(workoutName = "")
     )
     val uiStates = states.asStateFlow()
 
@@ -49,7 +49,7 @@ class MainViewModel @Inject constructor(
             todaySession = getTodaySession()
             states.value = states.value.copy(
                 //TODO this should be moved to datastore for Flow usage and avoid this workaround
-                name = getUsername(),
+                workoutName = getWorkoutName(workoutId) ?: "",
             )
         }
     }
@@ -142,6 +142,8 @@ class MainViewModel @Inject constructor(
         publishEvent(UiCommands.PAUSE_ALARM)
     }
 
+    var lastSpeak: SpeakState = SpeakState.Nothing
+
     private fun scheduleTimer(phase: Phase, duration: Long) {
         val newTargetTimeMillis = System.currentTimeMillis() + duration
         states.value = states.value.copy(
@@ -154,11 +156,12 @@ class MainViewModel @Inject constructor(
             publishEvent(UiCommands.START_ALARM(newTargetTimeMillis, states.value))
         }
         if (settingsRepository.getAnnouncePhase()) {
-            UiCommands.Speak(SpeakState.Message(phase.name.message()), flush = true)
+            publishEvent(UiCommands.Speak(SpeakState.Message(phase.name.message()), flush = true))
         }
         if (settingsRepository.getAnnouncePhaseDesc()) {
-            UiCommands.Speak(SpeakState.Message(phase.name.description()))
+            publishEvent(UiCommands.Speak(SpeakState.Message(phase.name.description())))
         }
+        lastSpeak = SpeakState.Nothing
         ticking()
     }
 
@@ -169,8 +172,9 @@ class MainViewModel @Inject constructor(
                     val remainingTime =
                         (System.currentTimeMillis() - states.value.targetTimeMillis) / 1000
                     val speakState = SpeakState.Companion.fromSeconds(remainingTime.toInt())
-                    if (speakState != SpeakState.Nothing) {
+                    if (speakState != SpeakState.Nothing && speakState != lastSpeak) {
                         publishEvent(UiCommands.Speak(speakState))
+                        lastSpeak = speakState
                     }
                     delay(1000)
                     ticking()
