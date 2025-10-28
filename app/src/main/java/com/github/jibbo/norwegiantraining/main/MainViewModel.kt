@@ -124,7 +124,8 @@ class MainViewModel @Inject constructor(
             step = Phase(PhaseName.COMPLETED, 0L),
             isTimerRunning = false,
             targetTimeMillis = 0L,
-            remainingTimeOnPauseMillis = 0L
+            remainingTimeOnPauseMillis = 0L,
+            showConfetti = true
         )
     }
 
@@ -196,6 +197,12 @@ class MainViewModel @Inject constructor(
         }
         workoutId = id
         refresh()
+    }
+
+    fun debugShowConfetti() {
+        states.value = states.value.copy(
+            showConfetti = true
+        )
     }
 
     sealed class UiCommands {
