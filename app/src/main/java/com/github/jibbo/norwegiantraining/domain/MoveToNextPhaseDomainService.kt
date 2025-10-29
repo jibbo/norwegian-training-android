@@ -2,6 +2,7 @@ package com.github.jibbo.norwegiantraining.domain
 
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import javax.inject.Inject
 
 class MoveToNextPhaseDomainService @Inject constructor(
@@ -12,6 +13,10 @@ class MoveToNextPhaseDomainService @Inject constructor(
 
     suspend operator fun invoke(id: Long, step: Int): Phase {
         val workout = workoutRepository.getById(id)
+        if (workout == null && FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled) {
+            FirebaseCrashlytics.getInstance()
+                .log("[MoveToNextPhaseDomainService] Workout not found: $id")
+        }
         val phases = workoutToPhasesConverter.convert(workout!!)
         val nextStep = (step + 1) % phases.size
         return phases[nextStep]
