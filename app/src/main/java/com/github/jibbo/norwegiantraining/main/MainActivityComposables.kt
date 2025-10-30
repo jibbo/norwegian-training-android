@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.VideoBackground
 import com.github.jibbo.norwegiantraining.components.localizable
@@ -48,7 +49,6 @@ import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
 import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
-import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.GetWorkoutName
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
@@ -60,6 +60,10 @@ import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
 import kotlinx.coroutines.delay
+import nl.dionsegijn.konfetti.compose.KonfettiView
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.util.concurrent.TimeUnit
 
 @Composable
@@ -130,6 +134,50 @@ internal fun MainView(
                     )
                 }
             }
+
+            if (BuildConfig.DEBUG) {
+                TextButton(onClick = {
+                    mainViewModel.debugShowConfetti()
+                }) {
+                    Text(
+                        text = "[DEBUG] Show confetti",
+                        style = Typography.titleMedium,
+                        color = White,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
+        if (state.showConfetti) {
+            KonfettiView(
+                modifier = Modifier.fillMaxSize(),
+                parties = listOf(
+//                    Party(
+//                        speed = 0f,
+//                        maxSpeed = 15f,
+//                        damping = 0.9f,
+//                        angle = Angle.BOTTOM,
+//                        spread = Spread.ROUND,
+//                        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+//                        emitter = Emitter(duration = 5, TimeUnit.SECONDS).perSecond(100),
+//                        position = Position.Relative(0.0, 0.0)
+//                            .between(Position.Relative(1.0, 0.0))
+//                    )
+                    Party(
+                        speed = 0f,
+                        maxSpeed = 30f,
+                        damping = 0.9f,
+                        spread = 360,
+                        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+                        emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100),
+                        position = Position.Relative(0.5, 0.3)
+                    )
+                )
+            )
         }
     }
 }

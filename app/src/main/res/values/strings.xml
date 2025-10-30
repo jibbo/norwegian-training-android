@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Norwegian Training</string>
+    <string name="app_name">Norwy</string>
 
     <!-- Actions -->
     <string name="start">Start</string>
@@ -62,11 +62,11 @@
     <string name="title_activity_logs">Your Activity</string>
 
     <!-- Onboarding -->
-    <string name="onboarding_step_1_title">Welcome to the Norwegian Training app!</string>
+    <string name="onboarding_step_1_title">Welcome to the Norwy app!</string>
     <string name="onboarding_step_1_description">The best companion for your cardio workout</string>
     <string name="onboarding_step_1_name">Markus R.</string>
     <string name="onboarding_step_1_handle">\@marksmeister</string>
-    <string name="onboarding_step_1_body">Stoked about this new app I found called "Norwegian Training"! If you\'re into the 4x4 protocol, you have to check this out. It handles all the timings and intervals perfectly, so I can focus on my workout instead of my watch. 🏃‍♀️⌚️ Highly recommend! #runningapp #fitness #HIIT #workout</string>
+    <string name="onboarding_step_1_body">Stoked about this new app I found called "Norwy"! If you\'re into the 4x4 protocol, you have to check this out. It handles all the timings and intervals perfectly, so I can focus on my workout instead of my watch. 🏃‍♀️⌚️ Highly recommend! #runningapp #fitness #HIIT #workout</string>
 
     <string name="onboarding_step_2_title">Automatic Timers</string>
     <string name="onboarding_step_2_description">Just press \"START\" to begin the workout.</string>

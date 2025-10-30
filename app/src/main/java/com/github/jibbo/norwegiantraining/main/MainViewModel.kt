@@ -11,6 +11,7 @@ import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -124,7 +125,8 @@ class MainViewModel @Inject constructor(
             step = Phase(PhaseName.COMPLETED, 0L),
             isTimerRunning = false,
             targetTimeMillis = 0L,
-            remainingTimeOnPauseMillis = 0L
+            remainingTimeOnPauseMillis = 0L,
+            showConfetti = true
         )
     }
 
@@ -190,12 +192,22 @@ class MainViewModel @Inject constructor(
     }
 
     fun setId(id: Long) {
-        if (id == -1L) {
+        if (id <= 0) {
+            if (settingsRepository.getCrashReportingEnabled()) {
+                FirebaseCrashlytics.getInstance()
+                    .recordException(Throwable("[MainViewModel] Invalid workout id: $id"))
+            }
             closeWorkout()
             return
         }
         workoutId = id
         refresh()
+    }
+
+    fun debugShowConfetti() {
+        states.value = states.value.copy(
+            showConfetti = true
+        )
     }
 
     sealed class UiCommands {
