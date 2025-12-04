@@ -1,38 +1,56 @@
 package com.github.jibbo.norwegiantraining.main
 
 import android.Manifest
-import android.app.AlarmManager
-import android.app.PendingIntent
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.provider.Settings
-import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.github.jibbo.norwegiantraining.alarm.AlarmReceiver
-import com.github.jibbo.norwegiantraining.alarm.AlarmUtils
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
+import com.github.jibbo.norwegiantraining.service.IWorkoutTimerService
+import com.github.jibbo.norwegiantraining.service.WorkoutServiceBinder
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerService
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private val REQUEST_CODE_POST_NOTIFICATIONS = 123
+    private val REQUEST_CODE_ACTIVITY_RECOGNITION = 124
 
-    private var tts: TextToSpeech? = null
+    private var timerService: IWorkoutTimerService? = null
+    private var isBound = false
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+            Log.d(TAG, "Service connected")
+            timerService = (binder as WorkoutServiceBinder)
+            isBound = true
+            mainViewModel.bindToService(binder)
+            observeServiceState()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            Log.d(TAG, "Service disconnected")
+            timerService = null
+            isBound = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,73 +58,60 @@ class MainActivity : BaseActivity() {
         setContent {
             NorwegianTrainingTheme(darkTheme = true) {
                 MainView(
-                    mainViewModel = mainViewModel, // Add a callback for when timer finishes in composable
+                    mainViewModel = mainViewModel,
                 )
             }
         }
 
-        initTTS()
-
-        AlarmUtils.createNotificationChannel(this)
-
-        setId()
+        val workoutId = intent.getLongExtra("workout_id", -1L)
+        if (workoutId > 0) {
+            startAndBindService(workoutId)
+        } else {
+            Log.e(TAG, "Invalid workout ID: $workoutId")
+        }
 
         observe()
+        checkNotificationPermission()
+        checkActivityRecognitionPermission()
+        checkExactAlarmPermission()
     }
 
-    private fun setId() {
-        val workoutId = intent.getLongExtra("workout_id", -1L)
-        mainViewModel.setId(workoutId)
+    private fun startAndBindService(workoutId: Long) {
+        val serviceIntent = Intent(this, WorkoutTimerService::class.java).apply {
+            action = WorkoutTimerService.ACTION_START_WORKOUT
+            putExtra(WorkoutTimerService.EXTRA_WORKOUT_ID, workoutId)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
+
+        val bindIntent = Intent(this, WorkoutTimerService::class.java)
+        bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
-    override fun onResume() {
-        super.onResume()
-        // TODO move shared preferences to datastore so that this access can be removed
-        mainViewModel.refresh()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                mainViewModel.permissionGranted()
-            } else {
-                // Permission denied. Handle appropriately
+    private fun observeServiceState() {
+        lifecycleScope.launch {
+            timerService?.timerState?.flowWithLifecycle(lifecycle)?.collect { state ->
+                mainViewModel.updateFromService(state)
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        tts?.stop()
-        tts?.shutdown()
+        if (isBound) {
+            unbindService(serviceConnection)
+            isBound = false
+        }
     }
 
     private fun observe() {
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
-                    is UiCommands.START_ALARM -> {
-                        startAlarm(it.triggerTime, it.uiState)
-                    }
-
-                    is UiCommands.SHOW_NOTIFICATION -> {
-                        checkNotificationPermission()
-                        AlarmUtils.showNotification(this@MainActivity, it.triggerTime)
-                    }
-
-                    is UiCommands.PAUSE_ALARM -> {
-                        AlarmUtils.dismissNotification(this@MainActivity)
-                    }
-
-                    is UiCommands.Speak -> {
-                        speak(it.speakState.message, it.flush)
-                    }
-
                     is UiCommands.CLOSE -> {
                         val intent = Intent(this@MainActivity, HomeActivity::class.java)
                         intent.flags =
@@ -118,41 +123,23 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun initTTS() {
-        tts = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                tts?.language = Locale.getDefault()
-            } else {
-                Log.e("tts", "not working")
-                tts = null
-            }
-        }
-    }
-
-    private fun startAlarm(triggerTime: Long, uiState: UiState) {
-        scheduleAlarm(triggerTime)
-        checkNotificationPermission()
-        AlarmUtils.showNotification(this, triggerTime)
-    }
-
-    private fun scheduleAlarm(triggerTime: Long) {
-        val intent = Intent(this, AlarmReceiver::class.java)
-        val pendingIntent =
-            PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager = ContextCompat.getSystemService(this, AlarmManager::class.java)
-            if (alarmManager?.canScheduleExactAlarms() == false) {
-                Intent().also {
-                    it.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-                    startActivity(it)
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            REQUEST_CODE_POST_NOTIFICATIONS -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "Notification permission granted")
                 }
-            } else {
-                alarmManager?.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
             }
-        } else {
-            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+            REQUEST_CODE_ACTIVITY_RECOGNITION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "Activity recognition permission granted")
+                }
+            }
         }
     }
 
@@ -171,12 +158,34 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun speak(@StringRes textId: Int, flush: Boolean = false) {
-        tts?.speak(
-            getString(textId),
-            if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD,
-            null,
-            "countdown_$textId"
-        )
+    private fun checkActivityRecognitionPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACTIVITY_RECOGNITION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(
+                    arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
+                    REQUEST_CODE_ACTIVITY_RECOGNITION
+                )
+            }
+        }
+    }
+
+    private fun checkExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = ContextCompat.getSystemService(this, android.app.AlarmManager::class.java)
+            if (alarmManager?.canScheduleExactAlarms() == false) {
+                Intent().also {
+                    it.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                    startActivity(it)
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
     }
 }

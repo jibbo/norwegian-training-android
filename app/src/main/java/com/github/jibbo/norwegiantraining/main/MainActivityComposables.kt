@@ -196,10 +196,7 @@ private fun ColumnScope.Timer(
 
         CountdownDisplay(
             targetTimeMillis = state.targetTimeMillis,
-            isRunning = state.isTimerRunning,
-            onFinish = {
-                mainViewModel.onTimerFinish()
-            }
+            isRunning = state.isTimerRunning
         )
     }
 
@@ -230,28 +227,22 @@ private fun Instructions(state: UiState) {
 internal fun CountdownDisplay(
     targetTimeMillis: Long,
     isRunning: Boolean,
-    onFinish: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var remainingTimeMillis by remember(targetTimeMillis, isRunning) {
+    var remainingTimeMillis by remember(targetTimeMillis) {
         mutableStateOf(
             targetTimeMillis - System.currentTimeMillis()
         )
     }
 
-    LaunchedEffect(key1 = targetTimeMillis, key2 = isRunning) {
+    LaunchedEffect(key1 = isRunning, key2 = targetTimeMillis) {
         if (!isRunning) {
             return@LaunchedEffect
         }
-        // Recalculate initial remaining time when targetTimeMillis or isRunning changes to true
-        remainingTimeMillis = targetTimeMillis - System.currentTimeMillis()
 
-        while (isRunning && remainingTimeMillis > 0) {
-            delay(1000L) // Update every second
-            remainingTimeMillis = targetTimeMillis - System.currentTimeMillis()
-        }
-        if (remainingTimeMillis <= 0) {
-            onFinish()
+        while (isRunning) {
+            remainingTimeMillis = (targetTimeMillis - System.currentTimeMillis()).coerceAtLeast(0L)
+            delay(1000L)
         }
     }
 
@@ -290,19 +281,8 @@ internal fun Header(viewModel: MainViewModel) {
 @Composable
 fun GreetingPreview() {
     NorwegianTrainingTheme {
-        val sessionRepository = FakeSessionRepo()
-        val settingsRepository = FakeSettingsRepository()
-        val workoutRepository = FakeWorkoutRepo()
-        val getTodaySession = GetTodaySessionUseCase(sessionRepository)
         MainView(
-            mainViewModel = MainViewModel(
-                MoveToNextPhaseDomainService(workoutRepository),
-                getTodaySession,
-                PhaseEndedUseCase(getTodaySession, sessionRepository),
-                SkipPhaseUseCase(getTodaySession, sessionRepository),
-                GetWorkoutName(workoutRepository),
-                settingsRepository
-            ),
+            mainViewModel = MainViewModel(),
         )
     }
 }

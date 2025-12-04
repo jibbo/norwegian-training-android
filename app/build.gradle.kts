@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation(libs.android.material)
     implementation(libs.dagger.hilt.android)
     implementation(libs.room.runtime)
