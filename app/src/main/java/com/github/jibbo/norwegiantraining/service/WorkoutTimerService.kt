@@ -158,6 +158,21 @@ class WorkoutTimerService : Service(), IWorkoutTimerService {
         }
     }
 
+    override suspend fun advanceToNextPhase() {
+        Log.d(TAG, "Advancing to next phase")
+        countDownTimer?.cancel()
+        cancelAlarm()
+        stateManager.moveToNextPhase()
+
+        val state = stateManager.state.value
+        if (state.isCompleted) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+        } else {
+            updateNotification()
+        }
+    }
+
     override suspend fun closeWorkout() {
         Log.d(TAG, "Closing workout")
         countDownTimer?.cancel()

@@ -9,6 +9,7 @@ interface IWorkoutTimerService {
     suspend fun startTimer()
     suspend fun pauseTimer()
     suspend fun skipPhase()
+    suspend fun advanceToNextPhase()
     suspend fun closeWorkout()
 }
 
@@ -33,6 +34,10 @@ class WorkoutServiceBinder(
 
     override suspend fun skipPhase() {
         service.skipPhase()
+    }
+
+    override suspend fun advanceToNextPhase() {
+        service.advanceToNextPhase()
     }
 
     override suspend fun closeWorkout() {
