@@ -31,7 +31,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WorkoutTimerService : Service(), IWorkoutTimerService {
+class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
 
     @Inject
     lateinit var stateManager: WorkoutTimerStateManager
@@ -80,16 +80,19 @@ class WorkoutTimerService : Service(), IWorkoutTimerService {
                     }
                 }
             }
+
             ACTION_PHASE_TRANSITION -> {
                 serviceScope.launch {
                     handlePhaseTransition()
                 }
             }
+
             ACTION_PAUSE_TIMER -> {
                 serviceScope.launch {
                     pauseTimer()
                 }
             }
+
             ACTION_SKIP_PHASE -> {
                 serviceScope.launch {
                     skipPhase()
@@ -243,18 +246,22 @@ class WorkoutTimerService : Service(), IWorkoutTimerService {
                 speak(getString(R.string.one_minute_remaining), flush = false)
                 true
             }
+
             3 -> {
                 speak(getString(R.string.three), flush = false)
                 true
             }
+
             2 -> {
                 speak(getString(R.string.two), flush = false)
                 true
             }
+
             1 -> {
                 speak(getString(R.string.one), flush = false)
                 true
             }
+
             else -> false
         }
 
@@ -364,7 +371,8 @@ class WorkoutTimerService : Service(), IWorkoutTimerService {
         if (!stateManager.shouldShowNotification()) return
 
         val notification = buildNotification()
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
@@ -382,7 +390,7 @@ class WorkoutTimerService : Service(), IWorkoutTimerService {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val pauseIntent = Intent(this, WorkoutTimerService::class.java).apply {
+        val pauseIntent = Intent(this, WorkoutTimerAndroidService::class.java).apply {
             action = ACTION_PAUSE_TIMER
         }
         val pausePendingIntent = PendingIntent.getService(
@@ -392,7 +400,7 @@ class WorkoutTimerService : Service(), IWorkoutTimerService {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val skipIntent = Intent(this, WorkoutTimerService::class.java).apply {
+        val skipIntent = Intent(this, WorkoutTimerAndroidService::class.java).apply {
             action = ACTION_SKIP_PHASE
         }
         val skipPendingIntent = PendingIntent.getService(
@@ -465,7 +473,8 @@ class WorkoutTimerService : Service(), IWorkoutTimerService {
                 setShowBadge(false)
             }
 
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
@@ -476,7 +485,8 @@ class WorkoutTimerService : Service(), IWorkoutTimerService {
         private const val NOTIFICATION_ID = 1001
 
         const val ACTION_START_WORKOUT = "com.github.jibbo.norwegiantraining.ACTION_START_WORKOUT"
-        const val ACTION_PHASE_TRANSITION = "com.github.jibbo.norwegiantraining.ACTION_PHASE_TRANSITION"
+        const val ACTION_PHASE_TRANSITION =
+            "com.github.jibbo.norwegiantraining.ACTION_PHASE_TRANSITION"
         const val ACTION_PAUSE_TIMER = "com.github.jibbo.norwegiantraining.ACTION_PAUSE_TIMER"
         const val ACTION_SKIP_PHASE = "com.github.jibbo.norwegiantraining.ACTION_SKIP_PHASE"
 

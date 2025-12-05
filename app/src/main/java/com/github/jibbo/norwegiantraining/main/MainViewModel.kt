@@ -3,7 +3,7 @@ package com.github.jibbo.norwegiantraining.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.domain.PhaseName
-import com.github.jibbo.norwegiantraining.service.IWorkoutTimerService
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerService
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
 
-    private var serviceBinder: IWorkoutTimerService? = null
+    private var serviceBinder: WorkoutTimerService? = null
 
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
     val uiEvents = events.asSharedFlow()
@@ -26,7 +26,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     )
     val uiStates = states.asStateFlow()
 
-    fun bindToService(binder: IWorkoutTimerService) {
+    fun bindToService(binder: WorkoutTimerService) {
         serviceBinder = binder
     }
 

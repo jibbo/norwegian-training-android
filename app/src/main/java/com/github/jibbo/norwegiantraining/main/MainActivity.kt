@@ -20,8 +20,8 @@ import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
-import com.github.jibbo.norwegiantraining.service.IWorkoutTimerService
 import com.github.jibbo.norwegiantraining.service.WorkoutServiceBinder
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerAndroidService
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerService
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +33,7 @@ class MainActivity : BaseActivity() {
     private val REQUEST_CODE_POST_NOTIFICATIONS = 123
     private val REQUEST_CODE_ACTIVITY_RECOGNITION = 124
 
-    private var timerService: IWorkoutTimerService? = null
+    private var timerService: WorkoutTimerService? = null
     private var isBound = false
 
     private val serviceConnection = object : ServiceConnection {
@@ -62,24 +62,26 @@ class MainActivity : BaseActivity() {
                 )
             }
         }
+        checkNotificationPermission()
+        checkActivityRecognitionPermission()
+        checkExactAlarmPermission()
+        boundServiceToWorkoutId()
+        observe()
+    }
 
+    private fun boundServiceToWorkoutId() {
         val workoutId = intent.getLongExtra("workout_id", -1L)
         if (workoutId > 0) {
             startAndBindService(workoutId)
         } else {
             Log.e(TAG, "Invalid workout ID: $workoutId")
         }
-
-        observe()
-        checkNotificationPermission()
-        checkActivityRecognitionPermission()
-        checkExactAlarmPermission()
     }
 
     private fun startAndBindService(workoutId: Long) {
-        val serviceIntent = Intent(this, WorkoutTimerService::class.java).apply {
-            action = WorkoutTimerService.ACTION_START_WORKOUT
-            putExtra(WorkoutTimerService.EXTRA_WORKOUT_ID, workoutId)
+        val serviceIntent = Intent(this, WorkoutTimerAndroidService::class.java).apply {
+            action = WorkoutTimerAndroidService.ACTION_START_WORKOUT
+            putExtra(WorkoutTimerAndroidService.EXTRA_WORKOUT_ID, workoutId)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -88,7 +90,7 @@ class MainActivity : BaseActivity() {
             startService(serviceIntent)
         }
 
-        val bindIntent = Intent(this, WorkoutTimerService::class.java)
+        val bindIntent = Intent(this, WorkoutTimerAndroidService::class.java)
         bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
@@ -135,6 +137,7 @@ class MainActivity : BaseActivity() {
                     Log.d(TAG, "Notification permission granted")
                 }
             }
+
             REQUEST_CODE_ACTIVITY_RECOGNITION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(TAG, "Activity recognition permission granted")
@@ -175,7 +178,8 @@ class MainActivity : BaseActivity() {
 
     private fun checkExactAlarmPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager = ContextCompat.getSystemService(this, android.app.AlarmManager::class.java)
+            val alarmManager =
+                ContextCompat.getSystemService(this, android.app.AlarmManager::class.java)
             if (alarmManager?.canScheduleExactAlarms() == false) {
                 Intent().also {
                     it.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM

@@ -51,7 +51,7 @@
         </activity>
 
         <service
-            android:name=".service.WorkoutTimerService"
+            android:name=".service.WorkoutTimerAndroidService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="health" />

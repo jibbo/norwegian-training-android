@@ -3,7 +3,7 @@ package com.github.jibbo.norwegiantraining.service
 import android.os.Binder
 import kotlinx.coroutines.flow.StateFlow
 
-interface IWorkoutTimerService {
+interface WorkoutTimerService {
     val timerState: StateFlow<WorkoutTimerState>
     suspend fun startWorkout(workoutId: Long)
     suspend fun startTimer()
@@ -14,8 +14,8 @@ interface IWorkoutTimerService {
 }
 
 class WorkoutServiceBinder(
-    private val service: WorkoutTimerService
-) : Binder(), IWorkoutTimerService {
+    private val service: WorkoutTimerAndroidService
+) : Binder(), WorkoutTimerService {
 
     override val timerState: StateFlow<WorkoutTimerState>
         get() = service.timerState
