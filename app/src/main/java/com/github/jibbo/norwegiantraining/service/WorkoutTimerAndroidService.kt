@@ -157,7 +157,8 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
         } else {
-            updateNotification()
+            // Automatically start the timer for the next phase
+            startTimer()
         }
     }
 
@@ -172,7 +173,8 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
         } else {
-            updateNotification()
+            // Automatically start the timer for the next phase
+            startTimer()
         }
     }
 
@@ -188,6 +190,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
     private suspend fun handlePhaseTransition() {
         Log.d(TAG, "Handling phase transition from alarm")
         countDownTimer?.cancel()
+        cancelAlarm()
         stateManager.moveToNextPhase()
 
         val state = stateManager.state.value
@@ -196,7 +199,8 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
         } else {
-            updateNotification()
+            // Automatically start the timer for the next phase
+            startTimer()
         }
     }
 

@@ -51,9 +51,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     service.startTimer()
                 } else {
                     // Handle GET_READY phase (duration = 0) - advance to first real phase
+                    // advanceToNextPhase now automatically starts the timer for the next phase
                     service.advanceToNextPhase()
-                    // Now start the timer for the new phase
-                    service.startTimer()
                 }
             }
         }
