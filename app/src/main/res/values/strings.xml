@@ -51,7 +51,7 @@
     <string name="enable_crash_reporting_description">It lets us fix bugs and improve the app</string>
     <string name="title_beta_section">Beta features</string>">
     <string name="beta_section_description">These features are still experimental and can cause unexpected behavior such as loss of workout data.</string>
-    <string name="enable_timer_notification">Notification with the timer</string>
+    <string name="enable_timer_notification">Notification with timer</string>
     <string name="onboarding_section_title">Show Onboarding again</string>
     <string name="about_dev_section_title">From the developer</string>
     <string name="about_dev_section_description">Hi! I\'m Gio, and I\'d like to thank you for using my app! As a fellow workout enthusiast, I made this because I got tired of fiddling with complicated timers. I hope you find it as useful as I do!</string>

@@ -82,7 +82,8 @@ class WorkoutTimerStateManager @Inject constructor(
         val currentState = _state.value
         if (!currentState.isTimerRunning) return
 
-        val remainingTime = (currentState.targetTimeMillis - System.currentTimeMillis()).coerceAtLeast(0L)
+        val remainingTime =
+            (currentState.targetTimeMillis - System.currentTimeMillis()).coerceAtLeast(0L)
 
         updateState(
             currentState.copy(
@@ -137,7 +138,6 @@ class WorkoutTimerStateManager @Inject constructor(
     fun shouldAnnouncePhase(): Boolean = settingsRepository.getAnnouncePhase()
     fun shouldAnnouncePhaseDesc(): Boolean = settingsRepository.getAnnouncePhaseDesc()
     fun shouldAnnounceCountdown(): Boolean = settingsRepository.getAnnounceCountdown()
-    fun shouldShowNotification(): Boolean = settingsRepository.getShowTimerNotification()
 
     private fun updateState(newState: WorkoutTimerState) {
         _state.value = newState

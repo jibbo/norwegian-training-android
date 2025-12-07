@@ -22,8 +22,7 @@ internal class SettingsViewModel @Inject constructor(
             announcePhaseDesc = settingsRepository.getAnnouncePhaseDesc(),
             announceCountdown = settingsRepository.getAnnounceCountdown(),
             isCrashReportingEnabled = settingsRepository.getCrashReportingEnabled(),
-            isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled(),
-            isTimerNotificationEnabled = settingsRepository.getShowTimerNotification()
+            isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled()
         )
     )
     val uiState = uiStates.asStateFlow()
@@ -65,14 +64,6 @@ internal class SettingsViewModel @Inject constructor(
         // TODO get rid of this if by having analytics check internally
         if (settingsRepository.getAnalyticsEnabled()) {
             analytics.logCrashReporting(enabled)
-        }
-    }
-
-    fun toggleTimerNotification(enabled: Boolean) {
-        settingsRepository.setShowTimerNotification(enabled)
-        uiStates.value = uiStates.value.copy(isTimerNotificationEnabled = enabled)
-        if (settingsRepository.getAnalyticsEnabled()) {
-            analytics.logTimerNotificationEnabled(enabled)
         }
     }
 }

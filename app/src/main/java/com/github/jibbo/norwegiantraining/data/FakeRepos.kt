@@ -50,12 +50,6 @@ class FakeSettingsRepository : SettingsRepository {
 
     override fun getCrashReportingEnabled(): Boolean = false
 
-    override fun setShowTimerNotification(enabled: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getShowTimerNotification(): Boolean = false
-
     override fun isOnboardingCompleted(): Boolean = false
 
     override fun onboardingCompleted() {

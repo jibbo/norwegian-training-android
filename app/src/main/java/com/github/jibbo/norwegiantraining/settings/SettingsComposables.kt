@@ -81,7 +81,7 @@ internal fun SettingsScreen(
             item { ProfileCard(viewModel) }
             item { TTSCard(viewModel) }
             item { OnboardingCard(viewModel) }
-            item { BetaCard(viewModel) }
+//            item { BetaCard(viewModel) }
             item { PrivacyCard(viewModel) }
             item { GetInTouchCard() }
             item { CreditsCard() }
@@ -187,47 +187,47 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
     }
 }
 
-@Composable
-private fun BetaCard(viewModel: SettingsViewModel) {
-    val state = viewModel.uiState.collectAsState()
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(6.dp)) {
-            Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text(
-                    text = R.string.title_beta_section.localizable(),
-                    style = Typography.bodyLarge,
-                    color = Primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-            }
-            Text(
-                text = R.string.beta_section_description.localizable(),
-                style = Typography.labelMedium,
-                color = White.copy(alpha = 0.6f),
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
-            ) {
-                Text(
-                    text = R.string.enable_timer_notification.localizable(),
-                    style = Typography.bodyMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                MySwitch(
-                    checked = state.value.isTimerNotificationEnabled,
-                    onCheckedChange = {
-                        viewModel.toggleTimerNotification(it)
-                    },
-                )
-            }
-        }
-    }
-}
+//@Composable
+//private fun BetaCard(viewModel: SettingsViewModel) {
+//    val state = viewModel.uiState.collectAsState()
+//    Card(modifier = Modifier.fillMaxWidth()) {
+//        Column(modifier = Modifier.padding(6.dp)) {
+//            Row(
+//                verticalAlignment = Alignment.Top,
+//                modifier = Modifier.padding(8.dp)
+//            ) {
+//                Text(
+//                    text = R.string.title_beta_section.localizable(),
+//                    style = Typography.bodyLarge,
+//                    color = Primary
+//                )
+//                Spacer(modifier = Modifier.weight(1f))
+//            }
+//            Text(
+//                text = R.string.beta_section_description.localizable(),
+//                style = Typography.labelMedium,
+//                color = White.copy(alpha = 0.6f),
+//                modifier = Modifier.padding(horizontal = 8.dp)
+//            )
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+//            ) {
+//                Text(
+//                    text = R.string.enable_timer_notification.localizable(),
+//                    style = Typography.bodyMedium,
+//                    modifier = Modifier.weight(1f)
+//                )
+//                MySwitch(
+//                    checked = state.value.isTimerNotificationEnabled,
+//                    onCheckedChange = {
+//                        viewModel.toggleTimerNotification(it)
+//                    },
+//                )
+//            }
+//        }
+//    }
+//}
 
 @Composable
 private fun GetInTouchCard() {

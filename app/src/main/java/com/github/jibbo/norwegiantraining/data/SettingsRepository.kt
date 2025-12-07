@@ -28,8 +28,6 @@ interface SettingsRepository {
     fun getAnalyticsEnabled(): Boolean
     fun setCrashReportingEnabled(enabled: Boolean)
     fun getCrashReportingEnabled(): Boolean
-    fun setShowTimerNotification(enabled: Boolean)
-    fun getShowTimerNotification(): Boolean
     fun isOnboardingCompleted(): Boolean
     fun onboardingCompleted(): Unit
 }
@@ -78,14 +76,6 @@ class SharedPreferencesSettingsRepository @Inject constructor(
 
     override fun getCrashReportingEnabled(): Boolean =
         sp.getBoolean(KEY_CRASHLYTICS_ENABLED, !isEuUser(context))
-
-    // ... inside SharedPreferencesSettingsRepository
-    override fun setShowTimerNotification(enabled: Boolean) {
-        sp.edit { putBoolean(KEY_SHOW_TIMER_NOTIFICATION, enabled) }
-    }
-
-    override fun getShowTimerNotification(): Boolean =
-        sp.getBoolean(KEY_SHOW_TIMER_NOTIFICATION, false)
 
     override fun isOnboardingCompleted(): Boolean =
         sp.getBoolean(KEY_ONBOARDING_COMPLETED, false)

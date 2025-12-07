@@ -154,9 +154,12 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
 
         val state = stateManager.state.value
         if (state.isCompleted) {
+            updateNotification()
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
         } else {
+            // Update notification to show new phase before starting timer
+            updateNotification()
             // Automatically start the timer for the next phase
             startTimer()
         }
@@ -170,9 +173,12 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
 
         val state = stateManager.state.value
         if (state.isCompleted) {
+            updateNotification()
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
         } else {
+            // Update notification to show new phase before starting timer
+            updateNotification()
             // Automatically start the timer for the next phase
             startTimer()
         }
@@ -320,8 +326,6 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
     }
 
     private fun scheduleAlarm(targetTimeMillis: Long, phaseIndex: Int) {
-        if (!stateManager.shouldShowNotification()) return
-
         val intent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra(EXTRA_PHASE_INDEX, phaseIndex)
         }
@@ -372,8 +376,6 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
     }
 
     private fun updateNotification() {
-        if (!stateManager.shouldShowNotification()) return
-
         val notification = buildNotification()
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -414,22 +416,24 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val title = state.workoutName.ifEmpty { "Workout Timer" }
         val phaseName = getString(state.currentPhase.name.message())
-
         val remainingMillis = stateManager.getRemainingTimeMillis()
         val minutes = (remainingMillis / 1000 / 60).toInt()
         val seconds = ((remainingMillis / 1000) % 60).toInt()
         val timeText = String.format("%02d:%02d", minutes, seconds)
 
-        val contentText = if (state.isTimerRunning) {
-            "$phaseName - $timeText"
+        val title = if (state.isTimerRunning && remainingMillis > 0) {
+            "$timeText - $phaseName"
         } else if (state.remainingTimeOnPauseMillis > 0) {
-            "$phaseName - Paused ($timeText)"
-        } else if (state.isCompleted) {
+            "$timeText (Paused) - $phaseName"
+        } else {
+            state.workoutName.ifEmpty { "Workout Timer" }
+        }
+
+        val contentText = if (state.isCompleted) {
             "Workout Completed!"
         } else {
-            phaseName
+            state.workoutName.ifEmpty { "Norwegian Training" }
         }
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
@@ -437,16 +441,9 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             .setContentTitle(title)
             .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setOngoing(!state.isCompleted)
+            .setOngoing(true)  // Always non-dismissible during workout
             .setContentIntent(contentPendingIntent)
             .setAutoCancel(false)
-
-        if (state.isTimerRunning && remainingMillis > 0) {
-            builder.setUsesChronometer(true)
-                .setChronometerCountDown(true)
-                .setWhen(System.currentTimeMillis() + remainingMillis)
-                .setShowWhen(true)
-        }
 
         if (!state.isCompleted && state.currentPhase.name != PhaseName.GET_READY) {
             if (state.isTimerRunning) {
