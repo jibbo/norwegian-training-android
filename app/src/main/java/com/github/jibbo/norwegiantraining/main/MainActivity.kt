@@ -62,16 +62,37 @@ class MainActivity : BaseActivity() {
                 )
             }
         }
-        checkNotificationPermission()
-        checkActivityRecognitionPermission()
+        // Start the chained permission check. The service will only start inside this flow.
+        checkPermissionsAndStartService()
         checkExactAlarmPermission()
-        boundServiceToWorkoutId()
         observe()
+    }
+
+    private fun checkPermissionsAndStartService() {
+        // Step 1: Check for Notification permission.
+        if (!checkNotificationPermission()) {
+            // Request was sent, the logic will continue in onRequestPermissionsResult.
+            return
+        }
+
+        // Step 2: If notification permission is already granted, check for Activity Recognition.
+        if (!checkActivityRecognitionPermission()) {
+            // Request was sent, the logic will continue in onRequestPermissionsResult.
+            return
+        }
+
+        // Step 3: If both permissions are already granted, start the service.
+        Log.d(TAG, "All permissions already granted. Starting service.")
+        boundServiceToWorkoutId()
     }
 
     private fun boundServiceToWorkoutId() {
         val workoutId = intent.getLongExtra("workout_id", -1L)
         if (workoutId > 0) {
+            if (isBound) {
+                Log.d(TAG, "Service is already bound. Skipping start and bind.")
+                return
+            }
             startAndBindService(workoutId)
         } else {
             Log.e(TAG, "Invalid workout ID: $workoutId")
@@ -84,6 +105,7 @@ class MainActivity : BaseActivity() {
             putExtra(WorkoutTimerAndroidService.EXTRA_WORKOUT_ID, workoutId)
         }
 
+        Log.d(TAG, "Starting foreground service.")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent)
         } else {
@@ -134,19 +156,33 @@ class MainActivity : BaseActivity() {
         when (requestCode) {
             REQUEST_CODE_POST_NOTIFICATIONS -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Notification permission granted")
+                    Log.d(TAG, "Notification permission granted. Now checking for Activity Recognition.")
+                    // Now that this is granted, immediately check the next permission.
+                    if (checkActivityRecognitionPermission()) {
+                        // If it's already granted, we can start the service.
+                        boundServiceToWorkoutId()
+                    }
+                    // If not granted, a new request was sent and we wait for its result.
+                } else {
+                    Log.w(TAG, "Notification permission was denied.")
+                    // You should probably show a message to the user here.
                 }
             }
 
             REQUEST_CODE_ACTIVITY_RECOGNITION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Activity recognition permission granted")
+                    Log.d(TAG, "Activity Recognition permission granted. Starting service.")
+                    // This is the final permission needed, so now we can start the service.
+                    boundServiceToWorkoutId()
+                } else {
+                    Log.w(TAG, "Activity Recognition permission was denied.")
+                    // You should probably show a message to the user here.
                 }
             }
         }
     }
 
-    private fun checkNotificationPermission() {
+    private fun checkNotificationPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -157,11 +193,13 @@ class MainActivity : BaseActivity() {
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                     REQUEST_CODE_POST_NOTIFICATIONS
                 )
+                return false
             }
         }
+        return true
     }
 
-    private fun checkActivityRecognitionPermission() {
+    private fun checkActivityRecognitionPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -172,8 +210,10 @@ class MainActivity : BaseActivity() {
                     arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
                     REQUEST_CODE_ACTIVITY_RECOGNITION
                 )
+                return false
             }
         }
+        return true
     }
 
     private fun checkExactAlarmPermission() {
