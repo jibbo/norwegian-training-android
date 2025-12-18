@@ -444,6 +444,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             .setOngoing(true)  // Always non-dismissible during workout
             .setContentIntent(contentPendingIntent)
             .setAutoCancel(false)
+            .setSilent(true)
 
         if (!state.isCompleted && state.currentPhase.name != PhaseName.GET_READY) {
             if (state.isTimerRunning) {
