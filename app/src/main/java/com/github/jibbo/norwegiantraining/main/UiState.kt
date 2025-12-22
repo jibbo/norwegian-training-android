@@ -11,6 +11,7 @@ data class UiState(
     val remainingTimeOnPauseMillis: Long = 0L,
     val workoutName: String = "",
     val showConfetti: Boolean = false,
+    val isServiceBound: Boolean = false,
 )
 
 fun PhaseName.description() = when (this) {

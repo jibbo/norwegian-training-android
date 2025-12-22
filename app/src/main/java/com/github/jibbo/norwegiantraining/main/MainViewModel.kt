@@ -28,6 +28,12 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun bindToService(binder: WorkoutTimerService) {
         serviceBinder = binder
+        states.value = states.value.copy(isServiceBound = true)
+    }
+
+    fun unbind() {
+        serviceBinder = null
+        states.value = states.value.copy(isServiceBound = false)
     }
 
     fun updateFromService(serviceState: WorkoutTimerState) {
@@ -38,7 +44,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
             targetTimeMillis = serviceState.targetTimeMillis,
             remainingTimeOnPauseMillis = serviceState.remainingTimeOnPauseMillis,
             workoutName = serviceState.workoutName,
-            showConfetti = serviceState.isCompleted && !currentState.showConfetti
+            showConfetti = serviceState.isCompleted && !currentState.showConfetti,
+            isServiceBound = currentState.isServiceBound
         )
     }
 
@@ -51,7 +58,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     service.startTimer()
                 } else {
                     // Handle GET_READY phase (duration = 0) - advance to first real phase
-                    // advanceToNextPhase now automatically starts the timer for the next phase
+                    // automatically starts the timer for the next phase
                     service.advanceToNextPhase()
                 }
             }
