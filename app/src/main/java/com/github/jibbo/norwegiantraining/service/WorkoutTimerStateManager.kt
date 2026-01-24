@@ -25,7 +25,6 @@ class WorkoutTimerStateManager @Inject constructor(
     private val moveToNextPhase: MoveToNextPhaseDomainService,
     private val phaseEndedUseCase: PhaseEndedUseCase,
     private val skipPhaseUseCase: SkipPhaseUseCase,
-    private val getTodaySessionUseCase: GetTodaySessionUseCase,
     private val settingsRepository: SettingsRepository
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -58,7 +57,7 @@ class WorkoutTimerStateManager @Inject constructor(
         updateState(newState)
     }
 
-    suspend fun startTimer() {
+    fun startTimer() {
         val currentState = _state.value
 
         val duration = if (currentState.remainingTimeOnPauseMillis > 0) {
@@ -78,7 +77,7 @@ class WorkoutTimerStateManager @Inject constructor(
         )
     }
 
-    suspend fun pauseTimer() {
+    fun pauseTimer() {
         val currentState = _state.value
         if (!currentState.isTimerRunning) return
 

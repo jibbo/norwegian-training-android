@@ -91,12 +91,4 @@ class TimerStatePersistence @Inject constructor(
             preferences.clear()
         }
     }
-
-    suspend fun hasActiveWorkout(): Boolean {
-        return dataStore.data.map { preferences ->
-            val workoutId = preferences[Keys.WORKOUT_ID] ?: -1L
-            val isCompleted = preferences[Keys.IS_COMPLETED] ?: false
-            workoutId != -1L && !isCompleted
-        }.first()
-    }
 }

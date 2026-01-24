@@ -103,7 +103,7 @@ class MainActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (mainViewModel.uiStates.value.isBound) {
+        if (mainViewModel.uiStates.value.isServiceBound) {
             unbindService(serviceConnection)
         }
     }
