@@ -60,11 +60,10 @@ class MainActivity : BaseActivity() {
                 )
             }
         }
-        if (checkNotificationPermission()) {
-            boundServiceToWorkoutId()
-        }
+
         checkActivityRecognitionPermission()
         checkExactAlarmPermission()
+
         observe()
     }
 
@@ -140,6 +139,7 @@ class MainActivity : BaseActivity() {
             REQUEST_CODE_ACTIVITY_RECOGNITION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(TAG, "Activity recognition permission granted")
+                    checkNotificationPermission()
                 }
             }
         }
@@ -162,7 +162,7 @@ class MainActivity : BaseActivity() {
         return true
     }
 
-    private fun checkActivityRecognitionPermission() {
+    private fun checkActivityRecognitionPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -173,11 +173,13 @@ class MainActivity : BaseActivity() {
                     arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
                     REQUEST_CODE_ACTIVITY_RECOGNITION
                 )
+                return false
             }
         }
+        return true
     }
 
-    private fun checkExactAlarmPermission() {
+    private fun checkExactAlarmPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val alarmManager =
                 ContextCompat.getSystemService(this, android.app.AlarmManager::class.java)
@@ -186,8 +188,10 @@ class MainActivity : BaseActivity() {
                     it.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
                     startActivity(it)
                 }
+                return false
             }
         }
+        return true
     }
 
     companion object {
