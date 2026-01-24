@@ -61,10 +61,17 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        checkActivityRecognitionPermission()
-        checkExactAlarmPermission()
-
         observe()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(checkActivityRecognitionPermission()
+            && checkNotificationPermission())
+        {
+            boundServiceToWorkoutId()
+        }
+        checkExactAlarmPermission()
     }
 
     private fun boundServiceToWorkoutId() {
