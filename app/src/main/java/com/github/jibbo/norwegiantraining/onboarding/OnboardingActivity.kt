@@ -1,8 +1,13 @@
 package com.github.jibbo.norwegiantraining.onboarding
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
@@ -101,7 +107,7 @@ fun Content(
     settingsRepository: SettingsRepository
 ) {
     val pagerState = rememberPagerState(pageCount = {
-        OnboardingStates.states.size
+        OnboardingStates.states().size
     })
     Column(
         modifier = Modifier
@@ -164,7 +170,15 @@ private fun OnBoardingPage(
     settingsRepository: SettingsRepository,
     modifier: Modifier = Modifier,
 ) {
-    val state = OnboardingStates.states[page]
+    val coroutineScope = rememberCoroutineScope()
+    val state = OnboardingStates.states()[page]
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        coroutineScope.launch {
+            pagerState.scrollToPage(page + 1)
+        }
+    }
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
@@ -194,12 +208,13 @@ private fun OnBoardingPage(
                 val selected = remember { mutableStateOf(1) }
                 Questions(page, pagerState, state, selected)
             }
+
+            is UiState.Permission -> PermissionPage(state)
         }
-        val coroutineScope = rememberCoroutineScope()
         val current = LocalContext.current
         Button(
             onClick = {
-                if (page == OnboardingStates.states.size - 1) {
+                if (page == OnboardingStates.states().size - 1) {
                     val intent = Intent(
                         current,
                         getNextActivity(hasPaid, settingsRepository)
@@ -207,6 +222,16 @@ private fun OnBoardingPage(
                     intent.flags =
                         Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     current.startActivity(intent)
+                }
+                if (state is UiState.Permission) {
+                    if (ContextCompat.checkSelfPermission(
+                            current,
+                            state.permission
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        launcher.launch(state.permission)
+                        return@Button
+                    }
                 }
                 coroutineScope.launch {
                     pagerState.scrollToPage(page + 1)
@@ -236,7 +261,6 @@ private fun getNextActivity(
         settingsRepository.onboardingCompleted()
         HomeActivity::class.java
     }
-
 
 @Composable
 fun ColumnScope.FeedbackPage(state: UiState.Feedback, modifier: Modifier = Modifier) {
@@ -302,6 +326,31 @@ fun ColumnScope.NormalPage(state: UiState.Normal, modifier: Modifier = Modifier)
                     .size(width = 300.dp, height = 300.dp)
             )
         }
+        Text(
+            text = state.body.localizable(),
+            style = Typography.bodyLarge,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+fun ColumnScope.PermissionPage(state: UiState.Permission, modifier: Modifier = Modifier) {
+    Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.weight(1f))
+        Image(
+            painter = painterResource(
+                id = state.image,
+            ),
+            contentDescription = null,
+            modifier = Modifier
+                .clip(CircleShape)
+                .size(width = 300.dp, height = 300.dp)
+        )
         Text(
             text = state.body.localizable(),
             style = Typography.bodyLarge,

@@ -89,6 +89,12 @@
     <string name="onboarding_step_6_description">pre-made for any fitness level</string>
     <string name="onboarding_step_6_body">Becoming a pro or not is your choice</string>
 
+    <string name="onboarding_step_notification_permission_title">Allow Notifications</string>
+    <string name="onboarding_step_notification_permission_body">This permission is needed show the remaining time as a notificaiton. Without this notification the app can\'t work when the screen is off</string>
+
+    <string name="onboarding_step_activity_recognition_permission_title">Allow Physical Activity Recognition</string>
+    <string name="onboarding_step_activity_recognition_permission_body">This permission is needed to count steps and also to keep the app running when the screen is off.</string>
+
     <!-- Home -->
     <string name="welcome">Welcome %1$s</string>
     <string name="workout_time">%1$sm (%2$sm rest)</string>
