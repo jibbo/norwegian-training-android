@@ -40,7 +40,7 @@
     <string name="enable_crash_reporting_description">Ci permette di correggere bug e migliorare l\'app</string>
     <string name="title_beta_section">Funzionalità beta</string>
     <string name="beta_section_description">Queste funzionalità sono ancora sperimentali e possono causare comportamenti inattesi come la perdita di dati relativi agli allenamenti</string>
-    <string name="enable_timer_notification">Notifica con il timer</string>
+    <string name="enable_timer_notification">Notifica con timer</string>
     <string name="onboarding_section_title">Mostra nuovamente l\'Onboarding</string>
     <string name="about_dev_section_title">Dallo sviluppatore</string>
     <string name="about_dev_section_description">Ciao! Sono Gio e vorrei ringraziarti per usare la mia app! Essendo un appassionato di allenamento, l\'ho creata perché ero stufo di armeggiare con timer complicati. Spero che tu la possa trovare utile quanto me!</string>

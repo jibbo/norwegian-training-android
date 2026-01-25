@@ -8,5 +8,4 @@ data class UiState(
     val announceCountdown: Boolean,
     val isCrashReportingEnabled: Boolean,
     val isAnalyticsEnabled: Boolean,
-    val isTimerNotificationEnabled: Boolean,
 )
