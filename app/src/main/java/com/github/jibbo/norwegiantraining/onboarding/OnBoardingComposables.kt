@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,11 +29,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -73,29 +76,37 @@ fun LoadingPage(
 ) {
     val state = viewModel.uiStates.collectAsState()
     when (state.value) {
-        is UiState.Loading -> TODO()
-        is UiState.Show -> OnBoardingWrapper(innerPadding, state.value as UiState.Show)
+        is UiState.Loading -> Loading(innerPadding)
+        is UiState.Show -> OnBoarding(innerPadding, viewModel, state.value as UiState.Show)
     }
 }
 
 @Composable
-fun OnBoardingWrapper(innerPadding: PaddingValues, uiState: UiState.Show) {
-    val current = LocalContext.current
-    if (!uiState.hasPaid) {
-        val intent = Intent(
-            current,
-            PaywallActivity::class.java
-        )
-        intent.flags =
-            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        current.startActivity(intent)
-    } else {
-        OnBoarding(innerPadding, uiState)
+fun Loading(innerPadding: PaddingValues) {
+    Column(
+        modifier = Modifier
+            .background(
+                brush = verticalGradient(
+                    colors = listOf(
+                        Color.DarkGray,
+                        Black
+                    )
+                )
+            )
+            .padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding()
+            )
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator()
     }
 }
 
 @Composable
-fun OnBoarding(innerPadding: PaddingValues, uiState: UiState.Show) {
+fun OnBoarding(innerPadding: PaddingValues, viewModel: OnboardingViewModel, uiState: UiState.Show) {
     val pagerState = rememberPagerState(pageCount = {
         uiState.states.size
     })
@@ -126,7 +137,7 @@ fun OnBoarding(innerPadding: PaddingValues, uiState: UiState.Show) {
                 page,
                 pagerState,
                 uiState.states,
-                uiState.hasPaid,
+                viewModel,
             )
         }
         Row(
@@ -160,15 +171,7 @@ private fun OnBoardingPage(
     viewModel: OnboardingViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val state = states[page]
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        coroutineScope.launch {
-            pagerState.scrollToPage(page + 1)
-        }
-    }
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
@@ -193,7 +196,7 @@ private fun OnBoardingPage(
             }
 
             is OnboardingPage.Feedback -> FeedbackPage(state)
-            is OnboardingPage.Questions -> {
+            is OnboardingPage.Question -> {
                 // TODO move selected inside the questions so that button can answer properly
                 val selected = remember { mutableStateOf(1) }
                 Questions(page, pagerState, state, selected)
@@ -203,7 +206,7 @@ private fun OnBoardingPage(
         }
         Button(
             onClick = {
-                viewModel.continueClicked()
+                viewModel.continueClicked(page)
             }, modifier = modifier
                 .fillMaxWidth()
                 .height(64.dp)
@@ -322,7 +325,7 @@ fun ColumnScope.PermissionPage(state: OnboardingPage.Permission, modifier: Modif
 fun ColumnScope.Questions(
     page: Int,
     pagerState: PagerState,
-    state: OnboardingPage.Questions,
+    state: OnboardingPage.Question,
     selectedOption: MutableState<Int>,
     modifier: Modifier = Modifier
 ) {
