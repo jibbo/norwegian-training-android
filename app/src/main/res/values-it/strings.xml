@@ -78,6 +78,7 @@
 
 
     <!-- Home -->
+    <string name="onboarding_step_name_placeholder">Il tuo nome</string>
     <string name="welcome">Ciao %1$s</string>
     <string name="workout_time">%1$sm (%2$sm riposo)</string>
     <string name="workout_split">%1$sx%1$s</string>
@@ -95,6 +96,11 @@
     <string name="workout_true_norwegian">🇳🇴 Vero 4x4 Norvegese</string>
     <string name="workout_expert_1">🏃‍♀️ Pro 1</string>
     <string name="workout_expert_2">💪 Pro 2</string>
+    <string name="onboarding_step_notification_permission_title">Consenti Notifiche</string>
+    <string name="onboarding_step_notification_permission_body">Questa autorizzazione è necessaria per mostrare il tempo rimanente come notifica. Senza questa notifica l\'app non può funzionare quando lo schermo è spento.</string>
+    <string name="onboarding_step_activity_recognition_permission_title">Consenti il ​​riconoscimento dell\'attività fisica</string>
+    <string name="onboarding_step_activity_recognition_permission_body">Questa autorizzazione è necessaria per contare i passi e anche per mantenere l\'app in esecuzione quando lo schermo è spento.</string>
+    <string name="onboarding_step_name_title">Come ti chiami?</string>
 
 
 </resources>

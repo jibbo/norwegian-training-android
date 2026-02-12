@@ -34,6 +34,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -41,6 +42,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +68,7 @@ import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -110,6 +113,7 @@ fun OnBoarding(innerPadding: PaddingValues, viewModel: OnboardingViewModel, uiSt
     val pagerState = rememberPagerState(pageCount = {
         uiState.states.size
     })
+    val selectedPage = viewModel.uiSelectedPage.collectAsState()
     Column(
         modifier = Modifier
             .background(
@@ -160,6 +164,17 @@ fun OnBoarding(innerPadding: PaddingValues, viewModel: OnboardingViewModel, uiSt
                 )
             }
         }
+        val coroutineScope = rememberCoroutineScope()
+        LaunchedEffect(selectedPage.value) {
+            coroutineScope.launch {
+                pagerState.scrollToPage(selectedPage.value)
+            }
+        }
+        LaunchedEffect(pagerState) {
+            snapshotFlow { pagerState.currentPage }.collect { page ->
+                viewModel.onPageSwiped(page) // Make sure this function exists in your ViewModel
+            }
+        }
     }
 }
 
@@ -203,6 +218,7 @@ private fun OnBoardingPage(
             }
 
             is OnboardingPage.Permission -> PermissionPage(state)
+            is OnboardingPage.NameSetting -> NameSetting(state, viewModel)
         }
         Button(
             onClick = {
@@ -291,6 +307,25 @@ fun ColumnScope.NormalPage(state: OnboardingPage.Normal, modifier: Modifier = Mo
                 .padding(16.dp)
                 .fillMaxWidth(),
             textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+fun ColumnScope.NameSetting(
+    state: OnboardingPage.NameSetting,
+    viewModel: OnboardingViewModel,
+    modifier: Modifier = Modifier
+) {
+    val nameState = viewModel.uiName.collectAsState()
+    Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.weight(1f))
+        TextField(
+            value = nameState.value,
+            onValueChange = { viewModel.onNameChanged(it) },
+            label = { Text(text = state.placeholder.localizable()) },
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.weight(1f))
     }

@@ -78,6 +78,7 @@
     <string name="onboarding_step_6_body">Ser un profesional o no, depende de ti</string>
 
     <!-- Home -->
+    <string name="onboarding_step_name_placeholder">Su nombre</string>
     <string name="welcome">Hola %1$s</string>
     <string name="workout_time">%1$sm (%2$sm descanso)</string>
     <string name="workout_split">%1$sx%1$s</string>
@@ -95,4 +96,9 @@
     <string name="workout_true_norwegian">🇳🇴 Verdadero 4x4 Noruego</string>
     <string name="workout_expert_1">🏃‍♀️ Pro 1</string>
     <string name="workout_expert_2">💪 Pro 2</string>
+    <string name="onboarding_step_notification_permission_title">Permitir notificaciones</string>
+    <string name="onboarding_step_notification_permission_body">Este permiso es necesario para mostrar el tiempo restante como notificación. Sin esta notificación, la aplicación no funcionará con la pantalla apagada.</string>
+    <string name="onboarding_step_activity_recognition_permission_title">Permitir el reconocimiento de la actividad física</string>
+    <string name="onboarding_step_activity_recognition_permission_body">Este permiso es necesario para contar los pasos y también para mantener la aplicación funcionando cuando la pantalla está apagada.</string>
+    <string name="onboarding_step_name_title">¿Cómo te llamas?</string>
 </resources>

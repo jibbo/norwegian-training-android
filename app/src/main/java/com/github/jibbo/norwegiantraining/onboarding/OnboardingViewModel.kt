@@ -2,6 +2,7 @@ package com.github.jibbo.norwegiantraining.onboarding
 
 import android.Manifest
 import android.os.Build
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.BuildConfig
@@ -21,47 +22,42 @@ import javax.inject.Inject
 class OnboardingViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
-    private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
+    private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow(replay = 1)
     val uiEvents = events.asSharedFlow()
 
-    private val states: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
+    private val selectedPage = MutableStateFlow(0)
+    val uiSelectedPage = selectedPage.asStateFlow()
+
+    private val name = MutableStateFlow("")
+    val uiName = name.asStateFlow()
+
+    private val states: MutableStateFlow<UiState> = MutableStateFlow(
+        UiState.Show(OnboardingStates.getOnboardingPages())
+    )
     val uiStates = states.asStateFlow()
+    fun continueClicked(step: Int) {
+        val onboardingPages = OnboardingStates.getOnboardingPages()
+        if (onboardingPages[step] is OnboardingPage.Permission) {
+            val state = onboardingPages[step] as OnboardingPage.Permission
+            viewModelScope.launch {
+                events.emit(UiCommands.AskPermission(state.permission))
+            }
+        }
+        if (step == onboardingPages.size - 1) {
+            if (BuildConfig.DEBUG) {
+                showHome()
+            } else if (Purchases.isConfigured) {
+                Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
+                    val hasPaid = customerInfo.entitlements.active.isNotEmpty()
+                    if (hasPaid) {
+                        showHome()
 
-    var selectedPage: Int = 0
-
-    init {
-        if (Purchases.isConfigured) {
-            Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
-                val hasPaid = customerInfo.entitlements.active.isNotEmpty()
-                if (!hasPaid) {
-                    if (BuildConfig.DEBUG) {
-                        settingsRepository.onboardingCompleted()
-                        viewModelScope.launch {
-                            events.emit(UiCommands.SHOW_HOME)
-                        }
                     } else {
                         viewModelScope.launch {
                             events.emit(UiCommands.SHOW_PAYWALL)
                         }
                     }
-                } else {
-                    states.value = UiState.Show(selectedPage, OnboardingStates.getOnboardingPages())
                 }
-            }
-        } else {
-            // In Previews or if Purchases is not configured, we default to showing the onboarding pages
-            states.value = UiState.Show(selectedPage, OnboardingStates.getOnboardingPages())
-        }
-    }
-
-    fun continueClicked(step: Int) {
-        val onboardingPages = OnboardingStates.getOnboardingPages()
-        if (step == onboardingPages.size - 1) {
-            showHome()
-        } else if (onboardingPages[step] is OnboardingPage.Permission) {
-            val state = onboardingPages[step] as OnboardingPage.Permission
-            viewModelScope.launch {
-                events.emit(UiCommands.AskPermission(state.permission))
             }
         } else {
             showNextPage()
@@ -69,11 +65,11 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun showNextPage() {
-        selectedPage += 1
-        viewModelScope.launch {
-            val value = states.value as UiState.Show
-            states.value = value.copy(selectedPage = selectedPage + 1)
-        }
+        selectedPage.value += 1
+//        viewModelScope.launch {
+//            val value = states.value as UiState.Show
+//            states.value = value.copy(selectedPage = selectedPage)
+//        }
     }
 
     fun permissionResult(granted: Boolean) {
@@ -85,6 +81,15 @@ class OnboardingViewModel @Inject constructor(
         viewModelScope.launch {
             events.emit(UiCommands.SHOW_HOME)
         }
+    }
+
+    fun onNameChanged(newName: String) {
+        name.value = newName
+        settingsRepository.setUserName(newName)
+    }
+
+    fun onPageSwiped(page: Int) {
+        selectedPage.value = page
     }
 
     object OnboardingStates {
@@ -113,15 +118,6 @@ class OnboardingViewModel @Inject constructor(
                     image = R.drawable.working_out_illustration
                 )
             )
-            add(
-                OnboardingPage.Normal(
-                    title = R.string.onboarding_step_4_title,
-                    description = R.string.onboarding_step_4_description,
-                    body = R.string.onboarding_step_4_body,
-                    image = R.drawable.hearth_illustration
-                )
-            )
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 add(
                     OnboardingPage.Permission(
@@ -143,6 +139,22 @@ class OnboardingViewModel @Inject constructor(
                     )
                 )
             }
+
+            add(
+                OnboardingPage.NameSetting(
+                    title = R.string.onboarding_step_name_title,
+                    placeholder = R.string.onboarding_step_name_placeholder,
+                )
+            )
+
+            add(
+                OnboardingPage.Normal(
+                    title = R.string.onboarding_step_4_title,
+                    description = R.string.onboarding_step_4_description,
+                    body = R.string.onboarding_step_4_body,
+                    image = R.drawable.hearth_illustration
+                )
+            )
         }
     }
 }

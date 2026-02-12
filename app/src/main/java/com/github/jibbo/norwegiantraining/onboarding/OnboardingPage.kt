@@ -9,7 +9,6 @@ import com.github.jibbo.norwegiantraining.R
 sealed class UiState {
     object Loading : UiState()
     data class Show(
-        val selectedPage: Int = 0,
         val states: List<OnboardingPage>
     ) : UiState()
 }
@@ -49,14 +48,12 @@ sealed class OnboardingPage(
         image
     )
 
-//    class Setting(
-//        @param:StringRes override val title: Int,
-//        @param:DrawableRes override val image: Int? = null,
-//        @param:StringRes val placeholder: Int,
-//    ) : OnboardingPage(
-//        title,
-//        image
-//    )
+    class NameSetting(
+        @param:StringRes override val title: Int,
+        @param:StringRes val placeholder: Int,
+    ) : OnboardingPage(
+        title,
+    )
 
     class Permission(
         @param:StringRes override val title: Int,
