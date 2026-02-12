@@ -42,6 +42,7 @@ class OnboardingViewModel @Inject constructor(
             viewModelScope.launch {
                 events.emit(UiCommands.AskPermission(state.permission))
             }
+            return
         }
         if (step == onboardingPages.size - 1) {
             if (BuildConfig.DEBUG) {
