@@ -16,7 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -225,19 +228,27 @@ private fun GetInTouchCard() {
                 modifier = Modifier.padding(8.dp)
             ) {
                 Spacer(modifier = Modifier.weight(1f))
-                Image(
-                    painter = painterResource(id = R.drawable.baseline_email_24),
-                    contentDescription = null,
-                )
-                Spacer(modifier = Modifier.size(6.dp))
-                TextButton(onClick = {
-                    context.composeEmail()
+                IconButton(onClick = {
+                    context.openMastodon()
                 }) {
-                    Text(
-                        text = R.string.about_dev_section_cta.localizable(),
-                        style = Typography.bodyLarge,
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_mastodon_24),
+                        contentDescription = R.string.about_dev_section_mastodon.localizable(),
+                        modifier = Modifier.size(36.dp)
                     )
                 }
+
+                Spacer(modifier = Modifier.size(24.dp))
+                IconButton(onClick = {
+                    context.composeEmail()
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_email_24),
+                        contentDescription = R.string.about_dev_section_cta.localizable(),
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+
             }
         }
     }
@@ -495,4 +506,11 @@ fun Context.composeEmail() {
     if (intent.resolveActivity(packageManager) != null) {
         startActivity(intent)
     }
+}
+
+fun Context.openMastodon() {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = "https://mastodon.social/@jibbolus".toUri()
+    }
+    startActivity(intent)
 }
