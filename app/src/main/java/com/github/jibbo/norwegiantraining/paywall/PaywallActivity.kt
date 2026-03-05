@@ -25,7 +25,6 @@ import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.revenuecat.purchases.CustomerInfo
-import com.revenuecat.purchases.EntitlementInfos
 import com.revenuecat.purchases.models.StoreTransaction
 import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIPurchasesAPI
 import com.revenuecat.purchases.ui.revenuecatui.Paywall
@@ -130,7 +129,7 @@ class PaywallActivity : BaseActivity() {
                         goToMainActivityIfPaid(null, freeTrialEndDate)
                     }) {
                         Text(
-                            text = "Dissmiss Paywall in trial",
+                            text = "TRIAL OK",
                             modifier = Modifier.padding(16.dp)
                         )
                     }
@@ -138,7 +137,7 @@ class PaywallActivity : BaseActivity() {
                         goToMainActivityIfPaid(null, Date())
                     }) {
                         Text(
-                            text = "Dissmiss Paywall out of trial",
+                            text = "EXPIRED TRIAL",
                             modifier = Modifier.padding(16.dp)
                         )
                     }
@@ -146,7 +145,7 @@ class PaywallActivity : BaseActivity() {
                         goToMainActivityIfPaid(null, null)
                     }) {
                         Text(
-                            text = "Dismiss Paywall never trial",
+                            text = "NEW TRIAL",
                             modifier = Modifier.padding(16.dp)
                         )
                     }
