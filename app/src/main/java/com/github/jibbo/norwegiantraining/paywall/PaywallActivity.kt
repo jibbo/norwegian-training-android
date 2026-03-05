@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.Scaffold
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
+import com.github.jibbo.norwegiantraining.freetrial.FreeTrialActivity
+import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.revenuecat.purchases.CustomerInfo
@@ -14,6 +16,8 @@ import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIP
 import com.revenuecat.purchases.ui.revenuecatui.Paywall
 import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.revenuecat.purchases.ui.revenuecatui.PaywallOptions
+import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalPreviewRevenueCatUIPurchasesAPI::class)
 class PaywallActivity : BaseActivity() {
@@ -50,10 +54,29 @@ class PaywallActivity : BaseActivity() {
     }
 
     fun goToMainActivityIfPaid(customerInfo: CustomerInfo) {
-        if (customerInfo.entitlements.active.isNotEmpty()) {
-            SharedPreferencesSettingsRepository(this).onboardingCompleted()
-            startActivity(Intent(this@PaywallActivity, MainActivity::class.java))
+        val sharedPreferencesSettingsRepository = SharedPreferencesSettingsRepository(this)
+
+        val freeTrialDate = sharedPreferencesSettingsRepository.getFreeTrialDate()
+        val endOfFreeTrial = if (freeTrialDate != null) {
+            val c = Calendar.getInstance()
+            c.time = freeTrialDate
+            c.add(Calendar.HOUR_OF_DAY, 24)
+            c.time
+        } else {
+            null
         }
+
+        val activityToBeOpened = if (customerInfo.entitlements.active.isNotEmpty()) {
+            HomeActivity::class.java
+        } else if (endOfFreeTrial == null || endOfFreeTrial.after(Calendar.getInstance().time)) {
+            sharedPreferencesSettingsRepository.startFreeTrial()
+            FreeTrialActivity::class.java
+        } else {
+            System.exit(0)
+            HomeActivity::class.java
+        }
+        sharedPreferencesSettingsRepository.onboardingCompleted()
+        startActivity(Intent(this@PaywallActivity, activityToBeOpened))
     }
 
 }

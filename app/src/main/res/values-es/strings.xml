@@ -102,4 +102,9 @@
     <string name="onboarding_step_activity_recognition_permission_title">Permitir el reconocimiento de la actividad física</string>
     <string name="onboarding_step_activity_recognition_permission_body">Este permiso es necesario para contar los pasos y también para mantener la aplicación funcionando cuando la pantalla está apagada.</string>
     <string name="onboarding_step_name_title">¿Cómo te llamas?</string>
+
+    <!-- Free Trial -->
+    <string name="free_trial_title">Hoy está en nosotros!</string>
+    <string name="free_trial_subtitle">Disfruta del acceso a la app durante las próximas 24 horas. Sin compromiso.</string>
+
 </resources>

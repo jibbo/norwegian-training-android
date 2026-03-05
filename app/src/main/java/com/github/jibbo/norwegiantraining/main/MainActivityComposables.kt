@@ -214,10 +214,9 @@ private fun Instructions(state: UiState) {
     )
     Text(
         text = state.step.name.description().localizable(),
-        style = Typography.headlineSmall,
+        style = Typography.bodyLarge,
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(0.8f)
             .padding(16.dp),
         textAlign = TextAlign.Center,
     )

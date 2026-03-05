@@ -103,5 +103,9 @@
     <string name="onboarding_step_activity_recognition_permission_body">Questa autorizzazione è necessaria per contare i passi e anche per mantenere l\'app in esecuzione quando lo schermo è spento.</string>
     <string name="onboarding_step_name_title">Come ti chiami?</string>
 
+    <!-- Prova gratuita -->
+    <string name="free_trial_title">Oggi te lo regaliamo noi!</string>
+    <string name="free_trial_subtitle">Accedi all\'app per le prossime 24 ore. Senza impegno.</string>
+
 
 </resources>

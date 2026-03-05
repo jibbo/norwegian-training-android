@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.revenuecat.purchases.ui)
     implementation(libs.gson)
     implementation(libs.konfetti)
+    implementation(libs.lottie)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,6 +31,8 @@ interface SettingsRepository {
     fun getCrashReportingEnabled(): Boolean
     fun isOnboardingCompleted(): Boolean
     fun onboardingCompleted(): Unit
+    fun getFreeTrialDate(): Date?
+    fun startFreeTrial()
 }
 
 @Singleton
@@ -37,7 +40,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) : SettingsRepository {
 
-    val sp = context.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
+    private val sp = context.getSharedPreferences(PREFS_KEY, Context.MODE_PRIVATE)
 
     override fun setUserName(name: String?) {
         sp.edit { putString(KEY_USERNAME, name) }
@@ -82,6 +85,18 @@ class SharedPreferencesSettingsRepository @Inject constructor(
 
     override fun onboardingCompleted() {
         sp.edit { putBoolean(KEY_ONBOARDING_COMPLETED, true) }
+    }
+
+    override fun getFreeTrialDate() = if (sp.contains("free_trial_date")) {
+        Date().apply {
+            time = sp.getLong("free_trial_date", System.currentTimeMillis())
+        }
+    } else {
+        null
+    }
+
+    override fun startFreeTrial() {
+        sp.edit { putLong("free_trial_date", System.currentTimeMillis()) }
     }
 
     companion object {

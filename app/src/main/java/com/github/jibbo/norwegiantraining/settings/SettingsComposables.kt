@@ -49,6 +49,7 @@ import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
+import com.github.jibbo.norwegiantraining.freetrial.FreeTrialActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
@@ -431,11 +432,6 @@ private fun CreditsCard() {
 @Composable
 private fun DebugCard() {
     val context = LocalContext.current
-    val intent = Intent(
-        context,
-        PaywallActivity::class.java
-    )
-    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(vertical = 6.dp)) {
             Row(
@@ -455,11 +451,37 @@ private fun DebugCard() {
             ) {
                 TextButton(
                     onClick = {
+                        val intent = Intent(
+                            context,
+                            PaywallActivity::class.java
+                        )
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         context.startActivity(intent)
                     }
                 ) {
                     Text(
                         text = "Paywall (remove .debug suffix from .gradle)",
+                        style = Typography.bodyMedium,
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(vertical = 8.dp)
+            ) {
+                TextButton(
+                    onClick = {
+                        val intent = Intent(
+                            context,
+                            FreeTrialActivity::class.java
+                        )
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        context.startActivity(intent)
+                    }
+                ) {
+                    Text(
+                        text = "Free Trial",
                         style = Typography.bodyMedium,
                     )
                 }
