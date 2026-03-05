@@ -24,6 +24,7 @@ interface Analytics {
     fun logCrashReporting(enabled: Boolean)
     fun enabled(enabled: Boolean)
     fun logStartFreeTrial(endDate: Date?)
+    fun logRevenueCatError(name: String, message: String)
 }
 
 class FirebaseTracker @Inject constructor(
@@ -85,6 +86,13 @@ class FirebaseTracker @Inject constructor(
                 val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm a")
                 putString("end_date", simpleDateFormat.format(it))
             }
+        })
+    }
+
+    override fun logRevenueCatError(name: String, message: String) {
+        firebaseAnalytics.logEvent("revenuecat_error", Bundle().apply {
+            putString("name", name)
+            putString("message", message)
         })
     }
 
