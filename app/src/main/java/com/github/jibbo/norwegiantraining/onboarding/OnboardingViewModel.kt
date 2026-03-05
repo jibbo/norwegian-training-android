@@ -45,9 +45,7 @@ class OnboardingViewModel @Inject constructor(
             return
         }
         if (step == onboardingPages.size - 1) {
-            if (BuildConfig.DEBUG) {
-                showHome()
-            } else if (Purchases.isConfigured) {
+            if (Purchases.isConfigured) {
                 Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
                     val hasPaid = customerInfo.entitlements.active.isNotEmpty()
                     if (hasPaid) {

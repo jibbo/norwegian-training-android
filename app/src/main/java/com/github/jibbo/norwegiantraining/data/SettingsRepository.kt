@@ -31,7 +31,7 @@ interface SettingsRepository {
     fun getCrashReportingEnabled(): Boolean
     fun isOnboardingCompleted(): Boolean
     fun onboardingCompleted(): Unit
-    fun getFreeTrialDate(): Date?
+    fun getFreeTrialEndDate(): Date?
     fun startFreeTrial()
 }
 
@@ -87,7 +87,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         sp.edit { putBoolean(KEY_ONBOARDING_COMPLETED, true) }
     }
 
-    override fun getFreeTrialDate() = if (sp.contains("free_trial_date")) {
+    override fun getFreeTrialEndDate() = if (sp.contains("free_trial_date")) {
         Date().apply {
             time = sp.getLong("free_trial_date", System.currentTimeMillis())
         }
@@ -96,7 +96,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     }
 
     override fun startFreeTrial() {
-        sp.edit { putLong("free_trial_date", System.currentTimeMillis()) }
+        sp.edit { putLong("free_trial_date", System.currentTimeMillis()+24*60*60*1000) }
     }
 
     companion object {

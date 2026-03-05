@@ -57,7 +57,7 @@ class FakeSettingsRepository : SettingsRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getFreeTrialDate(): Date? {
+    override fun getFreeTrialEndDate(): Date? {
         TODO("Not yet implemented")
     }
 

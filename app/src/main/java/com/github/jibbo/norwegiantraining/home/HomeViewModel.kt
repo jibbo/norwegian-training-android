@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -78,8 +79,11 @@ class HomeViewModel @Inject constructor(
     private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
         val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
         if (hasNotPurchased && !BuildConfig.DEBUG) {
-            viewModelScope.launch {
-                events.emit(UiCommands.SHOW_PAYWALL)
+            val freetTrialEndDate = settingsRepository.getFreeTrialEndDate() ?: Date()
+            if (freetTrialEndDate.before(Date())) {
+                viewModelScope.launch {
+                    events.emit(UiCommands.SHOW_PAYWALL)
+                }
             }
         }
     }
