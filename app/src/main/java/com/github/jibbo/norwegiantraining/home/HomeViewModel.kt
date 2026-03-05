@@ -47,7 +47,6 @@ class HomeViewModel @Inject constructor(
     fun refresh() {
         Purchases.sharedInstance.getCustomerInfoWith(
             onError = { pError ->
-                isTrial = true
                 analytics.logRevenueCatError(pError.code.name, pError.message)
             },
             onSuccess = purchasedCheck()
