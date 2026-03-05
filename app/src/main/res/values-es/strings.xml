@@ -46,6 +46,7 @@
     <string name="about_dev_section_title">Del desarrollador</string>
     <string name="about_dev_section_description">¡Hola! Soy Gio y quiero agradecerte por usar mi app. Como apasionado del entrenamiento, la creé porque me cansé de lidiar con temporizadores complicados. ¡Espero que te resulte tan útil como a mí!</string>
     <string name="about_dev_section_cta">Escribe un correo a Gio</string>
+    <string name="about_dev_section_mastodon">Escribe un DM a Gio</string>
     <string name="credits_section_cta">Créditos</string>
 
     <string name="title_activity_logs">Tu actividad</string>
