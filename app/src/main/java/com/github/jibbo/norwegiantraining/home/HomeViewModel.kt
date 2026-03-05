@@ -2,7 +2,6 @@ package com.github.jibbo.norwegiantraining.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.data.Difficulty
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.Workout
@@ -49,7 +48,7 @@ class HomeViewModel @Inject constructor(
             onSuccess = purchasedCheck()
         )
         viewModelScope.launch {
-            if (!settingsRepository.isOnboardingCompleted() && !BuildConfig.DEBUG) {
+            if (!settingsRepository.isOnboardingCompleted()) {
                 events.emit(UiCommands.SHOW_ONBOARDING)
             }
             refreshUsername()
@@ -78,7 +77,7 @@ class HomeViewModel @Inject constructor(
 
     private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
         val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
-        if (hasNotPurchased && !BuildConfig.DEBUG) {
+        if (hasNotPurchased) {
             val freetTrialEndDate = settingsRepository.getFreeTrialEndDate()
             if (freetTrialEndDate != null && freetTrialEndDate.before(Date())) {
                 viewModelScope.launch {
