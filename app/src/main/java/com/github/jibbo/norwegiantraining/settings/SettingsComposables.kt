@@ -468,7 +468,6 @@ private fun DebugCard() {
             }
             Row(
                 verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 TextButton(
                     onClick = {
@@ -481,7 +480,7 @@ private fun DebugCard() {
                     }
                 ) {
                     Text(
-                        text = "Free Trial",
+                        text = "Show Free Trial",
                         style = Typography.bodyMedium,
                     )
                 }
