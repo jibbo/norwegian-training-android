@@ -33,6 +33,7 @@ interface SettingsRepository {
     fun onboardingCompleted(): Unit
     fun getFreeTrialEndDate(): Date?
     fun startFreeTrial()
+    fun debugOnlySetFreeTrialDate(date: Date?)
 }
 
 @Singleton
@@ -96,7 +97,15 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     }
 
     override fun startFreeTrial() {
-        sp.edit { putLong("free_trial_date", System.currentTimeMillis()+24*60*60*1000) }
+        sp.edit { putLong("free_trial_date", System.currentTimeMillis() + 24 * 60 * 60 * 1000) }
+    }
+
+    override fun debugOnlySetFreeTrialDate(date: Date?) {
+        if (date != null)
+            sp.edit { putLong("free_trial_date", date.time) }
+        else {
+            sp.edit { remove("free_trial_date") }
+        }
     }
 
     companion object {

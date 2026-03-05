@@ -34,6 +34,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
@@ -51,9 +52,7 @@ import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class FreeTrialActivity : ComponentActivity() {
-    @Inject
-    lateinit var analytics: Analytics
+class FreeTrialActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +62,9 @@ class FreeTrialActivity : ComponentActivity() {
             NorwegianTrainingTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
                     FreeTrialWelcomeScreen {
+                        sharedPreferencesSettingsRepository.startFreeTrial()
+                        analytics.logStartFreeTrial(sharedPreferencesSettingsRepository.getFreeTrialEndDate())
+
                         val intent = Intent(
                             this,
                             HomeActivity::class.java
@@ -70,8 +72,6 @@ class FreeTrialActivity : ComponentActivity() {
                         intent.flags =
                             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
-                        sharedPreferencesSettingsRepository.startFreeTrial()
-                        analytics.logStartFreeTrial(sharedPreferencesSettingsRepository.getFreeTrialEndDate())
                     }
                 }
             }

@@ -148,6 +148,15 @@ class PaywallActivity : BaseActivity() {
                             modifier = Modifier.padding(16.dp)
                         )
                     }
+                    Button(onClick = {
+                        sharedPreferencesSettingsRepository.debugOnlySetFreeTrialDate(null)
+                        startActivity(Intent(this@PaywallActivity, HomeActivity::class.java))
+                    }) {
+                        Text(
+                            text = "PURCHASE",
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
                 }
             }
         }

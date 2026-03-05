@@ -64,6 +64,10 @@ class FakeSettingsRepository : SettingsRepository {
     override fun startFreeTrial() {
         TODO("Not yet implemented")
     }
+
+    override fun debugOnlySetFreeTrialDate(date: Date?) {
+        TODO("Not yet implemented")
+    }
 }
 
 class FakeTracker : Analytics {
