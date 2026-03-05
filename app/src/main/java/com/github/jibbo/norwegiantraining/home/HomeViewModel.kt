@@ -2,7 +2,7 @@ package com.github.jibbo.norwegiantraining.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.jibbo.norwegiantraining.BuildConfig
+import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.Difficulty
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.Workout
@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +25,7 @@ class HomeViewModel @Inject constructor(
     private val getUsername: GetUsername,
     getAllWorkouts: GetAllWorkouts,
     private val settingsRepository: SettingsRepository,
+    private val analytics: Analytics,
 ) : ViewModel() {
 
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
@@ -31,6 +33,8 @@ class HomeViewModel @Inject constructor(
 
     private val states: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiStates = states.asStateFlow()
+
+    private var isTrial = false
 
     init {
         viewModelScope.launch {
@@ -42,13 +46,13 @@ class HomeViewModel @Inject constructor(
 
     fun refresh() {
         Purchases.sharedInstance.getCustomerInfoWith(
-            onError = {
-                // TODO handle error
+            onError = { pError ->
+                analytics.logRevenueCatError(pError.code.name, pError.message)
             },
             onSuccess = purchasedCheck()
         )
         viewModelScope.launch {
-            if (!settingsRepository.isOnboardingCompleted() && !BuildConfig.DEBUG) {
+            if (!settingsRepository.isOnboardingCompleted()) {
                 events.emit(UiCommands.SHOW_ONBOARDING)
             }
             refreshUsername()
@@ -65,7 +69,19 @@ class HomeViewModel @Inject constructor(
 
     fun workoutClicked(id: Long) {
         viewModelScope.launch {
-            events.emit(UiCommands.SHOW_WORKOUT(id))
+            when {
+                isTrial -> {
+                    if (id < 3) {
+                        events.emit(UiCommands.SHOW_WORKOUT(id))
+                    } else {
+                        events.emit(UiCommands.SHOW_PAYWALL)
+                    }
+                }
+
+                else -> {
+                    events.emit(UiCommands.SHOW_WORKOUT(id))
+                }
+            }
         }
     }
 
@@ -77,9 +93,14 @@ class HomeViewModel @Inject constructor(
 
     private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
         val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
-        if (hasNotPurchased && !BuildConfig.DEBUG) {
-            viewModelScope.launch {
-                events.emit(UiCommands.SHOW_PAYWALL)
+        if (hasNotPurchased) {
+            val freeTrialEndDate = settingsRepository.getFreeTrialEndDate()
+            if (freeTrialEndDate != null && freeTrialEndDate.before(Date())) {
+                viewModelScope.launch {
+                    events.emit(UiCommands.SHOW_PAYWALL)
+                }
+            } else if (freeTrialEndDate != null) {
+                isTrial = true
             }
         }
     }

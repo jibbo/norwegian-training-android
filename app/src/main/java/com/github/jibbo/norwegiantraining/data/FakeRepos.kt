@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.data
 
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 class FakeSessionRepo : SessionRepository {
     override suspend fun getSessions(
@@ -55,6 +56,18 @@ class FakeSettingsRepository : SettingsRepository {
     override fun onboardingCompleted() {
         TODO("Not yet implemented")
     }
+
+    override fun getFreeTrialEndDate(): Date? {
+        TODO("Not yet implemented")
+    }
+
+    override fun startFreeTrial() {
+        TODO("Not yet implemented")
+    }
+
+    override fun debugOnlySetFreeTrialDate(date: Date?) {
+        TODO("Not yet implemented")
+    }
 }
 
 class FakeTracker : Analytics {
@@ -87,6 +100,14 @@ class FakeTracker : Analytics {
     }
 
     override fun enabled(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun logStartFreeTrial(endDate: Date?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun logRevenueCatError(name: String, message: String) {
         TODO("Not yet implemented")
     }
 

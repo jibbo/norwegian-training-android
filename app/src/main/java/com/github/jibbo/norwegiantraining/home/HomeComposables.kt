@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
+import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
@@ -203,13 +205,15 @@ private fun WorkoutCard(
 fun HomeViewPreview() {
     val settingsRepository = FakeSettingsRepository()
     val workoutRepository = FakeWorkoutRepo()
+    val analytics = FakeTracker()
     NorwegianTrainingTheme {
         Scaffold { innerPadding ->
             HomeView(
                 HomeViewModel(
                     GetUsername(settingsRepository),
                     GetAllWorkouts(workoutRepository),
-                    settingsRepository
+                    settingsRepository,
+                    analytics
                 ),
                 innerPadding
             )

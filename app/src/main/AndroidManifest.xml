@@ -12,6 +12,14 @@
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+
+            <data android:scheme="mailto" />
+        </intent>
+    </queries>
+
     <application
         android:name=".NorwegianTrainingApp"
         android:allowBackup="true"
@@ -20,6 +28,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NorwegianTraining">
+        <activity
+            android:name=".freetrial.FreeTrialActivity"
+            android:exported="false"
+            android:theme="@style/Theme.NorwegianTraining" />
         <activity
             android:name=".onboarding.OnboardingActivity"
             android:exported="false"
@@ -35,12 +47,10 @@
         <activity
             android:name=".paywall.PaywallActivity"
             android:theme="@style/Theme.NorwegianTraining" />
-
         <activity
             android:name=".main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.NorwegianTraining" />
-
         <activity
             android:name=".home.HomeActivity"
             android:exported="true"
@@ -62,12 +72,5 @@
             android:name=".alarm.AlarmReceiver"
             android:exported="true" />
     </application>
-
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.SENDTO" />
-            <data android:scheme="mailto" />
-        </intent>
-    </queries>
 
 </manifest>

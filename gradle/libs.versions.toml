@@ -21,6 +21,7 @@ revenuecat = "9.12.0"
 gson = "2.13.2"
 konfetti = "2.0.5"
 datastore = "1.2.0"
+lottie = "6.7.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +54,7 @@ revenuecat-purchases-ui = { group = "com.revenuecat.purchases", name = "purchase
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 konfetti = { group = "nl.dionsegijn", name = "konfetti-compose", version.ref = "konfetti" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
