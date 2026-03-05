@@ -99,6 +99,10 @@ class FakeTracker : Analytics {
         TODO("Not yet implemented")
     }
 
+    override fun logStartFreeTrial(endDate: Date?) {
+        TODO("Not yet implemented")
+    }
+
 }
 
 class FakeWorkoutRepo : WorkoutRepository {
