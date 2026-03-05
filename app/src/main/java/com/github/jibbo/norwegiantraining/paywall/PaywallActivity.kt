@@ -83,7 +83,6 @@ class PaywallActivity : BaseActivity() {
             }
 
             freeTrialEndDate == null -> {
-                sharedPreferencesSettingsRepository.startFreeTrial()
                 FreeTrialActivity::class.java
             }
 
@@ -123,10 +122,10 @@ class PaywallActivity : BaseActivity() {
                         )
                 ) {
                     Button(onClick = {
-                        sharedPreferencesSettingsRepository.startFreeTrial()
-                        val freeTrialEndDate =
-                            sharedPreferencesSettingsRepository.getFreeTrialEndDate()
-                        goToMainActivityIfPaid(null, freeTrialEndDate)
+                        val date = Date().apply {
+                            time += 24 * 60 * 60 * 1000
+                        }
+                        goToMainActivityIfPaid(null, date)
                     }) {
                         Text(
                             text = "TRIAL OK",

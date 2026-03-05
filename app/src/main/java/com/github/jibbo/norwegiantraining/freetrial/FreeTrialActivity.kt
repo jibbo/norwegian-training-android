@@ -35,6 +35,8 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.Analytics
+import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
 import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
@@ -47,10 +49,15 @@ import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
 import nl.dionsegijn.konfetti.core.emitter.Emitter
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class FreeTrialActivity : ComponentActivity() {
+    @Inject
+    lateinit var analytics: Analytics
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sharedPreferencesSettingsRepository = SharedPreferencesSettingsRepository(this)
         enableEdgeToEdge()
         setContent {
             NorwegianTrainingTheme {
@@ -63,6 +70,8 @@ class FreeTrialActivity : ComponentActivity() {
                         intent.flags =
                             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
+                        sharedPreferencesSettingsRepository.startFreeTrial()
+                        analytics.logStartFreeTrial(sharedPreferencesSettingsRepository.getFreeTrialEndDate())
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.data
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -8,6 +9,8 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,6 +23,7 @@ interface Analytics {
     fun logTimerNotificationEnabled(enabled: Boolean)
     fun logCrashReporting(enabled: Boolean)
     fun enabled(enabled: Boolean)
+    fun logStartFreeTrial(endDate: Date?)
 }
 
 class FirebaseTracker @Inject constructor(
@@ -72,6 +76,16 @@ class FirebaseTracker @Inject constructor(
 
     override fun enabled(enabled: Boolean) {
         firebaseAnalytics.setAnalyticsCollectionEnabled(enabled)
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    override fun logStartFreeTrial(endDate: Date?) {
+        firebaseAnalytics.logEvent("start_free_trial", Bundle().apply {
+            endDate?.let {
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm a")
+                putString("end_date", simpleDateFormat.format(it))
+            }
+        })
     }
 
 }
