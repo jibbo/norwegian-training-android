@@ -127,6 +127,7 @@
     <!-- Free Trial -->
     <string name="free_trial_title">Today is on us.</string>
     <string name="free_trial_subtitle">Enjoy the access to the app for the next 24 hours. No strings attached.</string>
+    <string name="free_trial_button">CLAIM FREE DAY NOW</string>
 
 
 </resources>

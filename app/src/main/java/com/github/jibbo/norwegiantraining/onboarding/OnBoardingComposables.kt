@@ -235,7 +235,11 @@ private fun OnBoardingPage(
         Button(
             onClick = {
                 viewModel.continueClicked(page)
-            }, modifier = modifier
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Primary,
+                contentColor = White
+            ), modifier = modifier
                 .fillMaxWidth()
                 .height(64.dp)
         ) {

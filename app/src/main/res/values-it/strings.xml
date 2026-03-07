@@ -77,6 +77,10 @@
     <string name="onboarding_step_6_description">preparati in anticipo per ogni livello di fitness</string>
     <string name="onboarding_step_6_body">Diventare pro o no è una tua scelta</string>
 
+    <string name="onboarding_step_invite_friends_title">Dillo ai tuoi amici</string>
+    <string name="onboarding_step_invite_friends_description">Allenarsi insieme rende più facile mantenere la costanza.</string>
+    <string name="onboarding_step_invite_friends_body">Studi dimostrano che allenarsi in coppia o in gruppo aumenta la costanza fino al 600%%</string>
+    <string name="share_msg">Ho appena iniziato il mio allenamento a intervalli 4x4! Prova Norwy con me: https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
 
     <!-- Home -->
     <string name="onboarding_step_name_placeholder">Il tuo nome</string>
@@ -106,6 +110,6 @@
     <!-- Prova gratuita -->
     <string name="free_trial_title">Oggi te lo regaliamo noi!</string>
     <string name="free_trial_subtitle">Accedi all\'app per le prossime 24 ore. Senza impegno.</string>
-
+    <string name="free_trial_button">RICHIEDI SUBITO UN GIORNO GRATUITO</string>
 
 </resources>
