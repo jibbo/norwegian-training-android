@@ -55,8 +55,7 @@ fun NorwegianTrainingTheme(
     }
 
     MaterialTheme(
-//        colorScheme = colorScheme,
-        colorScheme = DarkColorScheme,
+        colorScheme = colorScheme,
         typography = Typography,
         content = content
     )

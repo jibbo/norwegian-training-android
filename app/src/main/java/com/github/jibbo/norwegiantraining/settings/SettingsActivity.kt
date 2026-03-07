@@ -22,7 +22,7 @@ class SettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NorwegianTrainingTheme {
+            NorwegianTrainingTheme(darkTheme = true) {
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
