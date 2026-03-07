@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -44,7 +45,9 @@ import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
+import com.github.jibbo.norwegiantraining.ui.theme.White
 
 @Composable
 internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
@@ -55,7 +58,7 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
             .background(
                 brush = verticalGradient(
                     colors = listOf(
-                        DarkPrimary,
+                        Primary,
                         Black
                     )
                 )
@@ -99,7 +102,7 @@ internal fun Header(viewModel: HomeViewModel) {
     ) {
         Toolbar(
             name = R.string.welcome.localizable(state.username ?: ""),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         IconButton(onClick = { viewModel.chartsClicked() }) {
             Icon(
@@ -121,7 +124,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
     val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
     LazyColumn(
         contentPadding = PaddingValues(all = 6.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         val keys = state.workouts.keys.sorted()
         items(keys.size, { it }) { index ->
@@ -129,6 +132,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
             Text(
                 text = difficulty.printableName().localizable(),
                 modifier = Modifier.padding(bottom = 12.dp),
+                style = Typography.bodyMedium,
             )
             val workouts = state.workouts[difficulty]?.sortedBy { it.id } ?: listOf()
             val scrollState = rememberScrollState()
@@ -179,16 +183,19 @@ private fun WorkoutCard(
             text = workout.name,
             modifier = Modifier.padding(8.dp),
             style = Typography.titleMedium,
+            color = White
         )
         Text(
             text = R.string.workout_time.localizable(workout.totalTime, workout.restTime()),
             modifier = Modifier.padding(8.dp),
             style = Typography.bodyMedium,
+            color = White
         )
         Text(
             text = R.string.workout_split.localizable(splitSize),
-            modifier = Modifier.padding(8.dp),
-            style = Typography.bodyMedium,
+            modifier = Modifier.padding(8.dp).alpha(0.8f),
+            style = Typography.bodySmall,
+            color = White
         )
 //        TextButton(onClick = {
 //            viewModel.workoutClicked(workout.id)

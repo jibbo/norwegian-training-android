@@ -1,9 +1,6 @@
 package com.github.jibbo.norwegiantraining.onboarding
 
-import android.content.Intent
-import android.content.pm.PackageManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +10,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,9 +26,11 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,29 +46,27 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import com.github.jibbo.norwegiantraining.BuildConfig
+import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
-import com.github.jibbo.norwegiantraining.data.SettingsRepository
-import com.github.jibbo.norwegiantraining.home.HomeActivity
-import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -219,11 +217,29 @@ private fun OnBoardingPage(
 
             is OnboardingPage.Permission -> PermissionPage(state)
             is OnboardingPage.NameSetting -> NameSetting(state, viewModel)
+            is OnboardingPage.InviteFriends -> {
+                Text(
+                    text = state.description.localizable(),
+                    style = Typography.bodyLarge,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                )
+                InviteFriends(
+                    state,
+                    viewModel,
+                    modifier
+                )
+            }
         }
         Button(
             onClick = {
                 viewModel.continueClicked(page)
-            }, modifier = modifier
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Primary,
+                contentColor = White
+            ), modifier = modifier
                 .fillMaxWidth()
                 .height(64.dp)
         ) {
@@ -411,6 +427,57 @@ fun ColumnScope.Questions(
     }
 }
 
+@Composable
+fun ColumnScope.InviteFriends(
+    state: OnboardingPage.InviteFriends,
+    viewModel: OnboardingViewModel,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.weight(1f))
+        Image(
+            painter = painterResource(
+                id = state.image,
+            ),
+            contentDescription = null,
+            modifier = Modifier
+                .clip(CircleShape)
+                .size(width = 300.dp, height = 300.dp)
+        )
+        Text(
+            text = state.body.localizable(),
+            style = Typography.bodyLarge,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+        Button(
+            onClick = {
+                viewModel.share()
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Cyan,
+                contentColor = Color.Black
+            ),
+            modifier = modifier
+                .fillMaxWidth()
+                .height(64.dp),
+        ) {
+            Text(
+                text = R.string.share.localizable().uppercase(),
+                fontWeight = FontWeight.SemiBold,
+                color = Black
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                painter = painterResource(id = R.drawable.outline_ios_share_24),
+                contentDescription = R.string.share.localizable()
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

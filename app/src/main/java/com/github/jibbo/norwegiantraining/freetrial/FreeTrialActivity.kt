@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,6 +46,7 @@ import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
+import com.github.jibbo.norwegiantraining.ui.theme.White
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
@@ -59,7 +61,7 @@ class FreeTrialActivity : BaseActivity() {
         val sharedPreferencesSettingsRepository = SharedPreferencesSettingsRepository(this)
         enableEdgeToEdge()
         setContent {
-            NorwegianTrainingTheme {
+            NorwegianTrainingTheme(darkTheme = true) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
                     FreeTrialWelcomeScreen {
                         sharedPreferencesSettingsRepository.startFreeTrial()
@@ -157,11 +159,15 @@ fun FreeTrialWelcomeScreen(onStartTrial: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Primary,
+                contentColor = Black
+            )
         ) {
             Text(
-                text = "Claim My Free Day",
-                style = Typography.titleMedium
+                text = R.string.free_trial_button.localizable(),
+                style = Typography.titleMedium,
             )
         }
     }

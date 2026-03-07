@@ -23,7 +23,7 @@ class HomeActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            NorwegianTrainingTheme(darkTheme = true) {
+            NorwegianTrainingTheme(darkTheme = false) {
                 Scaffold { innerPadding ->
                     HomeView(homeViewModel, innerPadding)
                 }

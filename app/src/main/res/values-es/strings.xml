@@ -78,6 +78,11 @@
     <string name="onboarding_step_6_description">Prepárate con antelación para cada nivel de forma física</string>
     <string name="onboarding_step_6_body">Ser un profesional o no, depende de ti</string>
 
+    <string name="onboarding_step_invite_friends_title">Cuéntaselo a tus amigos</string>
+    <string name="onboarding_step_invite_friends_description">Entrenar juntos facilita la constancia.</string>
+    <string name="onboarding_step_invite_friends_body">Estudios demuestran que entrenar con un compañero o en grupo aumenta la constancia hasta en un 600%%</string>
+    <string name="share_msg">¡Acabo de empezar mis intervalos 4x4! Prueba Norwy conmigo: https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
+
     <!-- Home -->
     <string name="onboarding_step_name_placeholder">Su nombre</string>
     <string name="welcome">Hola %1$s</string>
@@ -106,5 +111,5 @@
     <!-- Free Trial -->
     <string name="free_trial_title">Hoy está en nosotros!</string>
     <string name="free_trial_subtitle">Disfruta del acceso a la app durante las próximas 24 horas. Sin compromiso.</string>
-
+    <string name="free_trial_button">RECLAMA TU DÍA GRATIS AHORA</string>
 </resources>
