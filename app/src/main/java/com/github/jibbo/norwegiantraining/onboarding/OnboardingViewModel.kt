@@ -91,6 +91,12 @@ class OnboardingViewModel @Inject constructor(
         selectedPage.value = page
     }
 
+    fun share() {
+        viewModelScope.launch {
+            events.emit(UiCommands.SHARE)
+        }
+    }
+
     object OnboardingStates {
         fun getOnboardingPages(): List<OnboardingPage> = buildList {
             add(
@@ -147,6 +153,15 @@ class OnboardingViewModel @Inject constructor(
             )
 
             add(
+                OnboardingPage.InviteFriends(
+                    title = R.string.onboarding_step_invite_friends_title,
+                    image = R.drawable.social_illustration,
+                    description = R.string.onboarding_step_invite_friends_description,
+                    body = R.string.onboarding_step_invite_friends_body,
+                )
+            )
+
+            add(
                 OnboardingPage.Normal(
                     title = R.string.onboarding_step_4_title,
                     description = R.string.onboarding_step_4_description,
@@ -161,6 +176,7 @@ class OnboardingViewModel @Inject constructor(
 sealed class UiCommands {
     object SHOW_HOME : UiCommands()
     object SHOW_PAYWALL : UiCommands()
+    object SHARE : UiCommands()
 
     data class AskPermission(val permission: String) : UiCommands()
 }

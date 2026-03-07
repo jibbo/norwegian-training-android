@@ -7,6 +7,7 @@
     <string name="skip">Skip training phase</string>
     <string name="continue_btn">Continue</string>
     <string name="back">back</string>
+    <string name="share">share</string>
 
 
     <!-- Timer states -->
@@ -98,6 +99,11 @@
 
     <string name="onboarding_step_name_title">What\'s your name?</string>
     <string name="onboarding_step_name_placeholder">Your name</string>
+
+    <string name="onboarding_step_invite_friends_title">Tell your friends</string>
+    <string name="onboarding_step_invite_friends_description">Working out together makes it easier to stay consistent.</string>
+    <string name="onboarding_step_invite_friends_body">Studies shows that working out with a partner or in a group increases consistency by up to 600%%</string>
+    <string name="share_msg">Just started my 4x4 intervals! Try Norwy with me: https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
 
     <!-- Home -->
     <string name="welcome">Welcome %1$s</string>

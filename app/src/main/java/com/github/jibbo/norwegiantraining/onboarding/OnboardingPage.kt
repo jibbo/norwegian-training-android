@@ -64,4 +64,11 @@ sealed class OnboardingPage(
         title,
         image,
     )
+
+    class InviteFriends(
+        @param:StringRes override val title: Int,
+        @param:DrawableRes override val image: Int,
+        @param:StringRes val description: Int,
+        @param:StringRes val body: Int,
+    ) : OnboardingPage(title, image)
 }

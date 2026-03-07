@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
@@ -50,6 +51,7 @@ class OnboardingActivity : BaseActivity() {
                 when (it) {
                     UiCommands.SHOW_HOME -> showActivity(HomeActivity::class.java)
                     UiCommands.SHOW_PAYWALL -> showActivity(PaywallActivity::class.java)
+                    UiCommands.SHARE -> showShare()
                     is UiCommands.AskPermission -> requestPermission(it.permission)
                 }
             }
@@ -68,5 +70,20 @@ class OnboardingActivity : BaseActivity() {
         intent.flags =
             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
+    }
+
+    fun showShare() {
+//        val shareIntent: Intent = Intent().apply {
+//            action = Intent.ACTION_SEND
+//            // Example: content://com.google.android.apps.photos.contentprovider/...
+//            putExtra(Intent.EXTRA_STREAM, uriToImage)
+//            type = "image/jpeg"
+//        }
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.share_msg))
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 }
