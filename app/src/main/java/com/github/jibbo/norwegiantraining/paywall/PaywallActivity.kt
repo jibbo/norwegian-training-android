@@ -44,33 +44,29 @@ class PaywallActivity : BaseActivity() {
         setContent {
             NorwegianTrainingTheme {
                 Scaffold { _ ->
-                    if (!BuildConfig.DEBUG) {
-                        Paywall(
-                            options = PaywallOptions.Builder(
-                                dismissRequest = {
-                                    goToMainActivityIfPaid(null, freeTrialEndDate)
-                                },
-                            )
-                                .setListener(
-                                    object : PaywallListener {
-                                        override fun onPurchaseCompleted(
-                                            customerInfo: CustomerInfo,
-                                            storeTransaction: StoreTransaction
-                                        ) {
-                                            goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
-                                        }
-
-                                        override fun onRestoreCompleted(customerInfo: CustomerInfo) {
-                                            goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
-                                        }
-                                    }
-                                )
-                                .setShouldDisplayDismissButton(false)
-                                .build()
+                    Paywall(
+                        options = PaywallOptions.Builder(
+                            dismissRequest = {
+                                goToMainActivityIfPaid(null, freeTrialEndDate)
+                            },
                         )
-                    } else {
-                        DebugPayWall()
-                    }
+                            .setListener(
+                                object : PaywallListener {
+                                    override fun onPurchaseCompleted(
+                                        customerInfo: CustomerInfo,
+                                        storeTransaction: StoreTransaction
+                                    ) {
+                                        goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
+                                    }
+
+                                    override fun onRestoreCompleted(customerInfo: CustomerInfo) {
+                                        goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
+                                    }
+                                }
+                            )
+                            .setShouldDisplayDismissButton(false)
+                            .build()
+                    )
                 }
             }
         }

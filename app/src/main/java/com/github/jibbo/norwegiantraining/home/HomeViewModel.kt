@@ -95,12 +95,10 @@ class HomeViewModel @Inject constructor(
         val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
         if (hasNotPurchased) {
             val freeTrialEndDate = settingsRepository.getFreeTrialEndDate()
-            if (freeTrialEndDate != null && freeTrialEndDate.before(Date())) {
+            if (freeTrialEndDate == null || freeTrialEndDate.before(Date())) {
                 viewModelScope.launch {
                     events.emit(UiCommands.SHOW_PAYWALL)
                 }
-            } else if (freeTrialEndDate != null) {
-                isTrial = true
             }
         }
     }

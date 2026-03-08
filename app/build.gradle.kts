@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ApplicationExtension
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -6,6 +8,13 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics) version "3.0.5"
     alias(libs.plugins.room)
+}
+
+extensions.configure<ApplicationExtension> {
+    buildFeatures {
+        resValues = true
+        buildConfig = true
+    }
 }
 
 android {
@@ -24,7 +33,7 @@ android {
         buildConfigField(
             "String",
             "REVENUECAT_API_KEY",
-            "\"${project.properties["REVENUECAT_API_KEY"]}\""
+            "\"${project.properties["REVENUECAT_API_KEY_TEST"]}\""
         )
     }
 
