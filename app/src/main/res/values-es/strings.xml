@@ -87,7 +87,6 @@
     <string name="onboarding_step_name_placeholder">Su nombre</string>
     <string name="welcome">Hola %1$s</string>
     <string name="workout_time">%1$sm (%2$sm descanso)</string>
-    <string name="workout_split">%1$sx%1$s</string>
     <string name="workout_category_beginner">Principiante</string>
     <string name="workout_category_intermediate">Intermedio</string>
     <string name="workout_category_expert">Pro</string>
