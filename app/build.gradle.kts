@@ -56,6 +56,7 @@ android {
                 "REVENUECAT_API_KEY",
                 "\"${project.properties["REVENUECAT_API_KEY"]}\""
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
