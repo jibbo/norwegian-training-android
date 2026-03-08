@@ -4,9 +4,13 @@ import androidx.lifecycle.ViewModel
 import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.getCustomerInfoWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,9 +26,34 @@ internal class SettingsViewModel @Inject constructor(
             announcePhaseDesc = settingsRepository.getAnnouncePhaseDesc(),
             announceCountdown = settingsRepository.getAnnounceCountdown(),
             isCrashReportingEnabled = settingsRepository.getCrashReportingEnabled(),
-            isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled()
+            isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled(),
+            isFreeTrial = settingsRepository.getFreeTrialEndDate()?.after(Date()) == true,
+            rcExpDate = settingsRepository.getFreeTrialEndDate().toLocalString()
         )
     )
+
+    init {
+        if (settingsRepository.getFreeTrialEndDate()?.after(Date()) == true) {
+            uiStates.value = uiStates.value.copy(
+                showUpgradeButton = true
+            )
+        } else if (Purchases.isConfigured) {
+            Purchases.sharedInstance.getCustomerInfoWith(
+                onError = {},
+                onSuccess = { customerInfo ->
+                    val expirationDate =
+                        customerInfo.entitlements.active.values.firstOrNull()?.expirationDate
+                    val showUpgradeButton = expirationDate != null
+                    uiStates.value = uiStates.value.copy(
+                        rcSubActive = customerInfo.entitlements.active.values.isNotEmpty(),
+                        rcExpDate = expirationDate?.toLocalString(),
+                        showUpgradeButton = showUpgradeButton
+                    )
+                }
+            )
+        }
+    }
+
     val uiState = uiStates.asStateFlow()
 
     fun setName(name: String) {
@@ -67,3 +96,5 @@ internal class SettingsViewModel @Inject constructor(
         }
     }
 }
+
+fun Date?.toLocalString() = this?.let { SimpleDateFormat.getDateInstance().format(it) }

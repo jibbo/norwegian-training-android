@@ -2,27 +2,23 @@ package com.github.jibbo.norwegiantraining.paywall
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.BackEventCompat
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.github.jibbo.norwegiantraining.BuildConfig
+import androidx.compose.ui.res.painterResource
+import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
 import com.github.jibbo.norwegiantraining.freetrial.FreeTrialActivity
 import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
-import com.github.jibbo.norwegiantraining.ui.theme.Black
-import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.models.StoreTransaction
@@ -30,7 +26,9 @@ import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIP
 import com.revenuecat.purchases.ui.revenuecatui.Paywall
 import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.revenuecat.purchases.ui.revenuecatui.PaywallOptions
+import kotlinx.coroutines.flow.Flow
 import java.util.Date
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalPreviewRevenueCatUIPurchasesAPI::class)
 class PaywallActivity : BaseActivity() {
@@ -43,33 +41,56 @@ class PaywallActivity : BaseActivity() {
 
         setContent {
             NorwegianTrainingTheme {
-                Scaffold { _ ->
-                    if (!BuildConfig.DEBUG) {
-                        Paywall(
-                            options = PaywallOptions.Builder(
-                                dismissRequest = {
-                                    goToMainActivityIfPaid(null, freeTrialEndDate)
-                                },
-                            )
-                                .setListener(
-                                    object : PaywallListener {
-                                        override fun onPurchaseCompleted(
-                                            customerInfo: CustomerInfo,
-                                            storeTransaction: StoreTransaction
-                                        ) {
-                                            goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
-                                        }
-
-                                        override fun onRestoreCompleted(customerInfo: CustomerInfo) {
-                                            goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
-                                        }
-                                    }
-                                )
-                                .setShouldDisplayDismissButton(false)
-                                .build()
+                Scaffold { padding ->
+                    Paywall(
+                        options = PaywallOptions.Builder(
+                            dismissRequest = {},
                         )
-                    } else {
-                        DebugPayWall()
+                            .setListener(
+                                object : PaywallListener {
+                                    override fun onPurchaseCompleted(
+                                        customerInfo: CustomerInfo,
+                                        storeTransaction: StoreTransaction
+                                    ) {
+                                        goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
+                                    }
+
+                                    override fun onRestoreCompleted(customerInfo: CustomerInfo) {
+                                        goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
+                                    }
+
+                                    override fun onPurchaseCancelled() {
+                                        super.onPurchaseCancelled()
+                                        goToMainActivityIfPaid(null, freeTrialEndDate)
+                                    }
+                                }
+                            )
+                            .setShouldDisplayDismissButton(false)
+                            .build()
+                    )
+                    Row {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Button(onClick = {
+                            goToMainActivityIfPaid(null, freeTrialEndDate)
+                        }, modifier = Modifier.padding(vertical = padding.calculateTopPadding())) {
+                            Icon(
+                                painter = painterResource(
+                                    id = R.drawable.outline_close_24
+                                ), contentDescription = "Close"
+                            )
+                        }
+                    }
+
+                    PredictiveBackHandler(enabled = true) { progress: Flow<BackEventCompat> ->
+                        try {
+                            progress.collect { backEvent ->
+                                // Update your UI or animation based on backEvent.progress
+                            }
+                            // Handle the final back action (e.g., navigate back)
+                            goToMainActivityIfPaid(null, freeTrialEndDate)
+                        } catch (e: CancellationException) {
+                            // Back gesture was cancelled, reset your UI
+                        }
                     }
                 }
             }
@@ -96,75 +117,5 @@ class PaywallActivity : BaseActivity() {
         }
         sharedPreferencesSettingsRepository.onboardingCompleted()
         startActivity(Intent(this@PaywallActivity, activityToBeOpened))
-    }
-
-    @Composable
-    fun DebugPayWall() {
-        NorwegianTrainingTheme {
-            Scaffold(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Black,
-                                DarkPrimary
-                            )
-                        )
-                    )
-            ) { innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(
-                            top = innerPadding.calculateTopPadding(),
-                            bottom = innerPadding.calculateBottomPadding()
-                        )
-                ) {
-                    Button(onClick = {
-                        val date = Date().apply {
-                            time += 24 * 60 * 60 * 1000
-                        }
-                        goToMainActivityIfPaid(null, date)
-                    }) {
-                        Text(
-                            text = "TRIAL OK",
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                    Button(onClick = {
-                        goToMainActivityIfPaid(null, Date())
-                    }) {
-                        Text(
-                            text = "EXPIRED TRIAL",
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                    Button(onClick = {
-                        goToMainActivityIfPaid(null, null)
-                    }) {
-                        Text(
-                            text = "NEW TRIAL",
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                    Button(onClick = {
-                        sharedPreferencesSettingsRepository.debugOnlySetFreeTrialDate(null)
-                        startActivity(Intent(this@PaywallActivity, HomeActivity::class.java))
-                    }) {
-                        Text(
-                            text = "PURCHASE",
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    @Preview
-    fun Preview() {
-        DebugPayWall()
     }
 }

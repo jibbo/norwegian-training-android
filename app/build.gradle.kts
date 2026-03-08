@@ -1,11 +1,20 @@
+import com.android.build.api.dsl.ApplicationExtension
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics) version "3.0.5"
+    alias(libs.plugins.room)
+}
+
+extensions.configure<ApplicationExtension> {
+    buildFeatures {
+        resValues = true
+        buildConfig = true
+    }
 }
 
 android {
@@ -16,21 +25,10 @@ android {
         applicationId = "com.github.jibbo.norwegiantraining"
         minSdk = 24
         targetSdk = 36
-        versionCode = 15
-        versionName = "2.1.3"
+        versionCode = 17
+        versionName = "2.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField(
-            "String",
-            "REVENUECAT_API_KEY",
-            "\"${project.properties["REVENUECAT_API_KEY"]}\""
-        )
-
-        // Configure Room schema location for KSP
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }
     }
 
     buildTypes {
@@ -39,6 +37,12 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
             versionNameSuffix = "-debug"
+
+            buildConfigField(
+                "String",
+                "REVENUECAT_API_KEY",
+                "\"${project.properties["REVENUECAT_API_KEY_TEST"]}\""
+            )
         }
         release {
             isMinifyEnabled = true
@@ -47,18 +51,34 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField(
+                "String",
+                "REVENUECAT_API_KEY",
+                "\"${project.properties["REVENUECAT_API_KEY"]}\""
+            )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+kotlin {
+    compilerOptions {
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
 

@@ -8,4 +8,8 @@ data class UiState(
     val announceCountdown: Boolean,
     val isCrashReportingEnabled: Boolean,
     val isAnalyticsEnabled: Boolean,
+    val isFreeTrial: Boolean,
+    val rcSubActive: Boolean = true,
+    val rcExpDate: String? = null,
+    val showUpgradeButton: Boolean = false
 )

@@ -8,6 +8,7 @@
     <string name="continue_btn">Continuar</string>
     <string name="back">Atrás</string>
 
+    <string name="buy">COMPRAR</string>
     <string name="get_ready">Prepárate</string>
     <string name="warmup">Calentamiento</string>
     <string name="hit_cardio">Fase intensa</string>
@@ -49,6 +50,7 @@
     <string name="about_dev_section_mastodon">Escribe un DM a Gio</string>
     <string name="credits_section_cta">Créditos</string>
 
+    <string name="subscription_section_never">para siempre</string>
     <string name="title_activity_logs">Tu actividad</string>
 
     <string name="onboarding_step_1_title">¡Bienvenidos en l\'app Norwy!</string>
@@ -111,4 +113,9 @@
     <string name="free_trial_title">Hoy está en nosotros!</string>
     <string name="free_trial_subtitle">Disfruta del acceso a la app durante las próximas 24 horas. Sin compromiso.</string>
     <string name="free_trial_button">RECLAMA TU DÍA GRATIS AHORA</string>
+    <string name="share">Compartir</string>
+    <string name="subscription_section_title">Suscripción</string>
+    <string name="subscription_section_status">estado de suscripción</string>
+    <string name="subscription_section_date">válido hasta</string>
+    <string name="free_trial">prueba gratuita</string>
 </resources>
