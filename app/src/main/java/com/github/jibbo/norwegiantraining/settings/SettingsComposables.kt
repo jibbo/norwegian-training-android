@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -53,6 +54,7 @@ import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.freetrial.FreeTrialActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
+import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -164,8 +166,7 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = R.string.title_profile_section.localizable(),
@@ -199,8 +200,7 @@ private fun SubscriptionCard(viewModel: SettingsViewModel) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = R.string.subscription_section_title.localizable(),
@@ -210,20 +210,23 @@ private fun SubscriptionCard(viewModel: SettingsViewModel) {
                 Spacer(modifier = Modifier.weight(1f))
             }
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = R.string.subscription_section_status.localizable(),
                     style = Typography.bodyMedium,
-                    color = Primary
-                )
-                Checkbox(
-                    checked = state.value.rcSubActive,
-                    onCheckedChange = null,
-                    enabled = false
+                    color = White.copy(alpha = 0.6f)
                 )
                 Spacer(modifier = Modifier.weight(1f))
+                if(state.value.isFreeTrial){
+                    Text(
+                        text = R.string.free_trial.localizable()
+                    )
+                }else {
+                    Checkbox(
+                        checked = state.value.rcSubActive, onCheckedChange = null, enabled = false
+                    )
+                }
             }
 
             val expDate = if (state.value.rcExpDate == null) {
@@ -232,17 +235,35 @@ private fun SubscriptionCard(viewModel: SettingsViewModel) {
                 state.value.rcExpDate!!
             }
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = R.string.subscription_section_date.localizable(expDate),
                     style = Typography.bodyMedium,
-                    color = Primary
+                    color = White.copy(alpha = 0.6f)
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
 
+            if (state.value.showUpgradeButton) {
+                Row(
+                    verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    val context = LocalContext.current
+                    Button(
+                        onClick = {
+                            showPaywall(context)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Primary,
+                            contentColor = Black
+                        )
+                    ) {
+                        Text(text = R.string.buy.localizable())
+                    }
+                }
+            }
         }
     }
 }
@@ -253,8 +274,7 @@ private fun GetInTouchCard() {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = R.string.about_dev_section_title.localizable(),
@@ -271,8 +291,7 @@ private fun GetInTouchCard() {
                 )
             }
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = R.string.about_dev_section_description.localizable(),
@@ -282,8 +301,7 @@ private fun GetInTouchCard() {
             }
 
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)
             ) {
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
@@ -316,21 +334,18 @@ private fun GetInTouchCard() {
 private fun OnboardingCard(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     val intent = Intent(
-        context,
-        OnboardingActivity::class.java
+        context, OnboardingActivity::class.java
     )
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(vertical = 6.dp)) {
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(vertical = 8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 TextButton(
                     onClick = {
                         context.startActivity(intent)
-                    }
-                ) {
+                    }) {
                     Text(
                         text = R.string.onboarding_section_title.localizable(),
                         style = Typography.bodyLarge,
@@ -348,8 +363,7 @@ private fun PrivacyCard(viewModel: SettingsViewModel) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = R.string.title_privacy_section.localizable(),
@@ -412,8 +426,7 @@ private fun CreditsCard() {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = R.string.credits_section_cta.localizable(),
@@ -423,8 +436,7 @@ private fun CreditsCard() {
                 )
             }
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = buildAnnotatedString {
@@ -437,14 +449,11 @@ private fun CreditsCard() {
                         ) {
                             append("Katerina Limpitsouni")
                         }
-                    },
-                    style = Typography.bodyMedium,
-                    color = White.copy(alpha = 0.6f)
+                    }, style = Typography.bodyMedium, color = White.copy(alpha = 0.6f)
                 )
             }
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = buildAnnotatedString {
@@ -457,14 +466,11 @@ private fun CreditsCard() {
                         ) {
                             append("Fauxels")
                         }
-                    },
-                    style = Typography.bodyMedium,
-                    color = White.copy(alpha = 0.6f)
+                    }, style = Typography.bodyMedium, color = White.copy(alpha = 0.6f)
                 )
             }
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = buildAnnotatedString {
@@ -477,9 +483,7 @@ private fun CreditsCard() {
                         ) {
                             append("Vitaly Gariev")
                         }
-                    },
-                    style = Typography.bodyMedium,
-                    color = White.copy(alpha = 0.6f)
+                    }, style = Typography.bodyMedium, color = White.copy(alpha = 0.6f)
                 )
             }
         }
@@ -492,31 +496,20 @@ private fun DebugCard() {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(vertical = 6.dp)) {
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
             ) {
                 Text(
-                    text = "DEBUG - Solo per Gio 🚫",
-                    style = Typography.bodyMedium,
-                    color = Primary
+                    text = "DEBUG - Solo per Gio 🚫", style = Typography.bodyMedium, color = Primary
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.padding(vertical = 8.dp)
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 TextButton(
                     onClick = {
-                        val intent = Intent(
-                            context,
-                            PaywallActivity::class.java
-                        )
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        context.startActivity(intent)
-                    }
-                ) {
+                        showPaywall(context)
+                    }) {
                     Text(
                         text = "Paywall (remove .debug suffix from .gradle)",
                         style = Typography.bodyMedium,
@@ -530,14 +523,12 @@ private fun DebugCard() {
                 TextButton(
                     onClick = {
                         val intent = Intent(
-                            context,
-                            FreeTrialActivity::class.java
+                            context, FreeTrialActivity::class.java
                         )
                         intent.flags =
                             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         context.startActivity(intent)
-                    }
-                ) {
+                    }) {
                     Text(
                         text = "Show Free Trial",
                         style = Typography.bodyMedium,
@@ -547,6 +538,15 @@ private fun DebugCard() {
             }
         }
     }
+}
+
+
+private fun showPaywall(context: Context) {
+    val intent = Intent(
+        context, PaywallActivity::class.java
+    )
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    context.startActivity(intent)
 }
 
 @Composable
@@ -568,9 +568,7 @@ fun GreetingPreview2() {
         Surface {
             Scaffold { innerPadding ->
                 SettingsScreen(
-                    SettingsViewModel(FakeSettingsRepository(), FakeTracker()),
-                    innerPadding,
-                    null
+                    SettingsViewModel(FakeSettingsRepository(), FakeTracker()), innerPadding, null
                 )
             }
         }

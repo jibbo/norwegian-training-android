@@ -29,12 +29,6 @@ android {
         versionName = "2.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField(
-            "String",
-            "REVENUECAT_API_KEY",
-            "\"${project.properties["REVENUECAT_API_KEY_TEST"]}\""
-        )
     }
 
     buildTypes {
@@ -43,6 +37,12 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
             versionNameSuffix = "-debug"
+
+            buildConfigField(
+                "String",
+                "REVENUECAT_API_KEY",
+                "\"${project.properties["REVENUECAT_API_KEY_TEST"]}\""
+            )
         }
         release {
             isMinifyEnabled = true
@@ -50,6 +50,11 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
+            )
+            buildConfigField(
+                "String",
+                "REVENUECAT_API_KEY",
+                "\"${project.properties["REVENUECAT_API_KEY"]}\""
             )
         }
     }

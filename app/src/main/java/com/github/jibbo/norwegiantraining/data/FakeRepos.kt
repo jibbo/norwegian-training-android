@@ -57,9 +57,7 @@ class FakeSettingsRepository : SettingsRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getFreeTrialEndDate(): Date? {
-        TODO("Not yet implemented")
-    }
+    override fun getFreeTrialEndDate(): Date = Date().apply { time += 24 * 60 * 60 * 1000 }
 
     override fun startFreeTrial() {
         TODO("Not yet implemented")

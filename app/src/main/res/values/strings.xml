@@ -7,7 +7,8 @@
     <string name="skip">Skip training phase</string>
     <string name="continue_btn">Continue</string>
     <string name="back">back</string>
-    <string name="share">share</string>
+    <string name="share">Share</string>
+    <string name="buy">BUY</string>
 
 
     <!-- Timer states -->
@@ -61,8 +62,8 @@
     <string name="credits_section_cta">Credits</string>
     <string name="subscription_section_title">Subscription</string>
     <string name="subscription_section_status">Status</string>
-    <string name="subscription_section_date">Expiration Date: %1$s</string>
-    <string name="subscription_section_never">Never</string>
+    <string name="subscription_section_date">Valid Until: %1$s</string>
+    <string name="subscription_section_never">Forever</string>
 
     <!-- Logs -->
     <string name="title_activity_logs">Your Activity</string>
@@ -133,6 +134,7 @@
     <string name="free_trial_title">Today is on us.</string>
     <string name="free_trial_subtitle">Enjoy the access to the app for the next 24 hours. No strings attached.</string>
     <string name="free_trial_button">CLAIM FREE DAY NOW</string>
+    <string name="free_trial">Free Trial</string>
 
 
 </resources>

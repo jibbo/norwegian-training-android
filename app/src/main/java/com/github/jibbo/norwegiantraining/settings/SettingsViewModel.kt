@@ -33,13 +33,21 @@ internal class SettingsViewModel @Inject constructor(
     )
 
     init {
-        if (Purchases.isConfigured) {
+        if (settingsRepository.getFreeTrialEndDate()?.after(Date()) == true) {
+            uiStates.value = uiStates.value.copy(
+                showUpgradeButton = true
+            )
+        } else if (Purchases.isConfigured) {
             Purchases.sharedInstance.getCustomerInfoWith(
                 onError = {},
                 onSuccess = { customerInfo ->
+                    val expirationDate =
+                        customerInfo.entitlements.active.values.firstOrNull()?.expirationDate
+                    val showUpgradeButton = expirationDate != null
                     uiStates.value = uiStates.value.copy(
                         rcSubActive = customerInfo.entitlements.active.values.isNotEmpty(),
-                        rcExpDate = customerInfo.entitlements.active.values.firstOrNull()?.expirationDate?.toLocalString()
+                        rcExpDate = expirationDate?.toLocalString(),
+                        showUpgradeButton = showUpgradeButton
                     )
                 }
             )
