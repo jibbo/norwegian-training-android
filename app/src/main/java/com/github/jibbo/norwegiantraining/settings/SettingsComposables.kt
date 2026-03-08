@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -223,7 +224,15 @@ private fun SubscriptionCard(viewModel: SettingsViewModel) {
                     )
                 } else {
                     Checkbox(
-                        checked = state.value.rcSubActive, onCheckedChange = null, enabled = false
+                        checked = state.value.rcSubActive,
+                        onCheckedChange = null,
+                        enabled = false,
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Primary,
+                            uncheckedColor = White.copy(alpha = 0.6f),
+                            disabledCheckedColor = Primary,
+                            disabledUncheckedColor = White.copy(alpha = 0.6f),
+                        ),
                     )
                 }
             }
