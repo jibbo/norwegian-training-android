@@ -60,7 +60,6 @@ import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
-import kotlin.math.exp
 
 @Composable
 internal fun SettingsScreen(
@@ -218,11 +217,11 @@ private fun SubscriptionCard(viewModel: SettingsViewModel) {
                     color = White.copy(alpha = 0.6f)
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                if(state.value.isFreeTrial){
+                if (state.value.isFreeTrial) {
                     Text(
                         text = R.string.free_trial.localizable()
                     )
-                }else {
+                } else {
                     Checkbox(
                         checked = state.value.rcSubActive, onCheckedChange = null, enabled = false
                     )
@@ -232,7 +231,7 @@ private fun SubscriptionCard(viewModel: SettingsViewModel) {
             val expDate = if (state.value.rcExpDate == null) {
                 R.string.subscription_section_never.localizable()
             } else {
-                state.value.rcExpDate!!
+                state.value.rcExpDate ?: "N/A"
             }
             Row(
                 verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
