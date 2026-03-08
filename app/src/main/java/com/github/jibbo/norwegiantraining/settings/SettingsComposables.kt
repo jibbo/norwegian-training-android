@@ -59,6 +59,7 @@ import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
+import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
 
@@ -220,7 +221,8 @@ private fun SubscriptionCard(viewModel: SettingsViewModel) {
                 Spacer(modifier = Modifier.weight(1f))
                 if (state.value.isFreeTrial) {
                     Text(
-                        text = R.string.free_trial.localizable()
+                        text = R.string.free_trial.localizable(),
+                        color = Red
                     )
                 } else {
                     Checkbox(
@@ -229,9 +231,9 @@ private fun SubscriptionCard(viewModel: SettingsViewModel) {
                         enabled = false,
                         colors = CheckboxDefaults.colors(
                             checkedColor = Primary,
-                            uncheckedColor = White.copy(alpha = 0.6f),
+                            uncheckedColor = Red,
                             disabledCheckedColor = Primary,
-                            disabledUncheckedColor = White.copy(alpha = 0.6f),
+                            disabledUncheckedColor = Red,
                         ),
                     )
                 }
