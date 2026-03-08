@@ -59,6 +59,10 @@
     <string name="about_dev_section_cta">Drop Gio an email</string>
     <string name="about_dev_section_mastodon">Send Gio a DM</string>
     <string name="credits_section_cta">Credits</string>
+    <string name="subscription_section_title">Subscription</string>
+    <string name="subscription_section_status">Status</string>
+    <string name="subscription_section_date">Expiration Date: %1$s</string>
+    <string name="subscription_section_never">Never</string>
 
     <!-- Logs -->
     <string name="title_activity_logs">Your Activity</string>

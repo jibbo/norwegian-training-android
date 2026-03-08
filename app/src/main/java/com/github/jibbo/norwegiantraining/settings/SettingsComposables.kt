@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -57,6 +58,7 @@ import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
+import kotlin.math.exp
 
 @Composable
 internal fun SettingsScreen(
@@ -83,6 +85,7 @@ internal fun SettingsScreen(
             state = listState,
         ) {
             item { ProfileCard(viewModel) }
+            item { SubscriptionCard(viewModel) }
             item { TTSCard(viewModel) }
             item { OnboardingCard(viewModel) }
             item { PrivacyCard(viewModel) }
@@ -186,6 +189,60 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                     .fillMaxWidth()
                     .padding(8.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun SubscriptionCard(viewModel: SettingsViewModel) {
+    val state = viewModel.uiState.collectAsState()
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.subscription_section_title.localizable(),
+                    style = Typography.bodyLarge,
+                    color = Primary
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.subscription_section_status.localizable(),
+                    style = Typography.bodyMedium,
+                    color = Primary
+                )
+                Checkbox(
+                    checked = state.value.rcSubActive,
+                    onCheckedChange = null,
+                    enabled = false
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+
+            val expDate = if (state.value.rcExpDate == null) {
+                R.string.subscription_section_never.localizable()
+            } else {
+                state.value.rcExpDate!!
+            }
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.subscription_section_date.localizable(expDate),
+                    style = Typography.bodyMedium,
+                    color = Primary
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+
         }
     }
 }
@@ -455,7 +512,8 @@ private fun DebugCard() {
                             context,
                             PaywallActivity::class.java
                         )
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         context.startActivity(intent)
                     }
                 ) {
@@ -475,7 +533,8 @@ private fun DebugCard() {
                             context,
                             FreeTrialActivity::class.java
                         )
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         context.startActivity(intent)
                     }
                 ) {
