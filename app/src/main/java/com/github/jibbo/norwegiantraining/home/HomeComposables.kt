@@ -164,10 +164,6 @@ private fun WorkoutCard(
     workout: Workout,
     viewModel: HomeViewModel
 ) {
-    val splitSize = workout.splitText(
-        withWarmup = false,
-        withCooldown = false
-    )
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = Black
@@ -192,18 +188,11 @@ private fun WorkoutCard(
             color = White
         )
         Text(
-            text = R.string.workout_split.localizable(splitSize),
+            text = R.string.workout_kCal.localizable(workout.kCal),
             modifier = Modifier.padding(8.dp).alpha(0.8f),
             style = Typography.bodySmall,
             color = White
         )
-//        TextButton(onClick = {
-//            viewModel.workoutClicked(workout.id)
-//        }, modifier = Modifier.align(Alignment.End)) {
-//            Text(
-//                text = R.string.start.localizable().uppercase(),
-//            )
-//        }
     }
 }
 
