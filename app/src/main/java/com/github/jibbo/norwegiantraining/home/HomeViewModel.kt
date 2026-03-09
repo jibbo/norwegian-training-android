@@ -99,6 +99,7 @@ class HomeViewModel @Inject constructor(
                 isTrial = true
             } else {
                 viewModelScope.launch {
+                    events.emit(UiCommands.SHOW_PAYWALL)
                 }
             }
         }
