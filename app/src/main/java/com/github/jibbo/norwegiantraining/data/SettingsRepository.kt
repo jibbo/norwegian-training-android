@@ -34,6 +34,8 @@ interface SettingsRepository {
     fun getFreeTrialEndDate(): Date?
     fun startFreeTrial()
     fun debugOnlySetFreeTrialDate(date: Date?)
+    fun setRecommendedWorkoutId(id: Long)
+    fun getRecommendedWorkoutId(): Long?
     fun setFitnessLevel(level: FitnessLevel)
     fun getFitnessLevel(): FitnessLevel
 }
@@ -102,6 +104,16 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         sp.edit { putLong("free_trial_date", System.currentTimeMillis() + 24 * 60 * 60 * 1000) }
     }
 
+    override fun setRecommendedWorkoutId(id: Long) {
+        sp.edit { putLong(KEY_RECOMMENDED_WORKOUT_ID, id) }
+    }
+
+    override fun getRecommendedWorkoutId(): Long? {
+        return if (sp.contains(KEY_RECOMMENDED_WORKOUT_ID))
+            sp.getLong(KEY_RECOMMENDED_WORKOUT_ID, -1L).takeIf { it != -1L }
+        else null
+    }
+
     override fun setFitnessLevel(level: FitnessLevel) {
         sp.edit { putString(KEY_FITNESS_LEVEL, level.name) }
     }
@@ -131,6 +143,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_SHOW_TIMER_NOTIFICATION = "show_timer_notification"
         const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
         const val KEY_FITNESS_LEVEL = "fitness_level"
+        const val KEY_RECOMMENDED_WORKOUT_ID = "recommended_workout_id"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

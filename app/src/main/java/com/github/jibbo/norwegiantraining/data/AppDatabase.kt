@@ -6,6 +6,7 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.jibbo.norwegiantraining.R
 import dagger.Module
@@ -31,6 +32,7 @@ import javax.inject.Singleton
     version = 2,
     exportSchema = true
 )
+@TypeConverters(SessionConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recordDao(): SessionDao
     abstract fun workoutDao(): WorkoutDao

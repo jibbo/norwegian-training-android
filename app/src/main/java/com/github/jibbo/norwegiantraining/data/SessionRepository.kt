@@ -4,11 +4,13 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
 interface SessionRepository {
     suspend fun getSessions(limit: Int = 30, offset: Int = 0): List<Session>
+    suspend fun getSessionsInRange(from: Date, to: Date): List<Session>
     suspend fun upsertSession(session: Session): Long
     suspend fun getTodaySession(): Session?
 }
@@ -21,6 +23,9 @@ class PersistentSessionRepository @Inject constructor(
         limit: Int,
         offset: Int
     ): List<Session> = sessionDao.getAll(limit, offset)
+
+    override suspend fun getSessionsInRange(from: Date, to: Date): List<Session> =
+        sessionDao.getInRange(from, to)
 
     override suspend fun upsertSession(session: Session): Long = sessionDao.upsert(session)
 

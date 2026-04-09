@@ -17,6 +17,9 @@ interface SessionDao {
     @Query("SELECT * FROM session ORDER BY date DESC LIMIT :limit OFFSET :offset")
     suspend fun getAll(limit: Int = 10, offset: Int = 0): List<Session>
 
+    @Query("SELECT * FROM session WHERE date BETWEEN :from AND :to ORDER BY date DESC")
+    suspend fun getInRange(from: Date, to: Date): List<Session>
+
     @Upsert
     suspend fun upsert(session: Session): Long
 

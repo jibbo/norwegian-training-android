@@ -9,6 +9,8 @@ class FakeSessionRepo : SessionRepository {
         offset: Int
     ): List<Session> = listOf()
 
+    override suspend fun getSessionsInRange(from: Date, to: Date): List<Session> = listOf()
+
     override suspend fun upsertSession(session: Session): Long = -1
 
     override suspend fun getTodaySession(): Session? = null
@@ -67,6 +69,8 @@ class FakeSettingsRepository : SettingsRepository {
         TODO("Not yet implemented")
     }
 
+    override fun setRecommendedWorkoutId(id: Long) {}
+    override fun getRecommendedWorkoutId(): Long? = null
     override fun setFitnessLevel(level: FitnessLevel) {}
 
     override fun getFitnessLevel(): FitnessLevel = FitnessLevel.BEGINNER

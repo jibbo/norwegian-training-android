@@ -10,6 +10,9 @@ class GetRecommendedWorkoutId @Inject constructor(
     private val settingsRepository: SettingsRepository,
 ) {
     operator fun invoke(workouts: Map<Difficulty, List<Workout>>): Long {
+        // If progression has already set a specific workout, use that
+        settingsRepository.getRecommendedWorkoutId()?.let { return it }
+        // Otherwise fall back to the first workout of the onboarding-selected difficulty
         val fitnessLevel = settingsRepository.getFitnessLevel()
         val difficulty = when (fitnessLevel) {
             FitnessLevel.BEGINNER -> Difficulty.BEGINNER
