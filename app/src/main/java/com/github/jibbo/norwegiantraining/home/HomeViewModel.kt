@@ -9,7 +9,7 @@ import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.isFreeTrial
-import com.github.jibbo.norwegiantraining.domain.isOnboardingComplete
+import com.github.jibbo.norwegiantraining.domain.isOnboardingCompleted
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
@@ -26,7 +26,7 @@ class HomeViewModel @Inject constructor(
     private val getUsername: GetUsername,
     private val getAllWorkouts: GetAllWorkouts,
     private val isFreeTrial: isFreeTrial,
-    private val isOnboardingComplete: isOnboardingComplete,
+    private val isOnboardingCompleted: isOnboardingCompleted,
     private val getRecommendedWorkoutId: GetRecommendedWorkoutId,
     private val analytics: Analytics,
 ) : ViewModel() {
@@ -41,7 +41,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            if (!isOnboardingComplete()) {
+            if (!isOnboardingCompleted()) {
                 events.emit(UiCommands.SHOW_ONBOARDING)
             } else {
                 getAllWorkouts().collect { workoutsMap ->
