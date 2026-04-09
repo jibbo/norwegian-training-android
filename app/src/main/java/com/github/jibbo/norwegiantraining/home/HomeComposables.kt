@@ -42,8 +42,8 @@ import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
-import com.github.jibbo.norwegiantraining.domain.isFreeTrial
-import com.github.jibbo.norwegiantraining.domain.isOnboardingCompleted
+import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
+import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -222,8 +222,8 @@ fun HomeViewPreview() {
                 HomeViewModel(
                     GetUsername(settingsRepository),
                     GetAllWorkouts(workoutRepository),
-                    isFreeTrial(settingsRepository),
-                    isOnboardingCompleted(settingsRepository),
+                    IsFreeTrial(settingsRepository),
+                    IsOnboardingCompleted(settingsRepository),
                     GetRecommendedWorkoutId(settingsRepository),
                     analytics
                 ),

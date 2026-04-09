@@ -4,7 +4,7 @@ import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import java.util.Date
 import javax.inject.Inject
 
-class isFreeTrial @Inject constructor(
+class IsFreeTrial @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) {
     operator fun invoke(): Boolean = settingsRepository.getFreeTrialEndDate()?.after(Date()) == true

@@ -8,8 +8,8 @@ import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
-import com.github.jibbo.norwegiantraining.domain.isFreeTrial
-import com.github.jibbo.norwegiantraining.domain.isOnboardingCompleted
+import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
+import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
@@ -25,8 +25,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getUsername: GetUsername,
     private val getAllWorkouts: GetAllWorkouts,
-    private val isFreeTrial: isFreeTrial,
-    private val isOnboardingCompleted: isOnboardingCompleted,
+    private val isFreeTrial: IsFreeTrial,
+    private val isOnboardingCompleted: IsOnboardingCompleted,
     private val getRecommendedWorkoutId: GetRecommendedWorkoutId,
     private val analytics: Analytics,
 ) : ViewModel() {
