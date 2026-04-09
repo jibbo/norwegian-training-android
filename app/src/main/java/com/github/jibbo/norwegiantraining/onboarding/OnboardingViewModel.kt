@@ -82,7 +82,9 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun permissionResult(granted: Boolean) {
-        showNextPage()
+        // hardcoded true because I want the user to go on all the same
+        // we will re-check permission when starting the workout anyway.
+        continueClicked(selectedPage.value, true)
     }
 
     private fun showHome() {
