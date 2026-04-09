@@ -40,7 +40,10 @@ import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
+import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.isFreeTrial
+import com.github.jibbo.norwegiantraining.domain.isOnboardingComplete
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -140,7 +143,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
                 modifier = Modifier.horizontalScroll(scrollState)
             ) {
                 workouts.forEach { workout ->
-                    WorkoutCard(workout, viewModel)
+                    WorkoutCard(workout, state.recommendedWorkoutId, viewModel)
                 }
             }
         }
@@ -161,9 +164,10 @@ internal fun Workouts(viewModel: HomeViewModel) {
 @Composable
 private fun WorkoutCard(
     workout: Workout,
-    viewModel: HomeViewModel
+    recommendedWorkoutId: Long?,
+    viewModel: HomeViewModel,
 ) {
-    val isRecommended = viewModel.isRecommended(workout)
+    val isRecommended = workout.id == recommendedWorkoutId
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = if (isRecommended) DarkPrimary else Black
@@ -218,7 +222,9 @@ fun HomeViewPreview() {
                 HomeViewModel(
                     GetUsername(settingsRepository),
                     GetAllWorkouts(workoutRepository),
-                    settingsRepository,
+                    isFreeTrial(settingsRepository),
+                    isOnboardingComplete(settingsRepository),
+                    GetRecommendedWorkoutId(settingsRepository),
                     analytics
                 ),
                 innerPadding

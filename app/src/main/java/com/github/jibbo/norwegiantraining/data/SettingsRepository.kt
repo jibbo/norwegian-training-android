@@ -41,7 +41,7 @@ interface SettingsRepository {
     fun startFreeTrial()
     fun debugOnlySetFreeTrialDate(date: Date?)
     fun setFitnessLevel(level: FitnessLevel)
-    fun getFitnessLevel(): FitnessLevel?
+    fun getFitnessLevel(): FitnessLevel
 }
 
 @Singleton
@@ -112,9 +112,11 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         sp.edit { putString(KEY_FITNESS_LEVEL, level.name) }
     }
 
-    override fun getFitnessLevel(): FitnessLevel? {
-        val raw = sp.getString(KEY_FITNESS_LEVEL, null) ?: return null
-        return FitnessLevel.valueOf(raw)
+    override fun getFitnessLevel(): FitnessLevel {
+        val raw =
+            sp.getString(KEY_FITNESS_LEVEL, FitnessLevel.BEGINNER.name)
+                ?: return FitnessLevel.BEGINNER
+        return FitnessLevel.entries.find { it.name == raw } ?: FitnessLevel.BEGINNER
     }
 
     override fun debugOnlySetFreeTrialDate(date: Date?) {

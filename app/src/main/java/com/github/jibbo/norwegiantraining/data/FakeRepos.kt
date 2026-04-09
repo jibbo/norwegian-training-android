@@ -69,7 +69,7 @@ class FakeSettingsRepository : SettingsRepository {
 
     override fun setFitnessLevel(level: FitnessLevel) {}
 
-    override fun getFitnessLevel(): FitnessLevel? = FitnessLevel.BEGINNER
+    override fun getFitnessLevel(): FitnessLevel = FitnessLevel.BEGINNER
 }
 
 class FakeTracker : Analytics {

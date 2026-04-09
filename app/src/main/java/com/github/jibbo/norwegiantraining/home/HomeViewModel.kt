@@ -4,11 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.Difficulty
-import com.github.jibbo.norwegiantraining.data.FitnessLevel
-import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
+import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.isFreeTrial
+import com.github.jibbo.norwegiantraining.domain.isOnboardingComplete
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
@@ -18,14 +19,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getUsername: GetUsername,
-    getAllWorkouts: GetAllWorkouts,
-    private val settingsRepository: SettingsRepository,
+    private val getAllWorkouts: GetAllWorkouts,
+    private val isFreeTrial: isFreeTrial,
+    private val isOnboardingComplete: isOnboardingComplete,
+    private val getRecommendedWorkoutId: GetRecommendedWorkoutId,
     private val analytics: Analytics,
 ) : ViewModel() {
 
@@ -35,12 +37,16 @@ class HomeViewModel @Inject constructor(
     private val states: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiStates = states.asStateFlow()
 
-    private var isTrial = false
+    private val isTrial = isFreeTrial()
 
     init {
         viewModelScope.launch {
-            getAllWorkouts().collect { workoutsMap ->
-                showWorkouts(workoutsMap)
+            if (!isOnboardingComplete()) {
+                events.emit(UiCommands.SHOW_ONBOARDING)
+            } else {
+                getAllWorkouts().collect { workoutsMap ->
+                    showWorkouts(workoutsMap)
+                }
             }
         }
     }
@@ -52,37 +58,11 @@ class HomeViewModel @Inject constructor(
             },
             onSuccess = purchasedCheck()
         )
-        viewModelScope.launch {
-            if (!settingsRepository.isOnboardingCompleted()) {
-                events.emit(UiCommands.SHOW_ONBOARDING)
-            }
-            refreshUsername()
-        }
+        refreshUsername()
     }
 
     fun settingsClicked() {
         publishEvent(UiCommands.SHOW_SETTINGS)
-    }
-
-    fun isRecommended(workout: Workout): Boolean {
-        val fitnessLevel = settingsRepository.getFitnessLevel() ?: return false
-        val loaded = states.value as? UiState.Loaded ?: return false
-        return when (fitnessLevel) {
-            FitnessLevel.BEGINNER -> {
-                val firstId = loaded.workouts[Difficulty.BEGINNER]?.minByOrNull { it.id }?.id
-                workout.id == firstId
-            }
-
-            FitnessLevel.OCCASIONAL -> {
-                val firstId = loaded.workouts[Difficulty.INTERMEDIATE]?.minByOrNull { it.id }?.id
-                workout.id == firstId
-            }
-
-            FitnessLevel.FIT -> {
-                val firstId = loaded.workouts[Difficulty.EXPERT]?.minByOrNull { it.id }?.id
-                workout.id == firstId
-            }
-        }
     }
 
     fun chartsClicked() {
@@ -93,11 +73,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             when {
                 isTrial -> {
-                    if (id < 3) {
-                        events.emit(UiCommands.SHOW_WORKOUT(id))
-                    } else {
-                        events.emit(UiCommands.SHOW_PAYWALL)
-                    }
+                    events.emit(UiCommands.SHOW_WORKOUT(id))
                 }
 
                 else -> {
@@ -116,10 +92,7 @@ class HomeViewModel @Inject constructor(
     private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
         val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
         if (hasNotPurchased) {
-            val freeTrialEndDate = settingsRepository.getFreeTrialEndDate()
-            if (freeTrialEndDate?.after(Date()) == true) {
-                isTrial = true
-            } else {
+            if (!isTrial) {
                 viewModelScope.launch {
                     events.emit(UiCommands.SHOW_PAYWALL)
                 }
@@ -127,31 +100,23 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun showWorkouts(workouts: Map<Difficulty, List<Workout>>) {
-        val value = states.value
-        when (value) {
+    private fun showWorkouts(workouts: Map<Difficulty, List<Workout>>) =
+        when (val value = states.value) {
             is UiState.Loaded -> {
                 states.value = value.copy(workouts = workouts)
             }
 
             else -> states.value = UiState.Loaded(
                 username = getUsername(),
-                workouts = workouts
+                workouts = workouts,
+                recommendedWorkoutId = getRecommendedWorkoutId(workouts)
             )
         }
-    }
 
     private fun refreshUsername() {
         val value = states.value
-        when (value) {
-            is UiState.Loaded -> {
-                states.value = value.copy(username = getUsername())
-            }
-
-            else -> states.value = UiState.Loaded(
-                username = getUsername(),
-                workouts = mapOf()
-            )
+        if (value is UiState.Loaded) {
+            states.value = value.copy(username = getUsername())
         }
     }
 }
