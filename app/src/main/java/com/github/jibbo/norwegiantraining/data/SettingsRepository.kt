@@ -36,6 +36,7 @@ interface SettingsRepository {
     fun startFreeTrial()
     fun debugOnlySetFreeTrialDate(date: Date?)
     fun setRecommendedWorkoutId(id: Long)
+    fun clearRecommendedWorkoutId()
     fun getRecommendedWorkoutId(): Long?
     fun setFitnessLevel(level: FitnessLevel)
     fun getFitnessLevel(): FitnessLevel
@@ -109,6 +110,10 @@ class SharedPreferencesSettingsRepository @Inject constructor(
 
     override fun setRecommendedWorkoutId(id: Long) {
         sp.edit { putLong(KEY_RECOMMENDED_WORKOUT_ID, id) }
+    }
+
+    override fun clearRecommendedWorkoutId() {
+        sp.edit { remove(KEY_RECOMMENDED_WORKOUT_ID) }
     }
 
     override fun getRecommendedWorkoutId(): Long? {

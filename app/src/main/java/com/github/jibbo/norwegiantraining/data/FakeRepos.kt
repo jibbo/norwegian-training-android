@@ -71,6 +71,7 @@ class FakeSettingsRepository : SettingsRepository {
     }
 
     override fun setRecommendedWorkoutId(id: Long) {}
+    override fun clearRecommendedWorkoutId() {}
     override fun getRecommendedWorkoutId(): Long? = null
     override fun setFitnessLevel(level: FitnessLevel) {}
 

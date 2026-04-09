@@ -12,7 +12,7 @@ class GetRecommendedWorkoutId @Inject constructor(
         // If progression has already set a specific workout, validate it still exists
         settingsRepository.getRecommendedWorkoutId()?.let { id ->
             if (workouts.values.flatten().any { it.id == id }) return id
-            settingsRepository.setRecommendedWorkoutId(-1L)
+            settingsRepository.clearRecommendedWorkoutId()
         }
         // Otherwise fall back to the first workout of the onboarding-selected difficulty
         val fitnessLevel = settingsRepository.getFitnessLevel()
