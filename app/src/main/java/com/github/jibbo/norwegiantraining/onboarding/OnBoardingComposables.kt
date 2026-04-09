@@ -1,6 +1,6 @@
 package com.github.jibbo.norwegiantraining.onboarding
 
-import androidx.compose.foundation.Canvas
+import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,19 +45,15 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
@@ -217,6 +212,7 @@ private fun OnBoardingPage(
 
             is OnboardingPage.Permission -> PermissionPage(state)
             is OnboardingPage.NameSetting -> NameSetting(state, viewModel)
+            is OnboardingPage.FitnessLevelQuestion -> FitnessLevelPage(state, viewModel)
             is OnboardingPage.InviteFriends -> {
                 Text(
                     text = state.description.localizable(),
@@ -232,22 +228,74 @@ private fun OnBoardingPage(
                 )
             }
         }
-        Button(
-            onClick = {
-                viewModel.continueClicked(page)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Primary,
-                contentColor = White
-            ), modifier = modifier
-                .fillMaxWidth()
-                .height(64.dp)
-        ) {
-            Text(
-                text = R.string.continue_btn.localizable().uppercase(),
-                fontWeight = FontWeight.SemiBold,
-                color = Black
-            )
+        // Hide the Continue button for self-advancing pages
+        if (state !is OnboardingPage.FitnessLevelQuestion) {
+            val context = LocalContext.current
+            val isPermissionGranted = if (state is OnboardingPage.Permission) {
+                ContextCompat.checkSelfPermission(
+                    context, state.permission
+                ) == PackageManager.PERMISSION_GRANTED
+            } else false
+            Button(
+                onClick = {
+                    viewModel.continueClicked(page, isPermissionGranted)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Primary,
+                    contentColor = White
+                ),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+            ) {
+                Text(
+                    text = R.string.continue_btn.localizable().uppercase(),
+                    fontWeight = FontWeight.SemiBold,
+                    color = Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ColumnScope.FitnessLevelPage(
+    state: OnboardingPage.FitnessLevelQuestion,
+    viewModel: OnboardingViewModel,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = state.description.localizable(),
+        style = Typography.bodyLarge,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        textAlign = TextAlign.Center,
+    )
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        state.options.forEach { (labelRes, level) ->
+            Button(
+                onClick = { viewModel.onFitnessLevelSelected(level) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Black,
+                    contentColor = White
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp)
+                    .height(64.dp)
+            ) {
+                Text(
+                    text = labelRes.localizable(),
+                    style = Typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 }

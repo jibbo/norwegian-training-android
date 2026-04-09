@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
@@ -35,13 +35,15 @@ import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
-import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
+import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
+import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -141,7 +143,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
                 modifier = Modifier.horizontalScroll(scrollState)
             ) {
                 workouts.forEach { workout ->
-                    WorkoutCard(workout, viewModel)
+                    WorkoutCard(workout, state.recommendedWorkoutId, viewModel)
                 }
             }
         }
@@ -162,19 +164,29 @@ internal fun Workouts(viewModel: HomeViewModel) {
 @Composable
 private fun WorkoutCard(
     workout: Workout,
-    viewModel: HomeViewModel
+    recommendedWorkoutId: Long?,
+    viewModel: HomeViewModel,
 ) {
+    val isRecommended = workout.id == recommendedWorkoutId
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
-            containerColor = Black
+            containerColor = if (isRecommended) DarkPrimary else Black
         ),
         modifier = Modifier
             .width(200.dp)
-            .height(125.dp),
+            .defaultMinSize(minHeight = if (isRecommended) 145.dp else 125.dp),
         onClick = {
             viewModel.workoutClicked(workout.id)
         }
     ) {
+        if (isRecommended) {
+            Text(
+                text = R.string.workout_start_here.localizable(),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                style = Typography.labelSmall,
+                color = Primary
+            )
+        }
         Text(
             text = workout.name,
             modifier = Modifier.padding(8.dp),
@@ -189,7 +201,9 @@ private fun WorkoutCard(
         )
         Text(
             text = R.string.workout_kCal.localizable(workout.kCal),
-            modifier = Modifier.padding(8.dp).alpha(0.8f),
+            modifier = Modifier
+                .padding(8.dp)
+                .alpha(0.8f),
             style = Typography.bodySmall,
             color = White
         )
@@ -208,7 +222,9 @@ fun HomeViewPreview() {
                 HomeViewModel(
                     GetUsername(settingsRepository),
                     GetAllWorkouts(workoutRepository),
-                    settingsRepository,
+                    IsFreeTrial(settingsRepository),
+                    IsOnboardingCompleted(settingsRepository),
+                    GetRecommendedWorkoutId(settingsRepository),
                     analytics
                 ),
                 innerPadding

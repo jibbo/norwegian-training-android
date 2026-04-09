@@ -9,6 +9,7 @@ sealed class UiState {
     object Loading : UiState()
     data class Loaded(
         val username: String?,
+        val recommendedWorkoutId: Long?,
         val workouts: Map<Difficulty, List<Workout>>
     ) : UiState()
 }
