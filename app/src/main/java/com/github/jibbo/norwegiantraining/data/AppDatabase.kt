@@ -82,11 +82,6 @@ abstract class AppDatabase : RoomDatabase() {
                 content = "5m-3m-3m-3m-3m-3m-3m-3m-3m-5m"
             ),
             Workout(
-                name = context.getString(R.string.workout_true_norwegian),
-                difficulty = Difficulty.EXPERT,
-                content = "5m-4m-4m-4m-4m-4m-4m-4m-4m-5m"
-            ),
-            Workout(
                 name = context.getString(R.string.workout_expert_1),
                 difficulty = Difficulty.EXPERT,
                 content = "5m-3m-3m-3m-3m-3m-3m-3m-3m-5m"
@@ -95,7 +90,12 @@ abstract class AppDatabase : RoomDatabase() {
                 name = context.getString(R.string.workout_expert_2),
                 difficulty = Difficulty.EXPERT,
                 content = "5m-198s-198s-198s-198s-198s-198s-198s-198s-5m"
-            )
+            ),
+            Workout(
+                name = context.getString(R.string.workout_true_norwegian),
+                difficulty = Difficulty.EXPERT,
+                content = "5m-4m-4m-4m-4m-4m-4m-4m-4m-5m"
+            ),
         )
 
         override fun onOpen(db: SupportSQLiteDatabase) {
