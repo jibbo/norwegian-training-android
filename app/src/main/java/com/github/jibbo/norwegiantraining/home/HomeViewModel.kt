@@ -41,12 +41,8 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            if (!isOnboardingCompleted()) {
-                events.emit(UiCommands.SHOW_ONBOARDING)
-            } else {
-                getAllWorkouts().collect { workoutsMap ->
-                    showWorkouts(workoutsMap)
-                }
+            getAllWorkouts().collect { workoutsMap ->
+                showWorkouts(workoutsMap)
             }
         }
     }
@@ -58,7 +54,13 @@ class HomeViewModel @Inject constructor(
             },
             onSuccess = purchasedCheck()
         )
-        refreshUsername()
+        if (!isOnboardingCompleted()) {
+            viewModelScope.launch {
+                events.emit(UiCommands.SHOW_ONBOARDING)
+            }
+        } else {
+            refreshUsername()
+        }
     }
 
     fun settingsClicked() {
