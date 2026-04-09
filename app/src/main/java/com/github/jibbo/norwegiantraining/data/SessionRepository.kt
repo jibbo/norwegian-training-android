@@ -29,7 +29,18 @@ class PersistentSessionRepository @Inject constructor(
 
     override suspend fun upsertSession(session: Session): Long = sessionDao.upsert(session)
 
-    override suspend fun getTodaySession() = sessionDao.getTodaySession()
+    override suspend fun getTodaySession(): Session? {
+        val cal = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        val startOfDay = cal.timeInMillis
+        cal.add(java.util.Calendar.DAY_OF_YEAR, 1)
+        val endOfDay = cal.timeInMillis - 1
+        return sessionDao.getTodaySession(startOfDay, endOfDay)
+    }
 }
 
 @Module

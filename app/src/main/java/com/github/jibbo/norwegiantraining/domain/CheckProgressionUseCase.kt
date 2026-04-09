@@ -1,10 +1,9 @@
 package com.github.jibbo.norwegiantraining.domain
 
-import com.github.jibbo.norwegiantraining.data.Difficulty
-import com.github.jibbo.norwegiantraining.data.FitnessLevel
 import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -20,16 +19,22 @@ class CheckProgressionUseCase @Inject constructor(
     private val settingsRepository: SettingsRepository,
 ) {
     suspend operator fun invoke(): ProgressionResult {
-        // 1. Fetch sessions from the last 28 days
+        // 1. Fetch sessions from the later of (28 days ago) or (last progression date)
         val now = Calendar.getInstance()
-        val from = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -28) }.time
+        val twentyEightDaysAgo =
+            Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -28) }.time
+        val lastProgression = settingsRepository.getLastProgressionDate()
+        val from = if (lastProgression != null && lastProgression.after(twentyEightDaysAgo))
+            lastProgression
+        else
+            twentyEightDaysAgo
         val sessions = sessionRepository.getSessionsInRange(from, now.time)
 
         // 2. Count weeks in the rolling window that had at least 3 sessions
+        val fromInstant = from.toInstant()
         val qualifyingWeeks = sessions
             .groupBy { session ->
-                Calendar.getInstance().apply { time = session.date }
-                    .get(Calendar.WEEK_OF_YEAR)
+                ChronoUnit.DAYS.between(fromInstant, session.date.toInstant()) / 7
             }
             .count { (_, weekSessions) -> weekSessions.size >= 3 }
 
@@ -53,6 +58,7 @@ class CheckProgressionUseCase @Inject constructor(
         val nextInDifficulty = workoutsInDifficulty.getOrNull(currentIndex + 1)
         if (nextInDifficulty != null) {
             settingsRepository.setRecommendedWorkoutId(nextInDifficulty.id)
+            settingsRepository.setLastProgressionDate(now.time)
             return ProgressionResult.NextWorkout(nextInDifficulty.id)
         }
 
@@ -66,18 +72,7 @@ class CheckProgressionUseCase @Inject constructor(
 
         settingsRepository.setFitnessLevel(nextLevel)
         settingsRepository.setRecommendedWorkoutId(firstOfNextLevel.id)
+        settingsRepository.setLastProgressionDate(now.time)
         return ProgressionResult.LevelUp(nextLevel)
-    }
-
-    private fun FitnessLevel.toDifficulty() = when (this) {
-        FitnessLevel.BEGINNER -> Difficulty.BEGINNER
-        FitnessLevel.OCCASIONAL -> Difficulty.INTERMEDIATE
-        FitnessLevel.FIT -> Difficulty.EXPERT
-    }
-
-    private fun FitnessLevel.next() = when (this) {
-        FitnessLevel.BEGINNER -> FitnessLevel.OCCASIONAL
-        FitnessLevel.OCCASIONAL -> FitnessLevel.FIT
-        FitnessLevel.FIT -> null // Already at the top
     }
 }

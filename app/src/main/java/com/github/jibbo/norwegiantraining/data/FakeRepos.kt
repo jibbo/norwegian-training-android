@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.data
 
+import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -74,6 +75,8 @@ class FakeSettingsRepository : SettingsRepository {
     override fun setFitnessLevel(level: FitnessLevel) {}
 
     override fun getFitnessLevel(): FitnessLevel = FitnessLevel.BEGINNER
+    override fun setLastProgressionDate(date: Date) {}
+    override fun getLastProgressionDate(): Date? = null
 }
 
 class FakeTracker : Analytics {
