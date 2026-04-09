@@ -4,21 +4,21 @@ import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SessionRepository
 import javax.inject.Inject
 
-data class PhaseEndedResult(
+data class WorkoutCompletedResult(
     val session: Session,
     val progression: ProgressionResult
 )
 
-class PhaseEndedUseCase @Inject constructor(
+class WorkoutCompletedUseCase @Inject constructor(
     private val getTodaySession: GetTodaySessionUseCase,
     private val sessionRepository: SessionRepository,
     private val checkProgression: CheckProgressionUseCase
 ) {
-    suspend operator fun invoke(): PhaseEndedResult {
+    suspend operator fun invoke(): WorkoutCompletedResult {
         val session = getTodaySession()
         val updated = session.copy(phasesEnded = session.phasesEnded + 1)
         sessionRepository.upsertSession(updated)
         val progression = checkProgression()
-        return PhaseEndedResult(session = updated, progression = progression)
+        return WorkoutCompletedResult(session = updated, progression = progression)
     }
 }
