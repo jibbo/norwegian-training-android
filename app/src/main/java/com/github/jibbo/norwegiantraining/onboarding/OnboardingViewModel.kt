@@ -38,7 +38,7 @@ class OnboardingViewModel @Inject constructor(
         val onboardingPages = OnboardingStates.getOnboardingPages()
         if (onboardingPages[step] is OnboardingPage.Permission) {
             if (isPermissionGranted) {
-                showNextPage()
+                showNextOnboardingStep(step, onboardingPages)
             } else {
                 val state = onboardingPages[step] as OnboardingPage.Permission
                 viewModelScope.launch {
@@ -47,6 +47,13 @@ class OnboardingViewModel @Inject constructor(
             }
             return
         }
+        showNextOnboardingStep(step, onboardingPages)
+    }
+
+    private fun showNextOnboardingStep(
+        step: Int,
+        onboardingPages: List<OnboardingPage>
+    ) {
         if (step == onboardingPages.size - 1) {
             if (Purchases.isConfigured) {
                 Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
