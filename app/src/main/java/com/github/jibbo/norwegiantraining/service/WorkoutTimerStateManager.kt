@@ -95,12 +95,14 @@ class WorkoutTimerStateManager @Inject constructor(
     suspend fun moveToNextPhase() {
         val currentState = _state.value
 
-        phaseEndedUseCase()
-
         val nextPhase = moveToNextPhase(currentState.workoutId, currentState.currentPhaseIndex)
         val nextIndex = currentState.currentPhaseIndex + 1
 
         val isCompleted = nextPhase.name == PhaseName.COMPLETED
+
+        if (isCompleted) {
+            phaseEndedUseCase()
+        }
 
         updateState(
             currentState.copy(
