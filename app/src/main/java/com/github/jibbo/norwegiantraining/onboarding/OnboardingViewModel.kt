@@ -34,13 +34,16 @@ class OnboardingViewModel @Inject constructor(
         UiState.Show(OnboardingStates.getOnboardingPages())
     )
     val uiStates = states.asStateFlow()
-    fun continueClicked(step: Int) {
+    fun continueClicked(step: Int, isPermissionGranted: Boolean = false) {
         val onboardingPages = OnboardingStates.getOnboardingPages()
         if (onboardingPages[step] is OnboardingPage.Permission) {
-            val state = onboardingPages[step] as OnboardingPage.Permission
-
-            viewModelScope.launch {
-                events.emit(UiCommands.AskPermission(state.permission))
+            if (isPermissionGranted) {
+                showNextPage()
+            } else {
+                val state = onboardingPages[step] as OnboardingPage.Permission
+                viewModelScope.launch {
+                    events.emit(UiCommands.AskPermission(state.permission))
+                }
             }
             return
         }

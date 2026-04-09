@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.onboarding
 
+import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,11 +47,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
@@ -227,23 +230,30 @@ private fun OnBoardingPage(
         }
         // Hide the Continue button for self-advancing pages
         if (state !is OnboardingPage.FitnessLevelQuestion) {
-        Button(
-            onClick = {
-                viewModel.continueClicked(page)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Primary,
-                contentColor = White
-            ), modifier = modifier
-                .fillMaxWidth()
-                .height(64.dp)
-        ) {
-            Text(
-                text = R.string.continue_btn.localizable().uppercase(),
-                fontWeight = FontWeight.SemiBold,
-                color = Black
-            )
-        }
+            val context = LocalContext.current
+            val isPermissionGranted = if (state is OnboardingPage.Permission) {
+                ContextCompat.checkSelfPermission(
+                    context, state.permission
+                ) == PackageManager.PERMISSION_GRANTED
+            } else false
+            Button(
+                onClick = {
+                    viewModel.continueClicked(page, isPermissionGranted)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Primary,
+                    contentColor = White
+                ),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+            ) {
+                Text(
+                    text = R.string.continue_btn.localizable().uppercase(),
+                    fontWeight = FontWeight.SemiBold,
+                    color = Black
+                )
+            }
         }
     }
 }
