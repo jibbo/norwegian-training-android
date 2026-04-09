@@ -16,6 +16,7 @@ class GetRecommendedWorkoutId @Inject constructor(
             FitnessLevel.OCCASIONAL -> Difficulty.INTERMEDIATE
             FitnessLevel.FIT -> Difficulty.EXPERT
         }
-        return workouts[difficulty]?.first()?.id ?: workouts.entries.first().value.first().id
+        return workouts[difficulty]?.firstOrNull()?.id
+            ?: workouts.entries.firstOrNull()?.value?.firstOrNull()?.id ?: 0
     }
 }
