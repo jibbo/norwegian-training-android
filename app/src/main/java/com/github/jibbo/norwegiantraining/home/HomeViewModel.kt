@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.Difficulty
+import com.github.jibbo.norwegiantraining.data.FitnessLevel
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
@@ -61,6 +62,27 @@ class HomeViewModel @Inject constructor(
 
     fun settingsClicked() {
         publishEvent(UiCommands.SHOW_SETTINGS)
+    }
+
+    fun isRecommended(workout: Workout): Boolean {
+        val fitnessLevel = settingsRepository.getFitnessLevel() ?: return false
+        val loaded = states.value as? UiState.Loaded ?: return false
+        return when (fitnessLevel) {
+            FitnessLevel.BEGINNER -> {
+                val firstId = loaded.workouts[Difficulty.BEGINNER]?.minByOrNull { it.id }?.id
+                workout.id == firstId
+            }
+
+            FitnessLevel.OCCASIONAL -> {
+                val firstId = loaded.workouts[Difficulty.INTERMEDIATE]?.minByOrNull { it.id }?.id
+                workout.id == firstId
+            }
+
+            FitnessLevel.FIT -> {
+                val firstId = loaded.workouts[Difficulty.EXPERT]?.minByOrNull { it.id }?.id
+                workout.id == firstId
+            }
+        }
     }
 
     fun chartsClicked() {

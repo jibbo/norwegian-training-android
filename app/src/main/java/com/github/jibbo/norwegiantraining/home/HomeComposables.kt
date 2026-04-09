@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
-import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
@@ -164,17 +163,26 @@ private fun WorkoutCard(
     workout: Workout,
     viewModel: HomeViewModel
 ) {
+    val isRecommended = viewModel.isRecommended(workout)
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
-            containerColor = Black
+            containerColor = if (isRecommended) DarkPrimary else Black
         ),
         modifier = Modifier
             .width(200.dp)
-            .height(125.dp),
+            .height(if (isRecommended) 145.dp else 125.dp),
         onClick = {
             viewModel.workoutClicked(workout.id)
         }
     ) {
+        if (isRecommended) {
+            Text(
+                text = "★ START HERE",
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                style = Typography.labelSmall,
+                color = Primary
+            )
+        }
         Text(
             text = workout.name,
             modifier = Modifier.padding(8.dp),
@@ -189,7 +197,9 @@ private fun WorkoutCard(
         )
         Text(
             text = R.string.workout_kCal.localizable(workout.kCal),
-            modifier = Modifier.padding(8.dp).alpha(0.8f),
+            modifier = Modifier
+                .padding(8.dp)
+                .alpha(0.8f),
             style = Typography.bodySmall,
             color = White
         )

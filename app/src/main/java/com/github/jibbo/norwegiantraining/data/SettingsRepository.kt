@@ -16,6 +16,12 @@ import javax.inject.Singleton
 
 const val PREFS_KEY = "norwegian_training_prefs"
 
+enum class FitnessLevel {
+    BEGINNER,
+    OCCASIONAL,
+    FIT
+}
+
 interface SettingsRepository {
     fun setUserName(name: String?): Unit
     fun getUserName(): String?
@@ -34,6 +40,8 @@ interface SettingsRepository {
     fun getFreeTrialEndDate(): Date?
     fun startFreeTrial()
     fun debugOnlySetFreeTrialDate(date: Date?)
+    fun setFitnessLevel(level: FitnessLevel)
+    fun getFitnessLevel(): FitnessLevel?
 }
 
 @Singleton
@@ -100,6 +108,15 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         sp.edit { putLong("free_trial_date", System.currentTimeMillis() + 24 * 60 * 60 * 1000) }
     }
 
+    override fun setFitnessLevel(level: FitnessLevel) {
+        sp.edit { putString(KEY_FITNESS_LEVEL, level.name) }
+    }
+
+    override fun getFitnessLevel(): FitnessLevel? {
+        val raw = sp.getString(KEY_FITNESS_LEVEL, null) ?: return null
+        return FitnessLevel.valueOf(raw)
+    }
+
     override fun debugOnlySetFreeTrialDate(date: Date?) {
         if (date != null)
             sp.edit { putLong("free_trial_date", date.time) }
@@ -117,6 +134,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_ANALYTICS_ENABLED = "analytics_enabled"
         const val KEY_SHOW_TIMER_NOTIFICATION = "show_timer_notification"
         const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
+        const val KEY_FITNESS_LEVEL = "fitness_level"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

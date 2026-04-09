@@ -2,11 +2,10 @@ package com.github.jibbo.norwegiantraining.onboarding
 
 import android.Manifest
 import android.os.Build
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.data.FitnessLevel
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
@@ -39,6 +38,7 @@ class OnboardingViewModel @Inject constructor(
         val onboardingPages = OnboardingStates.getOnboardingPages()
         if (onboardingPages[step] is OnboardingPage.Permission) {
             val state = onboardingPages[step] as OnboardingPage.Permission
+
             viewModelScope.launch {
                 events.emit(UiCommands.AskPermission(state.permission))
             }
@@ -97,32 +97,42 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
+    fun onFitnessLevelSelected(level: FitnessLevel) {
+        settingsRepository.setFitnessLevel(level)
+        showNextPage()
+    }
+
     object OnboardingStates {
         fun getOnboardingPages(): List<OnboardingPage> = buildList {
+            // Step 1: Hook
             add(
                 OnboardingPage.Normal(
-                    title = R.string.onboarding_step_6_title,
-                    description = R.string.onboarding_step_6_description,
-                    body = R.string.onboarding_step_6_body,
-                    image = R.drawable.runner_illustration
+                    title = R.string.onboarding_hook_title,
+                    description = R.string.onboarding_hook_description,
+                    body = R.string.onboarding_hook_body,
+                    image = R.drawable.hearth_illustration
                 )
             )
+            // Step 2: Fitness level question
             add(
-                OnboardingPage.Normal(
-                    title = R.string.onboarding_step_5_title,
-                    description = R.string.onboarding_step_5_description,
-                    body = R.string.onboarding_step_5_body,
-                    image = R.drawable.organizing_data_illustration
+                OnboardingPage.FitnessLevelQuestion(
+                    title = R.string.onboarding_fitness_title,
+                    description = R.string.onboarding_fitness_description,
+                    options = listOf(
+                        R.string.onboarding_fitness_beginner to FitnessLevel.BEGINNER,
+                        R.string.onboarding_fitness_occasional to FitnessLevel.OCCASIONAL,
+                        R.string.onboarding_fitness_fit to FitnessLevel.FIT
+                    )
                 )
             )
+            // Step 3: Name
             add(
-                OnboardingPage.Normal(
-                    title = R.string.onboarding_step_2_title,
-                    description = R.string.onboarding_step_2_description,
-                    body = R.string.onboarding_step_2_body,
-                    image = R.drawable.working_out_illustration
+                OnboardingPage.NameSetting(
+                    title = R.string.onboarding_step_name_title,
+                    placeholder = R.string.onboarding_step_name_placeholder,
                 )
             )
+            // Permissions
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 add(
                     OnboardingPage.Permission(
@@ -133,7 +143,6 @@ class OnboardingViewModel @Inject constructor(
                     )
                 )
             }
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 add(
                     OnboardingPage.Permission(
@@ -144,31 +153,6 @@ class OnboardingViewModel @Inject constructor(
                     )
                 )
             }
-
-            add(
-                OnboardingPage.NameSetting(
-                    title = R.string.onboarding_step_name_title,
-                    placeholder = R.string.onboarding_step_name_placeholder,
-                )
-            )
-
-            add(
-                OnboardingPage.InviteFriends(
-                    title = R.string.onboarding_step_invite_friends_title,
-                    image = R.drawable.social_illustration,
-                    description = R.string.onboarding_step_invite_friends_description,
-                    body = R.string.onboarding_step_invite_friends_body,
-                )
-            )
-
-            add(
-                OnboardingPage.Normal(
-                    title = R.string.onboarding_step_4_title,
-                    description = R.string.onboarding_step_4_description,
-                    body = R.string.onboarding_step_4_body,
-                    image = R.drawable.hearth_illustration
-                )
-            )
         }
     }
 }

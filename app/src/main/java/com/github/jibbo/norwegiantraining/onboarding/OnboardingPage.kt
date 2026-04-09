@@ -1,10 +1,8 @@
 package com.github.jibbo.norwegiantraining.onboarding
 
-import android.Manifest
-import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.data.FitnessLevel
 
 sealed class UiState {
     object Loading : UiState()
@@ -71,4 +69,10 @@ sealed class OnboardingPage(
         @param:StringRes val description: Int,
         @param:StringRes val body: Int,
     ) : OnboardingPage(title, image)
+
+    class FitnessLevelQuestion(
+        @param:StringRes override val title: Int,
+        @param:StringRes val description: Int,
+        val options: List<Pair<Int, FitnessLevel>>
+    ) : OnboardingPage(title)
 }
