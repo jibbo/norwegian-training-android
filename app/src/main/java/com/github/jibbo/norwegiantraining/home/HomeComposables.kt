@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
@@ -174,7 +174,7 @@ private fun WorkoutCard(
         ),
         modifier = Modifier
             .width(200.dp)
-            .height(if (isRecommended) 145.dp else 125.dp),
+            .defaultMinSize(minHeight = if (isRecommended) 145.dp else 125.dp),
         onClick = {
             viewModel.workoutClicked(workout.id)
         }
