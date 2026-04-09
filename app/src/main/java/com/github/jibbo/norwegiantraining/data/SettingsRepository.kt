@@ -16,12 +16,6 @@ import javax.inject.Singleton
 
 const val PREFS_KEY = "norwegian_training_prefs"
 
-enum class FitnessLevel {
-    BEGINNER,
-    OCCASIONAL,
-    FIT
-}
-
 interface SettingsRepository {
     fun setUserName(name: String?): Unit
     fun getUserName(): String?
