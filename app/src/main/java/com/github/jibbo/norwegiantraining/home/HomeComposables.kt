@@ -181,7 +181,7 @@ private fun WorkoutCard(
     ) {
         if (isRecommended) {
             Text(
-                text = "★ START HERE",
+                text = R.string.workout_start_here.localizable(),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                 style = Typography.labelSmall,
                 color = Primary

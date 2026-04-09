@@ -123,6 +123,8 @@
     <string name="onboarding_hook_description">Intervalli basati sulla scienza. Dal punto in cui sei oggi.</string>
     <string name="onboarding_hook_body">Il 4x4 norvegese è la cosa più efficace che puoi fare per la tua salute a lungo termine. Norwy ti ci porta — un allenamento alla volta.</string>
 
+    <string name="workout_start_here">★ INIZIA DA QUI</string>
+
     <!-- Onboarding - Livello fitness -->
     <string name="onboarding_fitness_title">Da dove parti?</string>
     <string name="onboarding_fitness_description">Evidenzieremo l\'allenamento giusto per te.</string>
