@@ -118,7 +118,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
 
     override fun getRecommendedWorkoutId(): Long? {
         return if (sp.contains(KEY_RECOMMENDED_WORKOUT_ID))
-            sp.getLong(KEY_RECOMMENDED_WORKOUT_ID, -1L).takeIf { it != -1L }
+            sp.getLong(KEY_RECOMMENDED_WORKOUT_ID, 0L)
         else null
     }
 

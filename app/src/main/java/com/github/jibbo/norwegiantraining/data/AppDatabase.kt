@@ -144,6 +144,9 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
                     substr(date, 7, 4) || '-' || substr(date, 4, 2) || '-' || substr(date, 1, 2)
                 ) AS INTEGER) * 1000
             FROM Session
+            WHERE strftime('%s',
+                substr(date, 7, 4) || '-' || substr(date, 4, 2) || '-' || substr(date, 1, 2)
+            ) IS NOT NULL
             """
         )
         db.execSQL("DROP TABLE Session")

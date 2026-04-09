@@ -12,7 +12,7 @@ data class WorkoutCompletedResult(
 class WorkoutCompletedUseCase @Inject constructor(
     private val getTodaySession: GetTodaySessionUseCase,
     private val sessionRepository: SessionRepository,
-    private val checkProgression: CheckProgressionUseCase
+    private val checkProgression: ApplyProgressionUseCase
 ) {
     suspend operator fun invoke(): WorkoutCompletedResult {
         val session = getTodaySession()
