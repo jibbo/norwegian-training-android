@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,6 +54,7 @@ import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
+import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import com.github.jibbo.norwegiantraining.freetrial.FreeTrialActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
@@ -177,6 +179,25 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.fitness_level_label.localizable(),
+                    style = Typography.bodyMedium,
+                    color = White.copy(alpha = 0.6f)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = state.value.fitnessLevel.toLabel().localizable(),
+                    style = Typography.bodyMedium,
+                    color = Primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             TextField(
                 placeholder = @Composable {
@@ -601,7 +622,7 @@ fun GreetingPreview2() {
     }
 }
 
-fun Context.composeEmail() {
+private fun Context.composeEmail() {
     val intent = Intent(Intent.ACTION_SENDTO).apply {
         data = "mailto:".toUri() // Only email apps handle this.
         putExtra(Intent.EXTRA_EMAIL, arrayOf("info@jibbo.it"))
@@ -612,9 +633,15 @@ fun Context.composeEmail() {
     }
 }
 
-fun Context.openMastodon() {
+private fun Context.openMastodon() {
     val intent = Intent(Intent.ACTION_VIEW).apply {
         data = "https://mastodon.social/@jibbolus".toUri()
     }
     startActivity(intent)
+}
+
+private fun FitnessLevel.toLabel(): Int = when (this) {
+    FitnessLevel.BEGINNER -> R.string.onboarding_fitness_beginner
+    FitnessLevel.OCCASIONAL -> R.string.onboarding_fitness_occasional
+    FitnessLevel.FIT -> R.string.onboarding_fitness_fit
 }

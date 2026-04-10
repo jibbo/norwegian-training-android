@@ -42,6 +42,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="title_profile_section">Profile</string>">
     <string name="your_name">Your name</string>">
+    <string name="fitness_level_label">Fitness level</string>
     <string name="title_tts_section">Vocal hints</string>">
     <string name="announce_phase">Phase name</string>
     <string name="announce_phase_description">Phase description</string>

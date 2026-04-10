@@ -29,6 +29,7 @@ internal class SettingsViewModel @Inject constructor(
     private val uiStates = MutableStateFlow(
         UiState(
             name = settingsRepository.getUserName(),
+            fitnessLevel = settingsRepository.getFitnessLevel(),
             announcePhase = settingsRepository.getAnnouncePhase(),
             announcePhaseDesc = settingsRepository.getAnnouncePhaseDesc(),
             announceCountdown = settingsRepository.getAnnounceCountdown(),
@@ -112,6 +113,7 @@ internal class SettingsViewModel @Inject constructor(
         settingsRepository.setFitnessLevel(FitnessLevel.BEGINNER)
         settingsRepository.clearRecommendedWorkoutId()
         settingsRepository.setRecommendedWorkoutId(5L) // "Not So Beginner" (last BEGINNER)
+        uiStates.value = uiStates.value.copy(fitnessLevel = FitnessLevel.BEGINNER)
 
         viewModelScope.launch {
             // 3 sessions per week across 4 weeks within the 28-day window
