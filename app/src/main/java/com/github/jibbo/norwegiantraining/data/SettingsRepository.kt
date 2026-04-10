@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.data
 import android.content.Context
 import android.telephony.TelephonyManager
 import androidx.core.content.edit
+import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -34,8 +35,13 @@ interface SettingsRepository {
     fun getFreeTrialEndDate(): Date?
     fun startFreeTrial()
     fun debugOnlySetFreeTrialDate(date: Date?)
+    fun setRecommendedWorkoutId(id: Long)
+    fun clearRecommendedWorkoutId()
+    fun getRecommendedWorkoutId(): Long?
     fun setFitnessLevel(level: FitnessLevel)
     fun getFitnessLevel(): FitnessLevel
+    fun setLastProgressionDate(date: Date)
+    fun getLastProgressionDate(): Date?
 }
 
 @Singleton
@@ -102,6 +108,20 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         sp.edit { putLong("free_trial_date", System.currentTimeMillis() + 24 * 60 * 60 * 1000) }
     }
 
+    override fun setRecommendedWorkoutId(id: Long) {
+        sp.edit { putLong(KEY_RECOMMENDED_WORKOUT_ID, id) }
+    }
+
+    override fun clearRecommendedWorkoutId() {
+        sp.edit { remove(KEY_RECOMMENDED_WORKOUT_ID) }
+    }
+
+    override fun getRecommendedWorkoutId(): Long? {
+        return if (sp.contains(KEY_RECOMMENDED_WORKOUT_ID))
+            sp.getLong(KEY_RECOMMENDED_WORKOUT_ID, 0L)
+        else null
+    }
+
     override fun setFitnessLevel(level: FitnessLevel) {
         sp.edit { putString(KEY_FITNESS_LEVEL, level.name) }
     }
@@ -111,6 +131,16 @@ class SharedPreferencesSettingsRepository @Inject constructor(
             sp.getString(KEY_FITNESS_LEVEL, FitnessLevel.BEGINNER.name)
                 ?: return FitnessLevel.BEGINNER
         return FitnessLevel.entries.find { it.name == raw } ?: FitnessLevel.BEGINNER
+    }
+
+    override fun setLastProgressionDate(date: Date) {
+        sp.edit { putLong(KEY_LAST_PROGRESSION_DATE, date.time) }
+    }
+
+    override fun getLastProgressionDate(): Date? {
+        return if (sp.contains(KEY_LAST_PROGRESSION_DATE))
+            Date(sp.getLong(KEY_LAST_PROGRESSION_DATE, 0L))
+        else null
     }
 
     override fun debugOnlySetFreeTrialDate(date: Date?) {
@@ -131,6 +161,8 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_SHOW_TIMER_NOTIFICATION = "show_timer_notification"
         const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
         const val KEY_FITNESS_LEVEL = "fitness_level"
+        const val KEY_RECOMMENDED_WORKOUT_ID = "recommended_workout_id"
+        const val KEY_LAST_PROGRESSION_DATE = "last_progression_date"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

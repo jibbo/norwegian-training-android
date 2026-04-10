@@ -5,8 +5,8 @@ import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.data.FitnessLevel
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
+import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
 import dagger.hilt.android.lifecycle.HiltViewModel

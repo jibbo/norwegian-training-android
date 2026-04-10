@@ -2,7 +2,7 @@ package com.github.jibbo.norwegiantraining.onboarding
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.github.jibbo.norwegiantraining.data.FitnessLevel
+import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 
 sealed class UiState {
     object Loading : UiState()

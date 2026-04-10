@@ -2,12 +2,11 @@ package com.github.jibbo.norwegiantraining.service
 
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
-import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.Phase
-import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
+import com.github.jibbo.norwegiantraining.domain.WorkoutCompletedUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -23,7 +22,7 @@ class WorkoutTimerStateManager @Inject constructor(
     private val persistence: TimerStatePersistence,
     private val workoutRepository: WorkoutRepository,
     private val moveToNextPhase: MoveToNextPhaseDomainService,
-    private val phaseEndedUseCase: PhaseEndedUseCase,
+    private val workoutCompletedUseCase: WorkoutCompletedUseCase,
     private val skipPhaseUseCase: SkipPhaseUseCase,
     private val settingsRepository: SettingsRepository
 ) {
@@ -96,12 +95,14 @@ class WorkoutTimerStateManager @Inject constructor(
     suspend fun moveToNextPhase() {
         val currentState = _state.value
 
-        phaseEndedUseCase()
-
         val nextPhase = moveToNextPhase(currentState.workoutId, currentState.currentPhaseIndex)
         val nextIndex = currentState.currentPhaseIndex + 1
 
         val isCompleted = nextPhase.name == PhaseName.COMPLETED
+
+        if (isCompleted) {
+            workoutCompletedUseCase()
+        }
 
         updateState(
             currentState.copy(

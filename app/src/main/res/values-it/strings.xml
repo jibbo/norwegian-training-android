@@ -30,6 +30,7 @@
     <string name="title_activity_settings">Impostazioni</string>
     <string name="title_profile_section">Profilo</string>
     <string name="your_name">Il tuo nome</string>
+    <string name="fitness_level_label">Livello fitness</string>
     <string name="title_tts_section">Suggerimenti vocali</string>
     <string name="announce_phase">Nome della fase</string>
     <string name="announce_phase_description">Descrizione della fase</string>

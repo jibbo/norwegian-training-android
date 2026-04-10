@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.data
 
+import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -9,7 +10,13 @@ class FakeSessionRepo : SessionRepository {
         offset: Int
     ): List<Session> = listOf()
 
+    override suspend fun getSessionsInRange(from: Date, to: Date): List<Session> = listOf()
+
     override suspend fun upsertSession(session: Session): Long = -1
+
+    override suspend fun insertSession(session: Session): Long = -1
+
+    override suspend fun insertSessions(sessions: List<Session>) {}
 
     override suspend fun getTodaySession(): Session? = null
 }
@@ -67,9 +74,14 @@ class FakeSettingsRepository : SettingsRepository {
         TODO("Not yet implemented")
     }
 
+    override fun setRecommendedWorkoutId(id: Long) {}
+    override fun clearRecommendedWorkoutId() {}
+    override fun getRecommendedWorkoutId(): Long? = null
     override fun setFitnessLevel(level: FitnessLevel) {}
 
     override fun getFitnessLevel(): FitnessLevel = FitnessLevel.BEGINNER
+    override fun setLastProgressionDate(date: Date) {}
+    override fun getLastProgressionDate(): Date? = null
 }
 
 class FakeTracker : Analytics {
@@ -116,26 +128,27 @@ class FakeTracker : Analytics {
 }
 
 class FakeWorkoutRepo : WorkoutRepository {
+    private val workouts = mutableListOf<Workout>()
+
     override fun getAll(): Flow<List<Workout>> {
         TODO("Not yet implemented")
     }
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
-        TODO("Not yet implemented")
+        workouts.filter { it.difficulty == difficulty }
 
-    override suspend fun getById(id: Long): Workout? {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getById(id: Long): Workout? =
+        workouts.firstOrNull { it.id == id }
 
     override suspend fun getDifficulties(): List<Difficulty> =
         Difficulty.entries.toList()
 
     override suspend fun insert(vararg workouts: Workout) {
-        TODO("Not yet implemented")
+        this.workouts.addAll(workouts)
     }
 
     override suspend fun insert(workouts: List<Workout>) {
-        TODO("Not yet implemented")
+        this.workouts.addAll(workouts)
     }
 
 }

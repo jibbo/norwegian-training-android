@@ -31,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -45,14 +44,6 @@ import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.VideoBackground
 import com.github.jibbo.norwegiantraining.components.localizable
-import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
-import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
-import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
-import com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase
-import com.github.jibbo.norwegiantraining.domain.GetWorkoutName
-import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
-import com.github.jibbo.norwegiantraining.domain.PhaseEndedUseCase
-import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary

@@ -8,11 +8,9 @@ class GetTodaySessionUseCase @Inject constructor(
     private val sessionRepository: SessionRepository
 ) {
     suspend operator fun invoke(): Session {
-        val session = sessionRepository.getTodaySession() ?: Session()
-        val id = sessionRepository.upsertSession(session)
-        if (id > 0) {
-            return session.copy(id = id)
-        }
-        return session
+        sessionRepository.getTodaySession()?.let { return it }
+        val newSession = Session()
+        val id = sessionRepository.insertSession(newSession)
+        return newSession.copy(id = id)
     }
 }

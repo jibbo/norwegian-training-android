@@ -6,6 +6,8 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.github.jibbo.norwegiantraining.R
 import dagger.Module
@@ -28,9 +30,10 @@ import javax.inject.Singleton
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
+@TypeConverters(SessionConverters::class, WorkoutConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recordDao(): SessionDao
     abstract fun workoutDao(): WorkoutDao
@@ -120,6 +123,37 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("DELETE FROM Session WHERE date IS NULL OR length(date) != 10")
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS Session_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                phases_ended INTEGER NOT NULL,
+                skip_count INTEGER NOT NULL,
+                date INTEGER NOT NULL
+            )
+            """
+        )
+        db.execSQL(
+            """
+            INSERT INTO Session_new (id, phases_ended, skip_count, date)
+            SELECT id, phases_ended, skip_count,
+                CAST(strftime('%s',
+                    substr(date, 7, 4) || '-' || substr(date, 4, 2) || '-' || substr(date, 1, 2)
+                ) AS INTEGER) * 1000
+            FROM Session
+            WHERE strftime('%s',
+                substr(date, 7, 4) || '-' || substr(date, 4, 2) || '-' || substr(date, 1, 2)
+            ) IS NOT NULL
+            """
+        )
+        db.execSQL("DROP TABLE Session")
+        db.execSQL("ALTER TABLE Session_new RENAME TO Session")
+    }
+}
+
 @Module
 @InstallIn(SingletonComponent::class)
 class DatabaseModule {
@@ -132,7 +166,7 @@ class DatabaseModule {
         context,
         AppDatabase::class.java,
         "norwegiantrainingdb"
-    ).addCallback(callback).build()
+    ).addMigrations(MIGRATION_2_3).addCallback(callback).build()
 
     @Provides
     fun provideRecordDao(database: AppDatabase) = database.recordDao()
