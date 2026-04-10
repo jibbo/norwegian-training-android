@@ -12,6 +12,8 @@ interface SessionRepository {
     suspend fun getSessions(limit: Int = 30, offset: Int = 0): List<Session>
     suspend fun getSessionsInRange(from: Date, to: Date): List<Session>
     suspend fun upsertSession(session: Session): Long
+    suspend fun insertSession(session: Session): Long
+    suspend fun insertSessions(sessions: List<Session>)
     suspend fun getTodaySession(): Session?
 }
 
@@ -28,6 +30,10 @@ class PersistentSessionRepository @Inject constructor(
         sessionDao.getInRange(from, to)
 
     override suspend fun upsertSession(session: Session): Long = sessionDao.upsert(session)
+
+    override suspend fun insertSession(session: Session): Long = sessionDao.insert(session)
+
+    override suspend fun insertSessions(sessions: List<Session>) = sessionDao.insert(sessions)
 
     override suspend fun getTodaySession(): Session? {
         val cal = java.util.Calendar.getInstance().apply {

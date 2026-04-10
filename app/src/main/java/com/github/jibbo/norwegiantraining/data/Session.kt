@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.data
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
+import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.TypeConverter
@@ -20,6 +21,12 @@ interface SessionDao {
 
     @Upsert
     suspend fun upsert(session: Session): Long
+
+    @Insert
+    suspend fun insert(session: Session): Long
+
+    @Insert
+    suspend fun insert(sessions: List<Session>)
 
     @Query("SELECT * FROM session WHERE date BETWEEN :startOfDay AND :endOfDay LIMIT 1")
     suspend fun getTodaySession(startOfDay: Long, endOfDay: Long): Session?

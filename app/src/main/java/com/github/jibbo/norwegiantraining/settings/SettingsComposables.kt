@@ -50,6 +50,7 @@ import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.freetrial.FreeTrialActivity
@@ -96,7 +97,7 @@ internal fun SettingsScreen(
             item { CreditsCard() }
 
             if (BuildConfig.DEBUG) {
-                item { DebugCard() }
+                item { DebugCard(viewModel) }
             }
 
             item { Spacer(modifier = Modifier.size(32.dp)) }
@@ -501,7 +502,7 @@ private fun CreditsCard() {
 }
 
 @Composable
-private fun DebugCard() {
+private fun DebugCard(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(vertical = 6.dp)) {
@@ -546,6 +547,19 @@ private fun DebugCard() {
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }
+            Row(
+                verticalAlignment = Alignment.Top,
+            ) {
+                TextButton(
+                    onClick = { viewModel.seedLevelUpTest() }
+                ) {
+                    Text(
+                        text = "Seed Level Up (BEGINNER → OCCASIONAL)",
+                        style = Typography.bodyMedium,
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+            }
         }
     }
 }
@@ -578,7 +592,9 @@ fun GreetingPreview2() {
         Surface {
             Scaffold { innerPadding ->
                 SettingsScreen(
-                    SettingsViewModel(FakeSettingsRepository(), FakeTracker()), innerPadding, null
+                    SettingsViewModel(FakeSettingsRepository(), FakeSessionRepo(), FakeTracker()),
+                    innerPadding,
+                    null
                 )
             }
         }

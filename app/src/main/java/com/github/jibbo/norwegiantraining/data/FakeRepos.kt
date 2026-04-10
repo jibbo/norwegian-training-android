@@ -14,6 +14,10 @@ class FakeSessionRepo : SessionRepository {
 
     override suspend fun upsertSession(session: Session): Long = -1
 
+    override suspend fun insertSession(session: Session): Long = -1
+
+    override suspend fun insertSessions(sessions: List<Session>) {}
+
     override suspend fun getTodaySession(): Session? = null
 }
 
