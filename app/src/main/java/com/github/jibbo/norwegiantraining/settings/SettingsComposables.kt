@@ -641,7 +641,7 @@ private fun Context.openMastodon() {
 }
 
 private fun FitnessLevel.toLabel(): Int = when (this) {
-    FitnessLevel.BEGINNER -> R.string.onboarding_fitness_beginner
-    FitnessLevel.OCCASIONAL -> R.string.onboarding_fitness_occasional
-    FitnessLevel.FIT -> R.string.onboarding_fitness_fit
+    FitnessLevel.BEGINNER -> R.string.workout_category_beginner
+    FitnessLevel.OCCASIONAL -> R.string.workout_category_intermediate
+    FitnessLevel.FIT -> R.string.workout_category_expert
 }
