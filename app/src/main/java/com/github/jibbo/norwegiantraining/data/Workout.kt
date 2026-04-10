@@ -8,7 +8,6 @@ import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -33,7 +32,6 @@ interface WorkoutDao {
 }
 
 @Entity
-@TypeConverters(WorkoutConverters::class)
 data class Workout(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,

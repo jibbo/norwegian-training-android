@@ -33,7 +33,7 @@ import javax.inject.Singleton
     version = 3,
     exportSchema = true
 )
-@TypeConverters(SessionConverters::class)
+@TypeConverters(SessionConverters::class, WorkoutConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recordDao(): SessionDao
     abstract fun workoutDao(): WorkoutDao

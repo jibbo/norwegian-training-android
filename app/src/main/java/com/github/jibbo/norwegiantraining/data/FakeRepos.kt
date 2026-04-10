@@ -128,26 +128,27 @@ class FakeTracker : Analytics {
 }
 
 class FakeWorkoutRepo : WorkoutRepository {
+    private val workouts = mutableListOf<Workout>()
+
     override fun getAll(): Flow<List<Workout>> {
         TODO("Not yet implemented")
     }
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
-        TODO("Not yet implemented")
+        workouts.filter { it.difficulty == difficulty }
 
-    override suspend fun getById(id: Long): Workout? {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getById(id: Long): Workout? =
+        workouts.firstOrNull { it.id == id }
 
     override suspend fun getDifficulties(): List<Difficulty> =
         Difficulty.entries.toList()
 
     override suspend fun insert(vararg workouts: Workout) {
-        TODO("Not yet implemented")
+        this.workouts.addAll(workouts)
     }
 
     override suspend fun insert(workouts: List<Workout>) {
-        TODO("Not yet implemented")
+        this.workouts.addAll(workouts)
     }
 
 }
