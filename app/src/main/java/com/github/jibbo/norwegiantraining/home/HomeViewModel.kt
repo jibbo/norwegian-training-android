@@ -94,7 +94,7 @@ class HomeViewModel @Inject constructor(
     private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
         val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
         if (hasNotPurchased) {
-            if (!isTrial) {
+            if (!isTrial && isOnboardingCompleted()) {
                 viewModelScope.launch {
                     events.emit(UiCommands.SHOW_PAYWALL)
                 }
