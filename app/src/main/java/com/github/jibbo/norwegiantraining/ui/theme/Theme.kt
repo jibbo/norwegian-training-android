@@ -18,7 +18,6 @@ private val DarkColorScheme = darkColorScheme(
     onBackground = White,
     onSurface = White,
     surface = Black,
-
     )
 
 private val LightColorScheme = lightColorScheme(
@@ -49,7 +48,7 @@ fun NorwegianTrainingTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = DarkColorScheme,
         typography = Typography,
         content = content
     )
