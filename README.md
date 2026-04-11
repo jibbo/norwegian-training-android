@@ -10,8 +10,10 @@ the [Play Store](https://play.google.com/store/apps/details?id=com.github.jibbo.
 ---
 
 <!-- SCREENSHOT PLACEHOLDER -->
-<img src="https://play-lh.googleusercontent.com/LLIrkm3ER-B8ocGcdiZQB21CCbQcC3h4qiVveW8tRfImGO2tWUMVjYJe3npUuB43qM78eKK8AyatbzRAvBRjzA">
-<img src="https://play-lh.googleusercontent.com/k_wp-tu6hJyOIvixDo9rgwEbIIJV6PgcZvOITi4uLNDXGgqQYMYwA1bFnZR2BL_jIBEfENxbR2vnCPogTA8R8w">
+
+| Screenshot 1                                                                                                                      | Screenshot 2                                                                                                                      |
+|-----------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| ![](https://play-lh.googleusercontent.com/LLIrkm3ER-B8ocGcdiZQB21CCbQcC3h4qiVveW8tRfImGO2tWUMVjYJe3npUuB43qM78eKK8AyatbzRAvBRjzA) | ![](https://play-lh.googleusercontent.com/k_wp-tu6hJyOIvixDo9rgwEbIIJV6PgcZvOITi4uLNDXGgqQYMYwA1bFnZR2BL_jIBEfENxbR2vnCPogTA8R8w) |
 ---
 
 ## Getting Started
