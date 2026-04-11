@@ -37,8 +37,19 @@ class ApplyProgressionUseCase @Inject constructor(
 
         val completedDifficulty = completedWorkout.difficulty
 
-        // User went back to a lower difficulty — don't touch the pointer
-        if (completedDifficulty.ordinal < currentDifficulty.ordinal) return null
+        // User went back to a lower difficulty — respect that choice
+        if (completedDifficulty.ordinal < currentDifficulty.ordinal) {
+            val newLevel = FitnessLevel.fromDifficulty(completedDifficulty)
+            val workoutsInDifficulty = workoutRepository
+                .getByDifficulty(completedDifficulty)
+                .sortedBy { it.id }
+            val completedIndex = workoutsInDifficulty.indexOfFirst { it.id == completedWorkoutId }
+            if (completedIndex == -1) return null
+
+            settingsRepository.setFitnessLevel(newLevel)
+            return advanceFrom(completedIndex, workoutsInDifficulty, newLevel, now)
+                ?: ProgressionResult.NextWorkout(completedWorkoutId)
+        }
 
         if (completedDifficulty == currentDifficulty) {
             // Same difficulty: check if the completed workout is ahead of recommendation
