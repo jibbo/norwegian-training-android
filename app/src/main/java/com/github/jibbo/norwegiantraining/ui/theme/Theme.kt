@@ -14,10 +14,10 @@ private val DarkColorScheme = darkColorScheme(
     primary = Primary,
     secondary = White,
     tertiary = White,
-    background = Gray,
+    background = Black,
     onBackground = White,
     onSurface = White,
-    surface = Gray,
+    surface = Black,
     )
 
 private val LightColorScheme = lightColorScheme(

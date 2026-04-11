@@ -19,9 +19,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -31,6 +32,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -60,6 +62,7 @@ import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
+import com.github.jibbo.norwegiantraining.ui.theme.Gray
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Red
@@ -110,7 +113,12 @@ internal fun SettingsScreen(
 @Composable
 private fun TTSCard(viewModel: SettingsViewModel) {
     val state = viewModel.uiState.collectAsState()
-    Card {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
         Column(modifier = Modifier.padding(6.dp)) {
             Text(
                 text = R.string.title_tts_section.localizable(),
@@ -167,7 +175,12 @@ private fun TTSCard(viewModel: SettingsViewModel) {
 @Composable
 private fun ProfileCard(viewModel: SettingsViewModel) {
     val state = viewModel.uiState.collectAsState()
-    Card(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
                 verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
@@ -209,6 +222,10 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                 },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Gray,
+                    focusedContainerColor = Gray,
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
@@ -220,7 +237,12 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
 @Composable
 private fun SubscriptionCard(viewModel: SettingsViewModel) {
     val state = viewModel.uiState.collectAsState()
-    Card(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
                 verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
@@ -303,7 +325,12 @@ private fun SubscriptionCard(viewModel: SettingsViewModel) {
 @Composable
 private fun GetInTouchCard() {
     val context = LocalContext.current
-    Card(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
                 verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
@@ -369,7 +396,12 @@ private fun OnboardingCard(viewModel: SettingsViewModel) {
         context, OnboardingActivity::class.java
     )
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-    Card(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
         Column(modifier = Modifier.padding(vertical = 6.dp)) {
             Row(
                 verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 8.dp)
@@ -392,7 +424,12 @@ private fun OnboardingCard(viewModel: SettingsViewModel) {
 @Composable
 private fun PrivacyCard(viewModel: SettingsViewModel) {
     val state = viewModel.uiState.collectAsState()
-    Card(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
                 verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
@@ -455,7 +492,12 @@ private fun PrivacyCard(viewModel: SettingsViewModel) {
 @Composable
 private fun CreditsCard() {
     val context = LocalContext.current
-    Card(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
         Column(modifier = Modifier.padding(6.dp)) {
             Row(
                 verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
@@ -525,7 +567,12 @@ private fun CreditsCard() {
 @Composable
 private fun DebugCard(viewModel: SettingsViewModel) {
     val context = LocalContext.current
-    Card(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
         Column(modifier = Modifier.padding(vertical = 6.dp)) {
             Row(
                 verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
