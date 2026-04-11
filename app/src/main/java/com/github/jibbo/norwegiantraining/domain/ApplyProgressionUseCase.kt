@@ -1,8 +1,11 @@
 package com.github.jibbo.norwegiantraining.domain
 
+import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
+import com.github.jibbo.norwegiantraining.log.SessionStatus
+import com.github.jibbo.norwegiantraining.log.getStatus
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -18,11 +21,15 @@ class ApplyProgressionUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository,
     private val settingsRepository: SettingsRepository,
 ) {
-    suspend operator fun invoke(completedWorkoutId: Long): ProgressionResult {
-        // Path 1: Skip-ahead — if the user completed a workout ahead of their
-        // recommendation, move the pointer forward immediately.
-        val skipAheadResult = applySkipAhead(completedWorkoutId)
-        if (skipAheadResult != null) return skipAheadResult
+    suspend operator fun invoke(completedWorkoutId: Long, session: Session): ProgressionResult {
+        val status = session.getStatus()
+        val isQualifying = status != SessionStatus.BAD
+
+        // Path 1: Skip-ahead — only if the session wasn't bad
+        if (isQualifying) {
+            val skipAheadResult = applySkipAhead(completedWorkoutId)
+            if (skipAheadResult != null) return skipAheadResult
+        }
 
         // Path 2: Time-based gradual progression (existing logic).
         return applyTimeBased()
@@ -131,8 +138,9 @@ class ApplyProgressionUseCase @Inject constructor(
         else
             twentyEightDaysAgo
         val sessions = sessionRepository.getSessionsInRange(from, now.time)
+            .filter { it.getStatus() != SessionStatus.BAD }
 
-        // 2. Count weeks in the rolling window that had at least 3 sessions
+        // 2. Count weeks in the rolling window that had at least 3 qualifying sessions
         val fromMillis = from.time
         val qualifyingWeeks = sessions
             .groupBy { session ->

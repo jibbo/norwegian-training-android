@@ -18,7 +18,7 @@ class WorkoutCompletedUseCase @Inject constructor(
         val session = getTodaySession()
         val updated = session.copy(phasesEnded = session.phasesEnded + 1)
         sessionRepository.upsertSession(updated)
-        val progression = checkProgression(workoutId)
+        val progression = checkProgression(workoutId, updated)
         return WorkoutCompletedResult(session = updated, progression = progression)
     }
 }
