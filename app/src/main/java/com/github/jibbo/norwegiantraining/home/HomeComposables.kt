@@ -1,21 +1,23 @@
 package com.github.jibbo.norwegiantraining.home
 
+import android.graphics.BlurMaskFilter
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -28,7 +30,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +52,7 @@ import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
 import com.github.jibbo.norwegiantraining.ui.theme.Black
-import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
+import com.github.jibbo.norwegiantraining.ui.theme.Gray
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
@@ -58,14 +64,7 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = verticalGradient(
-                    colors = listOf(
-                        Primary,
-                        Black
-                    )
-                )
-            )
+            .background(color = Black)
     ) {
         Image(
             painter = painterResource(id = R.drawable.runner_illustration),
@@ -127,7 +126,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
     val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
     LazyColumn(
         contentPadding = PaddingValues(all = 6.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         val keys = state.workouts.keys.sorted()
         items(keys.size, { it }) { index ->
@@ -175,45 +174,83 @@ private fun WorkoutCard(
     viewModel: HomeViewModel,
 ) {
     val isRecommended = workout.id == recommendedWorkoutId
-    ElevatedCard(
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = if (isRecommended) DarkPrimary else Black
-        ),
-        modifier = Modifier
-            .width(200.dp)
-            .defaultMinSize(minHeight = if (isRecommended) 145.dp else 125.dp),
-        onClick = {
-            viewModel.workoutClicked(workout.id)
+    val cardShape = RoundedCornerShape(12.dp)
+    Box(
+        modifier = if (isRecommended) {
+            Modifier
+                .graphicsLayer(clip = false)
+                .drawBehind {
+                    drawIntoCanvas { canvas ->
+                        val paint = Paint().also { p ->
+                            p.asFrameworkPaint().apply {
+                                isAntiAlias = true
+                                color = Primary.copy(alpha = 0.6f).toArgb()
+                                maskFilter = BlurMaskFilter(
+                                    16.dp.toPx(),
+                                    BlurMaskFilter.Blur.NORMAL
+                                )
+                            }
+                        }
+                        val cornerRadiusPx = 12.dp.toPx()
+                        canvas.drawRoundRect(
+                            left = 0f,
+                            top = 0f,
+                            right = size.width,
+                            bottom = size.height,
+                            radiusX = cornerRadiusPx,
+                            radiusY = cornerRadiusPx,
+                            paint = paint
+                        )
+                    }
+                }
+        } else {
+            Modifier
         }
     ) {
-        if (isRecommended) {
+        ElevatedCard(
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = Gray
+            ),
+            shape = cardShape,
+            modifier = Modifier
+                .width(200.dp)
+                .then(
+                    if (isRecommended) Modifier.border(1.5.dp, Primary, cardShape)
+                    else Modifier
+                ),
+            onClick = {
+                viewModel.workoutClicked(workout.id)
+            }
+        ) {
+            if (isRecommended) {
+                Text(
+                    text = recommendedLabel.localizable(),
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    style = Typography.labelSmall,
+                    color = Primary
+                )
+            }
             Text(
-                text = recommendedLabel.localizable(),
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                style = Typography.labelSmall,
-                color = Primary
+                text = workout.name,
+                modifier = Modifier.padding(8.dp),
+                style = Typography.titleMedium,
+                color = White
+            )
+            Text(
+                text = R.string.workout_time.localizable(workout.totalTime, workout.restTime()),
+                modifier = Modifier.padding(8.dp),
+                style = Typography.bodyMedium,
+                color = White
+            )
+            Text(
+                text = R.string.workout_kCal.localizable(workout.kCal),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .alpha(0.8f),
+                style = Typography.bodySmall,
+                color = White
             )
         }
-        Text(
-            text = workout.name,
-            modifier = Modifier.padding(8.dp),
-            style = Typography.titleMedium,
-            color = White
-        )
-        Text(
-            text = R.string.workout_time.localizable(workout.totalTime, workout.restTime()),
-            modifier = Modifier.padding(8.dp),
-            style = Typography.bodyMedium,
-            color = White
-        )
-        Text(
-            text = R.string.workout_kCal.localizable(workout.kCal),
-            modifier = Modifier
-                .padding(8.dp)
-                .alpha(0.8f),
-            style = Typography.bodySmall,
-            color = White
-        )
     }
 }
 

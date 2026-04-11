@@ -8,6 +8,7 @@ val DarkPrimary = Color(0xFF252E00)
 val Red = Color(0xFFe74c3c)
 val Orange = Color(0xFFf39c12)
 val Black = Color(0xFF070D0D)
+val Gray = Color(0xFF191919)
 val White = Color(0xFFFFFFFF)
 
 // Light
