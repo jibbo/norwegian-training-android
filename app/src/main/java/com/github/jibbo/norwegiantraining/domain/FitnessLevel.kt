@@ -18,4 +18,12 @@ enum class FitnessLevel {
         OCCASIONAL -> FIT
         FIT -> null
     }
+
+    companion object {
+        fun fromDifficulty(difficulty: Difficulty): FitnessLevel = when (difficulty) {
+            Difficulty.BEGINNER -> BEGINNER
+            Difficulty.INTERMEDIATE -> OCCASIONAL
+            Difficulty.EXPERT -> FIT
+        }
+    }
 }

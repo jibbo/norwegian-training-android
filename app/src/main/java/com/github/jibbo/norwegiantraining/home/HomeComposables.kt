@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.home
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -143,7 +144,12 @@ internal fun Workouts(viewModel: HomeViewModel) {
                 modifier = Modifier.horizontalScroll(scrollState)
             ) {
                 workouts.forEach { workout ->
-                    WorkoutCard(workout, state.recommendedWorkoutId, viewModel)
+                    WorkoutCard(
+                        workout,
+                        state.recommendedWorkoutId,
+                        state.recommendedLabel,
+                        viewModel
+                    )
                 }
             }
         }
@@ -165,6 +171,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
 private fun WorkoutCard(
     workout: Workout,
     recommendedWorkoutId: Long?,
+    @StringRes recommendedLabel: Int,
     viewModel: HomeViewModel,
 ) {
     val isRecommended = workout.id == recommendedWorkoutId
@@ -181,7 +188,7 @@ private fun WorkoutCard(
     ) {
         if (isRecommended) {
             Text(
-                text = R.string.workout_start_here.localizable(),
+                text = recommendedLabel.localizable(),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                 style = Typography.labelSmall,
                 color = Primary

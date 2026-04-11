@@ -20,4 +20,6 @@ class GetRecommendedWorkoutId @Inject constructor(
         return workouts[difficulty]?.firstOrNull()?.id
             ?: workouts.entries.firstOrNull()?.value?.firstOrNull()?.id
     }
+
+    fun hasProgressed(): Boolean = settingsRepository.getRecommendedWorkoutId() != null
 }

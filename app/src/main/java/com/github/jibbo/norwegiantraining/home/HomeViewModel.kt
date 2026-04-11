@@ -111,7 +111,8 @@ class HomeViewModel @Inject constructor(
             else -> states.value = UiState.Loaded(
                 username = getUsername(),
                 workouts = workouts,
-                recommendedWorkoutId = getRecommendedWorkoutId(workouts)
+                recommendedWorkoutId = getRecommendedWorkoutId(workouts),
+                hasProgressed = getRecommendedWorkoutId.hasProgressed()
             )
         }
 
