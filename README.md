@@ -1,33 +1,75 @@
-# 🚀 Norwy: Torch Fat & Strengthen Your Heart
+# 🚀 Norwy — Norwegian 4x4 Training Timer
 
-Simple Norwegian 4x4 timer app for every fitness level.
+A no-frills Android timer app for
+the [Norwegian 4x4 interval training method](https://www.ntnu.edu/cerg/advice). Pick your fitness
+level, start the timer, and let it guide you through intervals and rest periods.
 
-## Can I contribute?
-Sure, open a Pull request and I'll evaluate. I'll add you to the credits page. 
+Available on
+the [Play Store](https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining).
 
-Please mind that if you really want to contribute, do know it will be only for your personal satisfaction.
+---
 
-## Why is the app behind a paywall?
-In the past I developed a few free apps, people were constantly writing me about features they would have liked or they wanted assistance.
+<!-- SCREENSHOT PLACEHOLDER -->
 
-However, my time is limited and I can't provide support to anybody, hence I decided to have the app paywalled and support people who put some skin in the game.
+| Screenshot 1                                                                                                                      | Screenshot 2                                                                                                                      |
+|-----------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| ![](https://play-lh.googleusercontent.com/LLIrkm3ER-B8ocGcdiZQB21CCbQcC3h4qiVveW8tRfImGO2tWUMVjYJe3npUuB43qM78eKK8AyatbzRAvBRjzA) | ![](https://play-lh.googleusercontent.com/k_wp-tu6hJyOIvixDo9rgwEbIIJV6PgcZvOITi4uLNDXGgqQYMYwA1bFnZR2BL_jIBEfENxbR2vnCPogTA8R8w) |
+---
 
-You are welcome to keep using the free trial or disable the paywall as long as I don't have to do deal with feature requests.
+## Getting Started
 
-## Why is the free trial so limited?
-There are very easy ways to circumvent the current implementation of the free trial so I had to make the free trial somewhat limited.
+**Build**
 
-The alternative would be a server side check which in turn would make forks and so on more complicated and I don't want that either.
+```bash
+git clone https://github.com/jibbo/norwegian-training-android.git
+cd norwegian-training-android
+./gradlew assembleDebug
+```
 
-So -If you have the skills- feel free to to remove the limitations and keep using the app for free.
+---
 
-## Why don't you publish it on F-Droid?
-Sorry but I have limited time, I don't want to maintain multiple stores. This might change if there'd be a way to work full time on my own apps.
+## Contributing
 
-## Can I upload this app to the XYZ Repo/Mirror/Store?
-Yes, as long as you maintain it and I don't have to deal with complaints of users who aren't using the Play Store version.
+PRs are welcome. If it's a bug fix or small improvement, open one directly. For larger changes, open
+an issue first so we're aligned before you invest time.
 
-Please, also take into account that I won't accept any changes specific to alternative stores/ mirrors/ repos.
+A few honest caveats:
 
-## Are you an employer?
-Please note that this work isn't an example of good app architecture or production code, I develop this in my own free time thinking that I'll be the only one maintaining so I cut many corners.
+- This is a solo side project — review times may be slow.
+- I won't accept changes specific to alternative stores or mirrors.
+- If your PR is merged, you'll be added to the credits screen.
+
+---
+
+## FAQ
+
+**Why is the app paywalled?**
+I've shipped free apps before and ended up drowning in support requests I couldn't sustain. The
+paywall filters for users who have some skin in the game. A free trial is available, and the paywall
+is easy to remove locally if you have the skills.
+
+**Why is the free trial so limited?**
+The current paywall is client-side, which makes it trivially bypassable. A server-side check would
+complicate forking, which I don't want. So I kept the implementation simple and the trial limited —
+feel free to remove it for personal use.
+
+**Why not F-Droid?**
+Maintaining multiple stores isn't something I have bandwidth for right now.
+
+**Can I mirror this on another store?**
+Yes, as long as you maintain it independently and I'm not on the hook for support from non-Play
+Store users.
+
+---
+
+## A Note on Code Quality
+
+This is a personal project I build in my spare time with no intention of it being maintained by
+anyone else. Architecture shortcuts were taken deliberately. If you're here to evaluate my
+production work, this repo isn't the right sample.
+
+---
+
+## License
+
+[GPL-3.0](LICENSE)
