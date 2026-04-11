@@ -46,9 +46,13 @@ class ApplyProgressionUseCase @Inject constructor(
             val completedIndex = workoutsInDifficulty.indexOfFirst { it.id == completedWorkoutId }
             if (completedIndex == -1) return null
 
-            settingsRepository.setFitnessLevel(newLevel)
             return advanceFrom(completedIndex, workoutsInDifficulty, newLevel, now)
-                ?: ProgressionResult.NextWorkout(completedWorkoutId)
+                ?: run {
+                    settingsRepository.setFitnessLevel(newLevel)
+                    settingsRepository.setRecommendedWorkoutId(completedWorkoutId)
+                    settingsRepository.setLastProgressionDate(now.time)
+                    ProgressionResult.NextWorkout(completedWorkoutId)
+                }
         }
 
         if (completedDifficulty == currentDifficulty) {
@@ -80,9 +84,13 @@ class ApplyProgressionUseCase @Inject constructor(
         val completedIndex = workoutsInDifficulty.indexOfFirst { it.id == completedWorkoutId }
         if (completedIndex == -1) return null
 
-        settingsRepository.setFitnessLevel(newLevel)
         return advanceFrom(completedIndex, workoutsInDifficulty, newLevel, now)
-            ?: ProgressionResult.LevelUp(newLevel)
+            ?: run {
+                settingsRepository.setFitnessLevel(newLevel)
+                settingsRepository.setRecommendedWorkoutId(completedWorkoutId)
+                settingsRepository.setLastProgressionDate(now.time)
+                ProgressionResult.LevelUp(newLevel)
+            }
     }
 
     private suspend fun advanceFrom(
@@ -93,6 +101,7 @@ class ApplyProgressionUseCase @Inject constructor(
     ): ProgressionResult? {
         val nextInDifficulty = workoutsInDifficulty.getOrNull(completedIndex + 1)
         if (nextInDifficulty != null) {
+            settingsRepository.setFitnessLevel(fitnessLevel)
             settingsRepository.setRecommendedWorkoutId(nextInDifficulty.id)
             settingsRepository.setLastProgressionDate(now.time)
             return ProgressionResult.NextWorkout(nextInDifficulty.id)
