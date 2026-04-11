@@ -126,6 +126,7 @@
     <string name="onboarding_hook_body">El 4x4 noruego es lo más efectivo que puedes hacer por tu salud a largo plazo. Norwy te lleva hasta ahí — una sesión a la vez.</string>
 
     <string name="workout_start_here">★ EMPIEZA AQUÍ</string>
+    <string name="workout_resume_here">★ CONTINÚA AQUÍ</string>
 
     <!-- Onboarding - Nivel de forma física -->
     <string name="onboarding_fitness_title">¿Desde dónde empiezas?</string>
