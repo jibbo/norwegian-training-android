@@ -34,6 +34,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -45,7 +46,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -58,6 +58,7 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.ui.theme.Black
+import com.github.jibbo.norwegiantraining.ui.theme.Gray
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
@@ -81,14 +82,6 @@ fun LoadingPage(
 fun Loading(innerPadding: PaddingValues) {
     Column(
         modifier = Modifier
-            .background(
-                brush = verticalGradient(
-                    colors = listOf(
-                        Color.DarkGray,
-                        Black
-                    )
-                )
-            )
             .padding(
                 top = innerPadding.calculateTopPadding(),
                 bottom = innerPadding.calculateBottomPadding()
@@ -109,14 +102,6 @@ fun OnBoarding(innerPadding: PaddingValues, viewModel: OnboardingViewModel, uiSt
     val selectedPage = viewModel.uiSelectedPage.collectAsState()
     Column(
         modifier = Modifier
-            .background(
-                brush = verticalGradient(
-                    colors = listOf(
-                        Color.DarkGray,
-                        Black
-                    )
-                )
-            )
             .padding(
                 top = innerPadding.calculateTopPadding(),
                 bottom = innerPadding.calculateBottomPadding()
@@ -282,7 +267,7 @@ fun ColumnScope.FitnessLevelPage(
             Button(
                 onClick = { viewModel.onFitnessLevelSelected(level) },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Black,
+                    containerColor = Gray,
                     contentColor = White
                 ),
                 modifier = Modifier
@@ -292,8 +277,8 @@ fun ColumnScope.FitnessLevelPage(
             ) {
                 Text(
                     text = labelRes.localizable(),
+                    fontWeight = FontWeight.SemiBold,
                     style = Typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
                 )
             }
         }
@@ -386,6 +371,10 @@ fun ColumnScope.NameSetting(
     Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.weight(1f))
         TextField(
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Gray,
+                focusedContainerColor = Gray,
+            ),
             value = nameState.value,
             onValueChange = { viewModel.onNameChanged(it) },
             label = { Text(text = state.placeholder.localizable()) },
