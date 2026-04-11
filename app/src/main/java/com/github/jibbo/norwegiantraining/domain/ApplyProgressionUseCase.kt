@@ -18,7 +18,89 @@ class ApplyProgressionUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository,
     private val settingsRepository: SettingsRepository,
 ) {
-    suspend operator fun invoke(): ProgressionResult {
+    suspend operator fun invoke(completedWorkoutId: Long): ProgressionResult {
+        // Path 1: Skip-ahead — if the user completed a workout ahead of their
+        // recommendation, move the pointer forward immediately.
+        val skipAheadResult = applySkipAhead(completedWorkoutId)
+        if (skipAheadResult != null) return skipAheadResult
+
+        // Path 2: Time-based gradual progression (existing logic).
+        return applyTimeBased()
+    }
+
+    private suspend fun applySkipAhead(completedWorkoutId: Long): ProgressionResult? {
+        val completedWorkout = workoutRepository.getById(completedWorkoutId) ?: return null
+        val now = Calendar.getInstance()
+
+        val currentFitnessLevel = settingsRepository.getFitnessLevel()
+        val currentDifficulty = currentFitnessLevel.toDifficulty()
+
+        val completedDifficulty = completedWorkout.difficulty
+
+        // User went back to a lower difficulty — don't touch the pointer
+        if (completedDifficulty.ordinal < currentDifficulty.ordinal) return null
+
+        if (completedDifficulty == currentDifficulty) {
+            // Same difficulty: check if the completed workout is ahead of recommendation
+            val workoutsInDifficulty = workoutRepository
+                .getByDifficulty(currentDifficulty)
+                .sortedBy { it.id }
+
+            val currentRecommendedId = settingsRepository.getRecommendedWorkoutId()
+                ?: workoutsInDifficulty.firstOrNull()?.id
+                ?: return null
+
+            val recommendedIndex =
+                workoutsInDifficulty.indexOfFirst { it.id == currentRecommendedId }
+            val completedIndex = workoutsInDifficulty.indexOfFirst { it.id == completedWorkoutId }
+            if (recommendedIndex == -1 || completedIndex == -1) return null
+
+            // Not ahead — let time-based logic handle it
+            if (completedIndex <= recommendedIndex) return null
+
+            return advanceFrom(completedIndex, workoutsInDifficulty, currentFitnessLevel, now)
+        }
+
+        // Higher difficulty: user jumped ahead across difficulties
+        val newLevel = FitnessLevel.fromDifficulty(completedDifficulty)
+        val workoutsInDifficulty = workoutRepository
+            .getByDifficulty(completedDifficulty)
+            .sortedBy { it.id }
+        val completedIndex = workoutsInDifficulty.indexOfFirst { it.id == completedWorkoutId }
+        if (completedIndex == -1) return null
+
+        settingsRepository.setFitnessLevel(newLevel)
+        return advanceFrom(completedIndex, workoutsInDifficulty, newLevel, now)
+            ?: ProgressionResult.LevelUp(newLevel)
+    }
+
+    private suspend fun advanceFrom(
+        completedIndex: Int,
+        workoutsInDifficulty: List<com.github.jibbo.norwegiantraining.data.Workout>,
+        fitnessLevel: FitnessLevel,
+        now: Calendar
+    ): ProgressionResult? {
+        val nextInDifficulty = workoutsInDifficulty.getOrNull(completedIndex + 1)
+        if (nextInDifficulty != null) {
+            settingsRepository.setRecommendedWorkoutId(nextInDifficulty.id)
+            settingsRepository.setLastProgressionDate(now.time)
+            return ProgressionResult.NextWorkout(nextInDifficulty.id)
+        }
+
+        // Last workout in difficulty — level up if possible
+        val nextLevel = fitnessLevel.next() ?: return null
+        val nextDifficultyWorkouts = workoutRepository
+            .getByDifficulty(nextLevel.toDifficulty())
+            .sortedBy { it.id }
+        val firstOfNextLevel = nextDifficultyWorkouts.firstOrNull() ?: return null
+
+        settingsRepository.setFitnessLevel(nextLevel)
+        settingsRepository.setRecommendedWorkoutId(firstOfNextLevel.id)
+        settingsRepository.setLastProgressionDate(now.time)
+        return ProgressionResult.LevelUp(nextLevel)
+    }
+
+    private suspend fun applyTimeBased(): ProgressionResult {
         // 1. Fetch sessions from the later of (28 days ago) or (last progression date)
         val now = Calendar.getInstance()
         val twentyEightDaysAgo =
