@@ -135,4 +135,8 @@
     <string name="onboarding_fitness_occasional">Entreno de vez en cuando</string>
     <string name="onboarding_fitness_fit">Ya estoy en forma</string>
 
+    <string name="level_up_title">¡Subiste de nivel!</string>
+    <string name="level_up_subtitle">Has avanzado a %1$s. ¡Sigue superándote!</string>
+    <string name="level_up_button">CONTINUAR</string>
+
 </resources>

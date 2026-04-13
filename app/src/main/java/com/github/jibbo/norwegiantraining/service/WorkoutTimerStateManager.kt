@@ -100,9 +100,9 @@ class WorkoutTimerStateManager @Inject constructor(
 
         val isCompleted = nextPhase.name == PhaseName.COMPLETED
 
-        if (isCompleted) {
-            workoutCompletedUseCase(currentState.workoutId)
-        }
+        val progressionResult = if (isCompleted) {
+            workoutCompletedUseCase(currentState.workoutId).progression
+        } else null
 
         updateState(
             currentState.copy(
@@ -111,7 +111,8 @@ class WorkoutTimerStateManager @Inject constructor(
                 targetTimeMillis = 0L,
                 isTimerRunning = false,
                 remainingTimeOnPauseMillis = 0L,
-                isCompleted = isCompleted
+                isCompleted = isCompleted,
+                progressionResult = progressionResult
             )
         )
     }

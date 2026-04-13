@@ -9,11 +9,12 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
+import com.github.jibbo.norwegiantraining.domain.ProgressionResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,7 +28,8 @@ data class WorkoutTimerState(
     val targetTimeMillis: Long = 0L,
     val isTimerRunning: Boolean = false,
     val remainingTimeOnPauseMillis: Long = 0L,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val progressionResult: ProgressionResult? = null
 )
 
 @Singleton
@@ -46,6 +48,7 @@ class TimerStatePersistence @Inject constructor(
         val IS_TIMER_RUNNING = booleanPreferencesKey("is_timer_running")
         val REMAINING_TIME_ON_PAUSE = longPreferencesKey("remaining_time_on_pause")
         val IS_COMPLETED = booleanPreferencesKey("is_completed")
+        val PROGRESSION_RESULT = stringPreferencesKey("progression_result")
     }
 
     suspend fun saveState(state: WorkoutTimerState) {
@@ -59,6 +62,8 @@ class TimerStatePersistence @Inject constructor(
             preferences[Keys.IS_TIMER_RUNNING] = state.isTimerRunning
             preferences[Keys.REMAINING_TIME_ON_PAUSE] = state.remainingTimeOnPauseMillis
             preferences[Keys.IS_COMPLETED] = state.isCompleted
+            preferences[Keys.PROGRESSION_RESULT] =
+                serializeProgressionResult(state.progressionResult)
         }
     }
 
@@ -82,13 +87,30 @@ class TimerStatePersistence @Inject constructor(
             targetTimeMillis = preferences[Keys.TARGET_TIME_MILLIS] ?: 0L,
             isTimerRunning = preferences[Keys.IS_TIMER_RUNNING] ?: false,
             remainingTimeOnPauseMillis = preferences[Keys.REMAINING_TIME_ON_PAUSE] ?: 0L,
-            isCompleted = preferences[Keys.IS_COMPLETED] ?: false
+            isCompleted = preferences[Keys.IS_COMPLETED] ?: false,
+            progressionResult = deserializeProgressionResult(preferences[Keys.PROGRESSION_RESULT])
         )
     }
 
     suspend fun clearState() {
         dataStore.edit { preferences ->
             preferences.clear()
+        }
+    }
+
+    private fun serializeProgressionResult(result: ProgressionResult?): String = when (result) {
+        is ProgressionResult.LevelUp -> "LevelUp:${result.newLevel.name}"
+        is ProgressionResult.NextWorkout -> "NextWorkout:${result.workoutId}"
+        ProgressionResult.NoChange, null -> "NoChange"
+    }
+
+    private fun deserializeProgressionResult(value: String?): ProgressionResult? {
+        if (value == null || value == "NoChange") return null
+        val parts = value.split(":", limit = 2)
+        return when (parts[0]) {
+            "LevelUp" -> ProgressionResult.LevelUp(FitnessLevel.valueOf(parts[1]))
+            "NextWorkout" -> ProgressionResult.NextWorkout(parts[1].toLong())
+            else -> null
         }
     }
 }

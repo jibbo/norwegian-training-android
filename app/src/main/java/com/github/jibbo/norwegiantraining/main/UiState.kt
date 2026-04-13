@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.main
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
+import com.github.jibbo.norwegiantraining.domain.ProgressionResult
 
 data class UiState(
     val step: Phase = Phase(PhaseName.GET_READY, 0L),
@@ -12,6 +13,7 @@ data class UiState(
     val workoutName: String = "",
     val showConfetti: Boolean = false,
     val isServiceBound: Boolean = false,
+    val progressionResult: ProgressionResult? = null,
 )
 
 fun PhaseName.description() = when (this) {

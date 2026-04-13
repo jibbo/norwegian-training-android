@@ -152,4 +152,8 @@
     <string name="onboarding_fitness_occasional">I train occasionally</string>
     <string name="onboarding_fitness_fit">I\'m already fit</string>
 
+    <string name="level_up_title">Level Up!</string>
+    <string name="level_up_subtitle">You\'ve advanced to %1$s! Keep pushing your limits.</string>
+    <string name="level_up_button">CONTINUE</string>
+
 </resources>

@@ -19,6 +19,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.home.HomeActivity
+import com.github.jibbo.norwegiantraining.levelup.LevelUpActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
 import com.github.jibbo.norwegiantraining.service.WorkoutServiceBinder
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerAndroidService
@@ -120,6 +121,14 @@ class MainActivity : BaseActivity() {
                 when (it) {
                     is UiCommands.CLOSE -> {
                         val intent = Intent(this@MainActivity, HomeActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                    }
+
+                    is UiCommands.LEVEL_UP -> {
+                        val intent = Intent(this@MainActivity, LevelUpActivity::class.java)
+                        intent.putExtra(LevelUpActivity.EXTRA_NEW_LEVEL, it.newLevel.name)
                         intent.flags =
                             Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
