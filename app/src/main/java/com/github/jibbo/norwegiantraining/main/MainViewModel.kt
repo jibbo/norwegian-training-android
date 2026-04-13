@@ -100,7 +100,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun debugCompleteWorkout() {
         viewModelScope.launch {
-            serviceBinder?.completeWorkout()
+            serviceBinder?.debugCompleteWorkout()
         }
     }
 

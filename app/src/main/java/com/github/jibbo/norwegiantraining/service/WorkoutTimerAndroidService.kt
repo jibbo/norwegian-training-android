@@ -184,12 +184,14 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         }
     }
 
-    override suspend fun completeWorkout() {
+    override suspend fun debugCompleteWorkout() {
         Log.d(TAG, "Debug: completing workout (skipping all phases)")
         countDownTimer?.cancel()
         cancelAlarm()
 
-        stateManager.moveToNextPhase()
+        while (!stateManager.state.value.isCompleted) {
+            stateManager.moveToNextPhase()
+        }
 
         updateNotification()
         stopForeground(STOP_FOREGROUND_REMOVE)
