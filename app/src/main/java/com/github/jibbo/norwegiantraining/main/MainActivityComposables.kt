@@ -201,7 +201,8 @@ private fun ColumnScope.Timer(
 
         CountdownDisplay(
             targetTimeMillis = state.targetTimeMillis,
-            isRunning = state.isTimerRunning
+            isRunning = state.isTimerRunning,
+            remainingTimeOnPauseMillis = state.remainingTimeOnPauseMillis
         )
     }
 
@@ -231,16 +232,22 @@ private fun Instructions(state: UiState) {
 internal fun CountdownDisplay(
     targetTimeMillis: Long,
     isRunning: Boolean,
+    remainingTimeOnPauseMillis: Long = 0L,
     modifier: Modifier = Modifier
 ) {
-    var remainingTimeMillis by remember(targetTimeMillis) {
+    var remainingTimeMillis by remember(targetTimeMillis, remainingTimeOnPauseMillis) {
         mutableStateOf(
-            targetTimeMillis - System.currentTimeMillis()
+            if (isRunning) {
+                (targetTimeMillis - System.currentTimeMillis()).coerceAtLeast(0L)
+            } else {
+                remainingTimeOnPauseMillis
+            }
         )
     }
 
     LaunchedEffect(key1 = isRunning, key2 = targetTimeMillis) {
         if (!isRunning) {
+            remainingTimeMillis = remainingTimeOnPauseMillis
             return@LaunchedEffect
         }
 

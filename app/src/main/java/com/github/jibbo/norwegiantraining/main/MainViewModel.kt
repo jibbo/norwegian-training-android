@@ -100,7 +100,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun debugShowLevelUp() {
         viewModelScope.launch {
-            events.emit(UiCommands.LevelUp(FitnessLevel.BEGINNER))
+            events.emit(UiCommands.LevelUp(FitnessLevel.OCCASIONAL))
         }
     }
 

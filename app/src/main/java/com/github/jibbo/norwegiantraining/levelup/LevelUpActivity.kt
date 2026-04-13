@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -79,9 +78,9 @@ class LevelUpActivity : BaseActivity() {
 }
 
 fun FitnessLevel.displayNameResId(): Int = when (this) {
-    FitnessLevel.BEGINNER -> R.string.onboarding_fitness_beginner
-    FitnessLevel.OCCASIONAL -> R.string.onboarding_fitness_occasional
-    FitnessLevel.FIT -> R.string.onboarding_fitness_fit
+    FitnessLevel.BEGINNER -> R.string.workout_category_beginner
+    FitnessLevel.OCCASIONAL -> R.string.workout_category_intermediate
+    FitnessLevel.FIT -> R.string.workout_category_expert
 }
 
 @Composable
@@ -89,14 +88,8 @@ fun LevelUpScreen(newLevel: FitnessLevel, onContinue: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = verticalGradient(
-                    colors = listOf(Primary, DarkPrimary)
-                )
-            )
-    ) {
-    }
-    val giftComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wrapped_gift))
+    )
+    val giftComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.trophy))
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -108,7 +101,7 @@ fun LevelUpScreen(newLevel: FitnessLevel, onContinue: () -> Unit) {
             modifier = Modifier
                 .size(220.dp)
                 .background(
-                    color = Black,
+                    color = DarkPrimary,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
