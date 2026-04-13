@@ -78,7 +78,7 @@ class ApplyProgressionUseCase @Inject constructor(
             if (recommendedIndex == -1 || completedIndex == -1) return null
 
             // Not ahead — let time-based logic handle it
-            if (completedIndex <= recommendedIndex) return null
+            if (completedIndex < recommendedIndex) return null
 
             return advanceFrom(completedIndex, workoutsInDifficulty, currentFitnessLevel, now)
         }

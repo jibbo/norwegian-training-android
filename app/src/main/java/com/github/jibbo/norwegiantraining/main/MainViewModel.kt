@@ -98,6 +98,12 @@ class MainViewModel @Inject constructor() : ViewModel() {
         )
     }
 
+    fun debugCompleteWorkout() {
+        viewModelScope.launch {
+            serviceBinder?.completeWorkout()
+        }
+    }
+
     fun debugShowLevelUp() {
         viewModelScope.launch {
             events.emit(UiCommands.LevelUp(FitnessLevel.OCCASIONAL))

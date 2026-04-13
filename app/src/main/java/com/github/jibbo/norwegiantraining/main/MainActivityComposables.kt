@@ -155,6 +155,20 @@ internal fun MainView(
                         textAlign = TextAlign.Center,
                     )
                 }
+                TextButton(onClick = {
+                    mainViewModel.debugCompleteWorkout()
+                }) {
+                    Text(
+                        text = "[DEBUG] Complete workout",
+                        style = Typography.titleMedium,
+                        color = White,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
         if (state.showConfetti) {
