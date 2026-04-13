@@ -85,7 +85,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
             val progression = states.value.progressionResult
             serviceBinder?.closeWorkout()
             if (progression is ProgressionResult.LevelUp) {
-                events.emit(UiCommands.LEVEL_UP(progression.newLevel))
+                events.emit(UiCommands.LevelUp(progression.newLevel))
             } else {
                 events.emit(UiCommands.CLOSE)
             }
@@ -98,8 +98,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
         )
     }
 
+    fun debugShowLevelUp() {
+        viewModelScope.launch {
+            events.emit(UiCommands.LevelUp(FitnessLevel.BEGINNER))
+        }
+    }
+
     sealed class UiCommands {
         object CLOSE : UiCommands()
-        data class LEVEL_UP(val newLevel: FitnessLevel) : UiCommands()
+        data class LevelUp(val newLevel: FitnessLevel) : UiCommands()
     }
 }

@@ -141,6 +141,20 @@ internal fun MainView(
                         textAlign = TextAlign.Center,
                     )
                 }
+                TextButton(onClick = {
+                    mainViewModel.debugShowLevelUp()
+                }) {
+                    Text(
+                        text = "[DEBUG] Show Level up",
+                        style = Typography.titleMedium,
+                        color = White,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
         }
         if (state.showConfetti) {

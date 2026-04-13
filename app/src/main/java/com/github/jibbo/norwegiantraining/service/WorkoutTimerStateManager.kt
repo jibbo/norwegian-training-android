@@ -40,7 +40,7 @@ class WorkoutTimerStateManager @Inject constructor(
 
     suspend fun startWorkout(workoutId: Long) {
         val currentState = _state.value
-        if (currentState.workoutId == workoutId && !currentState.isCompleted) {
+        if (currentState.workoutId == workoutId) {
             return
         }
 

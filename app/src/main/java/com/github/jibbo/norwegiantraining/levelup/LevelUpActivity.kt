@@ -142,8 +142,7 @@ fun LevelUpScreen(newLevel: FitnessLevel, onContinue: () -> Unit) {
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = String.format(
-                R.string.level_up_subtitle.localizable(),
+            text = R.string.level_up_subtitle.localizable(
                 newLevel.displayNameResId().localizable()
             ),
             style = Typography.bodyLarge,

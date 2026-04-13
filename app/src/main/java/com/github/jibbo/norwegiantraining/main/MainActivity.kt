@@ -120,7 +120,7 @@ class MainActivity : BaseActivity() {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect { command ->
                 when (command) {
                     is UiCommands.CLOSE -> navigateTo(HomeActivity::class.java)
-                    is UiCommands.LEVEL_UP -> navigateTo(LevelUpActivity::class.java) {
+                    is UiCommands.LevelUp -> navigateTo(LevelUpActivity::class.java) {
                         putExtra(LevelUpActivity.EXTRA_NEW_LEVEL, command.newLevel.name)
                     }
                 }
