@@ -39,6 +39,11 @@ class WorkoutTimerStateManager @Inject constructor(
     }
 
     suspend fun startWorkout(workoutId: Long) {
+        val currentState = _state.value
+        if (currentState.workoutId == workoutId && !currentState.isCompleted) {
+            return
+        }
+
         val workout = workoutRepository.getById(workoutId) ?: return
 
         val initialPhase = Phase(PhaseName.GET_READY, 0L)
