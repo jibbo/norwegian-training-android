@@ -2,7 +2,9 @@ package com.github.jibbo.norwegiantraining.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import com.github.jibbo.norwegiantraining.domain.PhaseName
+import com.github.jibbo.norwegiantraining.domain.ProgressionResult
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerService
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +47,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
             remainingTimeOnPauseMillis = serviceState.remainingTimeOnPauseMillis,
             workoutName = serviceState.workoutName,
             showConfetti = serviceState.isCompleted && !currentState.showConfetti,
-            isServiceBound = currentState.isServiceBound
+            isServiceBound = currentState.isServiceBound,
+            progressionResult = serviceState.progressionResult
         )
     }
 
@@ -79,8 +82,13 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun closeWorkout() {
         viewModelScope.launch {
+            val progression = states.value.progressionResult
             serviceBinder?.closeWorkout()
-            events.emit(UiCommands.CLOSE)
+            if (progression is ProgressionResult.LevelUp) {
+                events.emit(UiCommands.LevelUp(progression.newLevel))
+            } else {
+                events.emit(UiCommands.CLOSE)
+            }
         }
     }
 
@@ -90,7 +98,20 @@ class MainViewModel @Inject constructor() : ViewModel() {
         )
     }
 
+    fun debugCompleteWorkout() {
+        viewModelScope.launch {
+            serviceBinder?.debugCompleteWorkout()
+        }
+    }
+
+    fun debugShowLevelUp() {
+        viewModelScope.launch {
+            events.emit(UiCommands.LevelUp(FitnessLevel.OCCASIONAL))
+        }
+    }
+
     sealed class UiCommands {
         object CLOSE : UiCommands()
+        data class LevelUp(val newLevel: FitnessLevel) : UiCommands()
     }
 }

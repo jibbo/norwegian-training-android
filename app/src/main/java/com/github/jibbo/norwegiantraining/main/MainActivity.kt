@@ -19,6 +19,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.home.HomeActivity
+import com.github.jibbo.norwegiantraining.levelup.LevelUpActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
 import com.github.jibbo.norwegiantraining.service.WorkoutServiceBinder
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerAndroidService
@@ -116,17 +117,26 @@ class MainActivity : BaseActivity() {
 
     private fun observe() {
         lifecycleScope.launch {
-            mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
-                when (it) {
-                    is UiCommands.CLOSE -> {
-                        val intent = Intent(this@MainActivity, HomeActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
+            mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect { command ->
+                when (command) {
+                    is UiCommands.CLOSE -> navigateTo(HomeActivity::class.java)
+                    is UiCommands.LevelUp -> navigateTo(LevelUpActivity::class.java) {
+                        putExtra(LevelUpActivity.EXTRA_NEW_LEVEL, command.newLevel.name)
                     }
                 }
             }
         }
+    }
+
+    private fun navigateTo(
+        destination: Class<*>,
+        configureIntent: Intent.() -> Unit = {}
+    ) {
+        val intent = Intent(this, destination).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            configureIntent()
+        }
+        startActivity(intent)
     }
 
     override fun onRequestPermissionsResult(

@@ -112,6 +112,11 @@ internal class SettingsViewModel @Inject constructor(
     fun seedLevelUpTest() {
         settingsRepository.setFitnessLevel(FitnessLevel.BEGINNER)
         settingsRepository.clearRecommendedWorkoutId()
+        viewModelScope.launch {
+            val todaySession = sessionRepository.getTodaySession()
+            val copy = todaySession?.copy(skipCount = 0) ?: Session()
+            sessionRepository.upsertSession(copy)
+        }
         settingsRepository.setRecommendedWorkoutId(5L) // "Not So Beginner" (last BEGINNER)
         uiStates.value = uiStates.value.copy(fitnessLevel = FitnessLevel.BEGINNER)
 

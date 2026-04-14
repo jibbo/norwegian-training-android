@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.domain
 
+import android.util.Log
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
@@ -21,28 +22,45 @@ class ApplyProgressionUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository,
     private val settingsRepository: SettingsRepository,
 ) {
+    companion object {
+        private const val TAG = "ApplyProgression"
+    }
     suspend operator fun invoke(completedWorkoutId: Long, session: Session): ProgressionResult {
         val status = session.getStatus()
         val isQualifying = status != SessionStatus.BAD
+        Log.d(
+            TAG,
+            "invoke: workoutId=$completedWorkoutId, session=$session, status=$status, isQualifying=$isQualifying"
+        )
 
         // Path 1: Skip-ahead — only if the session wasn't bad
         if (isQualifying) {
             val skipAheadResult = applySkipAhead(completedWorkoutId)
+            Log.d(TAG, "skipAhead result: $skipAheadResult")
             if (skipAheadResult != null) return skipAheadResult
         }
 
         // Path 2: Time-based gradual progression (existing logic).
-        return applyTimeBased()
+        val timeBasedResult = applyTimeBased()
+        Log.d(TAG, "timeBased result: $timeBasedResult")
+        return timeBasedResult
     }
 
     private suspend fun applySkipAhead(completedWorkoutId: Long): ProgressionResult? {
-        val completedWorkout = workoutRepository.getById(completedWorkoutId) ?: return null
+        val completedWorkout = workoutRepository.getById(completedWorkoutId) ?: run {
+            Log.d(TAG, "applySkipAhead: workout $completedWorkoutId not found")
+            return null
+        }
         val now = Calendar.getInstance()
 
         val currentFitnessLevel = settingsRepository.getFitnessLevel()
         val currentDifficulty = currentFitnessLevel.toDifficulty()
 
         val completedDifficulty = completedWorkout.difficulty
+        Log.d(
+            TAG,
+            "applySkipAhead: currentLevel=$currentFitnessLevel, currentDifficulty=$currentDifficulty, completedDifficulty=$completedDifficulty"
+        )
 
         // User went back to a lower difficulty — respect that choice
         if (completedDifficulty.ordinal < currentDifficulty.ordinal) {
@@ -70,17 +88,38 @@ class ApplyProgressionUseCase @Inject constructor(
 
             val currentRecommendedId = settingsRepository.getRecommendedWorkoutId()
                 ?: workoutsInDifficulty.firstOrNull()?.id
-                ?: return null
+                ?: run {
+                    Log.d(
+                        TAG,
+                        "applySkipAhead: no recommended workout and no workouts in difficulty"
+                    )
+                    return null
+                }
 
             val recommendedIndex =
                 workoutsInDifficulty.indexOfFirst { it.id == currentRecommendedId }
             val completedIndex = workoutsInDifficulty.indexOfFirst { it.id == completedWorkoutId }
-            if (recommendedIndex == -1 || completedIndex == -1) return null
+            Log.d(
+                TAG,
+                "applySkipAhead: sameDifficulty, recommendedId=$currentRecommendedId, recommendedIndex=$recommendedIndex, completedIndex=$completedIndex, workoutsCount=${workoutsInDifficulty.size}"
+            )
+            if (recommendedIndex == -1 || completedIndex == -1) {
+                Log.d(TAG, "applySkipAhead: index not found, returning null")
+                return null
+            }
 
             // Not ahead — let time-based logic handle it
-            if (completedIndex <= recommendedIndex) return null
+            if (completedIndex < recommendedIndex) {
+                Log.d(
+                    TAG,
+                    "applySkipAhead: completed ($completedIndex) < recommended ($recommendedIndex), returning null"
+                )
+                return null
+            }
 
-            return advanceFrom(completedIndex, workoutsInDifficulty, currentFitnessLevel, now)
+            val result = advanceFrom(completedIndex, workoutsInDifficulty, currentFitnessLevel, now)
+            Log.d(TAG, "applySkipAhead: sameDifficulty advanceFrom result=$result")
+            return result
         }
 
         // Higher difficulty: user jumped ahead across difficulties
@@ -107,6 +146,10 @@ class ApplyProgressionUseCase @Inject constructor(
         now: Calendar
     ): ProgressionResult? {
         val nextInDifficulty = workoutsInDifficulty.getOrNull(completedIndex + 1)
+        Log.d(
+            TAG,
+            "advanceFrom: completedIndex=$completedIndex, totalWorkouts=${workoutsInDifficulty.size}, nextExists=${nextInDifficulty != null}, fitnessLevel=$fitnessLevel, nextLevel=${fitnessLevel.next()}"
+        )
         if (nextInDifficulty != null) {
             settingsRepository.setFitnessLevel(fitnessLevel)
             settingsRepository.setRecommendedWorkoutId(nextInDifficulty.id)

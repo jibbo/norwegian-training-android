@@ -39,6 +39,11 @@ class WorkoutTimerStateManager @Inject constructor(
     }
 
     suspend fun startWorkout(workoutId: Long) {
+        val currentState = _state.value
+        if (currentState.workoutId == workoutId) {
+            return
+        }
+
         val workout = workoutRepository.getById(workoutId) ?: return
 
         val initialPhase = Phase(PhaseName.GET_READY, 0L)
@@ -100,9 +105,9 @@ class WorkoutTimerStateManager @Inject constructor(
 
         val isCompleted = nextPhase.name == PhaseName.COMPLETED
 
-        if (isCompleted) {
-            workoutCompletedUseCase(currentState.workoutId)
-        }
+        val progressionResult = if (isCompleted) {
+            workoutCompletedUseCase(currentState.workoutId).progression
+        } else null
 
         updateState(
             currentState.copy(
@@ -111,7 +116,8 @@ class WorkoutTimerStateManager @Inject constructor(
                 targetTimeMillis = 0L,
                 isTimerRunning = false,
                 remainingTimeOnPauseMillis = 0L,
-                isCompleted = isCompleted
+                isCompleted = isCompleted,
+                progressionResult = progressionResult
             )
         )
     }
