@@ -122,11 +122,18 @@ class HomeViewModel @Inject constructor(
             states.value = value.copy(username = getUsername())
         }
     }
+
+    fun showAge() {
+        viewModelScope.launch {
+            events.emit(UiCommands.SHOW_AGE)
+        }
+    }
 }
 
 sealed class UiCommands {
     object SHOW_SETTINGS : UiCommands()
     object SHOW_CHARTS : UiCommands()
+    object SHOW_AGE : UiCommands()
     object SHOW_ONBOARDING : UiCommands()
     object SHOW_PAYWALL : UiCommands()
     data class SHOW_WORKOUT(val id: Long) : UiCommands()

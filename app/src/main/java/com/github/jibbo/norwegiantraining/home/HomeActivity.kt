@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.components.BaseActivity
+import com.github.jibbo.norwegiantraining.age.AgeActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
 import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
@@ -33,10 +34,11 @@ class HomeActivity : BaseActivity() {
         lifecycleScope.launch {
             homeViewModel.uiEvents.flowWithLifecycle(lifecycle).collect {
                 when (it) {
-                    UiCommands.SHOW_ONBOARDING -> showOnboarding()
-                    UiCommands.SHOW_SETTINGS -> showSettings()
-                    UiCommands.SHOW_CHARTS -> showCharts()
-                    UiCommands.SHOW_PAYWALL -> showPaywall()
+                    is UiCommands.SHOW_ONBOARDING -> showOnboarding()
+                    is UiCommands.SHOW_SETTINGS -> showSettings()
+                    is UiCommands.SHOW_CHARTS -> showCharts()
+                    is UiCommands.SHOW_AGE -> showAge()
+                    is UiCommands.SHOW_PAYWALL -> showPaywall()
                     is UiCommands.SHOW_WORKOUT -> showWorkout(it.id)
                 }
             }
@@ -74,6 +76,10 @@ class HomeActivity : BaseActivity() {
         intent.flags =
             Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(newIntent)
+    }
+
+    private fun showAge() {
+        startActivity(Intent(this@HomeActivity, AgeActivity::class.java))
     }
 
 }
