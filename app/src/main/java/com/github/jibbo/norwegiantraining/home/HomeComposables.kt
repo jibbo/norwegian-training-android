@@ -106,6 +106,12 @@ internal fun Header(viewModel: HomeViewModel) {
             name = R.string.welcome.localizable(state.username ?: ""),
             modifier = Modifier.weight(1f),
         )
+        IconButton(onClick = { viewModel.showAge() }) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_account_circle_24),
+                contentDescription = "Age"
+            )
+        }
         IconButton(onClick = { viewModel.chartsClicked() }) {
             Icon(
                 painter = painterResource(R.drawable.outline_area_chart_24),
