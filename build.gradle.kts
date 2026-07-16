@@ -5,6 +5,6 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.google.services) apply false
-    alias(libs.plugins.firebase.crashlytics) version "3.0.5" apply false
+    alias(libs.plugins.firebase.crashlytics) version "3.0.7" apply false
     alias(libs.plugins.room) apply false
 }

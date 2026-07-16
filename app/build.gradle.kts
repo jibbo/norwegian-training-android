@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
-    alias(libs.plugins.firebase.crashlytics) version "3.0.5"
+    alias(libs.plugins.firebase.crashlytics) version "3.0.7"
     alias(libs.plugins.room)
 }
 
@@ -19,12 +19,12 @@ extensions.configure<ApplicationExtension> {
 
 android {
     namespace = "com.github.jibbo.norwegiantraining"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.github.jibbo.norwegiantraining"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 19
         versionName = "2.3.0"
 
@@ -77,7 +77,7 @@ room {
 
 kotlin {
     compilerOptions {
-        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_4
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
