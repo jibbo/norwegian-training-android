@@ -131,7 +131,9 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         stateManager.startTimer()
 
         val state = stateManager.state.value
-        scheduleAlarm(state.targetTimeMillis, state.currentPhaseIndex)
+            if (state.currentPhase.name != PhaseName.GET_READY) {
+            scheduleAlarm(state.targetTimeMillis, state.currentPhaseIndex)
+        }
         startCountdown(state.targetTimeMillis)
         updateNotification()
 
