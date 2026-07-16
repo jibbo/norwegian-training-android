@@ -24,10 +24,13 @@ class MoveToNextPhaseDomainService @Inject constructor(
 }
 
 object WorkoutToPhasesConverter {
+
+    const val GET_READY_COUNTDOWN_DURATION = 10_000L
+
     fun convert(workout: Workout): List<Phase> {
         val phases = workout.getSplit()
         val list = mutableListOf<Phase>()
-        list.add(Phase(PhaseName.GET_READY, 0L))
+        list.add(Phase(PhaseName.GET_READY, GET_READY_COUNTDOWN_DURATION))
         list.add(Phase(PhaseName.WARMUP, phases[0]))
         for (i in 1..phases.size - 2) {
             val name = if (i % 2 == 0) {
