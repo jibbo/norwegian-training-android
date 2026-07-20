@@ -72,7 +72,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         states.value.step.name != PhaseName.COMPLETED && states.value.step.name != PhaseName.GET_READY
 
     fun showCountdown() =
-        states.value.step.name != PhaseName.COMPLETED && states.value.step.name != PhaseName.GET_READY
+        states.value.step.name != PhaseName.COMPLETED
 
     fun skipClicked() {
         viewModelScope.launch {

@@ -21,5 +21,5 @@ class GetRecommendedWorkoutId @Inject constructor(
             ?: workouts.entries.firstOrNull()?.value?.firstOrNull()?.id
     }
 
-    fun hasProgressed(): Boolean = settingsRepository.getRecommendedWorkoutId() != null
+    fun hasProgressed(): Boolean = (settingsRepository.getRecommendedWorkoutId() ?: 0L) > 0
 }

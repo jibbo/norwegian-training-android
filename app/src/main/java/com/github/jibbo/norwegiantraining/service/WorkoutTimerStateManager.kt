@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.service
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
+import com.github.jibbo.norwegiantraining.domain.WorkoutToPhasesConverter
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
@@ -46,7 +47,7 @@ class WorkoutTimerStateManager @Inject constructor(
 
         val workout = workoutRepository.getById(workoutId) ?: return
 
-        val initialPhase = Phase(PhaseName.GET_READY, 0L)
+        val initialPhase = Phase(PhaseName.GET_READY, WorkoutToPhasesConverter.GET_READY_COUNTDOWN_DURATION)
         val newState = WorkoutTimerState(
             workoutId = workoutId,
             workoutName = workout.name,

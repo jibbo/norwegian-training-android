@@ -131,7 +131,9 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         stateManager.startTimer()
 
         val state = stateManager.state.value
-        scheduleAlarm(state.targetTimeMillis, state.currentPhaseIndex)
+            if (state.currentPhase.name != PhaseName.GET_READY) {
+            scheduleAlarm(state.targetTimeMillis, state.currentPhaseIndex)
+        }
         startCountdown(state.targetTimeMillis)
         updateNotification()
 
@@ -265,31 +267,23 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
     }
 
     private fun announceCountdown(secondsRemaining: Int) {
-        val shouldAnnounce = when (secondsRemaining) {
-            60 -> {
-                speak(getString(R.string.one_minute_remaining), flush = false)
-                true
-            }
+        val currentPhase = stateManager.state.value.currentPhase.name
+        val isGetReadyCountdown = currentPhase == PhaseName.GET_READY
 
-            3 -> {
-                speak(getString(R.string.three), flush = false)
-                true
-            }
-
-            2 -> {
-                speak(getString(R.string.two), flush = false)
-                true
-            }
-
-            1 -> {
-                speak(getString(R.string.one), flush = false)
-                true
-            }
-
-            else -> false
+        val shouldAnnounce = when {
+            isGetReadyCountdown -> secondsRemaining in 10 until 4
+            else -> secondsRemaining in setOf(60, 3, 2, 1)
         }
 
         if (shouldAnnounce) {
+            val messageId = when {
+                isGetReadyCountdown -> GET_READY_COUNTDOWN_STRINGS[secondsRemaining]!!
+                secondsRemaining == 60 -> R.string.one_minute_remaining
+                secondsRemaining == 3 -> R.string.three
+                secondsRemaining == 2 -> R.string.two
+                else -> R.string.one
+            }
+speak(getString(messageId), flush = false)
             lastSpokenSeconds = secondsRemaining
         }
     }
@@ -494,6 +488,16 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             notificationManager.createNotificationChannel(channel)
         }
     }
+
+    private val GET_READY_COUNTDOWN_STRINGS = mapOf(
+        10 to R.string.ten,
+        9 to R.string.nine,
+        8 to R.string.eight,
+        7 to R.string.seven,
+        6 to R.string.six,
+        5 to R.string.five,
+        4 to R.string.four
+    )
 
     companion object {
         private const val TAG = "WorkoutTimerService"
