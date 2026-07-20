@@ -15,6 +15,7 @@ data class UiState(
     val isServiceBound: Boolean = false,
     val progressionResult: ProgressionResult? = null,
 ) {
+    val isCompleted = step.name == PhaseName.COMPLETED
     val mainButtonText: Int
         get() = when {
             step.name == PhaseName.COMPLETED -> R.string.close

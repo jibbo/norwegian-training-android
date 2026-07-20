@@ -87,18 +87,13 @@ internal fun MainView(
             if (mainViewModel.showCountdown()) {
                 Timer(state, mainViewModel)
             }
-            val isCompleted = state.step.name == com.github.jibbo.norwegiantraining.domain.PhaseName.COMPLETED
             val animatedBackgroundColor by animateColorAsState(
                 targetValue = if (state.isTimerRunning) Red else Primary,
                 label = "ButtonBackgroundColorAnimation"
             )
             Button(
                 onClick = {
-                    if (isCompleted) {
-                        mainViewModel.closeWorkout()
-                    } else {
-                        mainViewModel.mainButtonClicked()
-                    }
+                    mainViewModel.onMainButtonClicked()
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = animatedBackgroundColor),
                 modifier = Modifier

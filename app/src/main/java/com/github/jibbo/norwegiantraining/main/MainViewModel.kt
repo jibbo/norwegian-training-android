@@ -52,7 +52,16 @@ class MainViewModel @Inject constructor() : ViewModel() {
         )
     }
 
-    fun mainButtonClicked() {
+    fun onMainButtonClicked(){
+        if (states.value.isCompleted) {
+            closeWorkout()
+        } else {
+            mainButtonClicked()
+        }
+
+    }
+
+    private fun mainButtonClicked() {
         viewModelScope.launch {
             serviceBinder?.let { service ->
                 if (states.value.isTimerRunning) {
