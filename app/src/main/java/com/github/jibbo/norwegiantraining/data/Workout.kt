@@ -42,6 +42,9 @@ data class Workout(
     @Ignore
     val totalTime = content.split("-").map { return@map it.toSeconds() }.sum().div(60)
 
+    @Ignore
+    val totalPhases = content.split("-").size + 1
+
     @Ignore // total time in minutes / km  * calories per km
     val kCal = (totalTime / 6) * 65
 
@@ -51,18 +54,6 @@ data class Workout(
     }
 
     fun getSplit(): List<Long> = content.split("-").map { it.toMilliSeconds() }
-
-    fun splitText(withWarmup: Boolean = true, withCooldown: Boolean = true): Int {
-        val split = getSplit()
-        val splitSize = if (!withWarmup && !withCooldown) {
-            split.removeFromSize(2)
-        } else if (!withWarmup || !withCooldown) {
-            split.removeFromSize(1)
-        } else {
-            split.size
-        }
-        return splitSize / 2
-    }
 
     private fun String.toSeconds(): Int {
         if (last() == 's') {

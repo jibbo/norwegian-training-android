@@ -24,6 +24,7 @@ data class WorkoutTimerState(
     val workoutId: Long = -1L,
     val workoutName: String = "",
     val currentPhaseIndex: Int = 0,
+    val totalPhases: Int = 0,
     val currentPhase: Phase = Phase(PhaseName.GET_READY, 0L),
     val targetTimeMillis: Long = 0L,
     val isTimerRunning: Boolean = false,
