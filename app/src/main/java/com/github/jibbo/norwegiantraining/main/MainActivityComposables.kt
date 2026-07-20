@@ -87,7 +87,7 @@ internal fun MainView(
             }
             val isCompleted = state.step.name == com.github.jibbo.norwegiantraining.domain.PhaseName.COMPLETED
             val animatedBackgroundColor by animateColorAsState(
-                targetValue = if (isCompleted || state.isTimerRunning) Red else Primary,
+                targetValue = if (state.isTimerRunning) Red else Primary,
                 label = "ButtonBackgroundColorAnimation"
             )
             Button(
