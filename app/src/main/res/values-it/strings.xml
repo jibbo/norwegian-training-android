@@ -3,6 +3,7 @@
 
     <string name="start">Inizia</string>
     <string name="pause">Pausa</string>
+    <string name="close">Chiudi</string>
     <string name="skip">Salta fase</string>
     <string name="continue_btn">Continua</string>
     <string name="back">indietro</string>

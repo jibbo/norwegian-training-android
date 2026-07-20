@@ -4,6 +4,7 @@
 
     <string name="start">Iniciar</string>
     <string name="pause">Pausa</string>
+    <string name="close">Cerrar</string>
     <string name="skip">Saltar fase</string>
     <string name="continue_btn">Continuar</string>
     <string name="back">Atrás</string>

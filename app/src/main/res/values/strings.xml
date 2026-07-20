@@ -4,6 +4,7 @@
     <!-- Actions -->
     <string name="start">Start</string>
     <string name="pause">Pause</string>
+    <string name="close">Close</string>
     <string name="skip">Skip training phase</string>
     <string name="continue_btn">Continue</string>
     <string name="back">back</string>
