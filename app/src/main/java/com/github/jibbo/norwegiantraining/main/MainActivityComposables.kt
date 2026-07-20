@@ -105,7 +105,7 @@ internal fun MainView(
                     .imePadding()
             ) {
                 val text = state.mainButtonText.localizable().uppercase()
-                val textColor: Color = if (state.isTimerRunning || isCompleted) White else Black
+                val textColor: Color = if (state.isTimerRunning) White else Black
                 Text(
                     text = text,
                     style = Typography.titleLarge,
