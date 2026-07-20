@@ -51,7 +51,7 @@ data class Workout(
     }
 
     fun getWorkoutSplits(): List<Long> = content.split("-").map { it.toMilliSeconds() }
-    fun getTotalSplits(): List<Long> = getWorkoutSplits()+2
+    fun totalSplitsCount(): Int = getWorkoutSplits().size + 2
 
     fun splitText(withWarmup: Boolean = true, withCooldown: Boolean = true): Int {
         val split = getWorkoutSplits()
