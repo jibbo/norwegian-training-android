@@ -17,6 +17,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -78,7 +80,7 @@ internal fun MainView(
                 )
                 .padding(horizontal = 16.dp)
         ) {
-            Header(viewModel = mainViewModel)
+            Header(viewModel = mainViewModel, isDebugMode = BuildConfig.DEBUG)
             Spacer(modifier = Modifier.weight(1f))
             Instructions(state)
             Spacer(modifier = Modifier.weight(1f))
@@ -120,51 +122,6 @@ internal fun MainView(
                 }) {
                     Text(
                         text = R.string.skip.localizable(),
-                        style = Typography.titleMedium,
-                        color = White,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(6.dp),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
-
-            if (BuildConfig.DEBUG) {
-                TextButton(onClick = {
-                    mainViewModel.debugShowConfetti()
-                }) {
-                    Text(
-                        text = "[DEBUG] Show confetti",
-                        style = Typography.titleMedium,
-                        color = White,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(6.dp),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-                TextButton(onClick = {
-                    mainViewModel.debugShowLevelUp()
-                }) {
-                    Text(
-                        text = "[DEBUG] Show Level up",
-                        style = Typography.titleMedium,
-                        color = White,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(6.dp),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-                TextButton(onClick = {
-                    mainViewModel.debugCompleteWorkout()
-                }) {
-                    Text(
-                        text = "[DEBUG] Complete workout",
                         style = Typography.titleMedium,
                         color = White,
                         textDecoration = TextDecoration.Underline,
@@ -288,8 +245,9 @@ internal fun CountdownDisplay(
 }
 
 @Composable
-internal fun Header(viewModel: MainViewModel) {
+internal fun Header(viewModel: MainViewModel, isDebugMode: Boolean) {
     val state by viewModel.uiStates.collectAsState()
+    var isDebugMenuExpanded by remember { mutableStateOf(false) }
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.safeDrawingPadding()) {
         Text(
             text = R.string.home_workout_name.localizable(state.workoutName),
@@ -298,6 +256,40 @@ internal fun Header(viewModel: MainViewModel) {
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
+        if (isDebugMode) {
+            IconButton(onClick = { isDebugMenuExpanded = !isDebugMenuExpanded }) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_settings_24),
+                    contentDescription = "Debug options"
+                )
+            }
+            DropdownMenu(
+                expanded = isDebugMenuExpanded,
+                onDismissRequest = { isDebugMenuExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    onClick = {
+                        isDebugMenuExpanded = false
+                        viewModel.debugShowConfetti()
+                    },
+                    text = { Text("Show confetti") }
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        isDebugMenuExpanded = false
+                        viewModel.debugShowLevelUp()
+                    },
+                    text = { Text("Show Level up") }
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        isDebugMenuExpanded = false
+                        viewModel.debugCompleteWorkout()
+                    },
+                    text = { Text("Complete workout") }
+                )
+            }
+        }
         IconButton(onClick = { viewModel.closeWorkout() }) {
             Icon(
                 painter = painterResource(R.drawable.outline_close_24),
