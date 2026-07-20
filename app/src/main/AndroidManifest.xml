@@ -69,7 +69,7 @@
             android:name=".service.WorkoutTimerAndroidService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="health|health|health|health|health" />
+            android:foregroundServiceType="health" />
 
         <receiver
             android:name=".alarm.AlarmReceiver"
