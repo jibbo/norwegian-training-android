@@ -7,6 +7,8 @@ import com.github.jibbo.norwegiantraining.domain.ProgressionResult
 
 data class UiState(
     val step: Phase = Phase(PhaseName.GET_READY, 0L),
+    val currentPhaseIndex: Int = 0,
+    val totalPhases: Int = 0,
     val isTimerRunning: Boolean = false,
     val targetTimeMillis: Long = 0L,
     val remainingTimeOnPauseMillis: Long = 0L,

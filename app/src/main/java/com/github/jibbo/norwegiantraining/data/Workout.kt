@@ -50,10 +50,11 @@ data class Workout(
         return (tmp.first().toSeconds() + tmp.last().toSeconds()).div(60)
     }
 
-    fun getSplit(): List<Long> = content.split("-").map { it.toMilliSeconds() }
+    fun getWorkoutSplits(): List<Long> = content.split("-").map { it.toMilliSeconds() }
+    fun getTotalSplits(): List<Long> = getWorkoutSplits()+2
 
     fun splitText(withWarmup: Boolean = true, withCooldown: Boolean = true): Int {
-        val split = getSplit()
+        val split = getWorkoutSplits()
         val splitSize = if (!withWarmup && !withCooldown) {
             split.removeFromSize(2)
         } else if (!withWarmup || !withCooldown) {

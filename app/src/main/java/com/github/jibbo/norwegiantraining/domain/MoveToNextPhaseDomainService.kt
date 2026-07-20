@@ -28,7 +28,7 @@ object WorkoutToPhasesConverter {
     const val GET_READY_COUNTDOWN_DURATION = 10_000L
 
     fun convert(workout: Workout): List<Phase> {
-        val phases = workout.getSplit()
+        val phases = workout.getWorkoutSplits()
         val list = mutableListOf<Phase>()
         list.add(Phase(PhaseName.GET_READY, GET_READY_COUNTDOWN_DURATION))
         list.add(Phase(PhaseName.WARMUP, phases[0]))

@@ -42,6 +42,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
         val currentState = states.value
         states.value = UiState(
             step = serviceState.currentPhase,
+            currentPhaseIndex = serviceState.currentPhaseIndex,
+            totalPhases = serviceState.totalPhases,
             isTimerRunning = serviceState.isTimerRunning,
             targetTimeMillis = serviceState.targetTimeMillis,
             remainingTimeOnPauseMillis = serviceState.remainingTimeOnPauseMillis,

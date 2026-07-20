@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.main
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -79,6 +84,11 @@ internal fun MainView(
                 .padding(horizontal = 16.dp)
         ) {
             Header(viewModel = mainViewModel)
+            PhaseTimeline(
+                currentPhaseIndex = state.currentPhaseIndex,
+                totalPhases = state.totalPhases
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             Spacer(modifier = Modifier.weight(1f))
             Instructions(state)
             Spacer(modifier = Modifier.weight(1f))
@@ -298,6 +308,49 @@ internal fun Header(viewModel: MainViewModel) {
                 painter = painterResource(R.drawable.outline_close_24),
                 contentDescription = ""
             )
+        }
+    }
+}
+
+@Composable
+private fun PhaseTimeline(currentPhaseIndex: Int, totalPhases: Int) {
+    if (totalPhases <= 0) return
+
+    val scrollState = rememberScrollState()
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(1.dp),
+        modifier = Modifier.horizontalScroll(scrollState).padding(horizontal = 16.dp),
+    ) {
+        for (i in 0 until totalPhases) {
+            val backgroundColor = when {
+                i < currentPhaseIndex -> Primary
+                else -> White.copy(alpha = 0.2f)
+            }
+
+            val segmentModifier = Modifier
+                .width(24.dp)
+                .height(6.dp)
+
+            if (i == currentPhaseIndex) {
+                Box(
+                    modifier = segmentModifier
+                        .background(backgroundColor, RoundedCornerShape(3.dp))
+                )
+            } else {
+                Box(modifier = segmentModifier.background(backgroundColor, RoundedCornerShape(3.dp)))
+            }
+
+            if (i < totalPhases - 1) {
+                val lineColor = when {
+                    i < currentPhaseIndex -> Primary
+                    else -> White.copy(alpha = 0.2f)
+                }
+
+                Box(
+                    modifier = Modifier
+                        .background(lineColor, RoundedCornerShape(3.dp))
+                )
+            }
         }
     }
 }
