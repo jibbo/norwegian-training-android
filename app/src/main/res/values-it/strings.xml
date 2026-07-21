@@ -106,14 +106,14 @@
     <string name="workout_expert_2">💪 Pro 2</string>
     <string name="onboarding_step_notification_permission_title">Consenti Notifiche</string>
     <string name="onboarding_step_notification_permission_body">Questa autorizzazione è necessaria per mostrare il tempo rimanente come notifica. Senza questa notifica l\'app non può funzionare quando lo schermo è spento.</string>
-    <string name="onboarding_step_activity_recognition_permission_title">Consenti il ​​riconoscimento dell\'attività fisica</string>
+    <string name="onboarding_step_activity_recognition_permission_title">Consenti il riconoscimento dell\'attività fisica</string>
     <string name="onboarding_step_activity_recognition_permission_body">Questa autorizzazione è necessaria per contare i passi e anche per mantenere l\'app in esecuzione quando lo schermo è spento.</string>
     <string name="onboarding_step_name_title">Come ti chiami?</string>
 
     <!-- Prova gratuita -->
-    <string name="free_trial_title">Oggi te lo regaliamo noi!</string>
-    <string name="free_trial_subtitle">Accedi all\'app per le prossime 24 ore. Senza impegno.</string>
-    <string name="free_trial_button">RICHIEDI SUBITO UN GIORNO GRATUITO</string>
+    <string name="free_trial_title">Ecco un regalo da parte nostra!</string>
+    <string name="free_trial_subtitle">Accedi all\'app per le prossime 14 ore. Senza impegno.</string>
+    <string name="free_trial_button">RICHIEDI SUBITO 14 GIORNI GRATUITI</string>
     <string name="share">Condividi</string>
     <string name="subscription_section_title">Abbonamento</string>
     <string name="subscription_section_status">Stato</string>
