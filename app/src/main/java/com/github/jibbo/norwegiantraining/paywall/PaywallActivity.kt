@@ -21,6 +21,8 @@ import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.revenuecat.purchases.CustomerInfo
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.getCustomerInfoWith
 import com.revenuecat.purchases.models.StoreTransaction
 import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIPurchasesAPI
 import com.revenuecat.purchases.ui.revenuecatui.Paywall
@@ -71,7 +73,9 @@ class PaywallActivity : BaseActivity() {
                     Row {
                         Spacer(modifier = Modifier.weight(1f))
                         Button(onClick = {
-                            goToMainActivityIfPaid(null, freeTrialEndDate)
+                            Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
+                                goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
+                            }
                         }, modifier = Modifier.padding(vertical = padding.calculateTopPadding())) {
                             Icon(
                                 painter = painterResource(

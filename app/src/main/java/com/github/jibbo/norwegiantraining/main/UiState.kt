@@ -14,7 +14,15 @@ data class UiState(
     val showConfetti: Boolean = false,
     val isServiceBound: Boolean = false,
     val progressionResult: ProgressionResult? = null,
-)
+) {
+    val isCompleted = step.name == PhaseName.COMPLETED
+    val mainButtonText: Int
+        get() = when {
+            step.name == PhaseName.COMPLETED -> R.string.close
+            isTimerRunning -> R.string.pause
+            else -> R.string.start
+        }
+}
 
 fun PhaseName.description() = when (this) {
     PhaseName.GET_READY -> R.string.get_ready_desc
