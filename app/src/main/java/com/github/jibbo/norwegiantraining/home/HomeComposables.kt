@@ -129,16 +129,11 @@ private fun StreakWidget() {
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.baseline_local_fire_department_24),
+                        painter = painterResource(R.drawable.ic_launcher_foreground),
                         contentDescription = "",
                         tint = Black,
-                        modifier = Modifier.size(48.dp)
                     )
                 }
-                Text(
-                    "3 weeks streak",
-                    modifier = Modifier.padding(top = 6.dp)
-                )
             }
             Column {
                 Month()
