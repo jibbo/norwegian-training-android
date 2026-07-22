@@ -113,7 +113,7 @@
 
     <!-- Free Trial -->
     <string name="free_trial_title">¡Es un regalo de nuestra parte!</string>
-    <string name="free_trial_subtitle">Disfruta del acceso a la app durante las próximas 14 días. Sin compromiso.</string>
+    <string name="free_trial_subtitle">Disfruta del acceso a la app durante las próximas 3 días. Sin compromiso.</string>
     <string name="free_trial_button">RECLAMA TUS DÍAS GRATIS AHORA</string>
     <string name="share">Compartir</string>
     <string name="subscription_section_title">Suscripción</string>

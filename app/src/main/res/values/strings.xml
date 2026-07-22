@@ -141,8 +141,8 @@
 
     <!-- Free Trial -->
     <string name="free_trial_title">Here is a gift from us.</string>
-    <string name="free_trial_subtitle">Enjoy the access to the app for the next 14 days. No strings attached.</string>
-    <string name="free_trial_button">CLAIM 14 FREE DAYS NOW</string>
+    <string name="free_trial_subtitle">Enjoy the access to the app for the next 3 days. No strings attached.</string>
+    <string name="free_trial_button">CLAIM 3 FREE DAYS NOW</string>
     <string name="free_trial">Free Trial</string>
 
     <!-- Onboarding - Hook -->

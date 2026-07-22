@@ -112,8 +112,8 @@
 
     <!-- Prova gratuita -->
     <string name="free_trial_title">Ecco un regalo da parte nostra!</string>
-    <string name="free_trial_subtitle">Accedi all\'app per le prossime 14 ore. Senza impegno.</string>
-    <string name="free_trial_button">RICHIEDI SUBITO 14 GIORNI GRATUITI</string>
+    <string name="free_trial_subtitle">Accedi all\'app per i prossimi 3 giorni. Gratuitamente e senza impegno.</string>
+    <string name="free_trial_button">RICHIEDI SUBITO 3 GIORNI GRATUITI</string>
     <string name="share">Condividi</string>
     <string name="subscription_section_title">Abbonamento</string>
     <string name="subscription_section_status">Stato</string>
