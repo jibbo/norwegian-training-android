@@ -47,11 +47,13 @@ class WorkoutTimerStateManager @Inject constructor(
 
         val workout = workoutRepository.getById(workoutId) ?: return
 
-        val initialPhase = Phase(PhaseName.GET_READY, WorkoutToPhasesConverter.GET_READY_COUNTDOWN_DURATION)
+        val initialPhase =
+            Phase(PhaseName.GET_READY, WorkoutToPhasesConverter.GET_READY_COUNTDOWN_DURATION)
         val newState = WorkoutTimerState(
             workoutId = workoutId,
             workoutName = workout.name,
             currentPhaseIndex = 0,
+            totalPhases = workout.totalPhases,
             currentPhase = initialPhase,
             targetTimeMillis = 0L,
             isTimerRunning = false,

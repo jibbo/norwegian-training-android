@@ -10,6 +10,8 @@ data class UiState(
     val isTimerRunning: Boolean = false,
     val targetTimeMillis: Long = 0L,
     val remainingTimeOnPauseMillis: Long = 0L,
+    val currentPhaseIndex: Int = 0,
+    val totalPhases: Int = 0,
     val workoutName: String = "",
     val showConfetti: Boolean = false,
     val isServiceBound: Boolean = false,

@@ -197,6 +197,12 @@ private fun Instructions(state: UiState) {
             .padding(16.dp),
         textAlign = TextAlign.Center,
     )
+    Text(
+        text = "${state.currentPhaseIndex}/${state.totalPhases}",
+        style = Typography.titleMedium,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable

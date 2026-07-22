@@ -45,6 +45,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
             isTimerRunning = serviceState.isTimerRunning,
             targetTimeMillis = serviceState.targetTimeMillis,
             remainingTimeOnPauseMillis = serviceState.remainingTimeOnPauseMillis,
+            currentPhaseIndex = serviceState.currentPhaseIndex,
+            totalPhases = serviceState.totalPhases,
             workoutName = serviceState.workoutName,
             showConfetti = serviceState.isCompleted && !currentState.showConfetti,
             isServiceBound = currentState.isServiceBound,
