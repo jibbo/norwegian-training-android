@@ -24,7 +24,7 @@ class GetWeeklySessionsUseCase @Inject constructor(
         
         // Get the end of the current week (day before first day 23:59:59.999)
         calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
-        calendar.add(Calendar.DAY_OF_WEEK, 6)
+        calendar.add(Calendar.DAY_OF_MONTH, 6)
         calendar.set(Calendar.HOUR_OF_DAY, 23)
         calendar.set(Calendar.MINUTE, 59)
         calendar.set(Calendar.SECOND, 59)
@@ -37,11 +37,16 @@ class GetWeeklySessionsUseCase @Inject constructor(
         return (0 until 7).map { dayIndex ->
             val dayCalendar = Calendar.getInstance()
             dayCalendar.time = startOfWeek
-            dayCalendar.add(Calendar.DAY_OF_WEEK, dayIndex)
+            dayCalendar.add(Calendar.DAY_OF_MONTH, dayIndex)
             
             sessions.find { session ->
-                val sessionDate = Date(session.date.time)
-                sessionDate.time == dayCalendar.time.time
+                val sessionCal = Calendar.getInstance()
+                sessionCal.time = session.date
+                sessionCal.set(Calendar.HOUR_OF_DAY, 0)
+                sessionCal.set(Calendar.MINUTE, 0)
+                sessionCal.set(Calendar.SECOND, 0)
+                sessionCal.set(Calendar.MILLISECOND, 0)
+                sessionCal.timeInMillis == dayCalendar.timeInMillis
             }
         }
     }
