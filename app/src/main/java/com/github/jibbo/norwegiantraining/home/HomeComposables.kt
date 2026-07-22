@@ -247,7 +247,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
                 recommendedWorkout,
                 viewModel
             )
-        } else {
+        } else if (allWorkouts.isNotEmpty()) {
             WorkoutCard(
                 allWorkouts[0],
                 viewModel
