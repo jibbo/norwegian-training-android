@@ -1,6 +1,5 @@
 package com.github.jibbo.norwegiantraining.home
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -133,8 +132,11 @@ internal fun Workouts(viewModel: HomeViewModel) {
         if (recommendedWorkout != null) {
             WorkoutCard(
                 recommendedWorkout,
-                state.recommendedWorkoutId,
-                state.recommendedLabel,
+                viewModel
+            )
+        } else{
+            WorkoutCard(
+                allWorkouts[0],
                 viewModel
             )
         }
@@ -150,7 +152,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
             modifier = Modifier.fillMaxWidth()
         ) {
             items(otherWorkouts.size, { it }) { index ->
-                WorkoutCard(otherWorkouts[index], null, 0, viewModel)
+                WorkoutCard(otherWorkouts[index], viewModel)
             }
         }
     }
@@ -159,11 +161,8 @@ internal fun Workouts(viewModel: HomeViewModel) {
 @Composable
 private fun WorkoutCard(
     workout: Workout,
-    recommendedWorkoutId: Long?,
-    @StringRes recommendedLabel: Int,
     viewModel: HomeViewModel,
 ) {
-    val isRecommended = workout.id == recommendedWorkoutId
     val cardShape = RoundedCornerShape(12.dp)
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
@@ -175,14 +174,6 @@ private fun WorkoutCard(
             viewModel.workoutClicked(workout.id)
         }
     ) {
-        if (isRecommended) {
-            Text(
-                text = recommendedLabel.localizable(),
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                style = Typography.labelSmall,
-                color = Primary
-            )
-        }
         Text(
             text = workout.name,
             modifier = Modifier.padding(8.dp),
