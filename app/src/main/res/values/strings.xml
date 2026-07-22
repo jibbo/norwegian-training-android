@@ -152,9 +152,6 @@
     <string name="onboarding_hook_description">Science-backed intervals. Starting from wherever you are.</string>
     <string name="onboarding_hook_body">The Norwegian 4x4 is the most effective thing you can do for your long-term health. Norwy guides you there — one session at a time.</string>
 
-    <string name="workout_start_here">★ START HERE</string>
-    <string name="workout_resume_here">★ RESUME HERE</string>
-
     <!-- Onboarding - Fitness level -->
     <string name="onboarding_fitness_title">Where are you starting from?</string>
     <string name="onboarding_fitness_description">We\'ll highlight the right workout for you.</string>

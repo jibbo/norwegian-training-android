@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
@@ -127,7 +128,8 @@ internal fun Workouts(viewModel: HomeViewModel) {
         Text(
             text = R.string.home_next_up.localizable(),
             modifier = Modifier.padding(bottom = 12.dp),
-            style = Typography.bodyMedium,
+            style = Typography.titleLarge,
+            fontWeight = FontWeight.Normal
         )
         if (recommendedWorkout != null) {
             WorkoutCard(
@@ -143,7 +145,8 @@ internal fun Workouts(viewModel: HomeViewModel) {
         Text(
             text = R.string.home_all_workouts.localizable(),
             modifier = Modifier.padding(bottom = 12.dp),
-            style = Typography.bodyMedium,
+            style = Typography.titleLarge,
+            fontWeight = FontWeight.Normal
         )
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 150.dp),
