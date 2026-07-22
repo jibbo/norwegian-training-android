@@ -130,7 +130,7 @@ class FakeWorkoutRepo : WorkoutRepository {
     private val workouts = mutableListOf<Workout>()
 
     override fun getAll(): Flow<List<Workout>> =
-        kotlinx.coroutines.flow.flow { emit(workouts) }
+        kotlinx.coroutines.flow.flow { emit(workouts.toList()) }
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
         workouts.filter { it.difficulty == difficulty }

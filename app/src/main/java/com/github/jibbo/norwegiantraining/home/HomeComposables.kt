@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -148,9 +150,16 @@ internal fun Workouts(viewModel: HomeViewModel) {
                 modifier = Modifier.padding(bottom = 12.dp),
                 style = Typography.bodyMedium,
             )
-        }
-        items(otherWorkouts.size, { it }) { index ->
-            WorkoutCard(otherWorkouts[index], null, 0, viewModel)
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 200.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(otherWorkouts.size, { it }) { index ->
+                    WorkoutCard(otherWorkouts[index], null, 0, viewModel)
+                }
+            }
         }
     }
 }
