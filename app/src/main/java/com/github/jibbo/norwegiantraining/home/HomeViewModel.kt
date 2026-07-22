@@ -78,7 +78,7 @@ class HomeViewModel @Inject constructor(
                 }
                 isGracePeriodExpired() -> {
                     // Grace period expired — show paywall
-                    publishEvent(UiCommands.SHOW_CHARTS_PAYWALL)
+                    publishEvent(UiCommands.SHOW_PAYWALL)
                 }
                 else -> {
                     // In grace period OR paid — charts are fine
