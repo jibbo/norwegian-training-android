@@ -1,17 +1,15 @@
 package com.github.jibbo.norwegiantraining.home
 
-import android.graphics.BlurMaskFilter
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
@@ -30,11 +28,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -124,46 +117,42 @@ internal fun Header(viewModel: HomeViewModel) {
 @Composable
 internal fun Workouts(viewModel: HomeViewModel) {
     val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
+    val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+    val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
+    val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
+
     LazyColumn(
         contentPadding = PaddingValues(all = 6.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        val keys = state.workouts.keys.sorted()
-        items(keys.size, { it }) { index ->
-            val difficulty = keys.elementAt(index)
+        item {
             Text(
-                text = difficulty.printableName().localizable(),
+                text = R.string.home_next_up.localizable(),
                 modifier = Modifier.padding(bottom = 12.dp),
                 style = Typography.bodyMedium,
             )
-            val workouts = state.workouts[difficulty]?.sortedBy { it.id } ?: listOf()
-            val scrollState = rememberScrollState()
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.horizontalScroll(scrollState)
-            ) {
-                workouts.forEach { workout ->
-                    WorkoutCard(
-                        workout,
-                        state.recommendedWorkoutId,
-                        state.recommendedLabel,
-                        viewModel
-                    )
-                }
+        }
+        if (recommendedWorkout != null) {
+            item {
+                WorkoutCard(
+                    recommendedWorkout,
+                    state.recommendedWorkoutId,
+                    state.recommendedLabel,
+                    viewModel
+                )
             }
         }
+        item {
+            Text(
+                text = R.string.home_all_workouts.localizable(),
+                modifier = Modifier.padding(bottom = 12.dp),
+                style = Typography.bodyMedium,
+            )
+        }
+        items(otherWorkouts.size, { it }) { index ->
+            WorkoutCard(otherWorkouts[index], null, 0, viewModel)
+        }
     }
-//    LazyVerticalGrid(
-//        columns = GridCells.Adaptive(minSize = 150.dp),
-//        verticalArrangement = Arrangement.spacedBy(6.dp),
-//        horizontalArrangement = Arrangement.spacedBy(6.dp),
-//        modifier = Modifier.padding(horizontal = 6.dp)
-//    ) {
-//        val workouts = state.value.workouts.flatMap { it.value }.sortedBy { it.id }
-//        items(workouts.size, { it }) { index ->
-//            WorkoutCard(workouts[index], viewModel)
-//        }
-//    }
 }
 
 @Composable
@@ -175,82 +164,44 @@ private fun WorkoutCard(
 ) {
     val isRecommended = workout.id == recommendedWorkoutId
     val cardShape = RoundedCornerShape(12.dp)
-    Box(
-        modifier = if (isRecommended) {
-            Modifier
-                .graphicsLayer(clip = false)
-                .drawBehind {
-                    drawIntoCanvas { canvas ->
-                        val paint = Paint().also { p ->
-                            p.asFrameworkPaint().apply {
-                                isAntiAlias = true
-                                color = Primary.copy(alpha = 0.6f).toArgb()
-                                maskFilter = BlurMaskFilter(
-                                    16.dp.toPx(),
-                                    BlurMaskFilter.Blur.NORMAL
-                                )
-                            }
-                        }
-                        val cornerRadiusPx = 12.dp.toPx()
-                        canvas.drawRoundRect(
-                            left = 0f,
-                            top = 0f,
-                            right = size.width,
-                            bottom = size.height,
-                            radiusX = cornerRadiusPx,
-                            radiusY = cornerRadiusPx,
-                            paint = paint
-                        )
-                    }
-                }
-        } else {
-            Modifier
+    ElevatedCard(
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+        shape = cardShape,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {
+            viewModel.workoutClicked(workout.id)
         }
     ) {
-        ElevatedCard(
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = Gray
-            ),
-            shape = cardShape,
-            modifier = Modifier
-                .width(200.dp)
-                .then(
-                    if (isRecommended) Modifier.border(1.5.dp, Primary, cardShape)
-                    else Modifier
-                ),
-            onClick = {
-                viewModel.workoutClicked(workout.id)
-            }
-        ) {
-            if (isRecommended) {
-                Text(
-                    text = recommendedLabel.localizable(),
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    style = Typography.labelSmall,
-                    color = Primary
-                )
-            }
+        if (isRecommended) {
             Text(
-                text = workout.name,
-                modifier = Modifier.padding(8.dp),
-                style = Typography.titleMedium,
-                color = White
-            )
-            Text(
-                text = R.string.workout_time.localizable(workout.totalTime, workout.restTime()),
-                modifier = Modifier.padding(8.dp),
-                style = Typography.bodyMedium,
-                color = White
-            )
-            Text(
-                text = R.string.workout_kCal.localizable(workout.kCal),
-                modifier = Modifier
-                    .padding(8.dp)
-                    .alpha(0.8f),
-                style = Typography.bodySmall,
-                color = White
+                text = recommendedLabel.localizable(),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                style = Typography.labelSmall,
+                color = Primary
             )
         }
+        Text(
+            text = workout.name,
+            modifier = Modifier.padding(8.dp),
+            style = Typography.titleMedium,
+            color = White
+        )
+        Text(
+            text = R.string.workout_time.localizable(workout.totalTime, workout.restTime()),
+            modifier = Modifier.padding(8.dp),
+            style = Typography.bodyMedium,
+            color = White
+        )
+        Text(
+            text = R.string.workout_kCal.localizable(workout.kCal),
+            modifier = Modifier
+                .padding(8.dp)
+                .alpha(0.8f),
+            style = Typography.bodySmall,
+            color = White
+        )
     }
 }
 

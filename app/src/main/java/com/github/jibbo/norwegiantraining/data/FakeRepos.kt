@@ -129,9 +129,8 @@ class FakeTracker : Analytics {
 class FakeWorkoutRepo : WorkoutRepository {
     private val workouts = mutableListOf<Workout>()
 
-    override fun getAll(): Flow<List<Workout>> {
-        TODO("Not yet implemented")
-    }
+    override fun getAll(): Flow<List<Workout>> =
+        kotlinx.coroutines.flow.flow { emit(workouts) }
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
         workouts.filter { it.difficulty == difficulty }

@@ -121,6 +121,8 @@
 
     <!-- Home -->
     <string name="welcome">Welcome %1$s</string>
+    <string name="home_next_up">Next Up</string>
+    <string name="home_all_workouts">All Workouts</string>
     <string name="workout_time">%1$sm (%2$sm rest)</string>
     <string name="workout_split" translatable="false">%1$sx%1$s</string>
     <string name="workout_kCal" translatable="false">~%1$s kCal 🔥</string>
