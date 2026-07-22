@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.home
 import androidx.annotation.StringRes
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.data.Difficulty
+import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.Workout
 
 sealed class UiState {
@@ -11,7 +12,8 @@ sealed class UiState {
         val username: String?,
         val recommendedWorkoutId: Long?,
         val hasProgressed: Boolean,
-        val workouts: Map<Difficulty, List<Workout>>
+        val workouts: Map<Difficulty, List<Workout>>,
+        val weeklySessions: List<Session?>
     ) : UiState()
 
 }

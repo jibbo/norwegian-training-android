@@ -38,15 +38,21 @@ import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
+import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.GetWeeklySessionsUseCase
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
+import com.github.jibbo.norwegiantraining.log.getColor
+import com.github.jibbo.norwegiantraining.log.getStatus
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -93,7 +99,7 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
             CircularProgressIndicator()
         } else {
             Header(viewModel)
-            StreakWidget()
+            StreakWidget(viewModel)
             Box(
                 modifier = Modifier.safeDrawingPadding(),
                 contentAlignment = Alignment.Center
@@ -106,7 +112,8 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
 }
 
 @Composable
-private fun StreakWidget() {
+private fun StreakWidget(viewModel: HomeViewModel) {
+    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = Black
@@ -136,14 +143,14 @@ private fun StreakWidget() {
                 }
             }
             Column {
-                Month()
+                Month(state.weeklySessions)
             }
         }
     }
 }
 
 @Composable
-private fun Month() {
+private fun Month(weeklySessions: List<Session?>) {
     val locale = LocalLocale.current.platformLocale
     val calendar = Calendar.getInstance(locale)
     val firstDayOfWeek = calendar.firstDayOfWeek
@@ -163,9 +170,15 @@ private fun Month() {
             ).orEmpty()
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(modifier = Modifier
-                    .size(24.dp)
-                    .background(Color.White, shape = CircleShape)) {}
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .background(
+                            color = weeklySessions[index]?.getStatus()
+                                ?.getColor() ?: White,
+                            shape = CircleShape
+                        )
+                ) {}
                 Text(
                     text = dayName,
                     style = Typography.labelSmall,
@@ -304,6 +317,8 @@ fun HomeViewPreview() {
     val settingsRepository = FakeSettingsRepository()
     val workoutRepository = FakeWorkoutRepo()
     val analytics = FakeTracker()
+    val sessionRepository = FakeSessionRepo()
+    val getWeeklySessions = GetWeeklySessionsUseCase(sessionRepository)
     NorwegianTrainingTheme {
         Scaffold { innerPadding ->
             HomeView(
@@ -313,6 +328,7 @@ fun HomeViewPreview() {
                     IsFreeTrial(settingsRepository),
                     IsOnboardingCompleted(settingsRepository),
                     GetRecommendedWorkoutId(settingsRepository),
+                    getWeeklySessions,
                     analytics
                 ),
                 innerPadding
