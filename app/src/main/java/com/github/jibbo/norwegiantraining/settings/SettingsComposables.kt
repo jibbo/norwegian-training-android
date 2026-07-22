@@ -628,6 +628,19 @@ private fun DebugCard(viewModel: SettingsViewModel) {
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }
+            Row(
+                verticalAlignment = Alignment.Top,
+            ) {
+                TextButton(
+                    onClick = { viewModel.debugOnlySetTrialAndGraceExpired() }
+                ) {
+                    Text(
+                        text = "Seed Grace period Expired",
+                        style = Typography.bodyMedium,
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+            }
         }
     }
 }

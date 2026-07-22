@@ -164,4 +164,8 @@
     <string name="level_up_subtitle">You\'ve advanced to %1$s! Keep pushing your limits.</string>
     <string name="level_up_button">CONTINUE</string>
 
+    <!-- Charts locked / grace period -->
+    <string name="charts_locked_title">Charts are locked.</string>
+    <string name="charts_locked_subtitle">Subscribe to see your progress.</string>
+
 </resources>

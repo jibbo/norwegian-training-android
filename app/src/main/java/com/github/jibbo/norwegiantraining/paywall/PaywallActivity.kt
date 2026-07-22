@@ -116,7 +116,8 @@ class PaywallActivity : BaseActivity() {
             }
 
             else -> {
-                OnboardingActivity::class.java
+                sharedPreferencesSettingsRepository.startGracePeriod()
+                HomeActivity::class.java
             }
         }
         sharedPreferencesSettingsRepository.onboardingCompleted()

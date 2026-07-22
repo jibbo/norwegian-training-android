@@ -35,6 +35,10 @@ interface SettingsRepository {
     fun getFreeTrialEndDate(): Date?
     fun startFreeTrial()
     fun debugOnlySetFreeTrialDate(date: Date?)
+    fun getGracePeriodEndDate(): Date?
+    fun startGracePeriod()
+    fun debugOnlySetGracePeriodDate(date: Date?)
+    fun debugOnlySetTrialAndGraceExpired()
     fun setRecommendedWorkoutId(id: Long)
     fun clearRecommendedWorkoutId()
     fun getRecommendedWorkoutId(): Long?
@@ -149,6 +153,31 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         else {
             sp.edit { remove("free_trial_date") }
         }
+    }
+
+    override fun getGracePeriodEndDate() = if (sp.contains("grace_period_date")) {
+        Date().apply { time = sp.getLong("grace_period_date", System.currentTimeMillis()) }
+    } else {
+        null
+    }
+
+    override fun startGracePeriod() {
+        sp.edit { putLong("grace_period_date", System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000) }
+    }
+
+    override fun debugOnlySetGracePeriodDate(date: Date?) {
+        if (date != null)
+            sp.edit { putLong("grace_period_date", date.time) }
+        else {
+            sp.edit { remove("grace_period_date") }
+        }
+    }
+
+    override fun debugOnlySetTrialAndGraceExpired() {
+        val in7Days = Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000)
+        val yesterday = Date(System.currentTimeMillis() - 1L * 24 * 60 * 60 * 1000)
+        sp.edit { putLong("free_trial_date", in7Days.time) }
+        sp.edit { putLong("grace_period_date", yesterday.time) }
     }
 
     companion object {

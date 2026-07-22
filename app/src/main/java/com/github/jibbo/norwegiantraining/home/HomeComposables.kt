@@ -50,6 +50,7 @@ import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
+import com.github.jibbo.norwegiantraining.domain.IsGracePeriodExpired
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.Gray
@@ -260,6 +261,7 @@ fun HomeViewPreview() {
     val settingsRepository = FakeSettingsRepository()
     val workoutRepository = FakeWorkoutRepo()
     val analytics = FakeTracker()
+    val isGracePeriod = IsGracePeriodExpired(settingsRepository)
     NorwegianTrainingTheme {
         Scaffold { innerPadding ->
             HomeView(
@@ -269,7 +271,8 @@ fun HomeViewPreview() {
                     IsFreeTrial(settingsRepository),
                     IsOnboardingCompleted(settingsRepository),
                     GetRecommendedWorkoutId(settingsRepository),
-                    analytics
+                    analytics,
+                    isGracePeriod
                 ),
                 innerPadding
             )
