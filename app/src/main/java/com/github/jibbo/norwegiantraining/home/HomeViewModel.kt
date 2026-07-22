@@ -9,6 +9,7 @@ import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
+import com.github.jibbo.norwegiantraining.domain.IsGracePeriodExpired
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.Purchases
@@ -29,6 +30,7 @@ class HomeViewModel @Inject constructor(
     private val isOnboardingCompleted: IsOnboardingCompleted,
     private val getRecommendedWorkoutId: GetRecommendedWorkoutId,
     private val analytics: Analytics,
+    private val isGracePeriodExpired: IsGracePeriodExpired,
 ) : ViewModel() {
 
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
@@ -68,7 +70,22 @@ class HomeViewModel @Inject constructor(
     }
 
     fun chartsClicked() {
-        publishEvent(UiCommands.SHOW_CHARTS)
+        viewModelScope.launch {
+            when {
+                isFreeTrial() -> {
+                    // Still in free trial — charts are fine
+                    publishEvent(UiCommands.SHOW_CHARTS)
+                }
+                isGracePeriodExpired() -> {
+                    // Grace period expired — show paywall
+                    publishEvent(UiCommands.SHOW_CHARTS_PAYWALL)
+                }
+                else -> {
+                    // In grace period OR paid — charts are fine
+                    publishEvent(UiCommands.SHOW_CHARTS)
+                }
+            }
+        }
     }
 
     fun workoutClicked(id: Long) {

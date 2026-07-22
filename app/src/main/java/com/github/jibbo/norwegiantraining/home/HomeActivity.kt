@@ -36,6 +36,7 @@ class HomeActivity : BaseActivity() {
                     UiCommands.SHOW_ONBOARDING -> showOnboarding()
                     UiCommands.SHOW_SETTINGS -> showSettings()
                     UiCommands.SHOW_CHARTS -> showCharts()
+                    UiCommands.SHOW_CHARTS_PAYWALL -> showChartsPaywall()
                     UiCommands.SHOW_PAYWALL -> showPaywall()
                     is UiCommands.SHOW_WORKOUT -> showWorkout(it.id)
                 }
