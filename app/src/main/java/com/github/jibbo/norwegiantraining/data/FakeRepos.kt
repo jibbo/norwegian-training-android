@@ -74,6 +74,18 @@ class FakeSettingsRepository : SettingsRepository {
         TODO("Not yet implemented")
     }
 
+    override fun getGracePeriodEndDate(): Date? {
+        TODO("Not yet implemented")
+    }
+
+    override fun startGracePeriod() {
+        TODO("Not yet implemented")
+    }
+
+    override fun debugOnlySetGracePeriodDate(date: Date?) {
+        TODO("Not yet implemented")
+    }
+
     override fun setRecommendedWorkoutId(id: Long) {}
     override fun clearRecommendedWorkoutId() {}
     override fun getRecommendedWorkoutId(): Long? = null
