@@ -12,11 +12,8 @@ sealed class UiState {
         val recommendedWorkoutId: Long?,
         val hasProgressed: Boolean,
         val workouts: Map<Difficulty, List<Workout>>
-    ) : UiState() {
-        @get:StringRes
-        val recommendedLabel: Int
-            get() = if (hasProgressed) R.string.workout_resume_here else R.string.workout_start_here
-    }
+    ) : UiState()
+
 }
 
 @StringRes
