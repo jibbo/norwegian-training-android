@@ -9,6 +9,6 @@ class IsGracePeriodExpired @Inject constructor(
 ) {
     operator fun invoke(): Boolean {
         val endDate = settingsRepository.getGracePeriodEndDate()
-        return endDate == null || endDate.after(Date())
+        return endDate == null || Date().after(endDate)
     }
 }

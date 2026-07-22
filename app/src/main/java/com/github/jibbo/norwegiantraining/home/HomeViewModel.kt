@@ -72,18 +72,8 @@ class HomeViewModel @Inject constructor(
     fun chartsClicked() {
         viewModelScope.launch {
             when {
-                isFreeTrial() -> {
-                    // Still in free trial — charts are fine
-                    publishEvent(UiCommands.SHOW_CHARTS)
-                }
-                isGracePeriodExpired() -> {
-                    // Grace period expired — show paywall
-                    publishEvent(UiCommands.SHOW_PAYWALL)
-                }
-                else -> {
-                    // In grace period OR paid — charts are fine
-                    publishEvent(UiCommands.SHOW_CHARTS)
-                }
+                isGracePeriodExpired() -> publishEvent(UiCommands.SHOW_PAYWALL)
+                else -> publishEvent(UiCommands.SHOW_CHARTS)
             }
         }
     }
@@ -91,13 +81,8 @@ class HomeViewModel @Inject constructor(
     fun workoutClicked(id: Long) {
         viewModelScope.launch {
             when {
-                isTrial -> {
-                    events.emit(UiCommands.SHOW_WORKOUT(id))
-                }
-
-                else -> {
-                    events.emit(UiCommands.SHOW_WORKOUT(id))
-                }
+                isTrial -> events.emit(UiCommands.SHOW_WORKOUT(id))
+                else -> events.emit(UiCommands.SHOW_WORKOUT(id))
             }
         }
     }

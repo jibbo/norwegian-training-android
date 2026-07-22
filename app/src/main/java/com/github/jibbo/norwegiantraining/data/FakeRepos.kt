@@ -86,6 +86,10 @@ class FakeSettingsRepository : SettingsRepository {
         TODO("Not yet implemented")
     }
 
+    override fun debugOnlySetTrialAndGraceExpired() {
+        TODO("Not yet implemented")
+    }
+
     override fun setRecommendedWorkoutId(id: Long) {}
     override fun clearRecommendedWorkoutId() {}
     override fun getRecommendedWorkoutId(): Long? = null

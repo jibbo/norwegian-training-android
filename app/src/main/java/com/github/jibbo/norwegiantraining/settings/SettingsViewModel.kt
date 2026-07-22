@@ -105,6 +105,18 @@ internal class SettingsViewModel @Inject constructor(
     }
 
     /**
+     * Debug: sets both free trial and grace period to expired dates,
+     * so the user appears past trial but no longer has grace access.
+     */
+    fun debugOnlySetTrialAndGraceExpired() {
+        settingsRepository.debugOnlySetTrialAndGraceExpired()
+        uiStates.value = uiStates.value.copy(
+            isFreeTrial = false,
+            showUpgradeButton = true
+        )
+    }
+
+    /**
      * Seeds the database with 12 sessions (3 per week x 4 weeks) and sets the
      * recommended workout to the last one in the current difficulty, so that
      * completing one more workout triggers a level-up.
