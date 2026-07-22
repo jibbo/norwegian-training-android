@@ -1,6 +1,5 @@
 package com.github.jibbo.norwegiantraining.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,9 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,7 +28,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,38 +38,58 @@ import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
+import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.GetWeeklySessionsUseCase
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
+import com.github.jibbo.norwegiantraining.log.getColor
+import com.github.jibbo.norwegiantraining.log.getStatus
 import com.github.jibbo.norwegiantraining.ui.theme.Black
-import com.github.jibbo.norwegiantraining.ui.theme.Gray
+import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
+import java.util.Calendar
 
 @Composable
 internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
     val state = viewModel.uiStates.collectAsState()
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(color = Black)
+//    ) {
+//        Image(
+//            painter = painterResource(id = R.drawable.runner_illustration),
+//            contentDescription = null,
+//            contentScale = ContentScale.Fit,
+//            modifier = Modifier
+//                .width(800.dp)
+//                .align(Alignment.BottomEnd)
+//        )
+//    }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Black)
+            .background(
+                brush = verticalGradient(
+                    colors = listOf(
+                        DarkPrimary,
+                        Black
+                    )
+                )
+            )
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.runner_illustration),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .width(800.dp)
-                .align(Alignment.BottomEnd)
-        )
     }
     Column(
         modifier = Modifier
@@ -76,6 +99,7 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
             CircularProgressIndicator()
         } else {
             Header(viewModel)
+            StreakWidget(viewModel)
             Box(
                 modifier = Modifier.safeDrawingPadding(),
                 contentAlignment = Alignment.Center
@@ -85,6 +109,93 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
         }
 
     }
+}
+
+@Composable
+private fun StreakWidget(viewModel: HomeViewModel) {
+    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
+    ElevatedCard(
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Black
+        ),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        onClick = { TODO() }
+    ) {
+        Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(12.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(color = Primary, shape = CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_launcher_foreground),
+                        contentDescription = "",
+                        tint = Black,
+                    )
+                }
+            }
+            Column {
+                Month(state.weeklySessions)
+            }
+        }
+    }
+}
+
+@Composable
+private fun Month(weeklySessions: List<Session?>) {
+    val locale = LocalLocale.current.platformLocale
+    val calendar = Calendar.getInstance(locale)
+    val firstDayOfWeek = calendar.firstDayOfWeek
+
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        val daysInWeek = 7
+        items(daysInWeek) { index ->
+            val dayOfWeek = (firstDayOfWeek + index - 1) % 7 + 1
+            calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek)
+            val dayName = calendar.getDisplayName(
+                Calendar.DAY_OF_WEEK,
+                Calendar.SHORT,
+                locale
+            ).orEmpty()
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .background(
+                            color = weeklySessions[index]?.getStatus()
+                                ?.getColor() ?: White,
+                            shape = CircleShape
+                        )
+                ) {}
+                Text(
+                    text = dayName,
+                    style = Typography.labelSmall,
+                    color = White,
+                    modifier = Modifier.padding(top = 6.dp)
+                )
+            }
+        }
+    }
+//    Row(modifier = Modifier.padding(top = 6.dp)) {
+//        Text(
+//            "A good streak has at least 3 workouts per week",
+//            style = Typography.labelSmall,
+//            color = White,
+//            modifier = Modifier.alpha(0.8f)
+//        )
+//    }
 }
 
 @Composable
@@ -136,7 +247,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
                 recommendedWorkout,
                 viewModel
             )
-        } else{
+        } else if (allWorkouts.isNotEmpty()) {
             WorkoutCard(
                 allWorkouts[0],
                 viewModel
@@ -169,7 +280,7 @@ private fun WorkoutCard(
     val cardShape = RoundedCornerShape(12.dp)
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
-            containerColor = Gray
+            containerColor = Black
         ),
         shape = cardShape,
         modifier = Modifier.fillMaxWidth(),
@@ -206,6 +317,8 @@ fun HomeViewPreview() {
     val settingsRepository = FakeSettingsRepository()
     val workoutRepository = FakeWorkoutRepo()
     val analytics = FakeTracker()
+    val sessionRepository = FakeSessionRepo()
+    val getWeeklySessions = GetWeeklySessionsUseCase(sessionRepository)
     NorwegianTrainingTheme {
         Scaffold { innerPadding ->
             HomeView(
@@ -215,6 +328,7 @@ fun HomeViewPreview() {
                     IsFreeTrial(settingsRepository),
                     IsOnboardingCompleted(settingsRepository),
                     GetRecommendedWorkoutId(settingsRepository),
+                    getWeeklySessions,
                     analytics
                 ),
                 innerPadding

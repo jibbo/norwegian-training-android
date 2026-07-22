@@ -8,6 +8,7 @@ import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.GetWeeklySessionsUseCase
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
 import com.revenuecat.purchases.CustomerInfo
@@ -28,6 +29,7 @@ class HomeViewModel @Inject constructor(
     private val isFreeTrial: IsFreeTrial,
     private val isOnboardingCompleted: IsOnboardingCompleted,
     private val getRecommendedWorkoutId: GetRecommendedWorkoutId,
+    private val getWeeklySessions: GetWeeklySessionsUseCase,
     private val analytics: Analytics,
 ) : ViewModel() {
 
@@ -103,17 +105,21 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun showWorkouts(workouts: Map<Difficulty, List<Workout>>) =
-        when (val value = states.value) {
-            is UiState.Loaded -> {
-                states.value = value.copy(workouts = workouts)
-            }
+        viewModelScope.launch {
+            val weeklySessions = getWeeklySessions()
+            when (val value = states.value) {
+                is UiState.Loaded -> {
+                    states.value = value.copy(workouts = workouts, weeklySessions = weeklySessions)
+                }
 
-            else -> states.value = UiState.Loaded(
-                username = getUsername(),
-                workouts = workouts,
-                recommendedWorkoutId = getRecommendedWorkoutId(workouts),
-                hasProgressed = getRecommendedWorkoutId.hasProgressed()
-            )
+                else -> states.value = UiState.Loaded(
+                    username = getUsername(),
+                    workouts = workouts,
+                    recommendedWorkoutId = getRecommendedWorkoutId(workouts),
+                    hasProgressed = getRecommendedWorkoutId.hasProgressed(),
+                    weeklySessions = weeklySessions
+                )
+            }
         }
 
     private fun refreshUsername() {
