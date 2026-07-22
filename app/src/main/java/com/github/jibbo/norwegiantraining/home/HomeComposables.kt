@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -123,42 +121,36 @@ internal fun Workouts(viewModel: HomeViewModel) {
     val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
     val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
 
-    LazyColumn(
-        contentPadding = PaddingValues(all = 6.dp),
+    Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.padding(6.dp)
     ) {
-        item {
-            Text(
-                text = R.string.home_next_up.localizable(),
-                modifier = Modifier.padding(bottom = 12.dp),
-                style = Typography.bodyMedium,
-            )
-        }
+        Text(
+            text = R.string.home_next_up.localizable(),
+            modifier = Modifier.padding(bottom = 12.dp),
+            style = Typography.bodyMedium,
+        )
         if (recommendedWorkout != null) {
-            item {
-                WorkoutCard(
-                    recommendedWorkout,
-                    state.recommendedWorkoutId,
-                    state.recommendedLabel,
-                    viewModel
-                )
-            }
-        }
-        item {
-            Text(
-                text = R.string.home_all_workouts.localizable(),
-                modifier = Modifier.padding(bottom = 12.dp),
-                style = Typography.bodyMedium,
+            WorkoutCard(
+                recommendedWorkout,
+                state.recommendedWorkoutId,
+                state.recommendedLabel,
+                viewModel
             )
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 200.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(otherWorkouts.size, { it }) { index ->
-                    WorkoutCard(otherWorkouts[index], null, 0, viewModel)
-                }
+        }
+        Text(
+            text = R.string.home_all_workouts.localizable(),
+            modifier = Modifier.padding(bottom = 12.dp),
+            style = Typography.bodyMedium,
+        )
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 150.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(otherWorkouts.size, { it }) { index ->
+                WorkoutCard(otherWorkouts[index], null, 0, viewModel)
             }
         }
     }
