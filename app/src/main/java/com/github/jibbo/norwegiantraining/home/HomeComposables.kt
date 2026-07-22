@@ -123,7 +123,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.padding(6.dp)
+        modifier = Modifier.padding(12.dp)
     ) {
         Text(
             text = R.string.home_next_up.localizable(),
@@ -150,8 +150,8 @@ internal fun Workouts(viewModel: HomeViewModel) {
         )
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 150.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             items(otherWorkouts.size, { it }) { index ->
