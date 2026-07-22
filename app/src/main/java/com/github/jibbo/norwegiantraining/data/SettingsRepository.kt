@@ -105,7 +105,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     }
 
     override fun startFreeTrial() {
-        sp.edit { putLong("free_trial_date", System.currentTimeMillis() + 24 * 60 * 60 * 1000) }
+        sp.edit { putLong("free_trial_date", System.currentTimeMillis() + 14L * 24 * 60 * 60 * 1000) }
     }
 
     override fun setRecommendedWorkoutId(id: Long) {
