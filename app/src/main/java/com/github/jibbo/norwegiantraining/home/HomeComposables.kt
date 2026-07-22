@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -93,6 +95,7 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
     }
     Column(
         modifier = Modifier
+            .padding(innerPadding)
             .fillMaxSize()
     ) {
         if (state.value is UiState.Loading) {
@@ -295,7 +298,7 @@ private fun WorkoutCard(
             color = White
         )
         Text(
-            text = R.string.workout_time.localizable(workout.totalTime, workout.restTime()),
+            text = R.string.workout_time.localizable(workout.totalTime),
             modifier = Modifier.padding(8.dp),
             style = Typography.bodyMedium,
             color = White
