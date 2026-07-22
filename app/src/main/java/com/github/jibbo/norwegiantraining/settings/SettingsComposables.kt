@@ -635,7 +635,7 @@ private fun DebugCard(viewModel: SettingsViewModel) {
                     onClick = { viewModel.debugOnlySetTrialAndGraceExpired() }
                 ) {
                     Text(
-                        text = "Seed Grace period Expired free trial",
+                        text = "Seed Grace period Expired",
                         style = Typography.bodyMedium,
                     )
                 }
