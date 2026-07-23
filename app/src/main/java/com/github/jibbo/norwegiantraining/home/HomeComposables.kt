@@ -16,8 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -46,7 +48,6 @@ import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
 import com.github.jibbo.norwegiantraining.data.Session
-import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
@@ -95,19 +96,24 @@ private fun PortraitLayout(
     viewModel: HomeViewModel,
     innerPadding: PaddingValues
 ) {
+    val state = viewModel.uiStates.collectAsState().value
     Column(
         modifier = Modifier
             .padding(innerPadding)
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
-        CircularProgressIndicator()
-        Header(viewModel)
-        StreakWidget(viewModel)
-        Box(
-            modifier = Modifier.safeDrawingPadding(),
-            contentAlignment = Alignment.Center
-        ) {
-            Workouts(viewModel)
+        when (state) {
+            is UiState.Loading -> CircularProgressIndicator()
+            is UiState.Loaded -> {
+                Header(viewModel)
+                StreakWidget(viewModel)
+                Box(
+                    modifier = Modifier.safeDrawingPadding(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Workouts(viewModel)
+                }
+            }
         }
     }
 }
@@ -121,12 +127,14 @@ private fun LandscapeLayout(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         // Left column: Header + Streak + Next Up
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Header(viewModel)
             StreakWidget(viewModel)
@@ -144,84 +152,105 @@ private fun LandscapeLayout(
 
 @Composable
 private fun NextUpWorkout(viewModel: HomeViewModel) {
-    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
-    val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+    when (val state = viewModel.uiStates.collectAsState().value) {
+        is UiState.Loading -> CircularProgressIndicator(modifier = Modifier.padding(12.dp))
+        is UiState.Loaded -> {
+            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.padding(12.dp)
-    ) {
-        Text(
-            text = R.string.home_next_up.localizable(),
-            modifier = Modifier.padding(bottom = 12.dp),
-            style = Typography.titleLarge,
-            fontWeight = FontWeight.Normal
-        )
-        val workout = allWorkouts.firstOrNull() ?: return
-        WorkoutCard(
-            workout,
-            viewModel
-        )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(12.dp)
+            ) {
+                Text(
+                    text = R.string.home_next_up.localizable(),
+                    modifier = Modifier.padding(bottom = 12.dp),
+                    style = Typography.titleLarge,
+                    fontWeight = FontWeight.Normal
+                )
+                val workout = allWorkouts.firstOrNull() ?: return
+                WorkoutCard(
+                    workout,
+                    viewModel
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun AllWorkouts(viewModel: HomeViewModel) {
-    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
-    val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
-    val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
-
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        item {
-            Text(
-                text = R.string.home_all_workouts.localizable(),
-                modifier = Modifier.padding(bottom = 12.dp),
-                style = Typography.titleLarge,
-                fontWeight = FontWeight.Normal
-            )
+    when (val state = viewModel.uiStates.collectAsState().value) {
+        is UiState.Loading -> {
+            CircularProgressIndicator(modifier = Modifier.padding(12.dp))
         }
-        items(otherWorkouts.size, { it }) { index ->
-            WorkoutCard(otherWorkouts[index], viewModel)
+
+        is UiState.Loaded -> {
+            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+            val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    Text(
+                        text = R.string.home_all_workouts.localizable(),
+                        modifier = Modifier.padding(bottom = 12.dp),
+                        style = Typography.titleLarge,
+                        fontWeight = FontWeight.Normal
+                    )
+                }
+                items(otherWorkouts.size, { it }) { index ->
+                    WorkoutCard(otherWorkouts[index], viewModel)
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun StreakWidget(viewModel: HomeViewModel) {
-    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
-    ElevatedCard(
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = Black
-        ),
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp),
-        onClick = { TODO() }
-    ) {
-        Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(12.dp)
+    when (val state = viewModel.uiStates.collectAsState().value) {
+        is UiState.Loading -> {
+            CircularProgressIndicator(modifier = Modifier.padding(12.dp))
+        }
+
+        is UiState.Loaded -> {
+            ElevatedCard(
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = Color.Black
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                onClick = { TODO() }
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .background(color = Primary, shape = CircleShape),
-                    contentAlignment = Alignment.Center
+                Row(
+                    modifier = Modifier.padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_launcher_foreground),
-                        contentDescription = "",
-                        tint = Black,
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(color = Primary, shape = CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_launcher_foreground),
+                                contentDescription = "",
+                                tint = Black,
+                            )
+                        }
+                    }
+                    Column {
+                        Month(state.weeklySessions)
+                    }
                 }
-            }
-            Column {
-                Month(state.weeklySessions)
             }
         }
     }
@@ -270,73 +299,85 @@ private fun Month(weeklySessions: List<Session?>) {
 
 @Composable
 internal fun Header(viewModel: HomeViewModel) {
-    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .safeDrawingPadding()
-    ) {
-        Toolbar(
-            name = R.string.welcome.localizable(state.username ?: ""),
-            modifier = Modifier.weight(1f),
-        )
-        IconButton(onClick = { viewModel.chartsClicked() }) {
-            Icon(
-                painter = painterResource(R.drawable.outline_area_chart_24),
-                contentDescription = ""
-            )
+    when (val state = viewModel.uiStates.collectAsState().value) {
+        is UiState.Loading -> {
+            CircularProgressIndicator(modifier = Modifier.safeDrawingPadding())
         }
-        IconButton(onClick = { viewModel.settingsClicked() }) {
-            Icon(
-                painter = painterResource(R.drawable.baseline_settings_24),
-                contentDescription = ""
-            )
+
+        is UiState.Loaded -> {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .safeDrawingPadding()
+            ) {
+                Toolbar(
+                    name = R.string.welcome.localizable(state.username ?: ""),
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(onClick = { viewModel.chartsClicked() }) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_area_chart_24),
+                        contentDescription = ""
+                    )
+                }
+                IconButton(onClick = { viewModel.settingsClicked() }) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_settings_24),
+                        contentDescription = ""
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
 internal fun Workouts(viewModel: HomeViewModel) {
-    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
-    val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
-    val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
-    val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.padding(12.dp)
-    ) {
-        Text(
-            text = R.string.home_next_up.localizable(),
-            modifier = Modifier.padding(bottom = 12.dp),
-            style = Typography.titleLarge,
-            fontWeight = FontWeight.Normal
-        )
-        if (recommendedWorkout != null) {
-            WorkoutCard(
-                recommendedWorkout,
-                viewModel
-            )
-        } else if (allWorkouts.isNotEmpty()) {
-            WorkoutCard(
-                allWorkouts[0],
-                viewModel
-            )
+    when (val state = viewModel.uiStates.collectAsState().value) {
+        is UiState.Loading -> {
+            CircularProgressIndicator(modifier = Modifier.padding(12.dp))
         }
-        Text(
-            text = R.string.home_all_workouts.localizable(),
-            modifier = Modifier.padding(bottom = 12.dp),
-            style = Typography.titleLarge,
-            fontWeight = FontWeight.Normal
-        )
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 150.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(otherWorkouts.size, { it }) { index ->
-                WorkoutCard(otherWorkouts[index], viewModel)
+
+        is UiState.Loaded -> {
+            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+            val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
+            val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(12.dp)
+            ) {
+                Text(
+                    text = R.string.home_next_up.localizable(),
+                    style = Typography.titleLarge,
+                    fontWeight = FontWeight.Normal
+                )
+                if (recommendedWorkout != null) {
+                    WorkoutCard(
+                        recommendedWorkout,
+                        viewModel
+                    )
+                } else if (allWorkouts.isNotEmpty()) {
+                    WorkoutCard(
+                        allWorkouts[0],
+                        viewModel
+                    )
+                }
+                Text(
+                    text = R.string.home_all_workouts.localizable(),
+                    style = Typography.titleLarge,
+                    fontWeight = FontWeight.Normal
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 150.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(otherWorkouts.size, { it }) { index ->
+                        WorkoutCard(otherWorkouts[index], viewModel)
+                    }
+                }
             }
         }
     }
@@ -350,7 +391,7 @@ private fun WorkoutCard(
     val cardShape = RoundedCornerShape(12.dp)
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
-            containerColor = Black
+            containerColor = Color.Black
         ),
         shape = cardShape,
         modifier = Modifier.fillMaxWidth(),
