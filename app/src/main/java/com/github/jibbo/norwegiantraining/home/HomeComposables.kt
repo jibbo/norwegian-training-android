@@ -1,14 +1,22 @@
 package com.github.jibbo.norwegiantraining.home
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -29,11 +37,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
@@ -82,6 +97,7 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
                 )
             )
     ) {
+        WakeBackground()
     }
 
     if (isLandscape) {
@@ -89,6 +105,120 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
     } else {
         PortraitLayout(viewModel, innerPadding)
     }
+}
+
+@Composable
+private fun WakeBackground() {
+    val infiniteTransition = rememberInfiniteTransition(label = "wake_transition")
+    
+    // Animation value from 0 to 1, looping continuously (slower animation)
+    val animValue = infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            tween(durationMillis = 8000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "wake_animation"
+    ).value
+    
+    val wakeLineCount = 12
+    val numWakeLines = remember { wakeLineCount }
+    
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .drawBehind {
+                val canvasSize = size
+                val minDimension = canvasSize.minDimension
+                val boatRadius = minDimension * 0.04f
+                
+                // Boat position: moves from bottom-left (0, height) to top-right (width, 0)
+                val boatX = canvasSize.width * animValue
+                val boatY = canvasSize.height * (1f - animValue)
+                
+                // Draw boat circle (subtle, semi-transparent)
+                drawCircle(
+                    color = Primary.copy(alpha = 0.15f),
+                    radius = boatRadius,
+                    center = Offset(boatX, boatY)
+                )
+                
+                // Draw inner boat circle (brighter core)
+                drawCircle(
+                    color = Primary.copy(alpha = 0.3f),
+                    radius = boatRadius * 0.5f,
+                    center = Offset(boatX, boatY)
+                )
+                
+                // Wake direction: opposite to boat travel (boat goes 45°, wake goes 225°)
+                val boatDirectionRadians = Math.toRadians(45.0)
+                
+                // Draw wake lines behind the boat
+                for (i in 0 until numWakeLines) {
+                    // Distribute lines in a V-shape pattern behind the boat
+                    val angleFraction = i.toFloat() / (numWakeLines - 1)
+                    val angleDegrees = -30f + (angleFraction * 60f) // -30 to +30 degrees
+                    val angleRadians = Math.toRadians(angleDegrees.toDouble())
+                    
+                    // Wake extends behind boat: 225° (opposite of boat's 45°)
+                    val wakeAngle = boatDirectionRadians + Math.PI + angleRadians
+                    
+                    // Line length varies based on animation progress (acceleration effect)
+                    val lineProgress = animValue.toDouble().pow(1.5)
+                    
+                    // Calculate line start at boat edge (behind)
+                    val lineStartX = boatX - (boatRadius * 1.2f) * cos(wakeAngle).toFloat()
+                    val lineStartY = boatY - (boatRadius * 1.2f) * sin(wakeAngle).toFloat()
+                    
+                    // Max line length based on remaining space towards bottom-left (extended wake)
+                    val maxLineLength = canvasSize.width * 2.0f
+                    val lineLength = lineProgress.toFloat() * maxLineLength
+                    
+                    // Draw sinusoidal line using multiple small segments
+                    val numSegments = 20
+                    val waveAmplitude = 4f // pixels
+                    val waveFrequency = 4f // waves per line length
+                    
+                    for (j in 0..numSegments) {
+                        val segmentFraction = j.toFloat() / numSegments
+                        val segmentLength = segmentFraction * lineLength
+                        
+                        // Base position on straight line behind boat
+                        val baseX = lineStartX + segmentLength * cos(wakeAngle).toFloat()
+                        val baseY = lineStartY + segmentLength * sin(wakeAngle).toFloat()
+                        
+                        // Sinusoidal offset perpendicular to line direction
+                        val perpendicularAngle = wakeAngle + Math.PI / 2.0
+                        val sinusoidalOffset = sin(segmentLength * waveFrequency * 2 * Math.PI / maxLineLength) * waveAmplitude
+                        
+                        val offsetX = (sinusoidalOffset * cos(perpendicularAngle)).toFloat()
+                        val offsetY = (sinusoidalOffset * sin(perpendicularAngle)).toFloat()
+                        
+                        val segEndX = baseX + offsetX
+                        val segEndY = baseY + offsetY
+                        
+                        // Previous segment point (or start point for first segment)
+                        if (j > 0) {
+                            val prevSegmentFraction = (j - 1).toFloat() / numSegments
+                            val prevSegmentLength = prevSegmentFraction * lineLength
+                            val prevBaseX = lineStartX + prevSegmentLength * cos(wakeAngle).toFloat()
+                            val prevBaseY = lineStartY + prevSegmentLength * sin(wakeAngle).toFloat()
+                            val prevSinusoidalOffset = sin(prevSegmentLength * waveFrequency * 2 * Math.PI / maxLineLength) * waveAmplitude
+                            val prevOffsetX = (prevSinusoidalOffset * cos(perpendicularAngle)).toFloat()
+                            val prevOffsetY = (prevSinusoidalOffset * sin(perpendicularAngle)).toFloat()
+                            
+                            drawLine(
+                                color = Primary.copy(alpha = 0.8f),
+                                start = Offset(prevBaseX + prevOffsetX, prevBaseY + prevOffsetY),
+                                end = Offset(segEndX, segEndY),
+                                strokeWidth = 2f + (angleFraction * 3f)
+                            )
+                        }
+                    }
+                }
+            }
+    )
 }
 
 @Composable
@@ -407,7 +537,7 @@ private fun WorkoutCard(
         )
         Text(
             text = R.string.workout_time.localizable(workout.totalTime),
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(4.dp),
             style = Typography.bodyMedium,
             color = White
         )
