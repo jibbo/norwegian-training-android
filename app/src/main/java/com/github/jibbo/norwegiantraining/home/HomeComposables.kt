@@ -1,28 +1,14 @@
 package com.github.jibbo.norwegiantraining.home
 
 import android.content.res.Configuration
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
-import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -42,8 +28,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -51,10 +42,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
@@ -63,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.Toolbar
+import com.github.jibbo.norwegiantraining.components.VideoBackground
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
@@ -80,12 +68,14 @@ import com.github.jibbo.norwegiantraining.log.getColor
 import com.github.jibbo.norwegiantraining.log.getStatus
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
-import com.github.jibbo.norwegiantraining.ui.theme.Gray
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
 import java.util.Calendar
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
 
 @Composable
 internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
@@ -116,95 +106,97 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
 
 @Composable
 private fun WakeBackground() {
-    var animValue by remember { mutableStateOf(0f) }
+    var animValue by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
         while (true) {
-            animValue += 0.01f
-            delay(80L)
+            animValue += 0.005f
+            if (animValue >= 1f) animValue = 0f
+            delay(16)
         }
     }
-    
+
     val wakeLineCount = 12
     val numWakeLines = remember { wakeLineCount }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .drawBehind {
                 val canvasSize = size
-                
-                // Boat position: moves from bottom-left (0, height) to top-right (width, 0)
-                val boatX = canvasSize.width * animValue
-                val boatY = canvasSize.height * (1f - animValue)
-                
+
                 // Wake direction: -45 degrees goes from bottom-left to top-right
-                // In Canvas coordinates: x increases (right), y decreases (up)
                 val boatDirectionRadians = Math.toRadians(-45.0)
-                
+
                 // Calculate full diagonal length for corner-to-corner lines
                 val diagonalLength = Math.sqrt(
                     (canvasSize.width.toDouble() * canvasSize.width + canvasSize.height.toDouble() * canvasSize.height)
                 ).toFloat()
-                
-                // Draw wake lines extending from bottom-left to top-right
+
+                // Max line length: slightly larger than diagonal to ensure it covers the screen
+                val maxLineLength = diagonalLength * 1.2f
+
+                // Draw wake lines from fixed bottom-left to top-right
                 for (i in 0 until numWakeLines) {
-                    // Distribute lines in a V-shape pattern along the boat's path
+                    // Distribute lines in a V-shape pattern around the -45° path
                     val angleFraction = i.toFloat() / (numWakeLines - 1)
                     val angleDegrees = -30f + (angleFraction * 60f) // -30 to +30 degrees relative to path
                     val angleRadians = Math.toRadians(angleDegrees.toDouble())
-                    
+
                     // Wake extends along boat's path: -45° (from bottom-left to top-right)
                     val wakeAngle = boatDirectionRadians + angleRadians
-                    
-                    // Line length varies based on animation progress (acceleration effect)
-                    val lineProgress = animValue.toDouble().pow(1.5)
-                    
-                    // Fixed starting point at bottom-left corner (doesn't move)
-                    val lineStartX = 0f
-                    val lineStartY = canvasSize.height
-                    
-                    // Max line length: full diagonal (corner-to-corner) with extra margin
-                    val maxLineLength = diagonalLength * 1.5f
-                    val lineLength = lineProgress.toFloat() * maxLineLength
-                    
+
+                    // Fixed starting point: bottom-left corner
+                    val lineStartX = -50f
+                    val lineStartY = canvasSize.height+50f
+
+                    // Fixed line length (does not move)
+                    val lineLength = maxLineLength
+
                     // Draw sinusoidal line using multiple small segments
-                    val numSegments = 20
-                    val waveAmplitude = 30f // Increased amplitude to make sinusoidal effect obvious
-                    val waveFrequency = 5f // 5 waves per line length
-                    
+                    val numSegments = 40
+                    val waveAmplitude = 20f // Reduced for gentler waves
+                    val waveFrequency = 1f // Reduced for fewer, wider waves
+
                     for (j in 0..numSegments) {
                         val segmentFraction = j.toFloat() / numSegments
                         val segmentLength = segmentFraction * lineLength
-                        
-                        // Base position on straight line along boat's path
+
+                        // Base position on straight line from bottom-left to top-right
                         val baseX = lineStartX + segmentLength * cos(wakeAngle).toFloat()
                         val baseY = lineStartY + segmentLength * sin(wakeAngle).toFloat()
-                        
+
                         // Sinusoidal offset perpendicular to line direction
                         val perpendicularAngle = wakeAngle + Math.PI / 2.0
-                        val sinusoidalOffset = sin(segmentLength * waveFrequency * 2 * Math.PI / maxLineLength) * waveAmplitude
-                        
+
+                        // Animate the wave phase along the line.
+                        // animValue 0→1 makes the wave travel from the line start to end,
+                        // creating a floating/rippling effect along the fixed line.
+                        val wavePhase = (segmentFraction - animValue) * waveFrequency * 2 * Math.PI
+                        val sinusoidalOffset = sin(wavePhase) * waveAmplitude
+
                         val offsetX = (sinusoidalOffset * cos(perpendicularAngle)).toFloat()
                         val offsetY = (sinusoidalOffset * sin(perpendicularAngle)).toFloat()
-                        
+
                         val segEndX = baseX + offsetX
                         val segEndY = baseY + offsetY
-                        
+
                         // Previous segment point (or start point for first segment)
                         if (j > 0) {
                             val prevSegmentFraction = (j - 1).toFloat() / numSegments
                             val prevSegmentLength = prevSegmentFraction * lineLength
                             val prevBaseX = lineStartX + prevSegmentLength * cos(wakeAngle).toFloat()
                             val prevBaseY = lineStartY + prevSegmentLength * sin(wakeAngle).toFloat()
-                            val prevSinusoidalOffset = sin(prevSegmentLength * waveFrequency * 2 * Math.PI / maxLineLength) * waveAmplitude
+
+                            val prevWavePhase = (prevSegmentFraction - animValue) * waveFrequency * 2 * Math.PI
+                            val prevSinusoidalOffset = sin(prevWavePhase) * waveAmplitude
                             val prevOffsetX = (prevSinusoidalOffset * cos(perpendicularAngle)).toFloat()
                             val prevOffsetY = (prevSinusoidalOffset * sin(perpendicularAngle)).toFloat()
-                            
+
                             drawLine(
-                                color = Primary.copy(alpha = 0.8f),
+                                color = Primary.copy(alpha = 0.09f),
                                 start = Offset(prevBaseX + prevOffsetX, prevBaseY + prevOffsetY),
                                 end = Offset(segEndX, segEndY),
-                                strokeWidth = 2f + (angleFraction * 3f)
+                                strokeWidth = 2.6f + (angleFraction * 3f)
                             )
                         }
                     }
@@ -230,7 +222,7 @@ private fun PortraitLayout(
                 Header(viewModel)
                 StreakWidget(viewModel)
                 Box(
-                    modifier = Modifier.safeDrawingPadding(),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Workouts(viewModel)
@@ -317,7 +309,7 @@ private fun AllWorkouts(viewModel: HomeViewModel) {
                 item {
                     Text(
                         text = R.string.home_all_workouts.localizable(),
-                        modifier = Modifier.padding(bottom = 12.dp),
+                        modifier = Modifier.padding(bottom = 16.dp),
                         style = Typography.titleLarge,
                         fontWeight = FontWeight.Normal
                     )
@@ -345,8 +337,8 @@ private fun StreakWidget(viewModel: HomeViewModel) {
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                onClick = { TODO() }
+                    .padding(horizontal = 16.dp),
+                onClick = { viewModel.chartsClicked() }
             ) {
                 Row(
                     modifier = Modifier.padding(8.dp),
@@ -429,8 +421,7 @@ internal fun Header(viewModel: HomeViewModel) {
         is UiState.Loaded -> {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .safeDrawingPadding()
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Toolbar(
                     name = R.string.welcome.localizable(state.username ?: ""),
@@ -467,12 +458,12 @@ internal fun Workouts(viewModel: HomeViewModel) {
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(16.dp)
             ) {
                 Text(
                     text = R.string.home_next_up.localizable(),
                     style = Typography.titleLarge,
-                    fontWeight = FontWeight.Normal
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.padding(top = 16.dp)
                 )
                 if (recommendedWorkout != null) {
                     WorkoutCard(
@@ -493,7 +484,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 150.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(3.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(otherWorkouts.size, { it }) { index ->
@@ -528,7 +519,7 @@ private fun WorkoutCard(
             color = White
         )
         Text(
-            text = R.string.workout_time.localizable(workout.totalTime),
+            text =R.string.workout_time.localizable(workout.totalTime),
             modifier = Modifier.padding(4.dp),
             style = Typography.bodyMedium,
             color = White
