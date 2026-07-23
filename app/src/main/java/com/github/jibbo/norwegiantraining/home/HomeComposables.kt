@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.home
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,11 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,21 +66,9 @@ import java.util.Calendar
 
 @Composable
 internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
-    val state = viewModel.uiStates.collectAsState()
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(color = Black)
-//    ) {
-//        Image(
-//            painter = painterResource(id = R.drawable.runner_illustration),
-//            contentDescription = null,
-//            contentScale = ContentScale.Fit,
-//            modifier = Modifier
-//                .width(800.dp)
-//                .align(Alignment.BottomEnd)
-//        )
-//    }
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -93,24 +82,110 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
             )
     ) {
     }
+
+    if (isLandscape) {
+        LandscapeLayout(viewModel, innerPadding)
+    } else {
+        PortraitLayout(viewModel, innerPadding)
+    }
+}
+
+@Composable
+private fun PortraitLayout(
+    viewModel: HomeViewModel,
+    innerPadding: PaddingValues
+) {
     Column(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
     ) {
-        if (state.value is UiState.Loading) {
-            CircularProgressIndicator()
-        } else {
+        CircularProgressIndicator()
+        Header(viewModel)
+        StreakWidget(viewModel)
+        Box(
+            modifier = Modifier.safeDrawingPadding(),
+            contentAlignment = Alignment.Center
+        ) {
+            Workouts(viewModel)
+        }
+    }
+}
+
+@Composable
+private fun LandscapeLayout(
+    viewModel: HomeViewModel,
+    innerPadding: PaddingValues
+) {
+    Row(
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Left column: Header + Streak + Next Up
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Header(viewModel)
             StreakWidget(viewModel)
-            Box(
-                modifier = Modifier.safeDrawingPadding(),
-                contentAlignment = Alignment.Center
-            ) {
-                Workouts(viewModel)
-            }
+            NextUpWorkout(viewModel)
         }
 
+        // Right column: All Workouts (scrollable LazyColumn)
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            AllWorkouts(viewModel)
+        }
+    }
+}
+
+@Composable
+private fun NextUpWorkout(viewModel: HomeViewModel) {
+    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
+    val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.padding(12.dp)
+    ) {
+        Text(
+            text = R.string.home_next_up.localizable(),
+            modifier = Modifier.padding(bottom = 12.dp),
+            style = Typography.titleLarge,
+            fontWeight = FontWeight.Normal
+        )
+        val workout = allWorkouts.firstOrNull() ?: return
+        WorkoutCard(
+            workout,
+            viewModel
+        )
+    }
+}
+
+@Composable
+private fun AllWorkouts(viewModel: HomeViewModel) {
+    val state = viewModel.uiStates.collectAsState().value as UiState.Loaded
+    val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+    val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        item {
+            Text(
+                text = R.string.home_all_workouts.localizable(),
+                modifier = Modifier.padding(bottom = 12.dp),
+                style = Typography.titleLarge,
+                fontWeight = FontWeight.Normal
+            )
+        }
+        items(otherWorkouts.size, { it }) { index ->
+            WorkoutCard(otherWorkouts[index], viewModel)
+        }
     }
 }
 
@@ -191,14 +266,6 @@ private fun Month(weeklySessions: List<Session?>) {
             }
         }
     }
-//    Row(modifier = Modifier.padding(top = 6.dp)) {
-//        Text(
-//            "A good streak has at least 3 workouts per week",
-//            style = Typography.labelSmall,
-//            color = White,
-//            modifier = Modifier.alpha(0.8f)
-//        )
-//    }
 }
 
 @Composable
