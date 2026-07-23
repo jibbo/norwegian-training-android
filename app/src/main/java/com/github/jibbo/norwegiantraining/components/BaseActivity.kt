@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.components
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import com.github.jibbo.norwegiantraining.data.Analytics
