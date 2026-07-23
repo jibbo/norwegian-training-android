@@ -8,7 +8,13 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Arrangement
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -74,6 +80,7 @@ import com.github.jibbo.norwegiantraining.log.getColor
 import com.github.jibbo.norwegiantraining.log.getStatus
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
+import com.github.jibbo.norwegiantraining.ui.theme.Gray
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
@@ -109,18 +116,13 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
 
 @Composable
 private fun WakeBackground() {
-    val infiniteTransition = rememberInfiniteTransition(label = "wake_transition")
-    
-    // Animation value from 0 to 1, looping continuously (slower animation)
-    val animValue = infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            tween(durationMillis = 8000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "wake_animation"
-    ).value
+    var animValue by remember { mutableStateOf(0f) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            animValue += 0.01f
+            delay(80L)
+        }
+    }
     
     val wakeLineCount = 12
     val numWakeLines = remember { wakeLineCount }
@@ -157,12 +159,12 @@ private fun WakeBackground() {
                     // Line length varies based on animation progress (acceleration effect)
                     val lineProgress = animValue.toDouble().pow(1.5)
                     
-                    // Calculate line start at boat position
-                    val lineStartX = boatX
-                    val lineStartY = boatY
+                    // Fixed starting point at bottom-left corner (doesn't move)
+                    val lineStartX = 0f
+                    val lineStartY = canvasSize.height
                     
                     // Max line length: full diagonal (corner-to-corner) with extra margin
-                    val maxLineLength = diagonalLength * 3.0f
+                    val maxLineLength = diagonalLength * 1.5f
                     val lineLength = lineProgress.toFloat() * maxLineLength
                     
                     // Draw sinusoidal line using multiple small segments
@@ -332,7 +334,7 @@ private fun AllWorkouts(viewModel: HomeViewModel) {
 private fun StreakWidget(viewModel: HomeViewModel) {
     when (val state = viewModel.uiStates.collectAsState().value) {
         is UiState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier.padding(12.dp))
+            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         }
 
         is UiState.Loaded -> {
@@ -465,7 +467,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(16.dp)
             ) {
                 Text(
                     text = R.string.home_next_up.localizable(),
@@ -491,7 +493,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 150.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(3.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(otherWorkouts.size, { it }) { index ->
