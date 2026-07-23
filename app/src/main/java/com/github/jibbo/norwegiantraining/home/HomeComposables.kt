@@ -130,61 +130,51 @@ private fun WakeBackground() {
             .fillMaxSize()
             .drawBehind {
                 val canvasSize = size
-                val minDimension = canvasSize.minDimension
-                val boatRadius = minDimension * 0.04f
                 
                 // Boat position: moves from bottom-left (0, height) to top-right (width, 0)
                 val boatX = canvasSize.width * animValue
                 val boatY = canvasSize.height * (1f - animValue)
                 
-                // Draw boat circle (subtle, semi-transparent)
-                drawCircle(
-                    color = Primary.copy(alpha = 0.15f),
-                    radius = boatRadius,
-                    center = Offset(boatX, boatY)
-                )
+                // Wake direction: -45 degrees goes from bottom-left to top-right
+                // In Canvas coordinates: x increases (right), y decreases (up)
+                val boatDirectionRadians = Math.toRadians(-45.0)
                 
-                // Draw inner boat circle (brighter core)
-                drawCircle(
-                    color = Primary.copy(alpha = 0.3f),
-                    radius = boatRadius * 0.5f,
-                    center = Offset(boatX, boatY)
-                )
+                // Calculate full diagonal length for corner-to-corner lines
+                val diagonalLength = Math.sqrt(
+                    (canvasSize.width.toDouble() * canvasSize.width + canvasSize.height.toDouble() * canvasSize.height)
+                ).toFloat()
                 
-                // Wake direction: opposite to boat travel (boat goes 45°, wake goes 225°)
-                val boatDirectionRadians = Math.toRadians(45.0)
-                
-                // Draw wake lines behind the boat
+                // Draw wake lines extending from bottom-left to top-right
                 for (i in 0 until numWakeLines) {
-                    // Distribute lines in a V-shape pattern behind the boat
+                    // Distribute lines in a V-shape pattern along the boat's path
                     val angleFraction = i.toFloat() / (numWakeLines - 1)
-                    val angleDegrees = -30f + (angleFraction * 60f) // -30 to +30 degrees
+                    val angleDegrees = -30f + (angleFraction * 60f) // -30 to +30 degrees relative to path
                     val angleRadians = Math.toRadians(angleDegrees.toDouble())
                     
-                    // Wake extends behind boat: 225° (opposite of boat's 45°)
-                    val wakeAngle = boatDirectionRadians + Math.PI + angleRadians
+                    // Wake extends along boat's path: -45° (from bottom-left to top-right)
+                    val wakeAngle = boatDirectionRadians + angleRadians
                     
                     // Line length varies based on animation progress (acceleration effect)
                     val lineProgress = animValue.toDouble().pow(1.5)
                     
-                    // Calculate line start at boat edge (behind)
-                    val lineStartX = boatX - (boatRadius * 1.2f) * cos(wakeAngle).toFloat()
-                    val lineStartY = boatY - (boatRadius * 1.2f) * sin(wakeAngle).toFloat()
+                    // Calculate line start at boat position
+                    val lineStartX = boatX
+                    val lineStartY = boatY
                     
-                    // Max line length based on remaining space towards bottom-left (extended wake)
-                    val maxLineLength = canvasSize.width * 2.0f
+                    // Max line length: full diagonal (corner-to-corner) with extra margin
+                    val maxLineLength = diagonalLength * 3.0f
                     val lineLength = lineProgress.toFloat() * maxLineLength
                     
                     // Draw sinusoidal line using multiple small segments
                     val numSegments = 20
-                    val waveAmplitude = 4f // pixels
-                    val waveFrequency = 4f // waves per line length
+                    val waveAmplitude = 30f // Increased amplitude to make sinusoidal effect obvious
+                    val waveFrequency = 5f // 5 waves per line length
                     
                     for (j in 0..numSegments) {
                         val segmentFraction = j.toFloat() / numSegments
                         val segmentLength = segmentFraction * lineLength
                         
-                        // Base position on straight line behind boat
+                        // Base position on straight line along boat's path
                         val baseX = lineStartX + segmentLength * cos(wakeAngle).toFloat()
                         val baseY = lineStartY + segmentLength * sin(wakeAngle).toFloat()
                         
