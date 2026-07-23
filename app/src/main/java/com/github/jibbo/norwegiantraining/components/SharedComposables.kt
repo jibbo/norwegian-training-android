@@ -1,6 +1,8 @@
 package com.github.jibbo.norwegiantraining.components
 
 import androidx.activity.OnBackPressedDispatcher
+import androidx.annotation.DrawableRes
+import androidx.annotation.RawRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -42,23 +44,23 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 
 
 @Composable
-fun VideoBackground() {
+fun VideoBackground(@RawRes res: Int = R.raw.bg) {
     Box(modifier = Modifier.fillMaxSize()) {
-        ExoplayerExample()
+        ExoplayerExample(res)
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    color = Black.copy(alpha = 0.8f)
+                    color = Black.copy(alpha = 0.9f)
                 )
         )
     }
 }
 
 @Composable
-fun ExoplayerExample() {
+fun ExoplayerExample(@RawRes res: Int) {
     val context = LocalContext.current
-    val videoUri = "android.resource://" + context.packageName + "/" + R.raw.bg
+    val videoUri = "android.resource://" + context.packageName + "/" + res
     val mediaItem = remember(videoUri) { // remember MediaItem based on URI
         MediaItem.Builder()
             .setUri(videoUri.toUri())

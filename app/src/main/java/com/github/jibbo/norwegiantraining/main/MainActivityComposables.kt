@@ -68,7 +68,7 @@ internal fun MainView(
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
         if (!LocalInspectionMode.current) {
-            VideoBackground()
+            VideoBackground(R.raw.bg)
         }
         Column(
             modifier = Modifier

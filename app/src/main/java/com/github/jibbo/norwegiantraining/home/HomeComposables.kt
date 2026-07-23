@@ -31,9 +31,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -49,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.Toolbar
+import com.github.jibbo.norwegiantraining.components.VideoBackground
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
@@ -70,7 +72,6 @@ import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
-import kotlinx.coroutines.delay
 import java.util.Calendar
 import kotlin.math.cos
 import kotlin.math.pow
@@ -105,11 +106,12 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
 
 @Composable
 private fun WakeBackground() {
-    var animValue by remember { mutableStateOf(0f) }
+    var animValue by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
         while (true) {
-            animValue += 0.01f
-            delay(80L)
+            animValue += 0.005f
+            if (animValue >= 1f) animValue = 0f
+            delay(16)
         }
     }
 
@@ -122,12 +124,7 @@ private fun WakeBackground() {
             .drawBehind {
                 val canvasSize = size
 
-                // Boat position: moves from bottom-left (0, height) to top-right (width, 0)
-                val boatX = canvasSize.width * animValue
-                val boatY = canvasSize.height * (1f - animValue)
-
                 // Wake direction: -45 degrees goes from bottom-left to top-right
-                // In Canvas coordinates: x increases (right), y decreases (up)
                 val boatDirectionRadians = Math.toRadians(-45.0)
 
                 // Calculate full diagonal length for corner-to-corner lines
@@ -135,45 +132,47 @@ private fun WakeBackground() {
                     (canvasSize.width.toDouble() * canvasSize.width + canvasSize.height.toDouble() * canvasSize.height)
                 ).toFloat()
 
-                // Draw wake lines extending from bottom-left to top-right
+                // Max line length: slightly larger than diagonal to ensure it covers the screen
+                val maxLineLength = diagonalLength * 1.2f
+
+                // Draw wake lines from fixed bottom-left to top-right
                 for (i in 0 until numWakeLines) {
-                    // Distribute lines in a V-shape pattern along the boat's path
+                    // Distribute lines in a V-shape pattern around the -45° path
                     val angleFraction = i.toFloat() / (numWakeLines - 1)
-                    val angleDegrees =
-                        -30f + (angleFraction * 60f) // -30 to +30 degrees relative to path
+                    val angleDegrees = -30f + (angleFraction * 60f) // -30 to +30 degrees relative to path
                     val angleRadians = Math.toRadians(angleDegrees.toDouble())
 
                     // Wake extends along boat's path: -45° (from bottom-left to top-right)
                     val wakeAngle = boatDirectionRadians + angleRadians
 
-                    // Line length varies based on animation progress (acceleration effect)
-                    val lineProgress = animValue.toDouble().pow(1.5)
+                    // Fixed starting point: bottom-left corner
+                    val lineStartX = -50f
+                    val lineStartY = canvasSize.height+50f
 
-                    // Fixed starting point at bottom-left corner (doesn't move)
-                    val lineStartX = 0f
-                    val lineStartY = canvasSize.height
-
-                    // Max line length: full diagonal (corner-to-corner) with extra margin
-                    val maxLineLength = diagonalLength * 1.5f
-                    val lineLength = lineProgress.toFloat() * maxLineLength
+                    // Fixed line length (does not move)
+                    val lineLength = maxLineLength
 
                     // Draw sinusoidal line using multiple small segments
-                    val numSegments = 20
-                    val waveAmplitude = 30f // Increased amplitude to make sinusoidal effect obvious
-                    val waveFrequency = 5f // 5 waves per line length
+                    val numSegments = 40
+                    val waveAmplitude = 20f // Reduced for gentler waves
+                    val waveFrequency = 1f // Reduced for fewer, wider waves
 
                     for (j in 0..numSegments) {
                         val segmentFraction = j.toFloat() / numSegments
                         val segmentLength = segmentFraction * lineLength
 
-                        // Base position on straight line along boat's path
+                        // Base position on straight line from bottom-left to top-right
                         val baseX = lineStartX + segmentLength * cos(wakeAngle).toFloat()
                         val baseY = lineStartY + segmentLength * sin(wakeAngle).toFloat()
 
                         // Sinusoidal offset perpendicular to line direction
                         val perpendicularAngle = wakeAngle + Math.PI / 2.0
-                        val sinusoidalOffset =
-                            sin(segmentLength * waveFrequency * 2 * Math.PI / maxLineLength) * waveAmplitude
+
+                        // Animate the wave phase along the line.
+                        // animValue 0→1 makes the wave travel from the line start to end,
+                        // creating a floating/rippling effect along the fixed line.
+                        val wavePhase = (segmentFraction - animValue) * waveFrequency * 2 * Math.PI
+                        val sinusoidalOffset = sin(wavePhase) * waveAmplitude
 
                         val offsetX = (sinusoidalOffset * cos(perpendicularAngle)).toFloat()
                         val offsetY = (sinusoidalOffset * sin(perpendicularAngle)).toFloat()
@@ -185,16 +184,13 @@ private fun WakeBackground() {
                         if (j > 0) {
                             val prevSegmentFraction = (j - 1).toFloat() / numSegments
                             val prevSegmentLength = prevSegmentFraction * lineLength
-                            val prevBaseX =
-                                lineStartX + prevSegmentLength * cos(wakeAngle).toFloat()
-                            val prevBaseY =
-                                lineStartY + prevSegmentLength * sin(wakeAngle).toFloat()
-                            val prevSinusoidalOffset =
-                                sin(prevSegmentLength * waveFrequency * 2 * Math.PI / maxLineLength) * waveAmplitude
-                            val prevOffsetX =
-                                (prevSinusoidalOffset * cos(perpendicularAngle)).toFloat()
-                            val prevOffsetY =
-                                (prevSinusoidalOffset * sin(perpendicularAngle)).toFloat()
+                            val prevBaseX = lineStartX + prevSegmentLength * cos(wakeAngle).toFloat()
+                            val prevBaseY = lineStartY + prevSegmentLength * sin(wakeAngle).toFloat()
+
+                            val prevWavePhase = (prevSegmentFraction - animValue) * waveFrequency * 2 * Math.PI
+                            val prevSinusoidalOffset = sin(prevWavePhase) * waveAmplitude
+                            val prevOffsetX = (prevSinusoidalOffset * cos(perpendicularAngle)).toFloat()
+                            val prevOffsetY = (prevSinusoidalOffset * sin(perpendicularAngle)).toFloat()
 
                             drawLine(
                                 color = Primary.copy(alpha = 0.8f),
