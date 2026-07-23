@@ -91,7 +91,7 @@
     <string name="welcome">Ciao %1$s</string>
     <string name="home_next_up">Prossimo</string>
     <string name="home_all_workouts">Tutti gli allenamenti</string>
-    <string name="workout_time">%1$sm</string>
+    <string name="workout_time">⏱️ %1$s minuti</string>
     <string name="workout_category_beginner">Principiante</string>
     <string name="workout_category_intermediate">Esordiente</string>
     <string name="workout_category_expert">Pro</string>
