@@ -193,10 +193,10 @@ private fun WakeBackground() {
                             val prevOffsetY = (prevSinusoidalOffset * sin(perpendicularAngle)).toFloat()
 
                             drawLine(
-                                color = Primary.copy(alpha = 0.8f),
+                                color = Primary.copy(alpha = 0.09f),
                                 start = Offset(prevBaseX + prevOffsetX, prevBaseY + prevOffsetY),
                                 end = Offset(segEndX, segEndY),
-                                strokeWidth = 2f + (angleFraction * 3f)
+                                strokeWidth = 2.6f + (angleFraction * 3f)
                             )
                         }
                     }
@@ -338,7 +338,7 @@ private fun StreakWidget(viewModel: HomeViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                onClick = { TODO() }
+                onClick = { viewModel.chartsClicked() }
             ) {
                 Row(
                     modifier = Modifier.padding(8.dp),
