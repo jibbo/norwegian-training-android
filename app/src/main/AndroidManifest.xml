@@ -38,6 +38,7 @@
         <activity
             android:name=".onboarding.OnboardingActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.NorwegianTraining" />
         <activity
             android:name=".log.LogActivity"
@@ -46,6 +47,7 @@
             android:name=".settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.NorwegianTraining" />
         <activity
             android:name=".paywall.PaywallActivity"
