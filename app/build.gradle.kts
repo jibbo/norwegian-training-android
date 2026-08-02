@@ -106,6 +106,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.konfetti)
     implementation(libs.lottie)
+    implementation(libs.play.review)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

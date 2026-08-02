@@ -22,6 +22,7 @@ gson = "2.14.0"
 konfetti = "2.0.5"
 datastore = "1.2.1"
 lottie = "6.7.1"
+playReview = "2.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

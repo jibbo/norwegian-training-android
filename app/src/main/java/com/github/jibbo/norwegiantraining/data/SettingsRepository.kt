@@ -42,6 +42,8 @@ interface SettingsRepository {
     fun getFitnessLevel(): FitnessLevel
     fun setLastProgressionDate(date: Date)
     fun getLastProgressionDate(): Date?
+    fun getReviewPromptShownDates(): List<Long>
+    fun addReviewPromptShownDate(date: Date)
 }
 
 @Singleton
@@ -143,6 +145,17 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         else null
     }
 
+    override fun getReviewPromptShownDates(): List<Long> {
+        val raw = sp.getString(KEY_REVIEW_PROMPT_SHOWN, "") ?: return emptyList()
+        return raw.split(",").filter { it.isNotBlank() }.map { it.toLong() }
+    }
+
+    override fun addReviewPromptShownDate(date: Date) {
+        val existing = getReviewPromptShownDates()
+        val updated = existing + date.time
+        sp.edit { putString(KEY_REVIEW_PROMPT_SHOWN, updated.joinToString(",")) }
+    }
+
     override fun debugOnlySetFreeTrialDate(date: Date?) {
         if (date != null)
             sp.edit { putLong("free_trial_date", date.time) }
@@ -163,6 +176,8 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_FITNESS_LEVEL = "fitness_level"
         const val KEY_RECOMMENDED_WORKOUT_ID = "recommended_workout_id"
         const val KEY_LAST_PROGRESSION_DATE = "last_progression_date"
+
+        const val KEY_REVIEW_PROMPT_SHOWN = "review_prompt_shown"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

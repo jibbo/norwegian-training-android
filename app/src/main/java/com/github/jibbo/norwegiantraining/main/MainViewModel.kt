@@ -1,7 +1,9 @@
 package com.github.jibbo.norwegiantraining.main
 
+import android.app.ReviewManagerFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.ProgressionResult
@@ -13,10 +15,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val settingsRepository: SettingsRepository
+) : ViewModel() {
 
     private var serviceBinder: WorkoutTimerService? = null
 
@@ -95,10 +101,53 @@ class MainViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             val progression = states.value.progressionResult
             serviceBinder?.closeWorkout()
+            requestReviewIfApplicable()
             if (progression is ProgressionResult.LevelUp) {
                 events.emit(UiCommands.LevelUp(progression.newLevel))
             } else {
                 events.emit(UiCommands.CLOSE)
+            }
+        }
+    }
+
+    fun requestReviewIfApplicable() {
+        viewModelScope.launch {
+            val shownDates = settingsRepository.getReviewPromptShownDates()
+            if (shownDates.size >= 3) return@launch
+
+            val shouldShow = if (shownDates.isEmpty()) {
+                true
+            } else {
+                val lastShown = shownDates.maxOrNull()!!
+                val daysSinceLast = TimeUnit.MILLISECONDS.toDays(
+                    System.currentTimeMillis() - lastShown
+                )
+                daysSinceLast >= 30
+            }
+
+            if (shouldShow) {
+                try {
+                    val manager = ReviewManagerFactory.create(
+                        com.github.jibbo.norwegiantraining.NorwegianTrainingApp.appContext
+                    )
+                    val request = manager.requestReviewFlow()
+                    request.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val pendingIntent = task.result?.pendingIntent
+                            pendingIntent?.let {
+                                // We can't launch it from a ViewModel, so we emit a command
+                                viewModelScope.launch {
+                                    events.emit(UiCommands.RequestReview(it))
+                                }
+                            }
+                        }
+                        // Mark it shown regardless of success/failure
+                        settingsRepository.addReviewPromptShownDate(Date(System.currentTimeMillis()))
+                    }
+                } catch (_: Exception) {
+                    // App context unavailable or other error, mark as shown
+                    settingsRepository.addReviewPromptShownDate(Date(System.currentTimeMillis()))
+                }
             }
         }
     }
