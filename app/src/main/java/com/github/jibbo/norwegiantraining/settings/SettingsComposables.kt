@@ -16,7 +16,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -44,7 +51,6 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -212,6 +218,7 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            val keyboardController = LocalSoftwareKeyboardController.current
             TextField(
                 placeholder = @Composable {
                     Text(text = R.string.your_name.localizable())
@@ -222,6 +229,9 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                 },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }
+                ),
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = Gray,
                     focusedContainerColor = Gray,

@@ -23,6 +23,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -368,6 +372,7 @@ fun ColumnScope.NameSetting(
     modifier: Modifier = Modifier
 ) {
     val nameState = viewModel.uiName.collectAsState()
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.weight(1f))
         TextField(
@@ -378,6 +383,10 @@ fun ColumnScope.NameSetting(
             value = nameState.value,
             onValueChange = { viewModel.onNameChanged(it) },
             label = { Text(text = state.placeholder.localizable()) },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { keyboardController?.hide() }
+            ),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.weight(1f))
