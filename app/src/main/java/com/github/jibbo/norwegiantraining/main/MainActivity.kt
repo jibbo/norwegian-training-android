@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.main
 
 import android.Manifest
+import android.app.ReviewManagerFactory
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -123,8 +124,32 @@ class MainActivity : BaseActivity() {
                     is UiCommands.LevelUp -> navigateTo(LevelUpActivity::class.java) {
                         putExtra(LevelUpActivity.EXTRA_NEW_LEVEL, command.newLevel.name)
                     }
+                    is UiCommands.RequestReview -> requestReview()
                 }
             }
+        }
+    }
+
+    private fun requestReview() {
+        try {
+            val manager = ReviewManagerFactory.create(this)
+            val request = manager.requestReviewFlow()
+            request.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    task.result?.let { pendingIntent ->
+                        try {
+                            startIntentSender(
+                                pendingIntent.intentSender,
+                                null, 0, 0, 0
+                            )
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Failed to launch review dialog", e)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create review manager", e)
         }
     }
 

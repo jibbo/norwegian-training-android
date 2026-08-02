@@ -126,28 +126,8 @@ class MainViewModel @Inject constructor(
             }
 
             if (shouldShow) {
-                try {
-                    val manager = ReviewManagerFactory.create(
-                        com.github.jibbo.norwegiantraining.NorwegianTrainingApp.appContext
-                    )
-                    val request = manager.requestReviewFlow()
-                    request.addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val pendingIntent = task.result?.pendingIntent
-                            pendingIntent?.let {
-                                // We can't launch it from a ViewModel, so we emit a command
-                                viewModelScope.launch {
-                                    events.emit(UiCommands.RequestReview(it))
-                                }
-                            }
-                        }
-                        // Mark it shown regardless of success/failure
-                        settingsRepository.addReviewPromptShownDate(Date(System.currentTimeMillis()))
-                    }
-                } catch (_: Exception) {
-                    // App context unavailable or other error, mark as shown
-                    settingsRepository.addReviewPromptShownDate(Date(System.currentTimeMillis()))
-                }
+                events.emit(UiCommands.RequestReview)
+                settingsRepository.addReviewPromptShownDate(Date(System.currentTimeMillis()))
             }
         }
     }
@@ -173,5 +153,6 @@ class MainViewModel @Inject constructor(
     sealed class UiCommands {
         object CLOSE : UiCommands()
         data class LevelUp(val newLevel: FitnessLevel) : UiCommands()
+        object RequestReview : UiCommands()
     }
 }
