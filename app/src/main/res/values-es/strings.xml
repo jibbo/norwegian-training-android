@@ -120,7 +120,7 @@
     <string name="share">Compartir</string>
     <string name="subscription_section_title">Suscripción</string>
     <string name="subscription_section_status">estado de suscripción</string>
-    <string name="subscription_section_date">válido hasta</string>
+    <string name="subscription_section_date">Válido hasta: %1$s</string>
     <string name="free_trial">prueba gratuita</string>
 
     <!-- Onboarding - Hook -->
