@@ -119,8 +119,9 @@
     <string name="share">Condividi</string>
     <string name="subscription_section_title">Abbonamento</string>
     <string name="subscription_section_status">Stato</string>
-    <string name="subscription_section_date">Valido fino al:</string>
+    <string name="subscription_section_date">Valido fino al: %1$s</string>
     <string name="free_trial">Prova gratuita</string>
+    <string name="app_version">Versione %1$s</string>
 
     <!-- Onboarding - Hook -->
     <string name="onboarding_hook_title">Il tuo cuore sta per ringiovanire parecchio.</string>

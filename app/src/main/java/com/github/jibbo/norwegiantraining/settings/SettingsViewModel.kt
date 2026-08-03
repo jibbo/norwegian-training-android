@@ -41,8 +41,10 @@ internal class SettingsViewModel @Inject constructor(
     )
 
     init {
-        if (settingsRepository.getFreeTrialEndDate()?.after(Date()) == true) {
+        val freeTrialEndDate = settingsRepository.getFreeTrialEndDate()
+        if (freeTrialEndDate?.after(Date()) == true) {
             uiStates.value = uiStates.value.copy(
+                rcExpDate = freeTrialEndDate.toLocalString(),
                 showUpgradeButton = true
             )
         } else if (Purchases.isConfigured) {
