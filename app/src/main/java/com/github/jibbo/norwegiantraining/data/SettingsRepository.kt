@@ -42,6 +42,8 @@ interface SettingsRepository {
     fun getFitnessLevel(): FitnessLevel
     fun setLastProgressionDate(date: Date)
     fun getLastProgressionDate(): Date?
+    fun setLastWorkoutId(id: Long)
+    fun getLastWorkoutId(): Long?
 }
 
 @Singleton
@@ -143,6 +145,16 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         else null
     }
 
+    override fun setLastWorkoutId(id: Long) {
+        sp.edit { putLong(KEY_LAST_WORKOUT_ID, id) }
+    }
+
+    override fun getLastWorkoutId(): Long? {
+        return if (sp.contains(KEY_LAST_WORKOUT_ID))
+            sp.getLong(KEY_LAST_WORKOUT_ID, 0L).takeIf { it > 0 }
+        else null
+    }
+
     override fun debugOnlySetFreeTrialDate(date: Date?) {
         if (date != null)
             sp.edit { putLong("free_trial_date", date.time) }
@@ -163,6 +175,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_FITNESS_LEVEL = "fitness_level"
         const val KEY_RECOMMENDED_WORKOUT_ID = "recommended_workout_id"
         const val KEY_LAST_PROGRESSION_DATE = "last_progression_date"
+        const val KEY_LAST_WORKOUT_ID = "last_workout_id"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

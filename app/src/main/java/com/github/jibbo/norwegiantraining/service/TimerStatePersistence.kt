@@ -13,6 +13,7 @@ import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.ProgressionResult
+import com.github.jibbo.norwegiantraining.log.SessionStatus
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -100,17 +101,29 @@ class TimerStatePersistence @Inject constructor(
     }
 
     private fun serializeProgressionResult(result: ProgressionResult?): String = when (result) {
-        is ProgressionResult.LevelUp -> "LevelUp:${result.newLevel.name}"
-        is ProgressionResult.NextWorkout -> "NextWorkout:${result.workoutId}"
+        is ProgressionResult.LevelUp -> {
+            val status = result.status?.name?.let { ":$it" } ?: ""
+            "LevelUp:${result.newLevel.name}$status"
+        }
+        is ProgressionResult.NextWorkout -> {
+            val status = result.status?.name?.let { ":$it" } ?: ""
+            "NextWorkout:${result.workoutId}$status"
+        }
         ProgressionResult.NoChange, null -> "NoChange"
     }
 
     private fun deserializeProgressionResult(value: String?): ProgressionResult? {
         if (value == null || value == "NoChange") return null
-        val parts = value.split(":", limit = 2)
+        val parts = value.split(":", limit = 3)
         return when (parts[0]) {
-            "LevelUp" -> ProgressionResult.LevelUp(FitnessLevel.valueOf(parts[1]))
-            "NextWorkout" -> ProgressionResult.NextWorkout(parts[1].toLong())
+            "LevelUp" -> {
+                val status = parts.getOrNull(2)?.let { SessionStatus.valueOf(it) }
+                ProgressionResult.LevelUp(FitnessLevel.valueOf(parts[1]), status)
+            }
+            "NextWorkout" -> {
+                val status = parts.getOrNull(2)?.let { SessionStatus.valueOf(it) }
+                ProgressionResult.NextWorkout(parts[1].toLong(), status)
+            }
             else -> null
         }
     }
