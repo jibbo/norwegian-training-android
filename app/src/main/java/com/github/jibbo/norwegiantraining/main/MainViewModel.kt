@@ -1,6 +1,5 @@
 package com.github.jibbo.norwegiantraining.main
 
-import android.app.ReviewManagerFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.SettingsRepository

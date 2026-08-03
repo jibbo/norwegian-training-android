@@ -46,6 +46,7 @@ import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.VideoBackground
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -305,7 +306,9 @@ internal fun Header(viewModel: MainViewModel, isDebugMode: Boolean) {
 fun GreetingPreview() {
     NorwegianTrainingTheme {
         MainView(
-            mainViewModel = MainViewModel(),
+            mainViewModel = MainViewModel(
+                settingsRepository = FakeSettingsRepository()
+            ),
         )
     }
 }

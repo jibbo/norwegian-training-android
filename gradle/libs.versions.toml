@@ -56,7 +56,8 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 konfetti = { group = "nl.dionsegijn", name = "konfetti-compose", version.ref = "konfetti" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
-play-review = { group = "com.google.android.play", name = "review", version.ref = "playReview" }
+play-review = { group = "com.google.android.play", name = "review-ktx", version.ref = "playReview" }
+play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "playReview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

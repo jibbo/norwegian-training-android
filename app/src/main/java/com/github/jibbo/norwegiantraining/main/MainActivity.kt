@@ -1,7 +1,6 @@
 package com.github.jibbo.norwegiantraining.main
 
 import android.Manifest
-import android.app.ReviewManagerFactory
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -26,6 +25,9 @@ import com.github.jibbo.norwegiantraining.service.WorkoutServiceBinder
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerAndroidService
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerService
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import com.google.android.gms.tasks.Task
+import com.google.android.play.core.review.ReviewInfo
+import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -133,19 +135,16 @@ class MainActivity : BaseActivity() {
     private fun requestReview() {
         try {
             val manager = ReviewManagerFactory.create(this)
-            val request = manager.requestReviewFlow()
+            val request: Task<ReviewInfo> = manager.requestReviewFlow()
             request.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    task.result?.let { pendingIntent ->
-                        try {
-                            startIntentSender(
-                                pendingIntent.intentSender,
-                                null, 0, 0, 0
-                            )
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Failed to launch review dialog", e)
-                        }
+                    val reviewInfo = task.result
+                    val flow = manager.launchReviewFlow(this, reviewInfo)
+                    flow.addOnCompleteListener {
+                        mainViewModel.closeWorkout()
                     }
+                } else {
+                    Log.e(TAG, "Failed to get Review Info", task.exception)
                 }
             }
         } catch (e: Exception) {
