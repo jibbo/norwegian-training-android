@@ -11,10 +11,10 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-sealed class ProgressionResult {
+sealed class ProgressionResult(val sessionStatus: SessionStatus? = null) {
     object NoChange : ProgressionResult()
-    data class NextWorkout(val workoutId: Long) : ProgressionResult()
-    data class LevelUp(val newLevel: FitnessLevel) : ProgressionResult()
+    data class NextWorkout(val workoutId: Long, val status: SessionStatus? = null) : ProgressionResult(status)
+    data class LevelUp(val newLevel: FitnessLevel, val status: SessionStatus? = null) : ProgressionResult(status)
 }
 
 class ApplyProgressionUseCase @Inject constructor(
@@ -34,7 +34,7 @@ class ApplyProgressionUseCase @Inject constructor(
         )
 
         // Time-based gradual progression
-        val timeBasedResult = applyTimeBased()
+        val timeBasedResult = applyTimeBased(status)
         Log.d(TAG, "timeBased result: $timeBasedResult")
         return timeBasedResult
     }
@@ -70,7 +70,7 @@ class ApplyProgressionUseCase @Inject constructor(
         return ProgressionResult.LevelUp(nextLevel)
     }
 
-    private suspend fun applyTimeBased(): ProgressionResult {
+    private suspend fun applyTimeBased(status: SessionStatus): ProgressionResult {
         // 1. Fetch sessions from the later of (28 days ago) or (last progression date)
         val now = Calendar.getInstance()
         val twentyEightDaysAgo =
@@ -113,7 +113,7 @@ class ApplyProgressionUseCase @Inject constructor(
         if (nextInDifficulty != null) {
             settingsRepository.setRecommendedWorkoutId(nextInDifficulty.id)
             settingsRepository.setLastProgressionDate(now.time)
-            return ProgressionResult.NextWorkout(nextInDifficulty.id)
+            return ProgressionResult.NextWorkout(nextInDifficulty.id, status)
         }
 
         // 6. Already on the last workout — level up if possible
@@ -127,6 +127,6 @@ class ApplyProgressionUseCase @Inject constructor(
         settingsRepository.setFitnessLevel(nextLevel)
         settingsRepository.setRecommendedWorkoutId(firstOfNextLevel.id)
         settingsRepository.setLastProgressionDate(now.time)
-        return ProgressionResult.LevelUp(nextLevel)
+        return ProgressionResult.LevelUp(nextLevel, status)
     }
 }

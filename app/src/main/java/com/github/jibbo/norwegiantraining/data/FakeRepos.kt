@@ -82,6 +82,8 @@ class FakeSettingsRepository : SettingsRepository {
     override fun getFitnessLevel(): FitnessLevel = FitnessLevel.BEGINNER
     override fun setLastProgressionDate(date: Date) {}
     override fun getLastProgressionDate(): Date? = null
+    override fun setLastWorkoutId(id: Long) {}
+    override fun getLastWorkoutId(): Long? = null
 }
 
 class FakeTracker : Analytics {
