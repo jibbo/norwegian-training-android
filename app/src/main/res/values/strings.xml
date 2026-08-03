@@ -72,6 +72,7 @@
     <string name="subscription_section_title">Subscription</string>
     <string name="subscription_section_status">Status</string>
     <string name="subscription_section_date">Valid Until: %1$s</string>
+    <string name="app_version">Version %1$s</string>
     <string name="subscription_section_never">Forever</string>
 
     <!-- Logs -->

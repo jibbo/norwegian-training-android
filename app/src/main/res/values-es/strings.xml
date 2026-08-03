@@ -121,7 +121,8 @@
     <string name="subscription_section_title">Suscripción</string>
     <string name="subscription_section_status">estado de suscripción</string>
     <string name="subscription_section_date">Válido hasta: %1$s</string>
-    <string name="free_trial">prueba gratuita</string>
+    <string name="free_trial">Prueba gratuita</string>
+    <string name="app_version">Versión %1$s</string>
 
     <!-- Onboarding - Hook -->
     <string name="onboarding_hook_title">Tu corazón está a punto de rejuvenecer mucho.</string>

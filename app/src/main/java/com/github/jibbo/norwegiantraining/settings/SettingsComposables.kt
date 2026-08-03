@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,7 +45,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.LinkAnnotation
@@ -110,6 +113,8 @@ internal fun SettingsScreen(
             if (BuildConfig.DEBUG) {
                 item { DebugCard(viewModel) }
             }
+
+            item { VersionCard() }
 
             item { Spacer(modifier = Modifier.size(32.dp)) }
         }
@@ -501,7 +506,6 @@ private fun PrivacyCard(viewModel: SettingsViewModel) {
 
 @Composable
 private fun CreditsCard() {
-    val context = LocalContext.current
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(
@@ -572,6 +576,30 @@ private fun CreditsCard() {
             }
         }
     }
+}
+
+@Composable
+private fun VersionCard() {
+//    ElevatedCard(
+//        modifier = Modifier.fillMaxWidth(),
+//        colors = CardDefaults.elevatedCardColors(
+//            containerColor = Gray
+//        ),
+//    ) {
+//        Column(modifier = Modifier.padding(6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(14.dp).fillMaxSize(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Text(
+                    text = R.string.app_version.localizable(BuildConfig.VERSION_NAME),
+                    style = Typography.labelSmall,
+                    color = Color.White,
+                    modifier = Modifier.alpha(0.8f)
+                )
+            }
+//        }
+//    }
 }
 
 @Composable
