@@ -131,7 +131,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         stateManager.startTimer()
 
         val state = stateManager.state.value
-            if (state.currentPhase.name != PhaseName.GET_READY) {
+        if (state.currentPhase.name != PhaseName.GET_READY) {
             scheduleAlarm(state.targetTimeMillis, state.currentPhaseIndex)
         }
         startCountdown(state.targetTimeMillis)
@@ -259,8 +259,11 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             }
 
             override fun onFinish() {
-                serviceScope.launch {
-                    handlePhaseTransition()
+                // Only transition if no alarm was scheduled — otherwise the AlarmReceiver handles it
+                if (!isAlarmScheduled()) {
+                    serviceScope.launch {
+                        handlePhaseTransition()
+                    }
                 }
             }
         }.start()
@@ -283,7 +286,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
                 secondsRemaining == 2 -> R.string.two
                 else -> R.string.one
             }
-speak(getString(messageId), flush = false)
+            speak(getString(messageId), flush = false)
             lastSpokenSeconds = secondsRemaining
         }
     }
@@ -359,6 +362,17 @@ speak(getString(messageId), flush = false)
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, targetTimeMillis, pendingIntent)
             Log.d(TAG, "Alarm scheduled for $targetTimeMillis")
         }
+    }
+
+    private fun isAlarmScheduled(): Boolean {
+        val intent = Intent(this, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
+        )
+        return pendingIntent != null
     }
 
     private fun cancelAlarm() {

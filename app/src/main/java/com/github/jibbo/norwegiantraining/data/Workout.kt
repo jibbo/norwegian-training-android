@@ -43,15 +43,10 @@ data class Workout(
     val totalTime = content.split("-").map { return@map it.toSeconds() }.sum().div(60)
 
     @Ignore
-    val totalPhases = content.split("-").size + 1
+    val totalPhases = content.split("-").size + 2 // We account also GET_READY and COMPLETED
 
     @Ignore // total time in minutes / km  * calories per km
     val kCal = (totalTime / 6) * 65
-
-    fun restTime(): Int {
-        val tmp = content.split("-")
-        return (tmp.first().toSeconds() + tmp.last().toSeconds()).div(60)
-    }
 
     fun getSplit(): List<Long> = content.split("-").map { it.toMilliSeconds() }
 
@@ -67,12 +62,6 @@ data class Workout(
             return dropLast(1).toLong() * 1000
         }
         return dropLast(n = 1).toLong() * 60 * 1000
-    }
-
-    private fun List<Any>.removeFromSize(howMany: Int) = if (size > howMany) {
-        size - howMany
-    } else {
-        0
     }
 }
 
