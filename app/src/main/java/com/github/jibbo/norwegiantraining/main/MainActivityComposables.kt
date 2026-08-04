@@ -197,7 +197,7 @@ private fun Instructions(state: UiState) {
             .padding(16.dp),
         textAlign = TextAlign.Center,
     )
-    val text: String = when {
+    val phasesText: String = when {
         state.currentPhaseIndex == 0 -> {
             R.string.phases_total.localizable(state.totalPhases)
         }
@@ -210,7 +210,7 @@ private fun Instructions(state: UiState) {
     }
 
     Text(
-        text = text,
+        text = phasesText,
         style = Typography.titleMedium,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth()
