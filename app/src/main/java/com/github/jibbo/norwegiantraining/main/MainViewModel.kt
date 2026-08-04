@@ -71,8 +71,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 } else if (states.value.remainingTimeOnPauseMillis > 0 || states.value.step.durationMillis > 0) {
                     service.startTimer()
                 } else {
-                    // Handle GET_READY phase (duration = 0) - advance to first real phase
-                    // automatically starts the timer for the next phase
                     service.advanceToNextPhase()
                 }
             }
