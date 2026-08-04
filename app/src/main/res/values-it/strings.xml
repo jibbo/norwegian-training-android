@@ -15,7 +15,7 @@
     <string name="light_cardio">Fase leggera</string>
     <string name="cooldown">Defaticamento</string>
     <string name="completed">FATTO</string>
-    <string name="phases_total">%1$s fasei in totale</string>
+    <string name="phases_total">%1$s fasi in totale</string>
     <string name="current_phases">%1$s di %2$s</string>
 
     <string name="home_workout_name">%1$s</string>
