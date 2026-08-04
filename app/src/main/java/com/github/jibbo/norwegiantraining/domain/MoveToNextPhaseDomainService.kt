@@ -18,7 +18,7 @@ class MoveToNextPhaseDomainService @Inject constructor(
                 .log("[MoveToNextPhaseDomainService] Workout not found: $id")
         }
         val phases = workoutToPhasesConverter.convert(workout!!)
-        val nextStep = (step + 1) % workout.totalPhases
+        val nextStep = (step + 1) % phases.size
         return phases[nextStep]
     }
 }

@@ -43,7 +43,7 @@ data class Workout(
     val totalTime = content.split("-").map { return@map it.toSeconds() }.sum().div(60)
 
     @Ignore
-    val totalPhases = content.split("-").size + 2 // We account also GET_READY and COMPLETED
+    val totalPhases = content.split("-").size
 
     @Ignore // total time in minutes / km  * calories per km
     val kCal = (totalTime / 6) * 65
