@@ -197,8 +197,20 @@ private fun Instructions(state: UiState) {
             .padding(16.dp),
         textAlign = TextAlign.Center,
     )
+    val text: String = when {
+        state.currentPhaseIndex == 0 -> {
+            R.string.phases_total.localizable(state.totalPhases)
+        }
+        state.currentPhaseIndex <= state.totalPhases -> {
+            R.string.current_phases.localizable(state.currentPhaseIndex, state.totalPhases)
+        }
+        else -> {
+            R.string.current_phases.localizable(state.totalPhases, state.totalPhases)
+        }
+    }
+
     Text(
-        text = "${state.currentPhaseIndex}/${state.totalPhases}",
+        text = text,
         style = Typography.titleMedium,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth()

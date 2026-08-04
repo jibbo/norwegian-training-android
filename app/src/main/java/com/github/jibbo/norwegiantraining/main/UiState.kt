@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.main
 
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.ProgressionResult
