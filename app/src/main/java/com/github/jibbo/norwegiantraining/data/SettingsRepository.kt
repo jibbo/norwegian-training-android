@@ -179,7 +179,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
-            var country = tm?.simCountryIso
+            var country = tm?.simCountryIso?.takeIf { it.isNotBlank() }
             country = country ?: Locale.getDefault().country
             val euCountries = arrayOf<String?>(
                 "BE", "EL", "LT", "PT", "BG", "ES", "LU", "RO", "CZ", "FR", "HU", "SI", "DK", "HR",
