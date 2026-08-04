@@ -19,6 +19,9 @@
     <string name="light_cardio">Light phase</string>
     <string name="cooldown">Cooldown</string>
     <string name="completed">DONE</string>
+    <string name="phases_total">%1$s phases total</string>
+    <string name="current_phases">%1$s of %2$s</string>
+
 
     <!-- MainActivity -->
     <string name="home_workout_name">%1$s</string>

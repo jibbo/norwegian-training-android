@@ -16,6 +16,8 @@
     <string name="light_cardio">Fase ligera</string>
     <string name="cooldown">Vuelta a la calma</string>
     <string name="completed">HECHO</string>
+    <string name="phases_total">%1$s fases en total</string>
+    <string name="current_phases">%1$s de %2$s</string>
 
     <string name="home_workout_name">%1$s</string>
     <string name="next_up">Siguiente fase >> %1$s</string>
