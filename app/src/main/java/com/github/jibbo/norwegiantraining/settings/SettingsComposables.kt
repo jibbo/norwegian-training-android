@@ -639,7 +639,7 @@ private fun CreditsCard() {
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        append(R.string.credits_illustrations_by.localizable())
+                        append("Illustrations by ")
                         withLink(
                             LinkAnnotation.Url(
                                 "https://twitter.com/ninalimpi",
@@ -656,7 +656,7 @@ private fun CreditsCard() {
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        append(R.string.credits_video_by.localizable())
+                        append("Video by ")
                         withLink(
                             LinkAnnotation.Url(
                                 "https://www.pexels.com/video/woman-running-through-the-stairs-3048202/",
@@ -673,7 +673,7 @@ private fun CreditsCard() {
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        append(R.string.credits_picture_by.localizable())
+                        append("Picture by ")
                         withLink(
                             LinkAnnotation.Url(
                                 "https://unsplash.com/@silverkblack?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash",
