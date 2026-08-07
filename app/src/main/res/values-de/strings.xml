@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Norwy</string>
+
+    <!-- Actions -->
+    <string name="start">Starten</string>
+    <string name="pause">Pause</string>
+    <string name="close">Schließen</string>
+    <string name="skip">Trainingsphase überspringen</string>
+    <string name="continue_btn">Weiter</string>
+    <string name="back">zurück</string>
+    <string name="share">Teilen</string>
+    <string name="buy">KAUFEN</string>
+
+
+    <!-- Timer states -->
+    <string name="get_ready">Mach dich bereit</string>
+    <string name="warmup">Aufwärmen</string>
+    <string name="hit_cardio">Intensive Phase</string>
+    <string name="light_cardio">Leichte Phase</string>
+    <string name="cooldown">Abkühlen</string>
+    <string name="completed">FERTIG</string>
+    <string name="phases_total">%1$s Phasen gesamt</string>
+    <string name="current_phases">%1$s von %2$s</string>
+
+
+    <!-- MainActivity -->
+    <string name="home_workout_name">%1$s</string>
+    <string name="next_up">Nächste >> %1$s</string>
+
+    <!-- Exercise descriptions -->
+    <string name="get_ready_desc">Beginne mit einem Aufwärmen</string>
+    <string name="warmup_desc">Trainiere leicht: Du solltest während des Aufwärmens sprechen können</string>
+    <string name="hit_cardio_desc">Gib dir die ganze Zeit über alle Mühe. Du schaffst das!</string>
+    <string name="light_cardio_desc">Trainiere leicht: Stabilisiere deinen Puls, ohne anzuhalten</string>
+    <string name="cooldown_desc">Atme, gehe langsam und entspannt, um deinen Puls zu senken – aber halt nicht an</string>
+    <string name="completed_desc">Herzlichen Glückwunsch! Du hast dieses Training beendet! Komm morgen für ein weiteres 💪</string>
+
+    <!-- TTS -->
+    <string name="one_minute_remaining">Noch eine Minute</string>
+    <string name="three" translatable="false">3</string>
+    <string name="two" translatable="false">2</string>
+    <string name="one" translatable="false">1</string>
+    <string name="four" translatable="false">4</string>
+    <string name="five" translatable="false">5</string>
+    <string name="six" translatable="false">6</string>
+    <string name="seven" translatable="false">7</string>
+    <string name="eight" translatable="false">8</string>
+    <string name="nine" translatable="false">9</string>
+    <string name="ten" translatable="false">10</string>
+    <string name="empty" translatable="false" />
+
+    <!-- Settings -->
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="title_profile_section">Profil</string>
+    <string name="weight">Gewicht</string>
+    <string name="height">Größe</string>
+    <string name="age">Alter</string>
+    <string name="title_general_section">Allgemein</string>
+    <string name="language">Sprache</string>
+    <string name="theme">Design</string>
+    <string name="dark_mode">Dunkelmodus</string>
+    <string name="notifications">Benachrichtigungen</string>
+    <string name="daily_reminder">Tägliche Erinnerung</string>
+    <string name="reminder_time">Erinnerungszeit</string>
+    <string name="title_activity_about">Über die App</string>
+    <string name="version">Version</string>
+    <string name="privacy_policy">Datenschutzerklärung</string>
+    <string name="terms_of_service">Nutzungsbedingungen</string>
+
+    <!-- Workout -->
+    <string name="workout">Training</string>
+    <string name="workouts">Trainings</string>
+    <string name="today">Heute</string>
+    <string name="tomorrow">Morgen</string>
+    <string name="yesterday">Gestern</string>
+    <string name="minutes">Minuten</string>
+    <string name="seconds">Sekunden</string>
+    <string name="calories">Kalorien</string>
+    <string name="distance">Strecke</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Willkommen bei Norwy</string>
+    <string name="onboarding_subtitle">Dein persönliches Training in Norwegen</string>
+    <string name="onboarding_step_1_title">Personalisierte Trainings</string>
+    <string name="onboarding_step_1_body">Einheiten, die an dein Niveau und deine Ziele angepasst sind</string>
+    <string name="onboarding_step_2_title">Fortschrittsverfolgung</string>
+    <string name="onboarding_step_2_body">Verfolge deine Verbesserungen im Laufe der Zeit</string>
+    <string name="onboarding_step_3_title">Tägliche Erinnerungen</string>
+    <string name="onboarding_step_3_body">Verpasse keine Trainingseinheit mehr</string>
+    <string name="onboarding_step_4_title">Schnelle Ergebnisse</string>
+    <string name="onboarding_step_4_body">Genieße die Vorteile bereits nach dem ersten Monat!</string>
+    <string name="onboarding_get_started">Loslegen</string>
+    <string name="onboarding_skip">Überspringen</string>
+
+    <!-- Level system -->
+    <string name="level">Stufe</string>
+    <string name="xp">XP</string>
+    <string name="level_up">Level aufgestiegen!</string>
+    <string name="level_up_title">Glückwunsch!</string>
+    <string name="level_up_desc">Du bist auf Stufe %1$s aufgestiegen. Mach weiter so!</string>
+    <string name="level_up_button">WEITER</string>
+
+</resources>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Norwy</string>
+
+    <!-- Actions -->
+    <string name="start">开始</string>
+    <string name="pause">暂停</string>
+    <string name="close">关闭</string>
+    <string name="skip">跳过训练阶段</string>
+    <string name="continue_btn">继续</string>
+    <string name="back">返回</string>
+    <string name="share">分享</string>
+    <string name="buy">购买</string>
+
+
+    <!-- Timer states -->
+    <string name="get_ready">做好准备</string>
+    <string name="warmup">热身</string>
+    <string name="hit_cardio">高强度阶段</string>
+    <string name="light_cardio">低强度阶段</string>
+    <string name="cooldown">放松</string>
+    <string name="completed">完成</string>
+    <string name="phases_total">共 %1$s 个阶段</string>
+    <string name="current_phases">%1$s / %2$s</string>
+
+
+    <!-- MainActivity -->
+    <string name="home_workout_name">%1$s</string>
+    <string name="next_up">下一个 >> %1$s</string>
+
+    <!-- Exercise descriptions -->
+    <string name="get_ready_desc">从热身开始</string>
+    <string name="warmup_desc">轻度运动：热身时你应该能够正常说话</string>
+    <string name="hit_cardio_desc">尽全力坚持到底。你可以做到的！</string>
+    <string name="light_cardio_desc">轻度运动：保持心率平稳，不要停下</string>
+    <string name="cooldown_desc">深呼吸，放慢节奏让心率恢复平静，但此刻不要停下</string>
+    <string name="completed_desc">恭喜！你完成了本次训练！明天再来挑战一次 💪</string>
+
+    <!-- TTS -->
+    <string name="one_minute_remaining">还剩一分钟</string>
+    <string name="three" translatable="false">3</string>
+    <string name="two" translatable="false">2</string>
+    <string name="one" translatable="false">1</string>
+    <string name="four" translatable="false">4</string>
+    <string name="five" translatable="false">5</string>
+    <string name="six" translatable="false">6</string>
+    <string name="seven" translatable="false">7</string>
+    <string name="eight" translatable="false">8</string>
+    <string name="nine" translatable="false">9</string>
+    <string name="ten" translatable="false">10</string>
+    <string name="empty" translatable="false" />
+
+    <!-- Settings -->
+    <string name="title_activity_settings">设置</string>
+    <string name="title_profile_section">个人资料</string>
+    <string name="weight">体重</string>
+    <string name="height">身高</string>
+    <string name="age">年龄</string>
+    <string name="title_general_section">通用</string>
+    <string name="language">语言</string>
+    <string name="theme">主题</string>
+    <string name="dark_mode">深色模式</string>
+    <string name="notifications">通知</string>
+    <string name="daily_reminder">每日提醒</string>
+    <string name="reminder_time">提醒时间</string>
+    <string name="title_activity_about">关于</string>
+    <string name="version">版本</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="terms_of_service">服务条款</string>
+
+    <!-- Workout -->
+    <string name="workout">训练</string>
+    <string name="workouts">训练计划</string>
+    <string name="today">今天</string>
+    <string name="tomorrow">明天</string>
+    <string name="yesterday">昨天</string>
+    <string name="minutes">分钟</string>
+    <string name="seconds">秒</string>
+    <string name="calories">卡路里</string>
+    <string name="distance">距离</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">欢迎使用 Norwy</string>
+    <string name="onboarding_subtitle">你在挪威的私人训练伙伴</string>
+    <string name="onboarding_step_1_title">个性化训练</string>
+    <string name="onboarding_step_1_body">根据你的水平和目标定制训练课程</string>
+    <string name="onboarding_step_2_title">进度追踪</string>
+    <string name="onboarding_step_2_body">随时跟踪你的进步</string>
+    <string name="onboarding_step_3_title">每日提醒</string>
+    <string name="onboarding_step_3_body">再也不错过任何一次训练</string>
+    <string name="onboarding_step_4_title">快速见效</string>
+    <string name="onboarding_step_4_body">第一个月就能感受到效果！</string>
+    <string name="onboarding_get_started">开始使用</string>
+    <string name="onboarding_skip">跳过</string>
+
+    <!-- Level system -->
+    <string name="level">等级</string>
+    <string name="xp">经验值</string>
+    <string name="level_up">升级！</string>
+    <string name="level_up_title">恭喜！</string>
+    <string name="level_up_desc">你已升至 %1$s 级。继续保持！</string>
+    <string name="level_up_button">继续</string>
+
+</resources>
