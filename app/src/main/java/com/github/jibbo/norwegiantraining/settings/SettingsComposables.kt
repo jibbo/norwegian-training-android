@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,14 +32,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -61,6 +60,7 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -134,7 +134,7 @@ private fun LanguageSelector(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     val state = viewModel.uiState.collectAsState()
     val currentLanguage = state.value.appLanguage ?: ""
-    var expanded by remember { mutableStateOf(false) }
+    var sheetOpen by remember { mutableStateOf(false) }
 
     data class LanguageOption(val code: String?, val labelRes: Int)
 
@@ -151,60 +151,78 @@ private fun LanguageSelector(viewModel: SettingsViewModel) {
     val selectedOption = languages.firstOrNull { it.code ?: "" == currentLanguage }
         ?: languages.first()
 
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 12.dp)
+                .clickable { sheetOpen = true }
         ) {
             Text(
                 text = R.string.app_language.localizable(),
                 style = Typography.bodyMedium,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(0.5f)
             )
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.weight(1f)
-            ) {
-                TextField(
-                    value = selectedOption.labelRes.localizable(),
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        errorContainerColor = Color.Transparent
-                    ),
+            Text(
+                text = selectedOption.labelRes.localizable(),
+                style = Typography.titleLarge,
+                color = White,
+                fontWeight = FontWeight.Normal
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_drop_down),
+                contentDescription = null,
+                tint = White
+            )
+        }
+    }
+
+    if (sheetOpen) {
+        ModalBottomSheet(
+            onDismissRequest = { sheetOpen = false },
+            containerColor = Black,
+            dragHandle = {
+                Divider(
+                    color = Gray,
+                    thickness = 4.dp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+        ) {
+            languages.forEach { lang ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .clickable {
+                            viewModel.selectLanguage(lang.code)
+                            sheetOpen = false
+                            val intent = context.packageManager
+                                .getLaunchIntentForPackage(context.packageName)
+                                ?.apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            intent?.let { context.startActivity(it) }
+                        }
                 ) {
-                    languages.forEach { lang ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = lang.labelRes.localizable(),
-                                    style = Typography.bodyMedium
-                                )
-                            },
-                            onClick = {
-                                viewModel.selectLanguage(lang.code)
-                                expanded = false
-                                val intent = context.packageManager
-                                    .getLaunchIntentForPackage(context.packageName)
-                                    ?.apply {
-                                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    }
-                                intent?.let { context.startActivity(it) }
-                            }
+                    Text(
+                        text = lang.labelRes.localizable(),
+                        style = Typography.bodyMedium,
+                        color = if (lang.code ?: "" == currentLanguage) Primary else White,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (lang.code ?: "" == currentLanguage) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_check_24),
+                            contentDescription = null,
+                            tint = Primary
                         )
                     }
                 }
@@ -334,7 +352,7 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
 
             LanguageSelector(viewModel)
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
