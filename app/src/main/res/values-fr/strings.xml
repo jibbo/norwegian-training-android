@@ -131,7 +131,4 @@
     <string name="level_up_title">Félicitations !</string>
     <string name="level_up_subtitle">Vous venez de passer au niveau %1$s</string>
     <string name="level_up_button">CONTINUER</string>
-    <string name="credits_illustrations_by">Illustrations par %1$s</string>
-    <string name="credits_video_by">Vidéo par %1$s</string>
-    <string name="credits_picture_by">Photo par %1$s</string>
 </resources>

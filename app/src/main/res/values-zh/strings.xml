@@ -131,7 +131,4 @@
     <string name="level_up_title">恭喜！</string>
     <string name="level_up_subtitle">你已升至 %1$s 级</string>
     <string name="level_up_button">继续</string>
-    <string name="credits_illustrations_by">插图由 %1$s 创作</string>
-    <string name="credits_video_by">视频由 %1$s 拍摄</string>
-    <string name="credits_picture_by">图片由 %1$s 拍摄</string>
 </resources>

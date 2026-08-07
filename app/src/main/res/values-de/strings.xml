@@ -131,7 +131,4 @@
     <string name="level_up_title">Glückwunsch!</string>
     <string name="level_up_subtitle">Du bist auf Stufe %1$s aufgestiegen</string>
     <string name="level_up_button">WEITER</string>
-    <string name="credits_illustrations_by">Illustrationen von %1$s</string>
-    <string name="credits_video_by">Video von %1$s</string>
-    <string name="credits_picture_by">Bild von %1$s</string>
 </resources>
