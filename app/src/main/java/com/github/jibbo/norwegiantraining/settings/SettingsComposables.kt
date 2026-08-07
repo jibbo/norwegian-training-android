@@ -110,7 +110,6 @@ internal fun SettingsScreen(
             state = listState,
         ) {
             item { ProfileCard(viewModel) }
-            item { LanguageCard(viewModel) }
             item { SubscriptionCard(viewModel) }
             item { TTSCard(viewModel) }
             item { OnboardingCard(viewModel) }
@@ -131,7 +130,7 @@ internal fun SettingsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LanguageCard(viewModel: SettingsViewModel) {
+private fun LanguageSelector(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     val state = viewModel.uiState.collectAsState()
     val currentLanguage = state.value.appLanguage ?: ""
@@ -152,23 +151,20 @@ private fun LanguageCard(viewModel: SettingsViewModel) {
     val selectedOption = languages.firstOrNull { it.code ?: "" == currentLanguage }
         ?: languages.first()
 
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = Gray
-        ),
-    ) {
-        Column(modifier = Modifier.padding(6.dp)) {
+    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        ) {
             Text(
                 text = R.string.app_language.localizable(),
-                style = Typography.bodyLarge,
-                modifier = Modifier.padding(8.dp),
-                color = Primary
+                style = Typography.bodyMedium,
+                modifier = Modifier.weight(1f)
             )
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.weight(1f)
             ) {
                 TextField(
                     value = selectedOption.labelRes.localizable(),
@@ -177,16 +173,19 @@ private fun LanguageCard(viewModel: SettingsViewModel) {
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                     },
-                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .menuAnchor()
                 )
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    modifier = Modifier.menuAnchor()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     languages.forEach { lang ->
                         DropdownMenuItem(
@@ -297,6 +296,46 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                 Spacer(modifier = Modifier.weight(1f))
             }
 
+            val keyboardController = LocalSoftwareKeyboardController.current
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Text(
+                    text = R.string.your_name.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                TextField(
+                    placeholder = {
+                        Text(text = R.string.your_name.localizable())
+                    },
+                    value = state.value.name ?: "",
+                    onValueChange = { newValue: String ->
+                        viewModel.setName(newValue)
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent
+                    ),
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { keyboardController?.hide() }
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LanguageSelector(viewModel)
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(8.dp)
@@ -313,27 +352,6 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                     color = Primary
                 )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            val keyboardController = LocalSoftwareKeyboardController.current
-            OutlinedTextField(
-                label = {
-                    Text(text = R.string.your_name.localizable())
-                },
-                value = state.value.name ?: "",
-                onValueChange = { newValue: String ->
-                    viewModel.setName(newValue)
-                },
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = { keyboardController?.hide() }
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
         }
     }
 }
