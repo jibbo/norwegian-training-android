@@ -36,7 +36,7 @@
     <string name="eight" translatable="false" />
     <string name="nine" translatable="false" />
     <string name="ten" translatable="false" />
-    <string name="empty" translatable="false" / />
+    <string name="empty" translatable="false" />
     <string name="title_activity_settings">Paramètres</string>
     <string name="title_profile_section">Profil</string>
     <string name="your_name">Votre nom</string>
