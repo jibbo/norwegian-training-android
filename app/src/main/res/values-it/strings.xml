@@ -141,4 +141,8 @@
     <string name="level_up_subtitle">Sei avanzato a %1$s! Continua così.</string>
     <string name="level_up_button">CONTINUA</string>
 
+    <string name="credits_illustrations_by">Illustrazioni di %1$s</string>
+    <string name="credits_video_by">Video di %1$s</string>
+    <string name="credits_picture_by">Foto di %1$s</string>
+
 </resources>

@@ -42,9 +42,9 @@
     <string name="your_name">你的名字</string>
     <string name="fitness_level_label">体能水平</string>
     <string name="title_tts_section">语音合成</string>
-    <string name="announce_phase">%1$s</string>
-    <string name="announce_phase_description">%1$s</string>
-    <string name="announce_countdown">%1$s</string>
+    <string name="announce_phase">阶段名称</string>
+    <string name="announce_phase_description">相描述</string>
+    <string name="announce_countdown">阶段结束前的倒计时</string>
     <string name="title_privacy_section">隐私</string>
     <string name="enable_analytics">分析数据</string>
     <string name="enable_analytics_description">通过分享匿名数据帮助改进应用</string>
@@ -97,7 +97,7 @@
     <string name="onboarding_step_invite_friends_body">分享你的进度，向朋友发起挑战</string>
     <string name="share_msg">我刚完成了一次 Norwy 训练！💪</string>
     <string name="welcome">欢迎</string>
-    <string name="home_next_up">下一个 >> %1$s</string>
+    <string name="home_next_up">下一个</string>
     <string name="home_all_workouts">所有训练</string>
     <string name="workout_time">时长</string>
     <string name="workout_split" translatable="false" />
@@ -105,17 +105,17 @@
     <string name="workout_category_beginner">初学者</string>
     <string name="workout_category_intermediate">中级</string>
     <string name="workout_category_expert">专家</string>
-    <string name="workout_first_steps">迈出第一步</string>
-    <string name="workout_beginner_1">初学者 1</string>
-    <string name="workout_beginner_2">初学者 2</string>
-    <string name="workout_beginner_3">初学者 3</string>
-    <string name="workout_not_so_beginner">不再是新手</string>
-    <string name="workout_intermediate_1">中级 1</string>
-    <string name="workout_intermediate_2">中级 2</string>
-    <string name="workout_intermediate_3">中级 3</string>
-    <string name="workout_true_norwegian">真正的挪威人</string>
-    <string name="workout_expert_1">专家 1</string>
-    <string name="workout_expert_2">专家 2</string>
+    <string name="workout_first_steps">🐾 迈出第一步</string>
+    <string name="workout_beginner_1">👣 初学者 1</string>
+    <string name="workout_beginner_2">🦶 初学者 2</string>
+    <string name="workout_beginner_3">🦶🦶 初学者 3</string>
+    <string name="workout_not_so_beginner">👟 不再是新手</string>
+    <string name="workout_intermediate_1">🎽 中级 1</string>
+    <string name="workout_intermediate_2">💨 中级 2</string>
+    <string name="workout_intermediate_3">🧠 中级 3</string>
+    <string name="workout_true_norwegian">"🇳🇴  真正的挪威人 4x4 "</string>
+    <string name="workout_expert_1">🏃‍♀️ 专家 1</string>
+    <string name="workout_expert_2">💪 专家 2</string>
     <string name="free_trial_title">7天免费试用</string>
     <string name="free_trial_subtitle">7天内使用所有训练课程</string>
     <string name="free_trial_button">开始免费试用</string>
@@ -131,4 +131,7 @@
     <string name="level_up_title">恭喜！</string>
     <string name="level_up_subtitle">你已升至 %1$s 级</string>
     <string name="level_up_button">继续</string>
+    <string name="credits_illustrations_by">插图由 %1$s 创作</string>
+    <string name="credits_video_by">视频由 %1$s 拍摄</string>
+    <string name="credits_picture_by">图片由 %1$s 拍摄</string>
 </resources>

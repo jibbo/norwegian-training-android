@@ -42,9 +42,9 @@
     <string name="your_name">Votre nom</string>
     <string name="fitness_level_label">Niveau de forme</string>
     <string name="title_tts_section">Synthèse vocale</string>
-    <string name="announce_phase">%1$s</string>
-    <string name="announce_phase_description">%1$s</string>
-    <string name="announce_countdown">%1$s</string>
+    <string name="announce_phase">Nom de la phase</string>
+    <string name="announce_phase_description">Description de la phase</string>
+    <string name="announce_countdown">Compte à rebours avant la fin de la phase</string>
     <string name="title_privacy_section">Confidentialité</string>
     <string name="enable_analytics">Analytiques</string>
     <string name="enable_analytics_description">Aider à améliorer l\'application en partageant des données anonymes</string>
@@ -57,7 +57,7 @@
     <string name="about_dev_section_title">Développeur</string>
     <string name="about_dev_section_description">Salut ! Je suis Gio, et je tiens à vous remercier d\'utiliser mon application.</string>
     <string name="about_dev_section_cta">Envoyez un email à Gio</string>
-    <string name="about_dev_section_mastodon">@Gio sur Mastodon</string>
+    <string name="about_dev_section_mastodon">Mastodon DM</string>
     <string name="credits_section_cta">Voir les crédits</string>
     <string name="subscription_section_title">Abonnement</string>
     <string name="subscription_section_status">Statut</string>
@@ -97,7 +97,7 @@
     <string name="onboarding_step_invite_friends_body">Partagez votre progression et challengez vos amis</string>
     <string name="share_msg">Je viens de compléter un entraînement Norwy ! 💪</string>
     <string name="welcome">Bienvenue</string>
-    <string name="home_next_up">Prochain >> %1$s</string>
+    <string name="home_next_up">Prochain</string>
     <string name="home_all_workouts">Tous les entraînements</string>
     <string name="workout_time">Durée</string>
     <string name="workout_split" translatable="false" />
@@ -105,17 +105,17 @@
     <string name="workout_category_beginner">Débutant</string>
     <string name="workout_category_intermediate">Intermédiaire</string>
     <string name="workout_category_expert">Expert</string>
-    <string name="workout_first_steps">Premiers pas</string>
-    <string name="workout_beginner_1">Débutant 1</string>
-    <string name="workout_beginner_2">Débutant 2</string>
-    <string name="workout_beginner_3">Débutant 3</string>
-    <string name="workout_not_so_beginner">Plus que débutant</string>
-    <string name="workout_intermediate_1">Intermédiaire 1</string>
-    <string name="workout_intermediate_2">Intermédiaire 2</string>
-    <string name="workout_intermediate_3">Intermédiaire 3</string>
-    <string name="workout_true_norwegian">Vrai Norvégien</string>
-    <string name="workout_expert_1">Expert 1</string>
-    <string name="workout_expert_2">Expert 2</string>
+    <string name="workout_first_steps">🐾 Premiers pas</string>
+    <string name="workout_beginner_1">👣 Débutant 1</string>
+    <string name="workout_beginner_2">🦶 Débutant 2</string>
+    <string name="workout_beginner_3">🦶🦶 Débutant 3</string>
+    <string name="workout_not_so_beginner">👟 Plus que débutant</string>
+    <string name="workout_intermediate_1">🎽 Intermédiaire 1</string>
+    <string name="workout_intermediate_2">💨 Intermédiaire 2</string>
+    <string name="workout_intermediate_3">🧠 Intermédiaire 3</string>
+    <string name="workout_true_norwegian">🇳🇴  Vrai 4x4 Norvégien</string>
+    <string name="workout_expert_1">🏃‍♀️ Expert 1</string>
+    <string name="workout_expert_2">💪 Expert 2</string>
     <string name="free_trial_title">Essai gratuit de 7 jours</string>
     <string name="free_trial_subtitle">Accédez à tous les entraînements pendant 7 jours</string>
     <string name="free_trial_button">COMMENCER L\'ESSAI GRATUIT</string>
@@ -131,4 +131,7 @@
     <string name="level_up_title">Félicitations !</string>
     <string name="level_up_subtitle">Vous venez de passer au niveau %1$s</string>
     <string name="level_up_button">CONTINUER</string>
+    <string name="credits_illustrations_by">Illustrations par %1$s</string>
+    <string name="credits_video_by">Vidéo par %1$s</string>
+    <string name="credits_picture_by">Photo par %1$s</string>
 </resources>

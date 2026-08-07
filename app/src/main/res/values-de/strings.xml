@@ -42,9 +42,9 @@
     <string name="your_name">Dein Name</string>
     <string name="fitness_level_label">Fitnesslevel</string>
     <string name="title_tts_section">Sprachausgabe</string>
-    <string name="announce_phase">%1$s</string>
-    <string name="announce_phase_description">%1$s</string>
-    <string name="announce_countdown">%1$s</string>
+    <string name="announce_phase">Phasenname</string>
+    <string name="announce_phase_description">Phasenbeschreibung</string>
+    <string name="announce_countdown">Countdown bis zum Ende der Phase</string>
     <string name="title_privacy_section">Datenschutz</string>
     <string name="enable_analytics">Analytik</string>
     <string name="enable_analytics_description">Hilf, die App zu verbessern, indem du anonyme Daten teilst</string>
@@ -57,7 +57,7 @@
     <string name="about_dev_section_title">Entwickler</string>
     <string name="about_dev_section_description">Hallo! Ich bin Gio, und ich möchte dich dafür danken, dass du meine App benutzt.</string>
     <string name="about_dev_section_cta">Schreibe Gio eine E-Mail</string>
-    <string name="about_dev_section_mastodon">@Gio auf Mastodon</string>
+    <string name="about_dev_section_mastodon">Mastodon DM</string>
     <string name="credits_section_cta">Credits anzeigen</string>
     <string name="subscription_section_title">Abonnement</string>
     <string name="subscription_section_status">Status</string>
@@ -97,7 +97,7 @@
     <string name="onboarding_step_invite_friends_body">Teile deine Fortschritte und fordere Freunde heraus</string>
     <string name="share_msg">Ich habe gerade ein Norwy-Training absolviert! 💪</string>
     <string name="welcome">Willkommen</string>
-    <string name="home_next_up">Nächste >> %1$s</string>
+    <string name="home_next_up">Nächste</string>
     <string name="home_all_workouts">Alle Trainings</string>
     <string name="workout_time">Dauer</string>
     <string name="workout_split" translatable="false" />
@@ -105,17 +105,17 @@
     <string name="workout_category_beginner">Anfänger</string>
     <string name="workout_category_intermediate">Fortgeschritten</string>
     <string name="workout_category_expert">Experte</string>
-    <string name="workout_first_steps">Erste Schritte</string>
-    <string name="workout_beginner_1">Anfänger 1</string>
-    <string name="workout_beginner_2">Anfänger 2</string>
-    <string name="workout_beginner_3">Anfänger 3</string>
-    <string name="workout_not_so_beginner">Mehr als Anfänger</string>
-    <string name="workout_intermediate_1">Fortgeschritten 1</string>
-    <string name="workout_intermediate_2">Fortgeschritten 2</string>
-    <string name="workout_intermediate_3">Fortgeschritten 3</string>
-    <string name="workout_true_norwegian">Echter Norweger</string>
-    <string name="workout_expert_1">Experte 1</string>
-    <string name="workout_expert_2">Experte 2</string>
+    <string name="workout_first_steps">🐾 Erste Schritte</string>
+    <string name="workout_beginner_1">👣 Anfänger 1</string>
+    <string name="workout_beginner_2">🦶 Anfänger 2</string>
+    <string name="workout_beginner_3">🦶🦶 Anfänger 3</string>
+    <string name="workout_not_so_beginner">👟 Mehr als Anfänger</string>
+    <string name="workout_intermediate_1">🎽 Fortgeschritten 1</string>
+    <string name="workout_intermediate_2">💨 Fortgeschritten 2</string>
+    <string name="workout_intermediate_3">🧠 Fortgeschritten 3</string>
+    <string name="workout_true_norwegian">🇳🇴  Echter 4x4 Norweger</string>
+    <string name="workout_expert_1">🏃‍♀️ Experte 1</string>
+    <string name="workout_expert_2">💪 Experte 2</string>
     <string name="free_trial_title">7 Tage kostenlos testen</string>
     <string name="free_trial_subtitle">Zugriff auf alle Trainings für 7 Tage</string>
     <string name="free_trial_button">KOSTENLOSE TESTVERSION STARTEN</string>
@@ -131,4 +131,7 @@
     <string name="level_up_title">Glückwunsch!</string>
     <string name="level_up_subtitle">Du bist auf Stufe %1$s aufgestiegen</string>
     <string name="level_up_button">WEITER</string>
+    <string name="credits_illustrations_by">Illustrationen von %1$s</string>
+    <string name="credits_video_by">Video von %1$s</string>
+    <string name="credits_picture_by">Bild von %1$s</string>
 </resources>
