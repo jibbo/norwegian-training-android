@@ -6,17 +6,17 @@ import android.os.LocaleList
 import java.util.Locale
 
 object LocaleHelper {
-    private const val LOCALE_KEY = "app_locale"
+    private const val PrefsName = "app_prefs"
+    private const val LOCALE_KEY = "app_language"
 
     fun setLocale(context: Context, languageCode: String?) {
-        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        prefs.edit().putString(LOCALE_KEY, languageCode).apply()
-        applyLocale(context)
+        context.getSharedPreferences(PrefsName, Context.MODE_PRIVATE)
+            .edit().putString(LOCALE_KEY, languageCode).apply()
     }
 
     fun getLocale(context: Context): String? {
-        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        return prefs.getString(LOCALE_KEY, null)
+        return context.getSharedPreferences(PrefsName, Context.MODE_PRIVATE)
+            .getString(LOCALE_KEY, null)
     }
 
     fun applyLocale(context: Context): Locale {
