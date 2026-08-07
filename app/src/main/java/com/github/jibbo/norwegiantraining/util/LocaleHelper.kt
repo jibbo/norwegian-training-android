@@ -27,7 +27,7 @@ object LocaleHelper {
             when (languageCode) {
                 "en" -> Locale.ENGLISH
                 "de" -> Locale.GERMAN
-                "es" -> Locale("es")
+                "es" -> Locale.forLanguageTag("es")
                 "fr" -> Locale.FRENCH
                 "it" -> Locale.ITALIAN
                 "zh" -> Locale.CHINESE
