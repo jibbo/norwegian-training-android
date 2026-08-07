@@ -131,4 +131,13 @@
     <string name="level_up_title">Glückwunsch!</string>
     <string name="level_up_subtitle">Du bist auf Stufe %1$s aufgestiegen</string>
     <string name="level_up_button">WEITER</string>
+
+    <string name="app_language">App-Sprache</string>
+    <string name="default_language">Systemstandard</string>
+    <string name="language_english">English</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Français</string>
+    <string name="language_italian">Italiano</string>
+    <string name="language_chinese">中文</string>
 </resources>

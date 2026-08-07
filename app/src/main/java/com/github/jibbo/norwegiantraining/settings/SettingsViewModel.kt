@@ -36,7 +36,8 @@ internal class SettingsViewModel @Inject constructor(
             isCrashReportingEnabled = settingsRepository.getCrashReportingEnabled(),
             isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled(),
             isFreeTrial = settingsRepository.getFreeTrialEndDate()?.after(Date()) == true,
-            rcExpDate = settingsRepository.getFreeTrialEndDate().toLocalString()
+            rcExpDate = settingsRepository.getFreeTrialEndDate().toLocalString(),
+            appLanguage = settingsRepository.getAppLanguage()
         )
     )
 
@@ -104,6 +105,10 @@ internal class SettingsViewModel @Inject constructor(
         if (settingsRepository.getAnalyticsEnabled()) {
             analytics.logCrashReporting(enabled)
         }
+    }
+
+    fun selectLanguage(languageCode: String?) {
+        settingsRepository.setAppLanguage(languageCode)
     }
 
     /**

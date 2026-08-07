@@ -84,6 +84,8 @@ class FakeSettingsRepository : SettingsRepository {
     override fun getLastProgressionDate(): Date? = null
     override fun setLastWorkoutId(id: Long) {}
     override fun getLastWorkoutId(): Long? = null
+    override fun setAppLanguage(languageCode: String?) {}
+    override fun getAppLanguage(): String? = null
 }
 
 class FakeTracker : Analytics {

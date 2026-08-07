@@ -33,6 +33,7 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -103,6 +104,7 @@ internal fun SettingsScreen(
             state = listState,
         ) {
             item { ProfileCard(viewModel) }
+            item { LanguageCard(viewModel) }
             item { SubscriptionCard(viewModel) }
             item { TTSCard(viewModel) }
             item { OnboardingCard(viewModel) }
@@ -117,6 +119,71 @@ internal fun SettingsScreen(
             item { VersionCard() }
 
             item { Spacer(modifier = Modifier.size(32.dp)) }
+        }
+    }
+}
+
+@Composable
+private fun LanguageCard(viewModel: SettingsViewModel) {
+    val context = LocalContext.current
+    val state = viewModel.uiState.collectAsState()
+    val currentLanguage = state.value.appLanguage ?: ""
+
+    data class LanguageOption(val code: String?, val labelRes: Int)
+
+    val languages = listOf(
+        LanguageOption(null, R.string.default_language),
+        LanguageOption("en", R.string.language_english),
+        LanguageOption("de", R.string.language_german),
+        LanguageOption("es", R.string.language_spanish),
+        LanguageOption("fr", R.string.language_french),
+        LanguageOption("it", R.string.language_italian),
+        LanguageOption("zh", R.string.language_chinese),
+    )
+
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
+        Column(modifier = Modifier.padding(6.dp)) {
+            Text(
+                text = R.string.app_language.localizable(),
+                style = Typography.bodyLarge,
+                modifier = Modifier.padding(8.dp),
+                color = Primary
+            )
+            languages.forEach { lang ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    RadioButton(
+                        selected = currentLanguage == (lang.code ?: ""),
+                        onClick = {
+                            viewModel.selectLanguage(lang.code)
+                            // Restart activity to apply locale immediately
+                            val intent = context.packageManager
+                                .getLaunchIntentForPackage(context.packageName)
+                                ?.apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            intent?.let { context.startActivity(it) }
+                        },
+                        colors = androidx.compose.material3.RadioButtonDefaults.colors(
+                            selectedColor = Primary
+                        )
+                    )
+                    Text(
+                        text = lang.labelRes.localizable(),
+                        style = Typography.bodyMedium,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
         }
     }
 }

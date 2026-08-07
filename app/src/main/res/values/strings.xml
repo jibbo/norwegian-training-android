@@ -167,4 +167,13 @@
     <string name="level_up_subtitle">You\'ve advanced to %1$s! Keep pushing your limits.</string>
     <string name="level_up_button">CONTINUE</string>
 
+    <string name="app_language">App Language</string>
+    <string name="default_language">System Default</string>
+    <string name="language_english">English</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Français</string>
+    <string name="language_italian">Italiano</string>
+    <string name="language_chinese">中文</string>
+
 </resources>

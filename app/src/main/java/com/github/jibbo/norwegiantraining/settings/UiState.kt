@@ -12,6 +12,7 @@ data class UiState(
     val isCrashReportingEnabled: Boolean,
     val isAnalyticsEnabled: Boolean,
     val isFreeTrial: Boolean,
+    val appLanguage: String? = null,
     val rcSubActive: Boolean = true,
     val rcExpDate: String? = null,
     val showUpgradeButton: Boolean = false

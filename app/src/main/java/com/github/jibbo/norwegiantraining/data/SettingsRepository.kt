@@ -4,6 +4,7 @@ import android.content.Context
 import android.telephony.TelephonyManager
 import androidx.core.content.edit
 import com.github.jibbo.norwegiantraining.domain.FitnessLevel
+import com.github.jibbo.norwegiantraining.util.LocaleHelper
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -44,6 +45,8 @@ interface SettingsRepository {
     fun getLastProgressionDate(): Date?
     fun setLastWorkoutId(id: Long)
     fun getLastWorkoutId(): Long?
+    fun setAppLanguage(languageCode: String?)
+    fun getAppLanguage(): String?
 }
 
 @Singleton
@@ -163,6 +166,13 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         }
     }
 
+    override fun setAppLanguage(languageCode: String?) {
+        LocaleHelper.setLocale(context, languageCode)
+        sp.edit { putString(KEY_APP_LANGUAGE, languageCode) }
+    }
+
+    override fun getAppLanguage(): String? = sp.getString(KEY_APP_LANGUAGE, null)
+
     companion object {
         const val KEY_ANNOUNCE_PHASE = "announce_phase"
         const val KEY_USERNAME = "username"
@@ -176,6 +186,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_RECOMMENDED_WORKOUT_ID = "recommended_workout_id"
         const val KEY_LAST_PROGRESSION_DATE = "last_progression_date"
         const val KEY_LAST_WORKOUT_ID = "last_workout_id"
+        const val KEY_APP_LANGUAGE = "app_language"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
