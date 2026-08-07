@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Norwy</string>
-
-    <!-- Actions -->
     <string name="start">开始</string>
     <string name="pause">暂停</string>
     <string name="close">关闭</string>
@@ -11,9 +9,6 @@
     <string name="back">返回</string>
     <string name="share">分享</string>
     <string name="buy">购买</string>
-
-
-    <!-- Timer states -->
     <string name="get_ready">做好准备</string>
     <string name="warmup">热身</string>
     <string name="hit_cardio">高强度阶段</string>
@@ -22,83 +17,118 @@
     <string name="completed">完成</string>
     <string name="phases_total">共 %1$s 个阶段</string>
     <string name="current_phases">%1$s / %2$s</string>
-
-
-    <!-- MainActivity -->
     <string name="home_workout_name">%1$s</string>
     <string name="next_up">下一个 >> %1$s</string>
-
-    <!-- Exercise descriptions -->
     <string name="get_ready_desc">从热身开始</string>
     <string name="warmup_desc">轻度运动：热身时你应该能够正常说话</string>
     <string name="hit_cardio_desc">尽全力坚持到底。你可以做到的！</string>
     <string name="light_cardio_desc">轻度运动：保持心率平稳，不要停下</string>
     <string name="cooldown_desc">深呼吸，放慢节奏让心率恢复平静，但此刻不要停下</string>
     <string name="completed_desc">恭喜！你完成了本次训练！明天再来挑战一次 💪</string>
-
-    <!-- TTS -->
     <string name="one_minute_remaining">还剩一分钟</string>
-    <string name="three" translatable="false">3</string>
-    <string name="two" translatable="false">2</string>
-    <string name="one" translatable="false">1</string>
-    <string name="four" translatable="false">4</string>
-    <string name="five" translatable="false">5</string>
-    <string name="six" translatable="false">6</string>
-    <string name="seven" translatable="false">7</string>
-    <string name="eight" translatable="false">8</string>
-    <string name="nine" translatable="false">9</string>
-    <string name="ten" translatable="false">10</string>
-    <string name="empty" translatable="false" />
-
-    <!-- Settings -->
+    <string name="three" translatable="false" />
+    <string name="two" translatable="false" />
+    <string name="one" translatable="false" />
+    <string name="four" translatable="false" />
+    <string name="five" translatable="false" />
+    <string name="six" translatable="false" />
+    <string name="seven" translatable="false" />
+    <string name="eight" translatable="false" />
+    <string name="nine" translatable="false" />
+    <string name="ten" translatable="false" />
+    <string name="empty" translatable="false" / />
     <string name="title_activity_settings">设置</string>
     <string name="title_profile_section">个人资料</string>
-    <string name="weight">体重</string>
-    <string name="height">身高</string>
-    <string name="age">年龄</string>
-    <string name="title_general_section">通用</string>
-    <string name="language">语言</string>
-    <string name="theme">主题</string>
-    <string name="dark_mode">深色模式</string>
-    <string name="notifications">通知</string>
-    <string name="daily_reminder">每日提醒</string>
-    <string name="reminder_time">提醒时间</string>
-    <string name="title_activity_about">关于</string>
-    <string name="version">版本</string>
-    <string name="privacy_policy">隐私政策</string>
-    <string name="terms_of_service">服务条款</string>
-
-    <!-- Workout -->
-    <string name="workout">训练</string>
-    <string name="workouts">训练计划</string>
-    <string name="today">今天</string>
-    <string name="tomorrow">明天</string>
-    <string name="yesterday">昨天</string>
-    <string name="minutes">分钟</string>
-    <string name="seconds">秒</string>
-    <string name="calories">卡路里</string>
-    <string name="distance">距离</string>
-
-    <!-- Onboarding -->
-    <string name="onboarding_title">欢迎使用 Norwy</string>
-    <string name="onboarding_subtitle">你在挪威的私人训练伙伴</string>
+    <string name="your_name">你的名字</string>
+    <string name="fitness_level_label">体能水平</string>
+    <string name="title_tts_section">语音合成</string>
+    <string name="announce_phase">%1$s</string>
+    <string name="announce_phase_description">%1$s</string>
+    <string name="announce_countdown">%1$s</string>
+    <string name="title_privacy_section">隐私</string>
+    <string name="enable_analytics">分析数据</string>
+    <string name="enable_analytics_description">通过分享匿名数据帮助改进应用</string>
+    <string name="enable_crash_reporting">崩溃报告</string>
+    <string name="enable_crash_reporting_description">自动发送崩溃报告</string>
+    <string name="title_beta_section">测试功能</string>
+    <string name="beta_section_description">访问实验性功能</string>
+    <string name="enable_timer_notification">计时器通知</string>
+    <string name="onboarding_section_title">设置</string>
+    <string name="about_dev_section_title">开发者</string>
+    <string name="about_dev_section_description">你好！我是 Gio，感谢你使用我的应用。</string>
+    <string name="about_dev_section_cta">给 Gio 发邮件</string>
+    <string name="about_dev_section_mastodon">在 Mastodon 上联系 Gio</string>
+    <string name="credits_section_cta">查看鸣谢</string>
+    <string name="subscription_section_title">订阅</string>
+    <string name="subscription_section_status">状态</string>
+    <string name="subscription_section_date">日期</string>
+    <string name="app_version">版本 %1$s</string>
+    <string name="subscription_section_never">从未</string>
+    <string name="title_activity_logs">日志</string>
     <string name="onboarding_step_1_title">个性化训练</string>
+    <string name="onboarding_step_1_description">根据你的水平和目标定制训练课程</string>
+    <string name="onboarding_step_1_name">个性化训练</string>
+    <string name="onboarding_step_1_handle">个性化训练</string>
     <string name="onboarding_step_1_body">根据你的水平和目标定制训练课程</string>
     <string name="onboarding_step_2_title">进度追踪</string>
+    <string name="onboarding_step_2_description">随时跟踪你的进步</string>
     <string name="onboarding_step_2_body">随时跟踪你的进步</string>
     <string name="onboarding_step_3_title">每日提醒</string>
-    <string name="onboarding_step_3_body">再也不错过任何一次训练</string>
+    <string name="onboarding_step_3_option_1">启用提醒</string>
+    <string name="onboarding_step_3_option_2">不用了</string>
     <string name="onboarding_step_4_title">快速见效</string>
+    <string name="onboarding_step_4_description">第一个月就能感受到效果！</string>
     <string name="onboarding_step_4_body">第一个月就能感受到效果！</string>
-    <string name="onboarding_get_started">开始使用</string>
-    <string name="onboarding_skip">跳过</string>
-
-    <!-- Level system -->
-    <string name="level">等级</string>
-    <string name="xp">经验值</string>
-    <string name="level_up">升级！</string>
+    <string name="onboarding_step_4_cta">开始吧！</string>
+    <string name="onboarding_step_5_title">通知</string>
+    <string name="onboarding_step_5_description">允许通知以接收训练提醒</string>
+    <string name="onboarding_step_5_body">我们会通过通知提醒你进行训练</string>
+    <string name="onboarding_step_6_title">活动识别</string>
+    <string name="onboarding_step_6_description">允许活动识别以追踪你的训练</string>
+    <string name="onboarding_step_6_body">这让 Norwy 能够自动检测你何时在训练</string>
+    <string name="onboarding_step_notification_permission_title">允许通知</string>
+    <string name="onboarding_step_notification_permission_body">我们需要此权限来发送训练提醒</string>
+    <string name="onboarding_step_activity_recognition_permission_title">允许活动识别</string>
+    <string name="onboarding_step_activity_recognition_permission_body">我们需要此权限来检测你的运动状态</string>
+    <string name="onboarding_step_name_title">你叫什么名字？</string>
+    <string name="onboarding_step_name_placeholder">你的名字</string>
+    <string name="onboarding_step_invite_friends_title">邀请朋友</string>
+    <string name="onboarding_step_invite_friends_description">和朋友一起训练</string>
+    <string name="onboarding_step_invite_friends_body">分享你的进度，向朋友发起挑战</string>
+    <string name="share_msg">我刚完成了一次 Norwy 训练！💪</string>
+    <string name="welcome">欢迎</string>
+    <string name="home_next_up">下一个 >> %1$s</string>
+    <string name="home_all_workouts">所有训练</string>
+    <string name="workout_time">时长</string>
+    <string name="workout_split" translatable="false" />
+    <string name="workout_kCal" translatable="false" />
+    <string name="workout_category_beginner">初学者</string>
+    <string name="workout_category_intermediate">中级</string>
+    <string name="workout_category_expert">专家</string>
+    <string name="workout_first_steps">迈出第一步</string>
+    <string name="workout_beginner_1">初学者 1</string>
+    <string name="workout_beginner_2">初学者 2</string>
+    <string name="workout_beginner_3">初学者 3</string>
+    <string name="workout_not_so_beginner">不再是新手</string>
+    <string name="workout_intermediate_1">中级 1</string>
+    <string name="workout_intermediate_2">中级 2</string>
+    <string name="workout_intermediate_3">中级 3</string>
+    <string name="workout_true_norwegian">真正的挪威人</string>
+    <string name="workout_expert_1">专家 1</string>
+    <string name="workout_expert_2">专家 2</string>
+    <string name="free_trial_title">7天免费试用</string>
+    <string name="free_trial_subtitle">7天内使用所有训练课程</string>
+    <string name="free_trial_button">开始免费试用</string>
+    <string name="free_trial">免费试用</string>
+    <string name="onboarding_hook_title">欢迎使用 Norwy</string>
+    <string name="onboarding_hook_description">你在挪威的私人训练伙伴</string>
+    <string name="onboarding_hook_body">随时随地进行训练</string>
+    <string name="onboarding_fitness_title">你的体能水平如何？</string>
+    <string name="onboarding_fitness_description">这有助于我们为你定制训练</string>
+    <string name="onboarding_fitness_beginner">初学者</string>
+    <string name="onboarding_fitness_occasional">偶尔运动</string>
+    <string name="onboarding_fitness_fit">体能良好</string>
     <string name="level_up_title">恭喜！</string>
-    <string name="level_up_desc">你已升至 %1$s 级。继续保持！</string>
+    <string name="level_up_subtitle">你已升至 %1$s 级</string>
     <string name="level_up_button">继续</string>
-
 </resources>
