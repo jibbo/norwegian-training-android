@@ -33,7 +33,11 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -123,11 +127,13 @@ internal fun SettingsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LanguageCard(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     val state = viewModel.uiState.collectAsState()
     val currentLanguage = state.value.appLanguage ?: ""
+    var expanded by remember { mutableStateOf(false) }
 
     data class LanguageOption(val code: String?, val labelRes: Int)
 
@@ -140,6 +146,9 @@ private fun LanguageCard(viewModel: SettingsViewModel) {
         LanguageOption("it", R.string.language_italian),
         LanguageOption("zh", R.string.language_chinese),
     )
+
+    val selectedOption = languages.firstOrNull { it.code ?: "" == currentLanguage }
+        ?: languages.first()
 
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -154,34 +163,49 @@ private fun LanguageCard(viewModel: SettingsViewModel) {
                 modifier = Modifier.padding(8.dp),
                 color = Primary
             )
-            languages.forEach { lang ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                TextField(
+                    value = selectedOption.labelRes.localizable(),
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(horizontal = 8.dp)
+                        .menuAnchor()
+                )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.menuAnchor()
                 ) {
-                    RadioButton(
-                        selected = currentLanguage == (lang.code ?: ""),
-                        onClick = {
-                            viewModel.selectLanguage(lang.code)
-                            // Restart activity to apply locale immediately
-                            val intent = context.packageManager
-                                .getLaunchIntentForPackage(context.packageName)
-                                ?.apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                            intent?.let { context.startActivity(it) }
-                        },
-                        colors = androidx.compose.material3.RadioButtonDefaults.colors(
-                            selectedColor = Primary
+                    languages.forEach { lang ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = lang.labelRes.localizable(),
+                                    style = Typography.bodyMedium
+                                )
+                            },
+                            onClick = {
+                                viewModel.selectLanguage(lang.code)
+                                expanded = false
+                                val intent = context.packageManager
+                                    .getLaunchIntentForPackage(context.packageName)
+                                    ?.apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                intent?.let { context.startActivity(it) }
+                            }
                         )
-                    )
-                    Text(
-                        text = lang.labelRes.localizable(),
-                        style = Typography.bodyMedium,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
+                    }
                 }
             }
         }
