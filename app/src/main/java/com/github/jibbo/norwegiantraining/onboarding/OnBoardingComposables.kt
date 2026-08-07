@@ -34,6 +34,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -375,7 +376,7 @@ fun ColumnScope.NameSetting(
     val keyboardController = LocalSoftwareKeyboardController.current
     Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.weight(1f))
-        TextField(
+        OutlinedTextField(
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Gray,
                 focusedContainerColor = Gray,
