@@ -3,24 +3,36 @@ package com.github.jibbo.norwegiantraining.components
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import com.github.jibbo.norwegiantraining.data.Analytics
-import android.content.SharedPreferences
-import com.github.jibbo.norwegiantraining.data.SettingsRepository
+import com.github.jibbo.norwegiantraining.data.PREFS_KEY
+import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository.Companion.KEY_APP_LANGUAGE
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class BaseActivity() : ComponentActivity() {
+abstract class BaseActivity : ComponentActivity() {
     @Inject
     lateinit var analytics: Analytics
 
     override fun attachBaseContext(newBase: Context) {
-        val prefs: SharedPreferences = newBase.getSharedPreferences(SettingsRepository.PREFS_KEY, Context.MODE_PRIVATE)
-        val locale = prefs.getString(SettingsRepository.KEY_APP_LANGUAGE, null)
+        super.attachBaseContext(localizeContext(newBase))
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        analytics.logScreenView(this::class.java.simpleName, this::class.java)
+    }
+
+    private fun localizeContext(newBase: Context): Context? {
+        val locale = newBase.getSharedPreferences(PREFS_KEY, MODE_PRIVATE).getString(KEY_APP_LANGUAGE, null)
         val context = if (locale.isNullOrEmpty()) {
             newBase
         } else {
@@ -38,20 +50,6 @@ abstract class BaseActivity() : ComponentActivity() {
             config.setLocale(resolvedLocale)
             newBase.createConfigurationContext(config)
         }
-        super.attachBaseContext(context)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        analytics.logScreenView(this::class.java.simpleName, this::class.java)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
+        return context
     }
 }
