@@ -520,7 +520,7 @@ private fun WorkoutCard(
         )
         Text(
             text =R.string.workout_time.localizable(workout.totalTime),
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.padding(8.dp),
             style = Typography.bodyMedium,
             color = White
         )
