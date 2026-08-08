@@ -4,7 +4,7 @@ import android.content.Context
 import android.telephony.TelephonyManager
 import androidx.core.content.edit
 import com.github.jibbo.norwegiantraining.domain.FitnessLevel
-import com.github.jibbo.norwegiantraining.util.LocaleHelper
+
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -167,8 +167,8 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     }
 
     override fun setAppLanguage(languageCode: String?) {
-        LocaleHelper.setLocale(context, languageCode)
-        sp.edit { putString(KEY_APP_LANGUAGE, languageCode) }
+        languageCode ?: return
+        sp.edit().putString(APP_LANGUAGE, languageCode).commit()
     }
 
     override fun getAppLanguage(): String? = sp.getString(KEY_APP_LANGUAGE, null)

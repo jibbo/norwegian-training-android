@@ -37,7 +37,7 @@ internal class SettingsViewModel @Inject constructor(
             isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled(),
             isFreeTrial = settingsRepository.getFreeTrialEndDate()?.after(Date()) == true,
             rcExpDate = settingsRepository.getFreeTrialEndDate().toLocalString(),
-            appLanguage = settingsRepository.getAppLanguage()
+            appLanguage = settingsRepository.getAppLanguage() ?: ""
         )
     )
 

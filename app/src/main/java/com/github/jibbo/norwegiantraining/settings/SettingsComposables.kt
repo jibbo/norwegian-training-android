@@ -38,7 +38,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -133,7 +132,7 @@ internal fun SettingsScreen(
 private fun LanguageSelector(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     val state = viewModel.uiState.collectAsState()
-    val currentLanguage = state.value.appLanguage ?: ""
+    val currentLanguage = state.value.appLanguage
     var sheetOpen by remember { mutableStateOf(false) }
 
     data class LanguageOption(val code: String?, val labelRes: Int)
@@ -207,7 +206,7 @@ private fun LanguageSelector(viewModel: SettingsViewModel) {
                             val intent = context.packageManager
                                 .getLaunchIntentForPackage(context.packageName)
                                 ?.apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                                 }
                             intent?.let { context.startActivity(it) }
                         }
