@@ -25,12 +25,12 @@ abstract class BaseActivity() : ComponentActivity() {
             newBase
         } else {
             val resolvedLocale = when (locale) {
-                "en" -> Locale.ENGLISH
-                "de" -> Locale.GERMAN
+                "en" -> Locale.forLanguageTag("en")
+                "de" -> Locale.forLanguageTag("de")
                 "es" -> Locale.forLanguageTag("es")
-                "fr" -> Locale.FRENCH
-                "it" -> Locale.ITALIAN
-                "zh" -> Locale.CHINESE
+                "fr" -> Locale.forLanguageTag("fr")
+                "it" -> Locale.forLanguageTag("it")
+                "zh" -> Locale.forLanguageTag("zh")
                 else -> Configuration(newBase.resources.configuration).locales.get(0)
             }
             Locale.setDefault(resolvedLocale)
