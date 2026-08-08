@@ -166,8 +166,9 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         }
     }
 
-    fun setAppLanguage(languageCode: String) {
-        sp.edit().putString(APP_LANGUAGE, languageCode).apply()
+    override fun setAppLanguage(languageCode: String?) {
+        languageCode ?: return
+        sp.edit().putString(APP_LANGUAGE, languageCode).commit()
     }
 
     override fun getAppLanguage(): String? = sp.getString(KEY_APP_LANGUAGE, null)
