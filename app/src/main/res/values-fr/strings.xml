@@ -100,8 +100,6 @@
     <string name="home_next_up">Prochain</string>
     <string name="home_all_workouts">Tous les entraînements</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
-    <string name="workout_split" translatable="false" />
-    <string name="workout_kCal" translatable="false" />
     <string name="workout_category_beginner">Débutant</string>
     <string name="workout_category_intermediate">Intermédiaire</string>
     <string name="workout_category_expert">Expert</string>
