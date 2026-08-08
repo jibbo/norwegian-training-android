@@ -96,7 +96,7 @@
     <string name="onboarding_step_invite_friends_description">和朋友一起训练</string>
     <string name="onboarding_step_invite_friends_body">分享你的进度，向朋友发起挑战</string>
     <string name="share_msg">我刚完成了一次 Norwy 训练！💪</string>
-    <string name="welcome">欢迎</string>
+    <string name="welcome">欢迎 %1$s</string>
     <string name="home_next_up">下一个</string>
     <string name="home_all_workouts">所有训练</string>
     <string name="workout_time">⏱️ %1$s 分钟</string>

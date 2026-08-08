@@ -96,7 +96,7 @@
     <string name="onboarding_step_invite_friends_description">Entraînez-vous ensemble avec vos amis</string>
     <string name="onboarding_step_invite_friends_body">Partagez votre progression et challengez vos amis</string>
     <string name="share_msg">Je viens de compléter un entraînement Norwy ! 💪</string>
-    <string name="welcome">Bienvenue</string>
+    <string name="welcome">Bienvenue %1$s</string>
     <string name="home_next_up">Prochain</string>
     <string name="home_all_workouts">Tous les entraînements</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
