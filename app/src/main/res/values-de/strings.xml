@@ -61,7 +61,7 @@
     <string name="credits_section_cta">Credits anzeigen</string>
     <string name="subscription_section_title">Abonnement</string>
     <string name="subscription_section_status">Status</string>
-    <string name="subscription_section_date">Datum</string>
+    <string name="subscription_section_date">Gültig bis: %1$s</string>
     <string name="app_version">Version %1$s</string>
     <string name="subscription_section_never">Nie</string>
     <string name="title_activity_logs">Protokolle</string>
@@ -99,7 +99,7 @@
     <string name="welcome">Willkommen</string>
     <string name="home_next_up">Nächste</string>
     <string name="home_all_workouts">Alle Trainings</string>
-    <string name="workout_time">Dauer</string>
+    <string name="workout_time">⏱️ %1$s Minuten</string>
     <string name="workout_split" translatable="false" />
     <string name="workout_kCal" translatable="false" />
     <string name="workout_category_beginner">Anfänger</string>
