@@ -462,7 +462,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(contentText)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)  // Always non-dismissible during workout
             .setContentIntent(contentPendingIntent)
             .setAutoCancel(false)
