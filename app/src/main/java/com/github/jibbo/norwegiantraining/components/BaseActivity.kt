@@ -7,7 +7,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import com.github.jibbo.norwegiantraining.data.Analytics
-import com.github.jibbo.norwegiantraining.util.LocaleHelper
+import android.content.SharedPreferences
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
@@ -18,7 +18,8 @@ abstract class BaseActivity() : ComponentActivity() {
     lateinit var analytics: Analytics
 
     override fun attachBaseContext(newBase: Context) {
-        val locale = LocaleHelper.getLocale(newBase)
+        val prefs: SharedPreferences = newBase.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val locale = prefs.getString("app_language", null)
         val context = if (locale.isNullOrEmpty()) {
             newBase
         } else {
