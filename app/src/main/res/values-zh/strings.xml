@@ -99,9 +99,7 @@
     <string name="welcome">欢迎</string>
     <string name="home_next_up">下一个</string>
     <string name="home_all_workouts">所有训练</string>
-    <string name="workout_time">时长</string>
-    <string name="workout_split" translatable="false" />
-    <string name="workout_kCal" translatable="false" />
+    <string name="workout_time">⏱️ %1$s 分钟</string>
     <string name="workout_category_beginner">初学者</string>
     <string name="workout_category_intermediate">中级</string>
     <string name="workout_category_expert">专家</string>
@@ -131,4 +129,13 @@
     <string name="level_up_title">恭喜！</string>
     <string name="level_up_subtitle">你已升至 %1$s 级</string>
     <string name="level_up_button">继续</string>
+
+    <string name="app_language">应用语言</string>
+    <string name="default_language">系统默认</string>
+    <string name="language_english">English</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Français</string>
+    <string name="language_italian">Italiano</string>
+    <string name="language_chinese">中文</string>
 </resources>

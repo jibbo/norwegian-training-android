@@ -4,6 +4,7 @@ import android.content.Context
 import android.telephony.TelephonyManager
 import androidx.core.content.edit
 import com.github.jibbo.norwegiantraining.domain.FitnessLevel
+
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -44,6 +45,8 @@ interface SettingsRepository {
     fun getLastProgressionDate(): Date?
     fun setLastWorkoutId(id: Long)
     fun getLastWorkoutId(): Long?
+    fun setAppLanguage(locale: Locale?)
+    fun getAppLanguage(): Locale?
 }
 
 @Singleton
@@ -107,7 +110,12 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     }
 
     override fun startFreeTrial() {
-        sp.edit { putLong("free_trial_date", System.currentTimeMillis() + 3L * 24 * 60 * 60 * 1000) }
+        sp.edit {
+            putLong(
+                "free_trial_date",
+                System.currentTimeMillis() + 3L * 24 * 60 * 60 * 1000
+            )
+        }
     }
 
     override fun setRecommendedWorkoutId(id: Long) {
@@ -163,6 +171,19 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         }
     }
 
+    override fun setAppLanguage(locale: Locale?) {
+        sp.edit(commit = true) { putString(KEY_APP_LANGUAGE_CODE, locale?.toLanguageTag()) }
+    }
+
+    override fun getAppLanguage(): Locale? =
+        if (sp.getString(KEY_APP_LANGUAGE_CODE, null) != null) {
+            Locale.forLanguageTag(
+                sp.getString(KEY_APP_LANGUAGE_CODE, null) ?: Locale.getDefault().toLanguageTag()
+            )
+        } else {
+            null
+        }
+
     companion object {
         const val KEY_ANNOUNCE_PHASE = "announce_phase"
         const val KEY_USERNAME = "username"
@@ -176,6 +197,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_RECOMMENDED_WORKOUT_ID = "recommended_workout_id"
         const val KEY_LAST_PROGRESSION_DATE = "last_progression_date"
         const val KEY_LAST_WORKOUT_ID = "last_workout_id"
+        const val KEY_APP_LANGUAGE_CODE = "app_language"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

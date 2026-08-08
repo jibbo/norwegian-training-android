@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.data
 import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
+import java.util.Locale
 
 class FakeSessionRepo : SessionRepository {
     override suspend fun getSessions(
@@ -84,6 +85,8 @@ class FakeSettingsRepository : SettingsRepository {
     override fun getLastProgressionDate(): Date? = null
     override fun setLastWorkoutId(id: Long) {}
     override fun getLastWorkoutId(): Long? = null
+    override fun setAppLanguage(locale: Locale?) {}
+    override fun getAppLanguage(): Locale = Locale.getDefault()
 }
 
 class FakeTracker : Analytics {

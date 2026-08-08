@@ -6,6 +6,7 @@ import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
+import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
 import com.github.jibbo.norwegiantraining.domain.FitnessLevel
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.revenuecat.purchases.Purchases
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +38,8 @@ internal class SettingsViewModel @Inject constructor(
             isCrashReportingEnabled = settingsRepository.getCrashReportingEnabled(),
             isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled(),
             isFreeTrial = settingsRepository.getFreeTrialEndDate()?.after(Date()) == true,
-            rcExpDate = settingsRepository.getFreeTrialEndDate().toLocalString()
+            rcExpDate = settingsRepository.getFreeTrialEndDate().toLocalString(),
+            appLanguage = settingsRepository.getAppLanguage()?.toLanguageTag()
         )
     )
 
@@ -103,6 +106,14 @@ internal class SettingsViewModel @Inject constructor(
         // TODO get rid of this if by having analytics check internally
         if (settingsRepository.getAnalyticsEnabled()) {
             analytics.logCrashReporting(enabled)
+        }
+    }
+
+    fun selectLanguage(languageOption: LanguageOption) {
+        if(languageOption.code != null) {
+            settingsRepository.setAppLanguage(Locale.forLanguageTag(languageOption.code))
+        }else{
+            settingsRepository.setAppLanguage(null)
         }
     }
 

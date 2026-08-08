@@ -61,7 +61,7 @@
     <string name="credits_section_cta">Credits anzeigen</string>
     <string name="subscription_section_title">Abonnement</string>
     <string name="subscription_section_status">Status</string>
-    <string name="subscription_section_date">Datum</string>
+    <string name="subscription_section_date">Gültig bis: %1$s</string>
     <string name="app_version">Version %1$s</string>
     <string name="subscription_section_never">Nie</string>
     <string name="title_activity_logs">Protokolle</string>
@@ -99,9 +99,7 @@
     <string name="welcome">Willkommen</string>
     <string name="home_next_up">Nächste</string>
     <string name="home_all_workouts">Alle Trainings</string>
-    <string name="workout_time">Dauer</string>
-    <string name="workout_split" translatable="false" />
-    <string name="workout_kCal" translatable="false" />
+    <string name="workout_time">⏱️ %1$s Minuten</string>
     <string name="workout_category_beginner">Anfänger</string>
     <string name="workout_category_intermediate">Fortgeschritten</string>
     <string name="workout_category_expert">Experte</string>
@@ -131,4 +129,13 @@
     <string name="level_up_title">Glückwunsch!</string>
     <string name="level_up_subtitle">Du bist auf Stufe %1$s aufgestiegen</string>
     <string name="level_up_button">WEITER</string>
+
+    <string name="app_language">App-Sprache</string>
+    <string name="default_language">Systemstandard</string>
+    <string name="language_english">English</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Français</string>
+    <string name="language_italian">Italiano</string>
+    <string name="language_chinese">中文</string>
 </resources>

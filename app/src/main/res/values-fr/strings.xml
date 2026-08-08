@@ -99,9 +99,7 @@
     <string name="welcome">Bienvenue</string>
     <string name="home_next_up">Prochain</string>
     <string name="home_all_workouts">Tous les entraînements</string>
-    <string name="workout_time">Durée</string>
-    <string name="workout_split" translatable="false" />
-    <string name="workout_kCal" translatable="false" />
+    <string name="workout_time">⏱️ %1$s minutes</string>
     <string name="workout_category_beginner">Débutant</string>
     <string name="workout_category_intermediate">Intermédiaire</string>
     <string name="workout_category_expert">Expert</string>
@@ -131,4 +129,13 @@
     <string name="level_up_title">Félicitations !</string>
     <string name="level_up_subtitle">Vous venez de passer au niveau %1$s</string>
     <string name="level_up_button">CONTINUER</string>
+
+    <string name="app_language">Langue de l\'app</string>
+    <string name="default_language">Par défaut du système</string>
+    <string name="language_english">English</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Français</string>
+    <string name="language_italian">Italiano</string>
+    <string name="language_chinese">中文</string>
 </resources>

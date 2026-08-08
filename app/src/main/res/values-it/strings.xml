@@ -141,4 +141,12 @@
     <string name="level_up_subtitle">Sei avanzato a %1$s! Continua così.</string>
     <string name="level_up_button">CONTINUA</string>
 
+    <string name="app_language">Lingua dell\'app</string>
+    <string name="default_language">Predefinita di sistema</string>
+    <string name="language_english">English</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Français</string>
+    <string name="language_italian">Italiano</string>
+    <string name="language_chinese">中文</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,9 +32,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -54,6 +60,7 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -117,6 +124,95 @@ internal fun SettingsScreen(
             item { VersionCard() }
 
             item { Spacer(modifier = Modifier.size(32.dp)) }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LanguageSelector(viewModel: SettingsViewModel) {
+    val context = LocalContext.current
+    val state = viewModel.uiState.collectAsState().value
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 12.dp)
+                .clickable { showBottomSheet = true }
+        ) {
+            Text(
+                text = R.string.app_language.localizable(),
+                style = Typography.bodyMedium,
+                modifier = Modifier.weight(0.5f)
+            )
+            Text(
+                text = state.selectedOption.labelRes.localizable(),
+                style = Typography.titleLarge,
+                color = White,
+                fontWeight = FontWeight.Normal
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_drop_down),
+                contentDescription = null,
+                tint = White
+            )
+        }
+    }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            containerColor = Black,
+            sheetState = sheetState,
+            dragHandle = {
+                Divider(
+                    color = Gray,
+                    thickness = 4.dp,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+        ) {
+            state.languages.forEach { lang ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .clickable {
+                            viewModel.selectLanguage(lang)
+                            showBottomSheet = false
+                            val intent = context.packageManager
+                                .getLaunchIntentForPackage(context.packageName)
+                                ?.apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            intent?.let { context.startActivity(it) }
+                        }
+                ) {
+                    Text(
+                        text = lang.labelRes.localizable(),
+                        style = Typography.bodyMedium,
+                        color = if (lang.code == state.appLanguage) Primary else White,
+                        modifier = Modifier.weight(1f)
+                    )
+                    if (lang.code == state.appLanguage) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_check_24),
+                            contentDescription = null,
+                            tint = Primary
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -204,6 +300,46 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                 Spacer(modifier = Modifier.weight(1f))
             }
 
+            val keyboardController = LocalSoftwareKeyboardController.current
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Text(
+                    text = R.string.your_name.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                TextField(
+                    placeholder = {
+                        Text(text = R.string.your_name.localizable())
+                    },
+                    value = state.value.name ?: "",
+                    onValueChange = { newValue: String ->
+                        viewModel.setName(newValue)
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent
+                    ),
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { keyboardController?.hide() }
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LanguageSelector(viewModel)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(8.dp)
@@ -220,31 +356,6 @@ private fun ProfileCard(viewModel: SettingsViewModel) {
                     color = Primary
                 )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            val keyboardController = LocalSoftwareKeyboardController.current
-            TextField(
-                placeholder = @Composable {
-                    Text(text = R.string.your_name.localizable())
-                },
-                value = state.value.name ?: "",
-                onValueChange = { newValue: String ->
-                    viewModel.setName(newValue)
-                },
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = { keyboardController?.hide() }
-                ),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = Gray,
-                    focusedContainerColor = Gray,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
         }
     }
 }
