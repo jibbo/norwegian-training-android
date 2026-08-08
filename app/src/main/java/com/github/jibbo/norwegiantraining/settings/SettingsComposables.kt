@@ -35,6 +35,7 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -131,24 +132,9 @@ internal fun SettingsScreen(
 @Composable
 private fun LanguageSelector(viewModel: SettingsViewModel) {
     val context = LocalContext.current
-    val state = viewModel.uiState.collectAsState()
-    val currentLanguage = state.value.appLanguage
-    var sheetOpen by remember { mutableStateOf(false) }
-
-    data class LanguageOption(val code: String?, val labelRes: Int)
-
-    val languages = listOf(
-        LanguageOption(null, R.string.default_language),
-        LanguageOption("en", R.string.language_english),
-        LanguageOption("de", R.string.language_german),
-        LanguageOption("es", R.string.language_spanish),
-        LanguageOption("fr", R.string.language_french),
-        LanguageOption("it", R.string.language_italian),
-        LanguageOption("zh", R.string.language_chinese),
-    )
-
-    val selectedOption = languages.firstOrNull { it.code ?: "" == currentLanguage }
-        ?: languages.first()
+    val state = viewModel.uiState.collectAsState().value
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -161,7 +147,7 @@ private fun LanguageSelector(viewModel: SettingsViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 12.dp)
-                .clickable { sheetOpen = true }
+                .clickable { showBottomSheet = true }
         ) {
             Text(
                 text = R.string.app_language.localizable(),
@@ -169,7 +155,7 @@ private fun LanguageSelector(viewModel: SettingsViewModel) {
                 modifier = Modifier.weight(0.5f)
             )
             Text(
-                text = selectedOption.labelRes.localizable(),
+                text = state.selectedOption.labelRes.localizable(),
                 style = Typography.titleLarge,
                 color = White,
                 fontWeight = FontWeight.Normal
@@ -182,10 +168,11 @@ private fun LanguageSelector(viewModel: SettingsViewModel) {
         }
     }
 
-    if (sheetOpen) {
+    if (showBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { sheetOpen = false },
+            onDismissRequest = { showBottomSheet = false },
             containerColor = Black,
+            sheetState = sheetState,
             dragHandle = {
                 Divider(
                     color = Gray,
@@ -194,15 +181,15 @@ private fun LanguageSelector(viewModel: SettingsViewModel) {
                 )
             }
         ) {
-            languages.forEach { lang ->
+            state.languages.forEach { lang ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 12.dp)
                         .clickable {
-                            viewModel.selectLanguage(lang.code)
-                            sheetOpen = false
+                            viewModel.selectLanguage(lang)
+                            showBottomSheet = false
                             val intent = context.packageManager
                                 .getLaunchIntentForPackage(context.packageName)
                                 ?.apply {
@@ -214,10 +201,10 @@ private fun LanguageSelector(viewModel: SettingsViewModel) {
                     Text(
                         text = lang.labelRes.localizable(),
                         style = Typography.bodyMedium,
-                        color = if (lang.code ?: "" == currentLanguage) Primary else White,
+                        color = if (lang.code == state.appLanguage) Primary else White,
                         modifier = Modifier.weight(1f)
                     )
-                    if (lang.code ?: "" == currentLanguage) {
+                    if (lang.code == state.appLanguage) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_check_24),
                             contentDescription = null,

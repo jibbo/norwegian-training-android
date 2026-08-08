@@ -45,8 +45,8 @@ interface SettingsRepository {
     fun getLastProgressionDate(): Date?
     fun setLastWorkoutId(id: Long)
     fun getLastWorkoutId(): Long?
-    fun setAppLanguage(languageCode: String?)
-    fun getAppLanguage(): String?
+    fun setAppLanguage(locale: Locale?)
+    fun getAppLanguage(): Locale?
 }
 
 @Singleton
@@ -110,7 +110,12 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     }
 
     override fun startFreeTrial() {
-        sp.edit { putLong("free_trial_date", System.currentTimeMillis() + 3L * 24 * 60 * 60 * 1000) }
+        sp.edit {
+            putLong(
+                "free_trial_date",
+                System.currentTimeMillis() + 3L * 24 * 60 * 60 * 1000
+            )
+        }
     }
 
     override fun setRecommendedWorkoutId(id: Long) {
@@ -166,11 +171,18 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         }
     }
 
-    override fun setAppLanguage(languageCode: String?) {
-        sp.edit(commit = true) { putString(KEY_APP_LANGUAGE, languageCode) }
+    override fun setAppLanguage(locale: Locale?) {
+        sp.edit(commit = true) { putString(KEY_APP_LANGUAGE_CODE, locale?.toLanguageTag()) }
     }
 
-    override fun getAppLanguage(): String? = sp.getString(KEY_APP_LANGUAGE, null)
+    override fun getAppLanguage(): Locale? =
+        if (sp.getString(KEY_APP_LANGUAGE_CODE, null) != null) {
+            Locale.forLanguageTag(
+                sp.getString(KEY_APP_LANGUAGE_CODE, null) ?: Locale.getDefault().toLanguageTag()
+            )
+        } else {
+            null
+        }
 
     companion object {
         const val KEY_ANNOUNCE_PHASE = "announce_phase"
@@ -185,7 +197,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_RECOMMENDED_WORKOUT_ID = "recommended_workout_id"
         const val KEY_LAST_PROGRESSION_DATE = "last_progression_date"
         const val KEY_LAST_WORKOUT_ID = "last_workout_id"
-        const val KEY_APP_LANGUAGE = "app_language"
+        const val KEY_APP_LANGUAGE_CODE = "app_language"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

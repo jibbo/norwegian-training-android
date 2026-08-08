@@ -6,8 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import com.github.jibbo.norwegiantraining.data.Analytics
-import com.github.jibbo.norwegiantraining.data.PREFS_KEY
-import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository.Companion.KEY_APP_LANGUAGE
+import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
@@ -32,22 +31,13 @@ abstract class BaseActivity : ComponentActivity() {
     }
 
     private fun localizeContext(newBase: Context): Context? {
-        val locale = newBase.getSharedPreferences(PREFS_KEY, MODE_PRIVATE).getString(KEY_APP_LANGUAGE, null)
-        val context = if (locale.isNullOrEmpty()) {
+        val locale = SharedPreferencesSettingsRepository(newBase).getAppLanguage()
+        val context = if(locale == null){
             newBase
-        } else {
-            val resolvedLocale = when (locale) {
-                "en" -> Locale.forLanguageTag("en")
-                "de" -> Locale.forLanguageTag("de")
-                "es" -> Locale.forLanguageTag("es")
-                "fr" -> Locale.forLanguageTag("fr")
-                "it" -> Locale.forLanguageTag("it")
-                "zh" -> Locale.forLanguageTag("zh")
-                else -> Configuration(newBase.resources.configuration).locales.get(0)
-            }
-            Locale.setDefault(resolvedLocale)
+        }else {
+            Locale.setDefault(locale)
             val config = Configuration(newBase.resources.configuration)
-            config.setLocale(resolvedLocale)
+            config.setLocale(locale)
             newBase.createConfigurationContext(config)
         }
         return context
