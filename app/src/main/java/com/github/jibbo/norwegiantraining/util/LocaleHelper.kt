@@ -11,7 +11,7 @@ object LocaleHelper {
 
     fun setLocale(context: Context, languageCode: String?) {
         context.getSharedPreferences(PrefsName, Context.MODE_PRIVATE)
-            .edit().putString(LOCALE_KEY, languageCode).apply()
+            .edit().putString(LOCALE_KEY, languageCode).commit()
     }
 
     fun getLocale(context: Context): String? {
