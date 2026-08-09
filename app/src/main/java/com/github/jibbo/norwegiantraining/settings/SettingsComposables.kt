@@ -38,6 +38,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -174,7 +175,7 @@ private fun LanguageSelector(viewModel: SettingsViewModel) {
             containerColor = Black,
             sheetState = sheetState,
             dragHandle = {
-                Divider(
+                HorizontalDivider(
                     color = Gray,
                     thickness = 4.dp,
                     modifier = Modifier.padding(bottom = 16.dp)

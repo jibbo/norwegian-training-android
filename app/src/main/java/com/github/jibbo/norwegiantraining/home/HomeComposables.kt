@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.VideoBackground
 import com.github.jibbo.norwegiantraining.components.localizable
@@ -210,22 +212,78 @@ private fun PortraitLayout(
     viewModel: HomeViewModel,
     innerPadding: PaddingValues
 ) {
-    val state = viewModel.uiStates.collectAsState().value
-    Column(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize(),
-    ) {
-        when (state) {
-            is UiState.Loading -> CircularProgressIndicator()
-            is UiState.Loaded -> {
+    when (val state = viewModel.uiStates.collectAsState().value) {
+        is UiState.Loading -> Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        is UiState.Loaded -> {
+            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+            val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
+            val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
+
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                // Fixed header above the scrollable area
                 Header(viewModel)
-                StreakWidget(viewModel)
-                Box(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    contentAlignment = Alignment.Center
+
+                // Scrollable content: streak, workouts
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(16.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize()
                 ) {
-                    Workouts(viewModel)
+                    // Streak widget spanning full width
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        StreakWidget(viewModel)
+                    }
+
+                    // "Next up" section spanning full width
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = R.string.home_next_up.localizable(),
+                            style = Typography.titleLarge,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                    }
+
+                    // Recommended workout or first workout
+                    if (recommendedWorkout != null) {
+                        item {
+                            WorkoutCard(recommendedWorkout, viewModel)
+                        }
+                    } else if (allWorkouts.isNotEmpty()) {
+                        item {
+                            WorkoutCard(allWorkouts[0], viewModel)
+                        }
+                    }
+
+                    // "All workouts" header spanning full width
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = R.string.home_all_workouts.localizable(),
+                            style = Typography.titleLarge,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+
+                    // Other workouts in grid
+                    items(otherWorkouts.size, { it }) { index ->
+                        WorkoutCard(otherWorkouts[index], viewModel)
+                    }
                 }
             }
         }
@@ -243,16 +301,24 @@ private fun LandscapeLayout(
             .fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Left column: Header + Streak + Next Up
+        // Left column: Header fixed, rest scrolls
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // Fixed header
             Header(viewModel)
-            StreakWidget(viewModel)
-            NextUpWorkout(viewModel)
+
+            // Scrollable content
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                StreakWidget(viewModel)
+                NextUpWorkout(viewModel)
+            }
         }
 
         // Right column: All Workouts (scrollable LazyColumn)
@@ -336,8 +402,7 @@ private fun StreakWidget(viewModel: HomeViewModel) {
                 ),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 onClick = { viewModel.chartsClicked() }
             ) {
                 Row(
@@ -421,7 +486,6 @@ internal fun Header(viewModel: HomeViewModel) {
         is UiState.Loaded -> {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Toolbar(
                     name = R.string.welcome.localizable(state.username ?: ""),
