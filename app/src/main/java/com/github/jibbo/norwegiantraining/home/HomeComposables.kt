@@ -14,8 +14,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,446 +48,490 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.components.Toolbar
-import com.github.jibbo.norwegiantraining.components.VideoBackground
-import com.github.jibbo.norwegiantraining.components.localizable
-import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
-import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
-import com.github.jibbo.norwegiantraining.data.FakeTracker
-import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
-import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.data.FakeRepos.FakeSessionRepo
+import com.github.jibbo.norwegiantraining.data.FakeRepos.FakeSettingsRepository
+import com.github.jibbo.norwegiantraining.data.FakeRepos.FakeTracker
+import com.github.jibbo.norwegiantraining.data.FakeRepos.FakeWorkoutRepo
+import com.github.jibbo.norwegiantraining.data.FakeRepos.GetRecommendedWorkoutId
+import com.github.jibbo.norwegiantraining.data.FakeRepos.GetUsername
+import com.github.jibbo.norwegiantraining.data.FakeRepos.GetWeeklySessionsUseCase
+import com.github.jibbo.norwegiantraining.data.FakeRepos.GetAllWorkouts
+import com.github.jibbo.norwegiantraining.data.FakeRepos.IsFreeTrial
+import com.github.jibbo.norwegiantraining.data.FakeRepos.IsOnboardingCompleted
+import com.github.jibbo.norwegiantraining.data.Tracker
 import com.github.jibbo.norwegiantraining.data.Workout
-import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
-import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
-import com.github.jibbo.norwegiantraining.domain.GetUsername
-import com.github.jibbo.norwegiantraining.domain.GetWeeklySessionsUseCase
-import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
-import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
-import com.github.jibbo.norwegiantraining.log.getColor
-import com.github.jibbo.norwegiantraining.log.getStatus
-import com.github.jibbo.norwegiantraining.ui.theme.Black
-import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
-import com.github.jibbo.norwegiantraining.ui.theme.Primary
-import com.github.jibbo.norwegiantraining.ui.theme.Typography
+import com.github.jibbo.norwegiantraining.data.Workout
+import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.White
-import java.util.Calendar
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
+import com.github.jibbo.norwegiantraining.util.Localizable
+import com.github.jibbo.norwegiantraining.util.Localizable
+import com.github.jibbo.norwegiantraining.util.Localizable.localizable
+import com.github.jibbo.norwegiantraining.util.coalesce
+import java.util.Locale
 
 @Composable
-internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
+    val uiState by viewModel.uiStates.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = verticalGradient(
-                    colors = listOf(
-                        DarkPrimary,
-                        Black
-                    )
-                )
-            )
-    ) {
-        WakeBackground()
-    }
-
-    if (isLandscape) {
-        LandscapeLayout(viewModel, innerPadding)
-    } else {
-        PortraitLayout(viewModel, innerPadding)
-    }
-}
-
-@Composable
-private fun WakeBackground() {
-    var animValue by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
         while (true) {
-            animValue += 0.005f
-            if (animValue >= 1f) animValue = 0f
-            delay(16)
+            viewModel.updateProgress()
+            delay(1000)
         }
     }
 
-    val wakeLineCount = 12
-    val numWakeLines = remember { wakeLineCount }
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .drawBehind {
-                val canvasSize = size
-
-                // Wake direction: -45 degrees goes from bottom-left to top-right
-                val boatDirectionRadians = Math.toRadians(-45.0)
-
-                // Calculate full diagonal length for corner-to-corner lines
-                val diagonalLength = Math.sqrt(
-                    (canvasSize.width.toDouble() * canvasSize.width + canvasSize.height.toDouble() * canvasSize.height)
-                ).toFloat()
-
-                // Max line length: slightly larger than diagonal to ensure it covers the screen
-                val maxLineLength = diagonalLength * 1.2f
-
-                // Draw wake lines from fixed bottom-left to top-right
-                for (i in 0 until numWakeLines) {
-                    // Distribute lines in a V-shape pattern around the -45° path
-                    val angleFraction = i.toFloat() / (numWakeLines - 1)
-                    val angleDegrees = -30f + (angleFraction * 60f) // -30 to +30 degrees relative to path
-                    val angleRadians = Math.toRadians(angleDegrees.toDouble())
-
-                    // Wake extends along boat's path: -45° (from bottom-left to top-right)
-                    val wakeAngle = boatDirectionRadians + angleRadians
-
-                    // Fixed starting point: bottom-left corner
-                    val lineStartX = -50f
-                    val lineStartY = canvasSize.height+50f
-
-                    // Fixed line length (does not move)
-                    val lineLength = maxLineLength
-
-                    // Draw sinusoidal line using multiple small segments
-                    val numSegments = 40
-                    val waveAmplitude = 20f // Reduced for gentler waves
-                    val waveFrequency = 1f // Reduced for fewer, wider waves
-
-                    for (j in 0..numSegments) {
-                        val segmentFraction = j.toFloat() / numSegments
-                        val segmentLength = segmentFraction * lineLength
-
-                        // Base position on straight line from bottom-left to top-right
-                        val baseX = lineStartX + segmentLength * cos(wakeAngle).toFloat()
-                        val baseY = lineStartY + segmentLength * sin(wakeAngle).toFloat()
-
-                        // Sinusoidal offset perpendicular to line direction
-                        val perpendicularAngle = wakeAngle + Math.PI / 2.0
-
-                        // Animate the wave phase along the line.
-                        // animValue 0→1 makes the wave travel from the line start to end,
-                        // creating a floating/rippling effect along the fixed line.
-                        val wavePhase = (segmentFraction - animValue) * waveFrequency * 2 * Math.PI
-                        val sinusoidalOffset = sin(wavePhase) * waveAmplitude
-
-                        val offsetX = (sinusoidalOffset * cos(perpendicularAngle)).toFloat()
-                        val offsetY = (sinusoidalOffset * sin(perpendicularAngle)).toFloat()
-
-                        val segEndX = baseX + offsetX
-                        val segEndY = baseY + offsetY
-
-                        // Previous segment point (or start point for first segment)
-                        if (j > 0) {
-                            val prevSegmentFraction = (j - 1).toFloat() / numSegments
-                            val prevSegmentLength = prevSegmentFraction * lineLength
-                            val prevBaseX = lineStartX + prevSegmentLength * cos(wakeAngle).toFloat()
-                            val prevBaseY = lineStartY + prevSegmentLength * sin(wakeAngle).toFloat()
-
-                            val prevWavePhase = (prevSegmentFraction - animValue) * waveFrequency * 2 * Math.PI
-                            val prevSinusoidalOffset = sin(prevWavePhase) * waveAmplitude
-                            val prevOffsetX = (prevSinusoidalOffset * cos(perpendicularAngle)).toFloat()
-                            val prevOffsetY = (prevSinusoidalOffset * sin(perpendicularAngle)).toFloat()
-
-                            drawLine(
-                                color = Primary.copy(alpha = 0.09f),
-                                start = Offset(prevBaseX + prevOffsetX, prevBaseY + prevOffsetY),
-                                end = Offset(segEndX, segEndY),
-                                strokeWidth = 2.6f + (angleFraction * 3f)
-                            )
-                        }
-                    }
-                }
-            }
-    )
-}
-
-@Composable
-private fun PortraitLayout(
-    viewModel: HomeViewModel,
-    innerPadding: PaddingValues
-) {
-    val state = viewModel.uiStates.collectAsState().value
-    Column(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize(),
-    ) {
-        when (state) {
-            is UiState.Loading -> CircularProgressIndicator()
-            is UiState.Loaded -> {
-                Header(viewModel)
-                StreakWidget(viewModel)
-                Box(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Workouts(viewModel)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun LandscapeLayout(
-    viewModel: HomeViewModel,
-    innerPadding: PaddingValues
-) {
-    Row(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // Left column: Header + Streak + Next Up
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Header(viewModel)
-            StreakWidget(viewModel)
-            NextUpWorkout(viewModel)
-        }
-
-        // Right column: All Workouts (scrollable LazyColumn)
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            AllWorkouts(viewModel)
-        }
-    }
-}
-
-@Composable
-private fun NextUpWorkout(viewModel: HomeViewModel) {
-    when (val state = viewModel.uiStates.collectAsState().value) {
+    when (uiState) {
+        is UiState.Error -> Text(
+            text = R.string.home_error.localizable(),
+            modifier = Modifier.padding(16.dp),
+            color = Color.Red
+        )
         is UiState.Loading -> CircularProgressIndicator(modifier = Modifier.padding(12.dp))
         is UiState.Loaded -> {
-            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+            val state = (uiState as UiState.Loaded).state
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(12.dp)
+            if (isLandscape) {
+                LandscapeHomeView(state, viewModel)
+            } else {
+                PortraitHomeView(state, viewModel)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PortraitHomeView(state: HomeState, viewModel: HomeViewModel) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding(),
+        contentPadding = PaddingValues(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Header
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = R.string.home_next_up.localizable(),
-                    modifier = Modifier.padding(bottom = 12.dp),
-                    style = Typography.titleLarge,
-                    fontWeight = FontWeight.Normal
+                    text = R.string.home_greeting.localizable(state.username),
+                    style = NorwegianTrainingTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = White
                 )
-                val workout = allWorkouts.firstOrNull() ?: return
-                WorkoutCard(
-                    workout,
-                    viewModel
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun AllWorkouts(viewModel: HomeViewModel) {
-    when (val state = viewModel.uiStates.collectAsState().value) {
-        is UiState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier.padding(12.dp))
-        }
-
-        is UiState.Loaded -> {
-            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
-            val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
-
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                item {
-                    Text(
-                        text = R.string.home_all_workouts.localizable(),
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        style = Typography.titleLarge,
-                        fontWeight = FontWeight.Normal
+                IconButton(onClick = { viewModel.settingsClicked() }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_settings),
+                        contentDescription = R.string.settings.localizable(),
+                        tint = White
                     )
                 }
-                items(otherWorkouts.size, { it }) { index ->
-                    WorkoutCard(otherWorkouts[index], viewModel)
-                }
             }
         }
-    }
-}
+        item { Spacer(modifier = Modifier.size(16.dp)) }
 
-@Composable
-private fun StreakWidget(viewModel: HomeViewModel) {
-    when (val state = viewModel.uiStates.collectAsState().value) {
-        is UiState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+        // Progress
+        item {
+            Text(
+                text = R.string.home_progress.localizable(
+                    state.currentWeekCompleted,
+                    state.currentWeekGoal
+                ),
+                style = NorwegianTrainingTheme.typography.bodyMedium,
+                color = White
+            )
         }
+        item { Spacer(modifier = Modifier.size(16.dp)) }
 
-        is UiState.Loaded -> {
+        item {
+            val progress = state.currentWeekCompleted.toFloat() / state.currentWeekGoal.toFloat()
+            androidx.compose.material3.LinearProgressIndicator(
+                progress = coalesce(progress),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                color = Color(0xFF4CAF50),
+                trackColor = Color.White.copy(alpha = 0.2f),
+                strokeWidth = 8.dp
+            )
+        }
+        item { Spacer(modifier = Modifier.size(8.dp)) }
+
+        item {
+            Text(
+                text = R.string.home_weeks.localizable(state.currentWeek),
+                style = NorwegianTrainingTheme.typography.bodySmall,
+                color = White.copy(alpha = 0.7f)
+            )
+        }
+        item { Spacer(modifier = Modifier.size(32.dp)) }
+
+        // Today's workout
+        item {
+            Text(
+                text = R.string.home_today.localizable(),
+                style = NorwegianTrainingTheme.typography.titleLarge,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.align(Alignment.Start)
+            )
+        }
+        item { Spacer(modifier = Modifier.size(12.dp)) }
+
+        item {
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = Color.Black
                 ),
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                onClick = { viewModel.chartsClicked() }
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    if (!state.isFreeTrial) {
+                            viewModel.paywallClicked()
+                    } else {
+                        viewModel.todayWorkoutClicked()
+                    }
+                }
+            }
             ) {
-                Row(
+                Text(
+                    text = state.todayWorkout?.name ?: R.string.workout_not_available.localizable(),
                     modifier = Modifier.padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(12.dp)
+                    style = NorwegianTrainingTheme.typography.titleMedium,
+                    color = White
+                )
+                if (state.todayWorkout != null) {
+                    Text(
+                        text = R.string.workout_time.localizable(state.todayWorkout.totalTime),
+                        modifier = Modifier.padding(4.dp),
+                        style = NorwegianTrainingTheme.typography.bodyMedium,
+                        color = White
+                    )
+                    Text(
+                        text = R.string.workout_kCal.localizable(state.todayWorkout.kCal),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .alpha(0.8f),
+                        style = NorwegianTrainingTheme.typography.bodySmall,
+                        color = White
+                    )
+                }
+            }
+        }
+        item { Spacer(modifier = Modifier.size(32.dp)) }
+
+        // Recent workouts
+        item {
+            Text(
+                text = R.string.home_recent.localizable(),
+                style = NorwegianTrainingTheme.typography.titleLarge,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.align(Alignment.Start)
+            )
+        }
+        item { Spacer(modifier = Modifier.size(12.dp)) }
+
+        item {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(state.recentWorkouts) { workout ->
+                    ElevatedCard(
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color.Black
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.size(150.dp),
+                        onClick = {
+                            if (!state.isFreeTrial) {
+                                viewModel.paywallClicked()
+                            } else {
+                                viewModel.workoutClicked(workout.id)
+                            }
+                        }
                     ) {
-                        Box(
+                        Text(
+                            text = workout.name,
+                            modifier = Modifier.padding(8.dp),
+                            style = NorwegianTrainingTheme.typography.titleMedium,
+                            color = White
+                        )
+                        Text(
+                            text = R.string.workout_time.localizable(workout.totalTime),
+                            modifier = Modifier.padding(4.dp),
+                            style = NorwegianTrainingTheme.typography.bodyMedium,
+                            color = White
+                        )
+                        Text(
+                            text = R.string.workout_kCal.localizable(workout.kCal),
                             modifier = Modifier
-                                .size(64.dp)
-                                .background(color = Primary, shape = CircleShape),
-                            contentAlignment = Alignment.Center
+                                .padding(8.dp)
+                                .alpha(0.8f),
+                            style = NorwegianTrainingTheme.typography.bodySmall,
+                            color = White
+                        )
+                    }
+                }
+            }
+        }
+        item { Spacer(modifier = Modifier.size(32.dp)) }
+
+        // All workouts
+        item {
+            Text(
+                text = R.string.home_all_workouts.localizable(),
+                style = NorwegianTrainingTheme.typography.titleLarge,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.align(Alignment.Start)
+            )
+        }
+        item { Spacer(modifier = Modifier.size(12.dp)) }
+
+        // Grid of other workouts - laid out as rows of 2
+        item {
+            val otherWorkouts = state.otherWorkouts
+            if (otherWorkouts.isNotEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    for (i in otherWorkouts.indices step 2) {
+                        val pair = listOf(
+                            otherWorkouts[i],
+                            otherWorkouts.getOrNull(i + 1)
+                        ).filterNotNull()
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_launcher_foreground),
-                                contentDescription = "",
-                                tint = Black,
-                            )
+                            pair.forEach { workout ->
+                                WorkoutCard(
+                                    workout,
+                                    viewModel,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            repeat(2 - pair.size) {
+                                Box(modifier = Modifier.weight(1f))
+                            }
                         }
                     }
-                    Column {
-                        Month(state.weeklySessions)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LandscapeHomeView(state: HomeState, viewModel: HomeViewModel) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()
+    ) {
+        // Left column - header, progress, today
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = R.string.home_greeting.localizable(state.username),
+                    style = NorwegianTrainingTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = White
+                )
+                IconButton(onClick = { viewModel.settingsClicked() }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_settings),
+                        contentDescription = R.string.settings.localizable(),
+                        tint = White
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(16.dp))
+
+            Text(
+                text = R.string.home_progress.localizable(
+                    state.currentWeekCompleted,
+                    state.currentWeekGoal
+                ),
+                style = NorwegianTrainingTheme.typography.bodyMedium,
+                color = White
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+
+            val progress = state.currentWeekCompleted.toFloat() / state.currentWeekGoal.toFloat()
+            androidx.compose.material3.LinearProgressIndicator(
+                progress = coalesce(progress),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                color = Color(0xFF4CAF50),
+                trackColor = Color.White.copy(alpha = 0.2f),
+                strokeWidth = 8.dp
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(
+                text = R.string.home_weeks.localizable(state.currentWeek),
+                style = NorwegianTrainingTheme.typography.bodySmall,
+                color = White.copy(alpha = 0.7f)
+            )
+            Spacer(modifier = Modifier.size(32.dp))
+
+            Text(
+                text = R.string.home_today.localizable(),
+                style = NorwegianTrainingTheme.typography.titleLarge,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.align(Alignment.Start)
+            )
+            Spacer(modifier = Modifier.size(12.dp))
+
+            ElevatedCard(
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = Color.Black
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    if (!state.isFreeTrial) {
+                        viewModel.paywallClicked()
+                    } else {
+                        viewModel.todayWorkoutClicked()
+                    }
+                }
+            ) {
+                Text(
+                    text = state.todayWorkout?.name ?: R.string.workout_not_available.localizable(),
+                    modifier = Modifier.padding(8.dp),
+                    style = NorwegianTrainingTheme.typography.titleMedium,
+                    color = White
+                )
+                if (state.todayWorkout != null) {
+                    Text(
+                        text = R.string.workout_time.localizable(state.todayWorkout.totalTime),
+                        modifier = Modifier.padding(4.dp),
+                        style = NorwegianTrainingTheme.typography.bodyMedium,
+                        color = White
+                    )
+                    Text(
+                        text = R.string.workout_kCal.localizable(state.todayWorkout.kCal),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .alpha(0.8f),
+                        style = NorwegianTrainingTheme.typography.bodySmall,
+                        color = White
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(32.dp))
+
+            Text(
+                text = R.string.home_recent.localizable(),
+                style = NorwegianTrainingTheme.typography.titleLarge,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.align(Alignment.Start)
+            )
+            Spacer(modifier = Modifier.size(12.dp))
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(state.recentWorkouts) { workout ->
+                    ElevatedCard(
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color.Black
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.size(150.dp),
+                        onClick = {
+                            if (!state.isFreeTrial) {
+                                viewModel.paywallClicked()
+                            } else {
+                                viewModel.workoutClicked(workout.id)
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = workout.name,
+                            modifier = Modifier.padding(8.dp),
+                            style = NorwegianTrainingTheme.typography.titleMedium,
+                            color = White
+                        )
+                        Text(
+                            text = R.string.workout_time.localizable(workout.totalTime),
+                            modifier = Modifier.padding(4.dp),
+                            style = NorwegianTrainingTheme.typography.bodyMedium,
+                            color = White
+                        )
+                        Text(
+                            text = R.string.workout_kCal.localizable(workout.kCal),
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .alpha(0.8f),
+                            style = NorwegianTrainingTheme.typography.bodySmall,
+                            color = White
+                        )
                     }
                 }
             }
         }
-    }
-}
 
-@Composable
-private fun Month(weeklySessions: List<Session?>) {
-    val locale = LocalLocale.current.platformLocale
-    val calendar = Calendar.getInstance(locale)
-    val firstDayOfWeek = calendar.firstDayOfWeek
+        // Right column - all workouts grid
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = R.string.home_all_workouts.localizable(),
+                style = NorwegianTrainingTheme.typography.titleLarge,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.align(Alignment.Start)
+            )
+            Spacer(modifier = Modifier.size(12.dp))
 
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        val daysInWeek = 7
-        items(daysInWeek) { index ->
-            val dayOfWeek = (firstDayOfWeek + index - 1) % 7 + 1
-            calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek)
-            val dayName = calendar.getDisplayName(
-                Calendar.DAY_OF_WEEK,
-                Calendar.SHORT,
-                locale
-            ).orEmpty()
-
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(
-                            color = weeklySessions[index]?.getStatus()
-                                ?.getColor() ?: White,
-                            shape = CircleShape
-                        )
-                ) {}
-                Text(
-                    text = dayName,
-                    style = Typography.labelSmall,
-                    color = White,
-                    modifier = Modifier.padding(top = 6.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-internal fun Header(viewModel: HomeViewModel) {
-    when (val state = viewModel.uiStates.collectAsState().value) {
-        is UiState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier.safeDrawingPadding())
-        }
-
-        is UiState.Loaded -> {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            ) {
-                Toolbar(
-                    name = R.string.welcome.localizable(state.username ?: ""),
-                    modifier = Modifier.weight(1f),
-                )
-                IconButton(onClick = { viewModel.chartsClicked() }) {
-                    Icon(
-                        painter = painterResource(R.drawable.outline_area_chart_24),
-                        contentDescription = ""
-                    )
-                }
-                IconButton(onClick = { viewModel.settingsClicked() }) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_settings_24),
-                        contentDescription = ""
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-internal fun Workouts(viewModel: HomeViewModel) {
-    when (val state = viewModel.uiStates.collectAsState().value) {
-        is UiState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier.padding(12.dp))
-        }
-
-        is UiState.Loaded -> {
-            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
-            val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
-            val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Text(
-                    text = R.string.home_next_up.localizable(),
-                    style = Typography.titleLarge,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-                if (recommendedWorkout != null) {
-                    WorkoutCard(
-                        recommendedWorkout,
-                        viewModel
-                    )
-                } else if (allWorkouts.isNotEmpty()) {
-                    WorkoutCard(
-                        allWorkouts[0],
-                        viewModel
-                    )
-                }
-                Text(
-                    text = R.string.home_all_workouts.localizable(),
-                    style = Typography.titleLarge,
-                    fontWeight = FontWeight.Normal
-                )
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 150.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
+            val otherWorkouts = state.otherWorkouts
+            if (otherWorkouts.isNotEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(otherWorkouts.size, { it }) { index ->
-                        WorkoutCard(otherWorkouts[index], viewModel)
+                    for (i in otherWorkouts.indices step 2) {
+                        val pair = listOf(
+                            otherWorkouts[i],
+                            otherWorkouts.getOrNull(i + 1)
+                        ).filterNotNull()
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            pair.forEach { workout ->
+                                WorkoutCard(
+                                    workout,
+                                    viewModel,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            repeat(2 - pair.size) {
+                                Box(modifier = Modifier.weight(1f))
+                            }
+                        }
                     }
                 }
             }
@@ -500,6 +543,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
 private fun WorkoutCard(
     workout: Workout,
     viewModel: HomeViewModel,
+    modifier: Modifier = Modifier,
 ) {
     val cardShape = RoundedCornerShape(12.dp)
     ElevatedCard(
@@ -507,7 +551,7 @@ private fun WorkoutCard(
             containerColor = Color.Black
         ),
         shape = cardShape,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         onClick = {
             viewModel.workoutClicked(workout.id)
         }
@@ -515,13 +559,13 @@ private fun WorkoutCard(
         Text(
             text = workout.name,
             modifier = Modifier.padding(8.dp),
-            style = Typography.titleMedium,
+            style = NorwegianTrainingTheme.typography.titleMedium,
             color = White
         )
         Text(
-            text =R.string.workout_time.localizable(workout.totalTime),
-            modifier = Modifier.padding(8.dp),
-            style = Typography.bodyMedium,
+            text = R.string.workout_time.localizable(workout.totalTime),
+            modifier = Modifier.padding(4.dp),
+            style = NorwegianTrainingTheme.typography.bodyMedium,
             color = White
         )
         Text(
@@ -529,7 +573,7 @@ private fun WorkoutCard(
             modifier = Modifier
                 .padding(8.dp)
                 .alpha(0.8f),
-            style = Typography.bodySmall,
+            style = NorwegianTrainingTheme.typography.bodySmall,
             color = White
         )
     }
