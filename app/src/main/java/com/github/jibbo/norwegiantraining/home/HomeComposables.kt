@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.VideoBackground
 import com.github.jibbo.norwegiantraining.components.localizable
@@ -300,16 +301,24 @@ private fun LandscapeLayout(
             .fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Left column: Header + Streak + Next Up
+        // Left column: Header fixed, rest scrolls
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // Fixed header
             Header(viewModel)
-            StreakWidget(viewModel)
-            NextUpWorkout(viewModel)
+
+            // Scrollable content
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                StreakWidget(viewModel)
+                NextUpWorkout(viewModel)
+            }
         }
 
         // Right column: All Workouts (scrollable LazyColumn)
