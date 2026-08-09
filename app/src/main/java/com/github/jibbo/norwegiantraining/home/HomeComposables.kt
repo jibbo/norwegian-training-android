@@ -225,59 +225,64 @@ private fun PortraitLayout(
             val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
             val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(16.dp),
+            Column(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                // Header spanning full width
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Header(viewModel)
-                }
+                // Fixed header above the scrollable area
+                Header(viewModel)
 
-                // Streak widget spanning full width
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    StreakWidget(viewModel)
-                }
-
-                // "Next up" section spanning full width
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = R.string.home_next_up.localizable(),
-                        style = Typography.titleLarge,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                }
-
-                // Recommended workout or first workout
-                if (recommendedWorkout != null) {
-                    item {
-                        WorkoutCard(recommendedWorkout, viewModel)
+                // Scrollable content: streak, workouts
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(16.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize()
+                ) {
+                    // Streak widget spanning full width
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        StreakWidget(viewModel)
                     }
-                } else if (allWorkouts.isNotEmpty()) {
-                    item {
-                        WorkoutCard(allWorkouts[0], viewModel)
+
+                    // "Next up" section spanning full width
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = R.string.home_next_up.localizable(),
+                            style = Typography.titleLarge,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
                     }
-                }
 
-                // "All workouts" header spanning full width
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = R.string.home_all_workouts.localizable(),
-                        style = Typography.titleLarge,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
+                    // Recommended workout or first workout
+                    if (recommendedWorkout != null) {
+                        item {
+                            WorkoutCard(recommendedWorkout, viewModel)
+                        }
+                    } else if (allWorkouts.isNotEmpty()) {
+                        item {
+                            WorkoutCard(allWorkouts[0], viewModel)
+                        }
+                    }
 
-                // Other workouts in grid
-                items(otherWorkouts.size, { it }) { index ->
-                    WorkoutCard(otherWorkouts[index], viewModel)
+                    // "All workouts" header spanning full width
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = R.string.home_all_workouts.localizable(),
+                            style = Typography.titleLarge,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+
+                    // Other workouts in grid
+                    items(otherWorkouts.size, { it }) { index ->
+                        WorkoutCard(otherWorkouts[index], viewModel)
+                    }
                 }
             }
         }
