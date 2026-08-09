@@ -388,8 +388,7 @@ private fun StreakWidget(viewModel: HomeViewModel) {
                 ),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 onClick = { viewModel.chartsClicked() }
             ) {
                 Row(
@@ -473,7 +472,6 @@ internal fun Header(viewModel: HomeViewModel) {
         is UiState.Loaded -> {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Toolbar(
                     name = R.string.welcome.localizable(state.username ?: ""),
