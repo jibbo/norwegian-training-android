@@ -63,7 +63,7 @@
     <string name="subscription_section_status">状态</string>
     <string name="subscription_section_date">有效期至：%1$s</string>
     <string name="app_version">版本 %1$s</string>
-    <string name="subscription_section_never">从未</string>
+    <string name="subscription_section_never">许可证永久有效</string>
     <string name="title_activity_logs">日志</string>
     <string name="onboarding_step_1_title">个性化训练</string>
     <string name="onboarding_step_1_description">根据你的水平和目标定制训练课程</string>
