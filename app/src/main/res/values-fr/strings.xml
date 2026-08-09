@@ -53,9 +53,9 @@
     <string name="title_beta_section">Fonctionnalités bêta</string>
     <string name="beta_section_description">Accédez aux fonctionnalités expérimentales</string>
     <string name="enable_timer_notification">Notification du minuteur</string>
-    <string name="onboarding_section_title">Configuration</string>
-    <string name="about_dev_section_title">Développeur</string>
-    <string name="about_dev_section_description">Salut ! Je suis Gio, et je tiens à vous remercier d\'utiliser mon application.</string>
+    <string name="onboarding_section_title">Revoir l\'introduction</string>
+    <string name="about_dev_section_title">Du développeur</string>
+    <string name="about_dev_section_description">Salut ! Je m\'appelle Gio et je tiens à vous remercier d\'utiliser mon application ! En tant que passionné de fitness, j\'ai créé cet outil car j\'en avais assez de me battre avec des minuteurs compliqués. J\'espère que vous le trouverez aussi utile que moi !</string>
     <string name="about_dev_section_cta">Envoyez un email à Gio</string>
     <string name="about_dev_section_mastodon">Mastodon DM</string>
     <string name="credits_section_cta">Voir les crédits</string>

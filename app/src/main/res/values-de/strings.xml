@@ -53,9 +53,9 @@
     <string name="title_beta_section">Beta-Funktionen</string>
     <string name="beta_section_description">Zugriff auf experimentelle Funktionen</string>
     <string name="enable_timer_notification">Timer-Benachrichtigung</string>
-    <string name="onboarding_section_title">Einrichtung</string>
-    <string name="about_dev_section_title">Entwickler</string>
-    <string name="about_dev_section_description">Hallo! Ich bin Gio, und ich möchte dich dafür danken, dass du meine App benutzt.</string>
+    <string name="onboarding_section_title">Einführung erneut anzeigen</string>
+    <string name="about_dev_section_title">Vom Entwickler</string>
+    <string name="about_dev_section_description">Hi! Ich bin Gio und möchte mich bei dir bedanken, dass du meine App nutzt! Da ich selbst gerne trainiere, habe ich diese App entwickelt, weil ich es leid war, mich mit komplizierten Timern herumzuschlagen. Ich hoffe, du findest sie genauso nützlich wie ich!</string>
     <string name="about_dev_section_cta">Schreibe Gio eine E-Mail</string>
     <string name="about_dev_section_mastodon">Mastodon DM</string>
     <string name="credits_section_cta">Credits anzeigen</string>

@@ -54,8 +54,8 @@
     <string name="beta_section_description">访问实验性功能</string>
     <string name="enable_timer_notification">计时器通知</string>
     <string name="onboarding_section_title">设置</string>
-    <string name="about_dev_section_title">开发者</string>
-    <string name="about_dev_section_description">你好！我是 Gio，感谢你使用我的应用。</string>
+    <string name="about_dev_section_title">开发者的话</string>
+    <string name="about_dev_section_description">你好！我是 Gio，非常感谢你使用我的应用！作为一名健身爱好者，我开发这款应用是因为我厌倦了摆弄那些复杂的计时器。希望你能发现它的实用之处！</string>
     <string name="about_dev_section_cta">给 Gio 发邮件</string>
     <string name="about_dev_section_mastodon">在 Mastodon 上联系 Gio</string>
     <string name="credits_section_cta">查看鸣谢</string>
