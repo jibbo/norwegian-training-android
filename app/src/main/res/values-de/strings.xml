@@ -26,17 +26,6 @@
     <string name="cooldown_desc">Atme, gehe langsam und entspannt, um deinen Puls zu senken – aber halt nicht an</string>
     <string name="completed_desc">Herzlichen Glückwunsch! Du hast dieses Training beendet! Komm morgen für ein weiteres 💪</string>
     <string name="one_minute_remaining">Noch eine Minute</string>
-    <string name="three" translatable="false" />
-    <string name="two" translatable="false" />
-    <string name="one" translatable="false" />
-    <string name="four" translatable="false" />
-    <string name="five" translatable="false" />
-    <string name="six" translatable="false" />
-    <string name="seven" translatable="false" />
-    <string name="eight" translatable="false" />
-    <string name="nine" translatable="false" />
-    <string name="ten" translatable="false" />
-    <string name="empty" translatable="false" />
     <string name="title_activity_settings">Einstellungen</string>
     <string name="title_profile_section">Profil</string>
     <string name="your_name">Dein Name</string>

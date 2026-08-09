@@ -26,17 +26,6 @@
     <string name="cooldown_desc">深呼吸，放慢节奏让心率恢复平静，但此刻不要停下</string>
     <string name="completed_desc">恭喜！你完成了本次训练！明天再来挑战一次 💪</string>
     <string name="one_minute_remaining">还剩一分钟</string>
-    <string name="three" translatable="false" />
-    <string name="two" translatable="false" />
-    <string name="one" translatable="false" />
-    <string name="four" translatable="false" />
-    <string name="five" translatable="false" />
-    <string name="six" translatable="false" />
-    <string name="seven" translatable="false" />
-    <string name="eight" translatable="false" />
-    <string name="nine" translatable="false" />
-    <string name="ten" translatable="false" />
-    <string name="empty" translatable="false" />
     <string name="title_activity_settings">设置</string>
     <string name="title_profile_section">个人资料</string>
     <string name="your_name">你的名字</string>
