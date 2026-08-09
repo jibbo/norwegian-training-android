@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -210,22 +211,73 @@ private fun PortraitLayout(
     viewModel: HomeViewModel,
     innerPadding: PaddingValues
 ) {
-    val state = viewModel.uiStates.collectAsState().value
-    Column(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize(),
-    ) {
-        when (state) {
-            is UiState.Loading -> CircularProgressIndicator()
-            is UiState.Loaded -> {
-                Header(viewModel)
-                StreakWidget(viewModel)
-                Box(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Workouts(viewModel)
+    when (val state = viewModel.uiStates.collectAsState().value) {
+        is UiState.Loading -> Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        is UiState.Loaded -> {
+            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+            val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
+            val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(16.dp),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                // Header spanning full width
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Header(viewModel)
+                }
+
+                // Streak widget spanning full width
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    StreakWidget(viewModel)
+                }
+
+                // "Next up" section spanning full width
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Text(
+                        text = R.string.home_next_up.localizable(),
+                        style = Typography.titleLarge,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                }
+
+                // Recommended workout or first workout
+                if (recommendedWorkout != null) {
+                    item {
+                        WorkoutCard(recommendedWorkout, viewModel)
+                    }
+                } else if (allWorkouts.isNotEmpty()) {
+                    item {
+                        WorkoutCard(allWorkouts[0], viewModel)
+                    }
+                }
+
+                // "All workouts" header spanning full width
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Text(
+                        text = R.string.home_all_workouts.localizable(),
+                        style = Typography.titleLarge,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+
+                // Other workouts in grid
+                items(otherWorkouts.size, { it }) { index ->
+                    WorkoutCard(otherWorkouts[index], viewModel)
                 }
             }
         }
