@@ -26,17 +26,6 @@
     <string name="cooldown_desc">Respirez, allez lentement et calmement pour faire baisser votre rythme cardiaque, mais ne vous arrêtez pas</string>
     <string name="completed_desc">Félicitations ! Vous avez atteint la fin de cet entraînement ! Revenez demain pour un autre 💪</string>
     <string name="one_minute_remaining">Une minute restante</string>
-    <string name="three" translatable="false" />
-    <string name="two" translatable="false" />
-    <string name="one" translatable="false" />
-    <string name="four" translatable="false" />
-    <string name="five" translatable="false" />
-    <string name="six" translatable="false" />
-    <string name="seven" translatable="false" />
-    <string name="eight" translatable="false" />
-    <string name="nine" translatable="false" />
-    <string name="ten" translatable="false" />
-    <string name="empty" translatable="false" />
     <string name="title_activity_settings">Paramètres</string>
     <string name="title_profile_section">Profil</string>
     <string name="your_name">Votre nom</string>
@@ -53,18 +42,18 @@
     <string name="title_beta_section">Fonctionnalités bêta</string>
     <string name="beta_section_description">Accédez aux fonctionnalités expérimentales</string>
     <string name="enable_timer_notification">Notification du minuteur</string>
-    <string name="onboarding_section_title">Configuration</string>
-    <string name="about_dev_section_title">Développeur</string>
-    <string name="about_dev_section_description">Salut ! Je suis Gio, et je tiens à vous remercier d\'utiliser mon application.</string>
+    <string name="onboarding_section_title">Revoir l\'introduction</string>
+    <string name="about_dev_section_title">Du développeur</string>
+    <string name="about_dev_section_description">Salut ! Je m\'appelle Gio et je tiens à vous remercier d\'utiliser mon application ! En tant que passionné de fitness, j\'ai créé cet outil car j\'en avais assez de me battre avec des minuteurs compliqués. J\'espère que vous le trouverez aussi utile que moi !</string>
     <string name="about_dev_section_cta">Envoyez un email à Gio</string>
     <string name="about_dev_section_mastodon">Mastodon DM</string>
     <string name="credits_section_cta">Voir les crédits</string>
     <string name="subscription_section_title">Abonnement</string>
     <string name="subscription_section_status">Statut</string>
-    <string name="subscription_section_date">Date</string>
+    <string name="subscription_section_date">Valable jusqu\'au : %1$s</string>
     <string name="app_version">Version %1$s</string>
-    <string name="subscription_section_never">Jamais</string>
-    <string name="title_activity_logs">Journaux</string>
+    <string name="subscription_section_never">à vie</string>
+    <string name="title_activity_logs">Activité</string>
     <string name="onboarding_step_1_title">Entraînements personnalisés</string>
     <string name="onboarding_step_1_description">Des séances adaptées à votre niveau et vos objectifs</string>
     <string name="onboarding_step_1_name">Entraînements personnalisés</string>
