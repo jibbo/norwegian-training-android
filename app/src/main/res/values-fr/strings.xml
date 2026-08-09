@@ -61,7 +61,7 @@
     <string name="credits_section_cta">Voir les crédits</string>
     <string name="subscription_section_title">Abonnement</string>
     <string name="subscription_section_status">Statut</string>
-    <string name="subscription_section_date">Date</string>
+    <string name="subscription_section_date">Valable jusqu\'au : %1$s</string>
     <string name="app_version">Version %1$s</string>
     <string name="subscription_section_never">Jamais</string>
     <string name="title_activity_logs">Journaux</string>

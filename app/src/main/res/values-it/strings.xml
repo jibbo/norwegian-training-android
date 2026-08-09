@@ -53,7 +53,7 @@
     <string name="about_dev_section_mastodon">Scrivi un DM a Gio</string>
     <string name="credits_section_cta">Riconoscimenti</string>
 
-    <string name="subscription_section_never">Per sempre</string>
+    <string name="subscription_section_never">per sempre</string>
     <string name="title_activity_logs">La tua attività</string>
 
     <string name="onboarding_step_1_title">Benvenuti nell\'app Norwy!</string>
