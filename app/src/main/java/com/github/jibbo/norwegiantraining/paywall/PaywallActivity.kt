@@ -5,21 +5,28 @@ import android.os.Bundle
 import androidx.activity.BackEventCompat
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsRepository
 import com.github.jibbo.norwegiantraining.freetrial.FreeTrialActivity
 import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
+import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
@@ -40,7 +47,7 @@ class PaywallActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         sharedPreferencesSettingsRepository = SharedPreferencesSettingsRepository(this)
         val freeTrialEndDate = sharedPreferencesSettingsRepository.getFreeTrialEndDate()
-
+        enableEdgeToEdge()
         setContent {
             NorwegianTrainingTheme {
                 Scaffold { padding ->
@@ -72,15 +79,21 @@ class PaywallActivity : BaseActivity() {
                     )
                     Row {
                         Spacer(modifier = Modifier.weight(1f))
-                        Button(onClick = {
+                        IconButton(onClick = {
                             Purchases.sharedInstance.getCustomerInfoWith { customerInfo ->
                                 goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
                             }
                         }, modifier = Modifier.padding(vertical = padding.calculateTopPadding())) {
                             Icon(
                                 painter = painterResource(
-                                    id = R.drawable.outline_close_24
-                                ), contentDescription = "Close"
+                                    id = R.drawable.outline_close_24,
+                                ), contentDescription = "Close",
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .background(
+                                        shape = RoundedCornerShape(size = 14.dp),
+                                        color = Primary
+                                    )
                             )
                         }
                     }
