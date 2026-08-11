@@ -276,6 +276,19 @@ private fun TTSCard(viewModel: SettingsViewModel) {
                     viewModel.setAnnounceCountdown(it)
                 })
             }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Text(
+                    text = R.string.vibration.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                MySwitch(checked = state.value.vibrationEnabled, onCheckedChange = {
+                    viewModel.setVibrationEnabled(it)
+                })
+            }
         }
     }
 }

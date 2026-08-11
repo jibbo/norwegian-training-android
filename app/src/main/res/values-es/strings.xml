@@ -39,6 +39,7 @@
     <string name="announce_phase">Nombre de la fase</string>
     <string name="announce_phase_description">Descripción de la fase</string>
     <string name="announce_countdown">Cuenta regresiva antes de terminar la fase</string>
+    <string name="vibration">Vibración al iniciar/pausar el temporizador</string>
     <string name="title_privacy_section">Privacidad</string>
     <string name="enable_analytics">Recopilación de datos</string>
     <string name="enable_analytics_description">Nos ayuda a mejorar la app según las funciones y opciones más populares</string>

@@ -34,6 +34,7 @@
     <string name="announce_phase">Phasenname</string>
     <string name="announce_phase_description">Phasenbeschreibung</string>
     <string name="announce_countdown">Countdown bis zum Ende der Phase</string>
+    <string name="vibration">Vibration bei Timer-Start/Pause</string>
     <string name="title_privacy_section">Datenschutz</string>
     <string name="enable_analytics">Analytik</string>
     <string name="enable_analytics_description">Hilf, die App zu verbessern, indem du anonyme Daten teilst</string>

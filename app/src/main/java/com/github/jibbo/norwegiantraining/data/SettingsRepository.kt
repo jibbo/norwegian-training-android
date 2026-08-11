@@ -27,6 +27,8 @@ interface SettingsRepository {
     fun getAnnouncePhaseDesc(): Boolean
     fun setAnnounceCountdown(enabled: Boolean)
     fun getAnnounceCountdown(): Boolean
+    fun setVibrationEnabled(enabled: Boolean)
+    fun getVibrationEnabled(): Boolean
     fun setAnalyticsEnabled(enabled: Boolean)
     fun getAnalyticsEnabled(): Boolean
     fun setCrashReportingEnabled(enabled: Boolean)
@@ -80,6 +82,12 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     }
 
     override fun getAnnounceCountdown(): Boolean = sp.getBoolean(KEY_ANNOUNCE_COUNTDOWN, true)
+
+    override fun setVibrationEnabled(enabled: Boolean) {
+        sp.edit { putBoolean(KEY_VIBRATION_ENABLED, enabled) }
+    }
+
+    override fun getVibrationEnabled(): Boolean = sp.getBoolean(KEY_VIBRATION_ENABLED, true)
 
     override fun setAnalyticsEnabled(enabled: Boolean) {
         sp.edit { putBoolean(KEY_ANALYTICS_ENABLED, enabled) }
@@ -198,6 +206,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_LAST_PROGRESSION_DATE = "last_progression_date"
         const val KEY_LAST_WORKOUT_ID = "last_workout_id"
         const val KEY_APP_LANGUAGE_CODE = "app_language"
+        const val KEY_VIBRATION_ENABLED = "vibration_enabled"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

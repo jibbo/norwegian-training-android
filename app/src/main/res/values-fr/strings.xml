@@ -34,6 +34,7 @@
     <string name="announce_phase">Nom de la phase</string>
     <string name="announce_phase_description">Description de la phase</string>
     <string name="announce_countdown">Compte à rebours avant la fin de la phase</string>
+    <string name="vibration">Vibration au démarrage/pause du minuteur</string>
     <string name="title_privacy_section">Confidentialité</string>
     <string name="enable_analytics">Analytiques</string>
     <string name="enable_analytics_description">Aider à améliorer l\'application en partageant des données anonymes</string>
