@@ -35,6 +35,7 @@ internal class SettingsViewModel @Inject constructor(
             announcePhase = settingsRepository.getAnnouncePhase(),
             announcePhaseDesc = settingsRepository.getAnnouncePhaseDesc(),
             announceCountdown = settingsRepository.getAnnounceCountdown(),
+            announceOneMinute = settingsRepository.getAnnounceOneMinute(),
             vibrationEnabled = settingsRepository.getVibrationEnabled(),
             isCrashReportingEnabled = settingsRepository.getCrashReportingEnabled(),
             isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled(),
@@ -92,6 +93,12 @@ internal class SettingsViewModel @Inject constructor(
         settingsRepository.setAnnounceCountdown(enabled)
         uiStates.value = uiStates.value.copy(announceCountdown = enabled)
         analytics.logAnnounceCountdownBeforeNextPhase(enabled)
+    }
+
+    fun setAnnounceOneMinute(enabled: Boolean) {
+        settingsRepository.setAnnounceOneMinute(enabled)
+        uiStates.value = uiStates.value.copy(announceOneMinute = enabled)
+        analytics.logAnnounceOneMinute(enabled)
     }
 
     fun setVibrationEnabled(enabled: Boolean) {

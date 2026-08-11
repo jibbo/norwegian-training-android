@@ -27,6 +27,8 @@ interface SettingsRepository {
     fun getAnnouncePhaseDesc(): Boolean
     fun setAnnounceCountdown(enabled: Boolean)
     fun getAnnounceCountdown(): Boolean
+    fun setAnnounceOneMinute(enabled: Boolean)
+    fun getAnnounceOneMinute(): Boolean
     fun setVibrationEnabled(enabled: Boolean)
     fun getVibrationEnabled(): Boolean
     fun setAnalyticsEnabled(enabled: Boolean)
@@ -82,6 +84,12 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     }
 
     override fun getAnnounceCountdown(): Boolean = sp.getBoolean(KEY_ANNOUNCE_COUNTDOWN, true)
+
+    override fun setAnnounceOneMinute(enabled: Boolean) {
+        sp.edit { putBoolean(KEY_ANNOUNCE_ONE_MINUTE, enabled) }
+    }
+
+    override fun getAnnounceOneMinute(): Boolean = sp.getBoolean(KEY_ANNOUNCE_ONE_MINUTE, true)
 
     override fun setVibrationEnabled(enabled: Boolean) {
         sp.edit { putBoolean(KEY_VIBRATION_ENABLED, enabled) }
@@ -197,6 +205,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_USERNAME = "username"
         const val KEY_ANNOUNCE_PHASE_DESC = "announce_phase_desc"
         const val KEY_ANNOUNCE_COUNTDOWN = "announce_countdown"
+        const val KEY_ANNOUNCE_ONE_MINUTE = "announce_one_minute"
         const val KEY_CRASHLYTICS_ENABLED = "crashlytics_enabled"
         const val KEY_ANALYTICS_ENABLED = "analytics_enabled"
         const val KEY_SHOW_TIMER_NOTIFICATION = "show_timer_notification"
