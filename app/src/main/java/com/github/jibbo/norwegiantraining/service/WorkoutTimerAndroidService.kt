@@ -11,11 +11,15 @@ import android.content.Intent
 import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.alarm.AlarmReceiver
+import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.main.description
@@ -35,6 +39,9 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
 
     @Inject
     lateinit var stateManager: WorkoutTimerStateManager
+
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -127,6 +134,11 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
     }
 
     override suspend fun startTimer() {
+        startTimerInternal()
+        vibrate()
+    }
+
+    private suspend fun startTimerInternal() {
         Log.d(TAG, "Starting timer")
         stateManager.startTimer()
 
@@ -140,11 +152,30 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         announcePhaseStart(state.currentPhase.name)
     }
 
+    private fun vibrate() {
+        if (!settingsRepository.getVibrationEnabled()) return
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            (getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            getSystemService(VIBRATOR_SERVICE) as Vibrator
+        }
+        if (vibrator.hasVibrator()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(40, 55))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(40)
+            }
+        }
+    }
+
     override suspend fun pauseTimer() {
         Log.d(TAG, "Pausing timer")
         countDownTimer?.cancel()
         cancelAlarm()
         stateManager.pauseTimer()
+        vibrate()
         updateNotification()
     }
 
@@ -163,7 +194,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             // Update notification to show new phase before starting timer
             updateNotification()
             // Automatically start the timer for the next phase
-            startTimer()
+            startTimerInternal()
         }
     }
 
@@ -182,7 +213,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             // Update notification to show new phase before starting timer
             updateNotification()
             // Automatically start the timer for the next phase
-            startTimer()
+            startTimerInternal()
         }
     }
 
@@ -222,7 +253,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             stopSelf()
         } else {
             // Automatically start the timer for the next phase
-            startTimer()
+            startTimerInternal()
         }
     }
 

@@ -38,6 +38,7 @@
     <string name="announce_phase">Nome della fase</string>
     <string name="announce_phase_description">Descrizione della fase</string>
     <string name="announce_countdown">Conto alla rovescia prima della fine della fase</string>
+    <string name="vibration">Vibrazione all\'avvio/in pausa del timer</string>
     <string name="title_privacy_section">Privacy</string>
     <string name="enable_analytics">Raccolta Dati</string>
     <string name="enable_analytics_description">Ci permette di migliorare l\'app in base a quali funzionalità e opzioni sono popolari</string>

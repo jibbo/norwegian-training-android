@@ -47,6 +47,12 @@ class FakeSettingsRepository : SettingsRepository {
 
     override fun getAnnounceCountdown(): Boolean = false
 
+    override fun setVibrationEnabled(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getVibrationEnabled(): Boolean = false
+
     override fun setAnalyticsEnabled(enabled: Boolean) {
         TODO("Not yet implemented")
     }

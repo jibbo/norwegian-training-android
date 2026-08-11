@@ -58,6 +58,7 @@
     <string name="announce_phase">Phase name</string>
     <string name="announce_phase_description">Phase description</string>
     <string name="announce_countdown">Countdown before phase ends</string>
+    <string name="vibration">Vibration on timer start/pause</string>
     <string name="title_privacy_section">Privacy</string>">
     <string name="enable_analytics">Data Collection</string>
     <string name="enable_analytics_description">It lets us improve the app based on which features and options are popular</string>
