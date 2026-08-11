@@ -42,59 +42,6 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
 
-
-@Composable
-fun VideoBackground(@RawRes res: Int = R.raw.bg) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        ExoplayerExample(res)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    color = Black.copy(alpha = 0.9f)
-                )
-        )
-    }
-}
-
-@Composable
-fun ExoplayerExample(@RawRes res: Int) {
-    val context = LocalContext.current
-    val videoUri = "android.resource://" + context.packageName + "/" + res
-    val mediaItem = remember(videoUri) { // remember MediaItem based on URI
-        MediaItem.Builder()
-            .setUri(videoUri.toUri())
-            .build()
-    }
-    val exoPlayer = remember(context, mediaItem) {
-        ExoPlayer.Builder(context)
-            .build()
-            .also { exoPlayer ->
-                exoPlayer.setMediaItem(mediaItem)
-                exoPlayer.playWhenReady = true
-                exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
-                exoPlayer.prepare()
-            }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            exoPlayer.release()
-        }
-    }
-
-    AndroidView(
-        factory = { ctx ->
-            StyledPlayerView(ctx).apply {
-                player = exoPlayer
-                useController = false
-                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-            }
-        },
-        modifier = Modifier.fillMaxSize()
-    )
-}
-
 @Composable
 fun Toolbar(
     name: String,
