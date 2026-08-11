@@ -489,7 +489,7 @@ internal fun Header(viewModel: HomeViewModel) {
             ) {
                 Toolbar(
                     name = R.string.welcome.localizable(state.username ?: ""),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).padding(12.dp),
                 )
                 IconButton(onClick = { viewModel.chartsClicked() }) {
                     Icon(
