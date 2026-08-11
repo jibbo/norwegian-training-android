@@ -121,7 +121,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         sp.edit {
             putLong(
                 "free_trial_date",
-                System.currentTimeMillis() + 3L * 24 * 60 * 60 * 1000
+                System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000
             )
         }
     }
