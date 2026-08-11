@@ -219,6 +219,7 @@ internal fun SweatDroplets(
                 val radiusPx = with(density) { radiusDp.dp.toPx() }
                 val slipDuration =
                     (3000L - ((radiusDp - 6f) * 90).toLong()).coerceIn(2100L, 3000L)
+                val dripDuration = 2000L
                 val droplet = Droplet(
                     id = nextId++,
                     startAngle = Random.nextFloat() * 1.9f - 2.5f,
@@ -226,14 +227,14 @@ internal fun SweatDroplets(
                     centerY = centerY,
                     circleRadius = circleRadius,
                     radius = radiusPx,
-                    lingerDurationMillis = Random.nextLong(3000L, 4000L),
+                    lingerDurationMillis = 15000L - slipDuration - dripDuration,
                     slipDurationMillis = slipDuration,
-                    dripDurationMillis = 550L,
+                    dripDurationMillis = dripDuration,
                     progress = Animatable(0f)
                 )
                 droplets.add(droplet)
             }
-            delay(1000L)
+            delay(5000L)
         }
     }
 
