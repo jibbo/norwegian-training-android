@@ -147,6 +147,7 @@ class WorkoutTimerStateManager @Inject constructor(
     fun shouldAnnouncePhase(): Boolean = settingsRepository.getAnnouncePhase()
     fun shouldAnnouncePhaseDesc(): Boolean = settingsRepository.getAnnouncePhaseDesc()
     fun shouldAnnounceCountdown(): Boolean = settingsRepository.getAnnounceCountdown()
+    fun shouldAnnounceOneMinute(): Boolean = settingsRepository.getAnnounceOneMinute()
 
     private fun updateState(newState: WorkoutTimerState) {
         _state.value = newState

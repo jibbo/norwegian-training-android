@@ -58,6 +58,7 @@
     <string name="announce_phase">Phase name</string>
     <string name="announce_phase_description">Phase description</string>
     <string name="announce_countdown">Countdown before phase ends</string>
+    <string name="announce_one_minute">One minute remaining</string>
     <string name="vibration">Vibration on timer start/pause</string>
     <string name="title_privacy_section">Privacy</string>">
     <string name="enable_analytics">Data Collection</string>

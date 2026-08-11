@@ -39,6 +39,7 @@
     <string name="announce_phase">Nombre de la fase</string>
     <string name="announce_phase_description">Descripción de la fase</string>
     <string name="announce_countdown">Cuenta regresiva antes de terminar la fase</string>
+    <string name="announce_one_minute">Aviso de un minuto</string>
     <string name="vibration">Vibración al iniciar/pausar el temporizador</string>
     <string name="title_privacy_section">Privacidad</string>
     <string name="enable_analytics">Recopilación de datos</string>

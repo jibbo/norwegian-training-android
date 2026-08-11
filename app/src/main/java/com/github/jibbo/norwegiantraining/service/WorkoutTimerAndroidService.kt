@@ -282,10 +282,8 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
 
         countDownTimer = object : CountDownTimer(duration, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
-                if (stateManager.shouldAnnounceCountdown()) {
-                    val secondsRemaining = (millisUntilFinished / 1000).toInt()
-                    announceCountdown(secondsRemaining)
-                }
+                val secondsRemaining = (millisUntilFinished / 1000).toInt()
+                announceCountdown(secondsRemaining)
                 updateNotification()
             }
 
@@ -305,8 +303,9 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         val isGetReadyCountdown = currentPhase == PhaseName.GET_READY
 
         val shouldAnnounce = when {
-            isGetReadyCountdown -> secondsRemaining in 10 until 4
-            else -> secondsRemaining in setOf(60, 3, 2, 1)
+            isGetReadyCountdown -> stateManager.shouldAnnounceCountdown() && secondsRemaining in 10 until 4
+            secondsRemaining == 60 -> stateManager.shouldAnnounceOneMinute()
+            else -> stateManager.shouldAnnounceCountdown() && secondsRemaining in setOf(3, 2, 1)
         }
 
         if (shouldAnnounce) {
