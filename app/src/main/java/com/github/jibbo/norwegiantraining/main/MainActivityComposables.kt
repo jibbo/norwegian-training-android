@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -63,7 +62,6 @@ internal fun MainView(
         modifier = Modifier.fillMaxSize(),
         containerColor = Black,
     ) { innerPadding ->
-        val bottomInsetPx = with(LocalDensity.current) { innerPadding.calculateBottomPadding().toPx() }
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
@@ -130,7 +128,6 @@ internal fun MainView(
             SweatDroplets(
                 isTimerRunning = state.isTimerRunning,
                 circleBounds = circleBounds.value,
-                bottomInsetPx = bottomInsetPx,
                 modifier = Modifier.fillMaxSize()
             )
             if (state.showConfetti) {

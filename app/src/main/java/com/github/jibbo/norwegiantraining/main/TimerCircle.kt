@@ -1,7 +1,6 @@
 package com.github.jibbo.norwegiantraining.main
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -19,7 +18,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
@@ -34,6 +37,9 @@ import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.ui.theme.*
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.random.Random
 import kotlinx.coroutines.delay
 
@@ -43,7 +49,7 @@ internal fun WaterCircle(
     onBoundsChanged: (Rect) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
@@ -70,8 +76,12 @@ internal fun WaterCircle(
             .border(2.dp, Primary.copy(alpha = 0.8f), CircleShape),
         contentAlignment = Alignment.Center
     ) {
+        val circleSide = maxWidth
+        val contentScale = (circleSide / 300.dp).coerceIn(0.78f, 1.1f)
         Column(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -90,22 +100,29 @@ internal fun WaterCircle(
                 Text(
                     text = phasesText.uppercase(),
                     style = Typography.titleSmall,
+                    fontSize = Typography.titleSmall.fontSize * contentScale,
                     color = Primary,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp * contentScale))
             Text(
                 text = state.step.name.message().localizable(),
                 style = Typography.headlineMedium,
+                fontSize = Typography.headlineMedium.fontSize * contentScale,
                 color = White,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             if (state.step.name != PhaseName.COMPLETED) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(8.dp * contentScale))
                 Text(
                     text = state.step.name.description().localizable(),
                     style = Typography.bodyMedium,
+                    fontSize = Typography.bodyMedium.fontSize * contentScale,
                     color = White.copy(alpha = 0.85f),
                     textAlign = TextAlign.Center,
                     maxLines = 3,
@@ -113,12 +130,12 @@ internal fun WaterCircle(
                 )
             }
             if (state.step.name != PhaseName.COMPLETED) {
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(12.dp * contentScale))
                 CountdownDisplay(
                     targetTimeMillis = state.targetTimeMillis,
                     isRunning = state.isTimerRunning,
                     remainingTimeOnPauseMillis = state.remainingTimeOnPauseMillis,
-                    fontSize = 45.sp
+                    fontSize = (45f * contentScale).coerceIn(32f, 48f).sp
                 )
             }
         }
@@ -166,29 +183,23 @@ internal fun CountdownDisplay(
     )
 }
 
-private data class SplashSpark(
-    val velocityX: Float,
-    val velocityY: Float,
-    val radius: Float
-)
-
 private data class Droplet(
     val id: Long,
-    val startX: Float,
+    val startAngle: Float,
+    val centerX: Float,
+    val centerY: Float,
+    val circleRadius: Float,
     val radius: Float,
-    val growDurationMillis: Long,
-    val dropDurationMillis: Long,
-    val splashDurationMillis: Long,
-    val progress: Animatable<Float, *>,
-    val splash: Animatable<Float, *>,
-    val sparks: List<SplashSpark>
+    val lingerDurationMillis: Long,
+    val slipDurationMillis: Long,
+    val dripDurationMillis: Long,
+    val progress: Animatable<Float, *>
 )
 
 @Composable
 internal fun SweatDroplets(
     isTimerRunning: Boolean,
     circleBounds: Rect?,
-    bottomInsetPx: Float,
     modifier: Modifier = Modifier
 ) {
     val droplets = remember { mutableStateListOf<Droplet>() }
@@ -201,23 +212,24 @@ internal fun SweatDroplets(
         while (true) {
             val bounds = currentBounds
             if (bounds != null) {
-                val radiusPx = with(density) { (10f + Random.nextFloat() * 16f).dp.toPx() }
+                val centerX = bounds.left + bounds.width / 2f
+                val centerY = bounds.top + bounds.height / 2f
+                val circleRadius = bounds.width / 2f
+                val radiusDp = 6f + Random.nextFloat() * Random.nextFloat() * 10f
+                val radiusPx = with(density) { radiusDp.dp.toPx() }
+                val slipDuration =
+                    (3000L - ((radiusDp - 6f) * 90).toLong()).coerceIn(2100L, 3000L)
                 val droplet = Droplet(
                     id = nextId++,
-                    startX = Random.nextFloat() * bounds.width,
+                    startAngle = Random.nextFloat() * 1.9f - 2.5f,
+                    centerX = centerX,
+                    centerY = centerY,
+                    circleRadius = circleRadius,
                     radius = radiusPx,
-                    growDurationMillis = Random.nextLong(2000L, 2600L),
-                    dropDurationMillis = Random.nextLong(700L, 900L),
-                    splashDurationMillis = Random.nextLong(600L, 700L),
-                    progress = Animatable(0f),
-                    splash = Animatable(0f),
-                    sparks = List(8) {
-                        SplashSpark(
-                            velocityX = Random.nextFloat() * 440f - 220f,
-                            velocityY = -Random.nextFloat() * 260f - 120f,
-                            radius = with(density) { (2.5f + Random.nextFloat() * 3.5f).dp.toPx() }
-                        )
-                    }
+                    lingerDurationMillis = Random.nextLong(3000L, 4000L),
+                    slipDurationMillis = slipDuration,
+                    dripDurationMillis = 550L,
+                    progress = Animatable(0f)
                 )
                 droplets.add(droplet)
             }
@@ -227,75 +239,116 @@ internal fun SweatDroplets(
 
     droplets.forEach { droplet ->
         LaunchedEffect(droplet.id) {
-            droplet.progress.animateTo(0.55f, tween(droplet.growDurationMillis.toInt(), easing = LinearEasing))
-            droplet.progress.animateTo(1f, tween(droplet.dropDurationMillis.toInt(), easing = EaseIn))
-            droplet.splash.animateTo(1f, tween(droplet.splashDurationMillis.toInt(), easing = LinearEasing))
+            val totalMillis = droplet.lingerDurationMillis +
+                droplet.slipDurationMillis +
+                droplet.dripDurationMillis
+            droplet.progress.animateTo(1f, tween(totalMillis.toInt(), easing = LinearEasing))
             droplets.remove(droplet)
         }
     }
 
     Canvas(modifier = modifier.fillMaxSize()) {
         if (circleBounds == null) return@Canvas
-        val bottomY = size.height - bottomInsetPx
         droplets.forEach { droplet ->
-            val progress = droplet.progress.value
-            when {
-                progress < 0.55f -> {
-                    val growFraction = (progress / 0.55f).coerceIn(0f, 1f)
-                    val radius = droplet.radius * growFraction * 1.05f
-                    val alpha = (growFraction * 1.2f).coerceIn(0f, 1f)
-                    drawDroplet(
-                        x = circleBounds.left + droplet.startX,
-                        y = circleBounds.top,
-                        radius = radius,
-                        alpha = alpha
-                    )
-                }
+            val totalMillis = droplet.lingerDurationMillis +
+                droplet.slipDurationMillis +
+                droplet.dripDurationMillis
+            val elapsed = droplet.progress.value * totalMillis
+            val lingerFraction = (elapsed / droplet.lingerDurationMillis).coerceIn(0f, 1f)
+            val slipFraction = ((elapsed - droplet.lingerDurationMillis) / droplet.slipDurationMillis)
+                .coerceIn(0f, 1f)
+            val dripFraction = ((elapsed - droplet.lingerDurationMillis - droplet.slipDurationMillis) /
+                droplet.dripDurationMillis).coerceIn(0f, 1f)
 
-                progress < 1f -> {
-                    val dropFraction = ((progress - 0.55f) / 0.45f).coerceIn(0f, 1f)
-                    val x = circleBounds.left + droplet.startX
-                    val y = circleBounds.top + (bottomY - circleBounds.top) * dropFraction
-                    drawDroplet(
-                        x = x,
-                        y = y,
-                        radius = droplet.radius,
-                        alpha = 0.95f,
-                        stretchY = 1.1f + 0.3f * dropFraction
-                    )
-                }
+            val bottomAngle = (PI / 2.0).toFloat()
+            val targetAngle = if (droplet.startAngle <= -bottomAngle) {
+                -3f * bottomAngle
+            } else {
+                bottomAngle
+            }
+            val slipPos = 0.25f * slipFraction + 0.75f * slipFraction * slipFraction
+            val angle = droplet.startAngle + (targetAngle - droplet.startAngle) * slipPos
 
-                else -> {
-                    val splashFraction = droplet.splash.value
-                    val impactX = circleBounds.left + droplet.startX
-                    val impactY = bottomY
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(Primary.copy(alpha = 1f), Primary.copy(alpha = 0f))
-                        ),
-                        radius = droplet.radius * (1.2f + splashFraction * 1.6f),
-                        center = Offset(impactX, impactY),
-                        alpha = (1f - splashFraction) * 0.7f
-                    )
-                    droplet.sparks.forEach { spark ->
-                        val t = splashFraction * (droplet.splashDurationMillis / 1000f)
-                        val splashGravity = 1600f
-                        val sx = impactX + spark.velocityX * t
-                        val sy = impactY + spark.velocityY * t + 0.5f * splashGravity * t * t
-                        drawCircle(
-                            color = Primary,
-                            radius = spark.radius * (1f - 0.4f * splashFraction),
-                            center = Offset(sx, sy),
-                            alpha = (1f - splashFraction) * 0.9f
-                        )
-                    }
-                }
+            val radius = droplet.radius * (0.5f + 0.5f * lingerFraction)
+
+            if (slipFraction > 0f && dripFraction <= 0f) {
+                drawTrail(
+                    droplet = droplet,
+                    startAngle = droplet.startAngle,
+                    angle = angle,
+                    trailProgress = slipFraction,
+                    radius = radius
+                )
+            }
+
+            val wobble =
+                sin(slipFraction * PI.toFloat() * 4f) * droplet.radius * 0.15f * (1f - slipFraction)
+            val wobbleRadius = droplet.circleRadius + wobble
+            var x = droplet.centerX + wobbleRadius * cos(angle)
+            var y = droplet.centerY + wobbleRadius * sin(angle)
+            if (dripFraction > 0f) {
+                val dripDrop = dripFraction * dripFraction
+                x = droplet.centerX
+                y = droplet.centerY + droplet.circleRadius + dripDrop * droplet.circleRadius * 0.5f
+            }
+
+            val alpha = when {
+                lingerFraction < 1f -> lingerFraction * 0.9f
+                dripFraction > 0f -> (1f - dripFraction) * 0.85f
+                else -> 0.85f
+            }
+            val degrees = 180f / PI.toFloat()
+            val trailEase =
+                if (slipFraction <= 0f) 0f else 1f - (1f - slipFraction) * (1f - slipFraction)
+            val motionSign = if (targetAngle > droplet.startAngle) 1f else -1f
+            val tipFlip = if (motionSign < 0f) PI.toFloat() else 0f
+            val travelRotation = (angle + tipFlip) * trailEase * (1f - dripFraction)
+            rotate(degrees = travelRotation * degrees, pivot = Offset(x, y)) {
+                drawTeardrop(
+                    x = x,
+                    y = y,
+                    radius = radius,
+                    alpha = alpha,
+                    stretchY = 1f + 0.2f * slipFraction
+                )
             }
         }
     }
 }
 
-private fun DrawScope.drawDroplet(
+private fun DrawScope.drawTrail(
+    droplet: Droplet,
+    startAngle: Float,
+    angle: Float,
+    trailProgress: Float,
+    radius: Float
+) {
+    val degrees = 180f / PI.toFloat()
+    val topLeft = Offset(
+        droplet.centerX - droplet.circleRadius,
+        droplet.centerY - droplet.circleRadius
+    )
+    val size = Size(droplet.circleRadius * 2f, droplet.circleRadius * 2f)
+    val steps = 10
+    for (i in 0 until steps) {
+        val f0 = i.toFloat() / steps
+        val f1 = (i + 1f) / steps
+        val a0 = angle + (startAngle - angle) * f0
+        val a1 = angle + (startAngle - angle) * f1
+        drawArc(
+            color = Primary,
+            startAngle = a0 * degrees,
+            sweepAngle = (a1 - a0) * degrees,
+            useCenter = false,
+            topLeft = topLeft,
+            size = size,
+            style = Stroke(width = radius * 1.1f, cap = StrokeCap.Round),
+            alpha = 0.12f * (1f - f0) * trailProgress
+        )
+    }
+}
+
+private fun DrawScope.drawTeardrop(
     x: Float,
     y: Float,
     radius: Float,
@@ -303,21 +356,60 @@ private fun DrawScope.drawDroplet(
     stretchY: Float = 1f
 ) {
     if (radius <= 0f) return
-    val highlightOffset = radius * 0.3f
-    drawOval(
+    val length = radius * 2.4f * stretchY
+    val halfWidth = radius * 1.1f
+    val tipY = y - length * 0.55f
+    val bottomY = y + length * 0.42f
+    val path = Path().apply {
+        moveTo(x, tipY)
+        cubicTo(
+            x + halfWidth * 0.6f, y - length * 0.15f,
+            x + halfWidth * 0.75f, y + length * 0.3f,
+            x, bottomY
+        )
+        cubicTo(
+            x - halfWidth * 0.75f, y + length * 0.3f,
+            x - halfWidth * 0.6f, y - length * 0.15f,
+            x, tipY
+        )
+        close()
+    }
+    val highlight = Offset(x - halfWidth * 0.3f, y - length * 0.05f)
+    drawPath(
+        path = path,
+        color = Primary.copy(alpha = 0.45f),
+        style = Stroke(width = radius * 0.35f, cap = StrokeCap.Round),
+        alpha = alpha
+    )
+    drawPath(
+        path = path,
         brush = Brush.radialGradient(
-            colors = listOf(Primary.copy(alpha = 0.95f), Primary.copy(alpha = 0.1f)),
-            center = Offset(x - highlightOffset, y - highlightOffset * 0.7f),
-            radius = radius * 1.2f
+            colors = listOf(
+                White.copy(alpha = 0.5f),
+                Primary.copy(alpha = 0.3f),
+                Primary.copy(alpha = 0.1f)
+            ),
+            center = highlight,
+            radius = radius * 1.3f
         ),
-        topLeft = Offset(x - radius, y - radius * stretchY),
-        size = Size(radius * 2f, radius * 2f * stretchY),
         alpha = alpha
     )
     drawCircle(
         color = White,
-        radius = radius * 0.22f,
-        center = Offset(x - highlightOffset, y - highlightOffset),
-        alpha = alpha * 0.55f
+        radius = radius * 0.24f,
+        center = Offset(x - halfWidth * 0.4f, y - length * 0.22f),
+        alpha = alpha * 0.85f
+    )
+    drawCircle(
+        color = White,
+        radius = radius * 0.1f,
+        center = Offset(x - halfWidth * 0.55f, y - length * 0.32f),
+        alpha = alpha * 0.7f
+    )
+    drawCircle(
+        color = White,
+        radius = radius * 0.12f,
+        center = Offset(x + halfWidth * 0.35f, y + length * 0.2f),
+        alpha = alpha * 0.25f
     )
 }
