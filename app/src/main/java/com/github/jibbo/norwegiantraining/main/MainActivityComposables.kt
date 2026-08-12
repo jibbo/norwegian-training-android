@@ -2,6 +2,8 @@ package com.github.jibbo.norwegiantraining.main
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -57,7 +59,6 @@ internal fun MainView(
     mainViewModel: MainViewModel,
 ) {
     val state by mainViewModel.uiStates.collectAsState()
-    val circleBounds = remember { mutableStateOf<Rect?>(null) }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Black,
@@ -81,7 +82,7 @@ internal fun MainView(
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    WaterCircle(state = state, onBoundsChanged = { circleBounds.value = it })
+                    WaterCircle(state = state)
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 val animatedBackgroundColor by animateColorAsState(
@@ -107,11 +108,18 @@ internal fun MainView(
                         modifier = Modifier.padding(16.dp)
                     )
                 }
-
-                if (mainViewModel.showSkipButton()) {
-                    TextButton(onClick = {
+                val showSkip = mainViewModel.showSkipButton()
+                val skipAlpha by animateFloatAsState(
+                    targetValue = if (showSkip) 1f else 0f,
+                    animationSpec = tween(durationMillis = 400),
+                    label = "SkipButtonAlpha"
+                )
+                    TextButton(
+                    onClick = {
                         mainViewModel.skipClicked()
-                    }) {
+                    },
+                    enabled = showSkip
+                    ) {
                         Text(
                             text = R.string.skip.localizable(),
                             style = Typography.titleMedium,
@@ -119,32 +127,16 @@ internal fun MainView(
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(6.dp),
+                                .padding(6.dp)
+                                .alpha(skipAlpha),
                             textAlign = TextAlign.Center,
                         )
-                    }
                 }
             }
-            SweatDroplets(
-                isTimerRunning = state.isTimerRunning,
-                circleBounds = circleBounds.value,
-                modifier = Modifier.fillMaxSize()
-            )
             if (state.showConfetti) {
                 KonfettiView(
                     modifier = Modifier.fillMaxSize(),
                     parties = listOf(
-//                    Party(
-//                        speed = 0f,
-//                        maxSpeed = 15f,
-//                        damping = 0.9f,
-//                        angle = Angle.BOTTOM,
-//                        spread = Spread.ROUND,
-//                        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-//                        emitter = Emitter(duration = 5, TimeUnit.SECONDS).perSecond(100),
-//                        position = Position.Relative(0.0, 0.0)
-//                            .between(Position.Relative(1.0, 0.0))
-//                    )
                         Party(
                             speed = 0f,
                             maxSpeed = 30f,
