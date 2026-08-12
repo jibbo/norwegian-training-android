@@ -31,11 +31,12 @@
     <string name="your_name">Dein Name</string>
     <string name="fitness_level_label">Fitnesslevel</string>
     <string name="title_tts_section">Sprachausgabe</string>
+    <string name="title_vibration_section">Vibration</string>
     <string name="announce_phase">Phasenname</string>
     <string name="announce_phase_description">Phasenbeschreibung</string>
     <string name="announce_countdown">Countdown bis zum Ende der Phase</string>
     <string name="announce_one_minute">Eine Minute vor Ende</string>
-    <string name="vibration">Vibration bei Timer-Start/Pause</string>
+    <string name="vibration">Bei Timer-Start/Pause</string>
     <string name="title_privacy_section">Datenschutz</string>
     <string name="enable_analytics">Analytik</string>
     <string name="enable_analytics_description">Hilf, die App zu verbessern, indem du anonyme Daten teilst</string>

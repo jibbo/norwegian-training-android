@@ -36,6 +36,7 @@
     <string name="your_name">Tu nombre</string>
     <string name="fitness_level_label">Nivel de fitness</string>
     <string name="title_tts_section">Indicaciones por voz</string>
+    <string name="title_vibration_section">Vibración</string>
     <string name="announce_phase">Nombre de la fase</string>
     <string name="announce_phase_description">Descripción de la fase</string>
     <string name="announce_countdown">Cuenta regresiva antes de terminar la fase</string>

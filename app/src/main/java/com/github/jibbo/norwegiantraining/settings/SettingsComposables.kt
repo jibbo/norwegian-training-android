@@ -113,6 +113,7 @@ internal fun SettingsScreen(
             item { ProfileCard(viewModel) }
             item { SubscriptionCard(viewModel) }
             item { TTSCard(viewModel) }
+            item { VibrationCard(viewModel) }
             item { OnboardingCard(viewModel) }
             item { PrivacyCard(viewModel) }
             item { GetInTouchCard() }
@@ -288,6 +289,30 @@ private fun TTSCard(viewModel: SettingsViewModel) {
                 MySwitch(checked = state.value.announceOneMinute, onCheckedChange = {
                     viewModel.setAnnounceOneMinute(it)
                 })
+            }
+        }
+    }
+}
+
+@Composable
+private fun VibrationCard(viewModel: SettingsViewModel) {
+    val state = viewModel.uiState.collectAsState()
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
+        Column(modifier = Modifier.padding(6.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = R.string.title_vibration_section.localizable(),
+                    style = Typography.bodyLarge,
+                    color = Primary
+                )
+                Spacer(modifier = Modifier.weight(1f))
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
