@@ -68,7 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
+import com.github.jibbo.norwegiantraining.components.BackToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
@@ -101,7 +101,7 @@ internal fun SettingsScreen(
                 bottom = innerPadding.calculateBottomPadding()
             )
     ) {
-        AnimatedToolbar(
+        BackToolbar(
             R.string.title_activity_settings.localizable(),
             listState,
             backDispatcher = backDispatcher
