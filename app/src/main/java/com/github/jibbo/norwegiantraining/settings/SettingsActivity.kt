@@ -38,7 +38,7 @@ class SettingsActivity : BaseActivity() {
                     SettingsScreen(
                         viewModel = viewModel,
                         innerPadding = innerPadding,
-                        backDispatcher = null
+                        backDispatcher = onBackPressedDispatcher
                     )
                 }
             }

@@ -44,7 +44,7 @@ class LogActivity : BaseActivity() {
                         }
 
                         is UiState.Loaded -> {
-                            Logs(innerPadding, uiState.value as UiState.Loaded)
+                            Logs(innerPadding, uiState.value as UiState.Loaded, onBackPressedDispatcher)
                         }
                     }
                 }
