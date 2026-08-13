@@ -38,6 +38,8 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 fun Toolbar(
     name: String,
     backDispatcher: OnBackPressedDispatcher? = null,
+    onBackClick: (() -> Unit)? = null,
+    trailingContent: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -45,10 +47,9 @@ fun Toolbar(
         modifier = modifier
             .padding(vertical = 16.dp)
     ) {
-        if (backDispatcher != null) {
-            IconButton(onClick = {
-                backDispatcher.onBackPressed()
-            }) {
+        val backAction = onBackClick ?: backDispatcher?.let { { it.onBackPressed() } }
+        if (backAction != null) {
+            IconButton(onClick = backAction) {
                 Icon(
                     painter = painterResource(
                         id = R.drawable.outline_arrow_back_24
@@ -61,8 +62,11 @@ fun Toolbar(
         Text(
             text = name,
             style = Typography.headlineSmall,
-            modifier = Modifier.padding(start = 6.dp)
+            modifier = Modifier.padding(start = 6.dp).weight(1f)
         )
+        if (trailingContent != null) {
+            trailingContent()
+        }
     }
 }
 

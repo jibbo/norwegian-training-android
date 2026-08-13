@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
+import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -157,52 +158,46 @@ internal fun MainView(
 internal fun Header(viewModel: MainViewModel, isDebugMode: Boolean) {
     val state by viewModel.uiStates.collectAsState()
     var isDebugMenuExpanded by remember { mutableStateOf(false) }
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(
-            text = R.string.home_workout_name.localizable(state.workoutName),
-            style = Typography.headlineLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
-        if (isDebugMode) {
-            IconButton(onClick = { isDebugMenuExpanded = !isDebugMenuExpanded }) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_settings_24),
-                    contentDescription = "Debug options"
-                )
+    Toolbar(
+        name = R.string.home_workout_name.localizable(state.workoutName),
+        onBackClick = { viewModel.closeWorkout() },
+        trailingContent = if (isDebugMode) {
+            {
+                IconButton(onClick = { isDebugMenuExpanded = !isDebugMenuExpanded }) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_settings_24),
+                        contentDescription = "Debug options"
+                    )
+                }
             }
-            DropdownMenu(
-                expanded = isDebugMenuExpanded,
-                onDismissRequest = { isDebugMenuExpanded = false }
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        isDebugMenuExpanded = false
-                        viewModel.debugShowConfetti()
-                    },
-                    text = { Text("Show confetti") }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        isDebugMenuExpanded = false
-                        viewModel.debugShowLevelUp()
-                    },
-                    text = { Text("Show Level up") }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        isDebugMenuExpanded = false
-                        viewModel.debugCompleteWorkout()
-                    },
-                    text = { Text("Complete workout") }
-                )
-            }
-        }
-        IconButton(onClick = { viewModel.closeWorkout() }) {
-            Icon(
-                painter = painterResource(R.drawable.outline_close_24),
-                contentDescription = ""
+        } else null,
+        modifier = Modifier.fillMaxWidth()
+    )
+    if (isDebugMode) {
+        DropdownMenu(
+            expanded = isDebugMenuExpanded,
+            onDismissRequest = { isDebugMenuExpanded = false }
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    isDebugMenuExpanded = false
+                    viewModel.debugShowConfetti()
+                },
+                text = { Text("Show confetti") }
+            )
+            DropdownMenuItem(
+                onClick = {
+                    isDebugMenuExpanded = false
+                    viewModel.debugShowLevelUp()
+                },
+                text = { Text("Show Level up") }
+            )
+            DropdownMenuItem(
+                onClick = {
+                    isDebugMenuExpanded = false
+                    viewModel.debugCompleteWorkout()
+                },
+                text = { Text("Complete workout") }
             )
         }
     }
