@@ -4,14 +4,7 @@ import androidx.activity.OnBackPressedDispatcher
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
@@ -25,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -42,63 +34,12 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.StyledPlayerView
 
-
-@Composable
-fun VideoBackground(@RawRes res: Int = R.raw.bg) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        ExoplayerExample(res)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    color = Black.copy(alpha = 0.9f)
-                )
-        )
-    }
-}
-
-@Composable
-fun ExoplayerExample(@RawRes res: Int) {
-    val context = LocalContext.current
-    val videoUri = "android.resource://" + context.packageName + "/" + res
-    val mediaItem = remember(videoUri) { // remember MediaItem based on URI
-        MediaItem.Builder()
-            .setUri(videoUri.toUri())
-            .build()
-    }
-    val exoPlayer = remember(context, mediaItem) {
-        ExoPlayer.Builder(context)
-            .build()
-            .also { exoPlayer ->
-                exoPlayer.setMediaItem(mediaItem)
-                exoPlayer.playWhenReady = true
-                exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
-                exoPlayer.prepare()
-            }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            exoPlayer.release()
-        }
-    }
-
-    AndroidView(
-        factory = { ctx ->
-            StyledPlayerView(ctx).apply {
-                player = exoPlayer
-                useController = false
-                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-            }
-        },
-        modifier = Modifier.fillMaxSize()
-    )
-}
-
 @Composable
 fun Toolbar(
     name: String,
     backDispatcher: OnBackPressedDispatcher? = null,
+    onBackClick: (() -> Unit)? = null,
+    trailingContent: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -106,10 +47,9 @@ fun Toolbar(
         modifier = modifier
             .padding(vertical = 16.dp)
     ) {
-        if (backDispatcher != null) {
-            IconButton(onClick = {
-                backDispatcher.onBackPressed()
-            }) {
+        val backAction = onBackClick ?: backDispatcher?.let { { it.onBackPressed() } }
+        if (backAction != null) {
+            IconButton(onClick = backAction) {
                 Icon(
                     painter = painterResource(
                         id = R.drawable.outline_arrow_back_24
@@ -122,19 +62,22 @@ fun Toolbar(
         Text(
             text = name,
             style = Typography.headlineSmall,
-            modifier = Modifier.padding(start = 6.dp)
+            modifier = Modifier.padding(start = 6.dp).weight(1f)
         )
+        if (trailingContent != null) {
+            trailingContent()
+        }
     }
 }
 
-
 @Composable
 fun AnimatedToolbar(
-    name: String, listState: LazyListState, backDispatcher: OnBackPressedDispatcher? = null
+    name: String,
+    listState: LazyListState
 ) {
     val density = LocalDensity.current
     val initialFontSizeSp = Typography.displayLarge.fontSize.value
-    val targetFontSizeSp = 28f // Target font size in sp, e.g., 28.sp
+    val targetFontSizeSp = 28f
     val initialLineHeightSp = Typography.displayLarge.lineHeight.value
     val targetLineHeightSp = if (initialFontSizeSp != 0f) {
         targetFontSizeSp * (initialLineHeightSp / initialFontSizeSp)
@@ -160,47 +103,51 @@ fun AnimatedToolbar(
         }
     }
 
-    // Animate font size
     val animatedFontSizeSp by animateFloatAsState(
         targetValue = lerp(initialFontSizeSp, targetFontSizeSp, scrollFraction),
         label = "fontSizeAnimation"
     )
-
-    // Animate line height
     val animatedLineHeightSp by animateFloatAsState(
         targetValue = lerp(initialLineHeightSp, targetLineHeightSp, scrollFraction),
         label = "lineHeightAnimation"
     )
 
-    Column {
-        Spacer(modifier = Modifier.height(animatedLineHeightSp.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
-        ) {
-            if (backDispatcher != null) {
-                IconButton(onClick = {
-                    backDispatcher.onBackPressed()
-                }) {
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.outline_arrow_back_24
-                        ),
-                        contentDescription = R.string.back.localizable(),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-            Text(
-                text = name,
-                style = Typography.displayLarge.copy( // Apply animated font size and line height
-                    fontSize = animatedFontSizeSp.sp,
-                    lineHeight = animatedLineHeightSp.sp
-                ),
-            )
-        }
+    Text(
+        text = name,
+        style = Typography.displayLarge.copy(
+            fontSize = animatedFontSizeSp.sp,
+            lineHeight = animatedLineHeightSp.sp
+        ),
+        modifier = Modifier.padding(start = 6.dp)
+    )
+}
 
+@Composable
+fun BackToolbar(
+    name: String,
+    listState: LazyListState,
+    backDispatcher: OnBackPressedDispatcher? = null
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 16.dp)
+    ) {
+        if (backDispatcher != null) {
+            IconButton(
+                onClick = {
+                    backDispatcher.onBackPressed()
+                },
+                modifier = Modifier.align(Alignment.Top)
+            ) {
+                Icon(
+                    painter = painterResource(
+                        id = R.drawable.outline_arrow_back_24
+                    ),
+                    contentDescription = R.string.back.localizable(),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+        AnimatedToolbar(name, listState)
     }
 }

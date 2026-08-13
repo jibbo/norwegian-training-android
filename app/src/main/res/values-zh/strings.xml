@@ -31,6 +31,7 @@
     <string name="your_name">你的名字</string>
     <string name="fitness_level_label">体能水平</string>
     <string name="title_tts_section">语音合成</string>
+    <string name="title_vibration_section">振动</string>
     <string name="announce_phase">阶段名称</string>
     <string name="announce_phase_description">相描述</string>
     <string name="announce_countdown">阶段结束前的倒计时</string>

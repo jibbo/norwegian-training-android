@@ -2,17 +2,16 @@ package com.github.jibbo.norwegiantraining.main
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -25,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,18 +31,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.components.VideoBackground
+import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -52,7 +49,6 @@ import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
-import kotlinx.coroutines.delay
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
@@ -66,247 +62,142 @@ internal fun MainView(
     val state by mainViewModel.uiStates.collectAsState()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        containerColor = Black,
     ) { innerPadding ->
-        if (!LocalInspectionMode.current) {
-            VideoBackground(R.raw.bg)
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(
-                    top = innerPadding.calculateTopPadding() + 8.dp,
-                    bottom = innerPadding.calculateBottomPadding()
-                )
-                .padding(horizontal = 16.dp)
-        ) {
-            Header(viewModel = mainViewModel, isDebugMode = BuildConfig.DEBUG)
-            Spacer(modifier = Modifier.weight(1f))
-            Instructions(state)
-            Spacer(modifier = Modifier.weight(1f))
-            if (mainViewModel.showCountdown()) {
-                Timer(state, mainViewModel)
-            }
-            val animatedBackgroundColor by animateColorAsState(
-                targetValue = if (state.isTimerRunning) Red else Primary,
-                label = "ButtonBackgroundColorAnimation"
-            )
-            Button(
-                onClick = {
-                    mainViewModel.onMainButtonClicked()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = animatedBackgroundColor),
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
                 modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .imePadding()
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        top = innerPadding.calculateTopPadding() + 8.dp,
+                        bottom = innerPadding.calculateBottomPadding()
+                    )
+                    .padding(horizontal = 16.dp)
             ) {
-                val text = state.mainButtonText.localizable().uppercase()
-                val textColor: Color = if (state.isTimerRunning) White else Black
-                Text(
-                    text = text,
-                    style = Typography.titleLarge,
-                    color = textColor,
-                    modifier = Modifier.padding(16.dp)
+                Header(viewModel = mainViewModel, isDebugMode = BuildConfig.DEBUG)
+                Spacer(modifier = Modifier.weight(1f))
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    WaterCircle(state = state)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                val animatedBackgroundColor by animateColorAsState(
+                    targetValue = if (state.isTimerRunning) Red else Primary,
+                    label = "ButtonBackgroundColorAnimation"
                 )
-            }
-
-            if (mainViewModel.showSkipButton()) {
-                TextButton(onClick = {
-                    mainViewModel.skipClicked()
-                }) {
+                Button(
+                    onClick = {
+                        mainViewModel.onMainButtonClicked()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = animatedBackgroundColor),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .imePadding()
+                ) {
+                    val text = state.mainButtonText.localizable().uppercase()
+                    val textColor: Color = if (state.isTimerRunning) White else Black
                     Text(
-                        text = R.string.skip.localizable(),
-                        style = Typography.titleMedium,
-                        color = White,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(6.dp),
-                        textAlign = TextAlign.Center,
+                        text = text,
+                        style = Typography.titleLarge,
+                        color = textColor,
+                        modifier = Modifier.padding(16.dp)
                     )
                 }
+                val showSkip = mainViewModel.showSkipButton()
+                val skipAlpha by animateFloatAsState(
+                    targetValue = if (showSkip) 1f else 0f,
+                    animationSpec = tween(durationMillis = 400),
+                    label = "SkipButtonAlpha"
+                )
+                    TextButton(
+                    onClick = {
+                        mainViewModel.skipClicked()
+                    },
+                    enabled = showSkip
+                    ) {
+                        Text(
+                            text = R.string.skip.localizable(),
+                            style = Typography.titleMedium,
+                            color = White,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(6.dp)
+                                .alpha(skipAlpha),
+                            textAlign = TextAlign.Center,
+                        )
+                }
             }
-        }
-        if (state.showConfetti) {
-            KonfettiView(
-                modifier = Modifier.fillMaxSize(),
-                parties = listOf(
-//                    Party(
-//                        speed = 0f,
-//                        maxSpeed = 15f,
-//                        damping = 0.9f,
-//                        angle = Angle.BOTTOM,
-//                        spread = Spread.ROUND,
-//                        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-//                        emitter = Emitter(duration = 5, TimeUnit.SECONDS).perSecond(100),
-//                        position = Position.Relative(0.0, 0.0)
-//                            .between(Position.Relative(1.0, 0.0))
-//                    )
-                    Party(
-                        speed = 0f,
-                        maxSpeed = 30f,
-                        damping = 0.9f,
-                        spread = 360,
-                        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                        emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100),
-                        position = Position.Relative(0.5, 0.3)
+            if (state.showConfetti) {
+                KonfettiView(
+                    modifier = Modifier.fillMaxSize(),
+                    parties = listOf(
+                        Party(
+                            speed = 0f,
+                            maxSpeed = 30f,
+                            damping = 0.9f,
+                            spread = 360,
+                            colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+                            emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100),
+                            position = Position.Relative(0.5, 0.3)
+                        )
                     )
                 )
-            )
-        }
-    }
-}
-
-@Composable
-private fun ColumnScope.Timer(
-    state: UiState,
-    mainViewModel: MainViewModel
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        CountdownDisplay(
-            targetTimeMillis = state.targetTimeMillis,
-            isRunning = state.isTimerRunning,
-            remainingTimeOnPauseMillis = state.remainingTimeOnPauseMillis
-        )
-    }
-
-    Spacer(modifier = Modifier.weight(1f))
-}
-
-@Composable
-private fun Instructions(state: UiState) {
-    Spacer(modifier = Modifier.height(64.dp))
-    Text(
-        text = state.step.name.message().localizable(),
-        style = Typography.headlineLarge,
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center
-    )
-    Text(
-        text = state.step.name.description().localizable(),
-        style = Typography.bodyLarge,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        textAlign = TextAlign.Center,
-    )
-    val phasesText: String = when {
-        state.currentPhaseIndex == 0 -> {
-            R.string.phases_total.localizable(state.totalPhases)
-        }
-        state.currentPhaseIndex <= state.totalPhases -> {
-            R.string.current_phases.localizable(state.currentPhaseIndex, state.totalPhases)
-        }
-        else -> {
-            R.string.current_phases.localizable(state.totalPhases, state.totalPhases)
-        }
-    }
-
-    Text(
-        text = phasesText,
-        style = Typography.titleMedium,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth()
-    )
-}
-
-@Composable
-internal fun CountdownDisplay(
-    targetTimeMillis: Long,
-    isRunning: Boolean,
-    remainingTimeOnPauseMillis: Long = 0L,
-    modifier: Modifier = Modifier
-) {
-    var remainingTimeMillis by remember(targetTimeMillis, remainingTimeOnPauseMillis) {
-        mutableStateOf(
-            if (isRunning) {
-                (targetTimeMillis - System.currentTimeMillis()).coerceAtLeast(0L)
-            } else {
-                remainingTimeOnPauseMillis
             }
-        )
-    }
-
-    LaunchedEffect(key1 = isRunning, key2 = targetTimeMillis) {
-        if (!isRunning) {
-            remainingTimeMillis = remainingTimeOnPauseMillis
-            return@LaunchedEffect
-        }
-
-        while (isRunning) {
-            remainingTimeMillis = (targetTimeMillis - System.currentTimeMillis()).coerceAtLeast(0L)
-            delay(1000L)
         }
     }
-
-    val minutes = TimeUnit.MILLISECONDS.toMinutes(remainingTimeMillis.coerceAtLeast(0L))
-    val seconds = TimeUnit.MILLISECONDS.toSeconds(remainingTimeMillis.coerceAtLeast(0L)) % 60
-
-    Text(
-        text = String.format("%02d:%02d", minutes, seconds),
-        style = Typography.displayLarge,
-        fontSize = 128.sp,
-        modifier = modifier
-    )
 }
 
 @Composable
 internal fun Header(viewModel: MainViewModel, isDebugMode: Boolean) {
     val state by viewModel.uiStates.collectAsState()
     var isDebugMenuExpanded by remember { mutableStateOf(false) }
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.safeDrawingPadding()) {
-        Text(
-            text = R.string.home_workout_name.localizable(state.workoutName),
-            style = Typography.headlineLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
-        if (isDebugMode) {
-            IconButton(onClick = { isDebugMenuExpanded = !isDebugMenuExpanded }) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_settings_24),
-                    contentDescription = "Debug options"
-                )
+    Toolbar(
+        name = R.string.home_workout_name.localizable(state.workoutName),
+        onBackClick = { viewModel.closeWorkout() },
+        trailingContent = if (isDebugMode) {
+            {
+                IconButton(onClick = { isDebugMenuExpanded = !isDebugMenuExpanded }) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_settings_24),
+                        contentDescription = "Debug options"
+                    )
+                }
             }
-            DropdownMenu(
-                expanded = isDebugMenuExpanded,
-                onDismissRequest = { isDebugMenuExpanded = false }
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        isDebugMenuExpanded = false
-                        viewModel.debugShowConfetti()
-                    },
-                    text = { Text("Show confetti") }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        isDebugMenuExpanded = false
-                        viewModel.debugShowLevelUp()
-                    },
-                    text = { Text("Show Level up") }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        isDebugMenuExpanded = false
-                        viewModel.debugCompleteWorkout()
-                    },
-                    text = { Text("Complete workout") }
-                )
-            }
-        }
-        IconButton(onClick = { viewModel.closeWorkout() }) {
-            Icon(
-                painter = painterResource(R.drawable.outline_close_24),
-                contentDescription = ""
+        } else null,
+        modifier = Modifier.fillMaxWidth()
+    )
+    if (isDebugMode) {
+        DropdownMenu(
+            expanded = isDebugMenuExpanded,
+            onDismissRequest = { isDebugMenuExpanded = false }
+        ) {
+            DropdownMenuItem(
+                onClick = {
+                    isDebugMenuExpanded = false
+                    viewModel.debugShowConfetti()
+                },
+                text = { Text("Show confetti") }
+            )
+            DropdownMenuItem(
+                onClick = {
+                    isDebugMenuExpanded = false
+                    viewModel.debugShowLevelUp()
+                },
+                text = { Text("Show Level up") }
+            )
+            DropdownMenuItem(
+                onClick = {
+                    isDebugMenuExpanded = false
+                    viewModel.debugCompleteWorkout()
+                },
+                text = { Text("Complete workout") }
             )
         }
     }

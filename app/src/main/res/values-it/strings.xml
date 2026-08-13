@@ -35,11 +35,12 @@
     <string name="your_name">Il tuo nome</string>
     <string name="fitness_level_label">Livello fitness</string>
     <string name="title_tts_section">Suggerimenti vocali</string>
+    <string name="title_vibration_section">Vibrazione</string>
     <string name="announce_phase">Nome della fase</string>
     <string name="announce_phase_description">Descrizione della fase</string>
     <string name="announce_countdown">Conto alla rovescia prima della fine della fase</string>
     <string name="announce_one_minute">Avviso un minuto prima della fine</string>
-    <string name="vibration">Vibrazione all\'avvio/in pausa del timer</string>
+    <string name="vibration">All\'avvio/in pausa del timer</string>
     <string name="title_privacy_section">Privacy</string>
     <string name="enable_analytics">Raccolta Dati</string>
     <string name="enable_analytics_description">Ci permette di migliorare l\'app in base a quali funzionalità e opzioni sono popolari</string>
@@ -56,7 +57,7 @@
     <string name="credits_section_cta">Riconoscimenti</string>
 
     <string name="subscription_section_never">per sempre</string>
-    <string name="title_activity_logs">La tua attività</string>
+    <string name="title_activity_logs">Attività</string>
 
     <string name="onboarding_step_1_title">Benvenuti nell\'app Norwy!</string>
     <string name="onboarding_step_1_description">La miglior compagna per il tuo allenamento cardio</string>

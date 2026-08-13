@@ -84,8 +84,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
         states.value.step.name != PhaseName.COMPLETED
 
     fun skipClicked() {
-        viewModelScope.launch {
-            serviceBinder?.skipPhase()
+        if(showSkipButton()) {
+            viewModelScope.launch {
+                serviceBinder?.skipPhase()
+            }
         }
     }
 

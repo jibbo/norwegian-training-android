@@ -1,6 +1,6 @@
 package com.github.jibbo.norwegiantraining.log
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,8 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
-import com.github.jibbo.norwegiantraining.components.Toolbar
+import com.github.jibbo.norwegiantraining.components.BackToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -41,7 +40,8 @@ import kotlin.random.Random
 @Composable
 internal fun Logs(
     innerPadding: PaddingValues,
-    uiState: UiState.Loaded
+    uiState: UiState.Loaded,
+    backDispatcher: OnBackPressedDispatcher? = null
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -53,10 +53,10 @@ internal fun Logs(
                 bottom = innerPadding.calculateBottomPadding()
             )
     ) {
-        AnimatedToolbar(
+        BackToolbar(
             R.string.title_activity_logs.localizable(),
             listState,
-            null
+            backDispatcher
         )
         Row(
             modifier = Modifier

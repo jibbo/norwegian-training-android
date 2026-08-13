@@ -10,6 +10,8 @@ val Orange = Color(0xFFf39c12)
 val Black = Color(0xFF070D0D)
 val Gray = Color(0xFF191919)
 val White = Color(0xFFFFFFFF)
+val WaterDeep = Color(0xFF12270E)
+val WaterShallow = Color(0xFF3E5C10)
 
 // Light
 val Purple40 = Color(0xFF6650a4)
