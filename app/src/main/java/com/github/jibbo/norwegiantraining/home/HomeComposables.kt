@@ -38,6 +38,8 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -78,6 +80,13 @@ import java.util.Calendar
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
+
+internal object WorkoutTransitionBounds {
+    private val bounds = mutableMapOf<Long, androidx.compose.ui.geometry.Rect>()
+
+    fun update(id: Long, rect: androidx.compose.ui.geometry.Rect) { bounds[id] = rect }
+    fun get(id: Long) = bounds[id]
+}
 
 @Composable
 internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
@@ -571,7 +580,11 @@ private fun WorkoutCard(
             containerColor = Color.Black
         ),
         shape = cardShape,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .onGloballyPositioned {
+                WorkoutTransitionBounds.update(workout.id, it.boundsInWindow())
+            },
         onClick = {
             viewModel.workoutClicked(workout.id)
         }

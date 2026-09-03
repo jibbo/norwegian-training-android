@@ -12,7 +12,9 @@ import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.compose.setContent
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
@@ -64,6 +66,10 @@ class MainActivity : BaseActivity() {
                 )
             }
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = closeToHome()
+        })
 
         observe()
     }
@@ -128,13 +134,42 @@ class MainActivity : BaseActivity() {
         lifecycleScope.launch {
             mainViewModel.uiEvents.flowWithLifecycle(lifecycle).collect { command ->
                 when (command) {
-                    is UiCommands.CLOSE -> navigateTo(HomeActivity::class.java)
+                    is UiCommands.CLOSE -> closeToHome()
                     is UiCommands.LevelUp -> navigateTo(LevelUpActivity::class.java) {
                         putExtra(LevelUpActivity.EXTRA_NEW_LEVEL, command.newLevel.name)
                     }
                 }
             }
         }
+    }
+
+    private fun closeToHome() {
+        val left = intent.getFloatExtra(EXTRA_TRANSITION_LEFT, Float.NaN)
+        val top = intent.getFloatExtra(EXTRA_TRANSITION_TOP, Float.NaN)
+        val width = intent.getFloatExtra(EXTRA_TRANSITION_WIDTH, Float.NaN)
+        val height = intent.getFloatExtra(EXTRA_TRANSITION_HEIGHT, Float.NaN)
+        val view = window.decorView
+        if (left.isNaN() || top.isNaN() || width <= 0f || height <= 0f) {
+            finish()
+            return
+        }
+
+        val targetWidth = width / view.width
+        val targetHeight = height / view.height
+        view.pivotX = left + width / 2f
+        view.pivotY = top + height / 2f
+        view.animate()
+            .scaleX(targetWidth)
+            .scaleY(targetHeight)
+            .alpha(0f)
+            .setDuration(280)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .withEndAction {
+                finish()
+                // The decor-view animation above is the complete exit transition.
+                overridePendingTransition(0, 0)
+            }
+            .start()
     }
 
     private fun navigateTo(
@@ -222,5 +257,9 @@ class MainActivity : BaseActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
+        const val EXTRA_TRANSITION_LEFT = "transition_left"
+        const val EXTRA_TRANSITION_TOP = "transition_top"
+        const val EXTRA_TRANSITION_WIDTH = "transition_width"
+        const val EXTRA_TRANSITION_HEIGHT = "transition_height"
     }
 }
