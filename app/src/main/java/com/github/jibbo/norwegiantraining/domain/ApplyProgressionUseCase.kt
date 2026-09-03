@@ -1,6 +1,5 @@
 package com.github.jibbo.norwegiantraining.domain
 
-import android.util.Log
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
@@ -22,21 +21,9 @@ class ApplyProgressionUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository,
     private val settingsRepository: SettingsRepository,
 ) {
-    companion object {
-        private const val TAG = "ApplyProgression"
-    }
     suspend operator fun invoke(completedWorkoutId: Long, session: Session): ProgressionResult {
         val status = session.getStatus()
-        val isQualifying = status != SessionStatus.BAD
-        Log.d(
-            TAG,
-            "invoke: workoutId=$completedWorkoutId, session=$session, status=$status, isQualifying=$isQualifying"
-        )
-
-        // Time-based gradual progression
-        val timeBasedResult = applyTimeBased(status)
-        Log.d(TAG, "timeBased result: $timeBasedResult")
-        return timeBasedResult
+        return applyTimeBased(status)
     }
 
     private suspend fun advanceFrom(
@@ -46,10 +33,6 @@ class ApplyProgressionUseCase @Inject constructor(
         now: Calendar
     ): ProgressionResult? {
         val nextInDifficulty = workoutsInDifficulty.getOrNull(completedIndex + 1)
-        Log.d(
-            TAG,
-            "advanceFrom: completedIndex=$completedIndex, totalWorkouts=${workoutsInDifficulty.size}, nextExists=${nextInDifficulty != null}, fitnessLevel=$fitnessLevel, nextLevel=${fitnessLevel.next()}"
-        )
         if (nextInDifficulty != null) {
             settingsRepository.setFitnessLevel(fitnessLevel)
             settingsRepository.setRecommendedWorkoutId(nextInDifficulty.id)
@@ -71,7 +54,6 @@ class ApplyProgressionUseCase @Inject constructor(
     }
 
     private suspend fun applyTimeBased(status: SessionStatus): ProgressionResult {
-        // 1. Fetch sessions from the later of (28 days ago) or (last progression date)
         val now = Calendar.getInstance()
         val twentyEightDaysAgo =
             Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -28) }.time
@@ -83,7 +65,6 @@ class ApplyProgressionUseCase @Inject constructor(
         val sessions = sessionRepository.getSessionsInRange(from, now.time)
             .filter { it.getStatus() != SessionStatus.BAD }
 
-        // 2. Count weeks in the rolling window that had at least 3 qualifying sessions
         val fromMillis = from.time
         val qualifyingWeeks = sessions
             .groupBy { session ->
@@ -91,10 +72,8 @@ class ApplyProgressionUseCase @Inject constructor(
             }
             .count { (_, weekSessions) -> weekSessions.size >= 3 }
 
-        // 3. Not enough qualifying weeks yet
         if (qualifyingWeeks < 4) return ProgressionResult.NoChange
 
-        // 4. Find the current recommended workout within the current difficulty
         val currentFitnessLevel = settingsRepository.getFitnessLevel()
         val currentDifficulty = currentFitnessLevel.toDifficulty()
         val workoutsInDifficulty = workoutRepository
@@ -108,7 +87,6 @@ class ApplyProgressionUseCase @Inject constructor(
         val currentIndex = workoutsInDifficulty.indexOfFirst { it.id == currentRecommendedId }
         if (currentIndex == -1) return ProgressionResult.NoChange
 
-        // 5. Advance to the next workout within the same difficulty if possible
         val nextInDifficulty = workoutsInDifficulty.getOrNull(currentIndex + 1)
         if (nextInDifficulty != null) {
             settingsRepository.setRecommendedWorkoutId(nextInDifficulty.id)
@@ -116,7 +94,6 @@ class ApplyProgressionUseCase @Inject constructor(
             return ProgressionResult.NextWorkout(nextInDifficulty.id, status)
         }
 
-        // 6. Already on the last workout — level up if possible
         val nextLevel = currentFitnessLevel.next() ?: return ProgressionResult.NoChange
         val nextDifficultyWorkouts = workoutRepository
             .getByDifficulty(nextLevel.toDifficulty())
