@@ -35,8 +35,8 @@
     <string name="announce_phase_description">Phasenbeschreibung</string>
     <string name="announce_countdown">Countdown bis zum Ende der Phase</string>
     <string name="announce_one_minute">Eine Minute vor Ende</string>
-    <string name="announce_pause">App pausiert</string>
-    <string name="app_paused">App pausiert</string>
+    <string name="announce_pause">Training pausiert</string>
+    <string name="app_paused">Training pausiert</string>
     <string name="vibration">Vibration bei Timer-Start/Pause</string>
     <string name="title_privacy_section">Datenschutz</string>
     <string name="enable_analytics">Analytik</string>
