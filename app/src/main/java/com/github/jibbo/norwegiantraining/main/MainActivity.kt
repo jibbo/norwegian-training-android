@@ -35,6 +35,8 @@ class MainActivity : BaseActivity() {
     private val REQUEST_CODE_ACTIVITY_RECOGNITION = 124
 
     private var timerService: WorkoutTimerService? = null
+    private var serviceStartRequested = false
+    private var serviceBindRequested = false
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
@@ -47,6 +49,7 @@ class MainActivity : BaseActivity() {
         override fun onServiceDisconnected(name: ComponentName) {
             Log.d(TAG, "Service disconnected")
             timerService = null
+            serviceBindRequested = false
             mainViewModel.unbind()
         }
     }
@@ -90,14 +93,19 @@ class MainActivity : BaseActivity() {
             putExtra(WorkoutTimerAndroidService.EXTRA_WORKOUT_ID, workoutId)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent)
-        } else {
-            startService(serviceIntent)
+        if (!serviceStartRequested) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent)
+            } else {
+                startService(serviceIntent)
+            }
+            serviceStartRequested = true
         }
 
-        val bindIntent = Intent(this, WorkoutTimerAndroidService::class.java)
-        bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+        if (!serviceBindRequested) {
+            val bindIntent = Intent(this, WorkoutTimerAndroidService::class.java)
+            serviceBindRequested = bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+        }
     }
 
     private fun observeServiceState() {
@@ -110,8 +118,9 @@ class MainActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (mainViewModel.uiStates.value.isServiceBound) {
+        if (serviceBindRequested) {
             unbindService(serviceConnection)
+            serviceBindRequested = false
         }
     }
 

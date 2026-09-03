@@ -8,9 +8,6 @@ import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
 import com.github.jibbo.norwegiantraining.domain.WorkoutCompletedUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,8 +24,6 @@ class WorkoutTimerStateManager @Inject constructor(
     private val skipPhaseUseCase: SkipPhaseUseCase,
     private val settingsRepository: SettingsRepository
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-
     private val _state = MutableStateFlow(WorkoutTimerState())
     val state: StateFlow<WorkoutTimerState> = _state.asStateFlow()
 
@@ -64,7 +59,7 @@ class WorkoutTimerStateManager @Inject constructor(
         updateState(newState)
     }
 
-    fun startTimer() {
+    suspend fun startTimer() {
         val currentState = _state.value
 
         val duration = if (currentState.remainingTimeOnPauseMillis > 0) {
@@ -84,7 +79,7 @@ class WorkoutTimerStateManager @Inject constructor(
         )
     }
 
-    fun pauseTimer() {
+    suspend fun pauseTimer() {
         val currentState = _state.value
         if (!currentState.isTimerRunning) return
 
@@ -149,10 +144,8 @@ class WorkoutTimerStateManager @Inject constructor(
     fun shouldAnnounceCountdown(): Boolean = settingsRepository.getAnnounceCountdown()
     fun shouldAnnounceOneMinute(): Boolean = settingsRepository.getAnnounceOneMinute()
 
-    private fun updateState(newState: WorkoutTimerState) {
+    private suspend fun updateState(newState: WorkoutTimerState) {
         _state.value = newState
-        scope.launch {
-            persistence.saveState(newState)
-        }
+        persistence.saveState(newState)
     }
 }

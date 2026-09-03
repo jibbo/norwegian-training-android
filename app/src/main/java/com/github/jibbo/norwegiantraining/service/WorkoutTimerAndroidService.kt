@@ -28,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -44,6 +45,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
     lateinit var settingsRepository: SettingsRepository
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val initializationComplete = CompletableDeferred<Unit>()
 
     private var tts: TextToSpeech? = null
     private var isTtsReady = false
@@ -62,46 +64,56 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         Log.d(TAG, "Service onCreate")
 
         createNotificationChannel()
+        startForegroundWithNotification()
         initializeTTS()
 
         serviceScope.launch {
-            stateManager.initialize()
+            try {
+                stateManager.initialize()
 
-            val state = stateManager.state.value
-            if (state.workoutId != -1L && state.isTimerRunning) {
-                Log.d(TAG, "Restoring timer from saved state")
-                restoreTimerFromState()
+                val state = stateManager.state.value
+                if (state.workoutId != -1L && state.isTimerRunning) {
+                    Log.d(TAG, "Restoring timer from saved state")
+                    restoreTimerFromState()
+                } else {
+                    updateNotification()
+                }
+            } finally {
+                initializationComplete.complete(Unit)
             }
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "onStartCommand: ${intent?.action}")
+        val action = intent?.action
+        val alarmPhaseIndex = intent?.getIntExtra(EXTRA_PHASE_INDEX, -1) ?: -1
+        Log.d(TAG, "onStartCommand: $action")
 
-        when (intent?.action) {
-            ACTION_START_WORKOUT -> {
-                val workoutId = intent.getLongExtra(EXTRA_WORKOUT_ID, -1L)
-                if (workoutId != -1L) {
-                    serviceScope.launch {
+        serviceScope.launch {
+            initializationComplete.await()
+
+            when (action) {
+                ACTION_START_WORKOUT -> {
+                    val workoutId = intent.getLongExtra(EXTRA_WORKOUT_ID, -1L)
+                    if (workoutId != -1L) {
                         startWorkout(workoutId)
                     }
                 }
-            }
 
-            ACTION_PHASE_TRANSITION -> {
-                serviceScope.launch {
-                    handlePhaseTransition()
+                ACTION_PHASE_TRANSITION -> {
+                    val state = stateManager.state.value
+                    if (state.workoutId != -1L &&
+                        (alarmPhaseIndex == -1 || state.currentPhaseIndex == alarmPhaseIndex)
+                    ) {
+                        handlePhaseTransition()
+                    }
                 }
-            }
 
-            ACTION_PAUSE_TIMER -> {
-                serviceScope.launch {
+                ACTION_PAUSE_TIMER -> {
                     pauseTimer()
                 }
-            }
 
-            ACTION_SKIP_PHASE -> {
-                serviceScope.launch {
+                ACTION_SKIP_PHASE -> {
                     skipPhase()
                 }
             }
@@ -263,6 +275,12 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
             Log.d(TAG, "Restoring countdown timer")
             startCountdown(state.targetTimeMillis)
             scheduleAlarm(state.targetTimeMillis, state.currentPhaseIndex)
+        } else if (state.isTimerRunning) {
+            // The process may have been dead when the alarm was due. Let the
+            // normal transition path catch up instead of leaving a stale timer.
+            serviceScope.launch {
+                handlePhaseTransition()
+            }
         }
         startForegroundWithNotification()
     }
