@@ -189,6 +189,9 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         stateManager.pauseTimer()
         vibrate()
         updateNotification()
+        if (stateManager.shouldAnnouncePause()) {
+            speak(getString(R.string.app_paused), flush = true)
+        }
     }
 
     override suspend fun skipPhase() {

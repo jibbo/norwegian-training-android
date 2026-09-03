@@ -35,6 +35,8 @@
     <string name="announce_phase_description">Description de la phase</string>
     <string name="announce_countdown">Compte à rebours avant la fin de la phase</string>
     <string name="announce_one_minute">Une minute avant la fin</string>
+    <string name="announce_pause">Entraînement en pause</string>
+    <string name="app_paused">Entraînement en pause</string>
     <string name="vibration">Vibration au démarrage/pause du minuteur</string>
     <string name="title_privacy_section">Confidentialité</string>
     <string name="enable_analytics">Analytiques</string>
