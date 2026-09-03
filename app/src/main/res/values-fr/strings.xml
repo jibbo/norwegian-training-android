@@ -56,7 +56,7 @@
     <string name="app_version">Version %1$s</string>
     <string name="subscription_section_never">à vie</string>
     <string name="title_activity_logs">Activité</string>
-    <string name="onboarding_step_1_title">Bienvenue dans l'application Norwy !</string>
+    <string name="onboarding_step_1_title">Bienvenue dans l\'application Norwy !</string>
     <string name="onboarding_step_1_description">Des séances adaptées à votre niveau et vos objectifs</string>
     <string name="onboarding_step_1_name">Markus R.</string>
     <string name="onboarding_step_1_handle">\@marksmeister</string>
@@ -84,8 +84,8 @@
     <string name="onboarding_step_name_title">Comment vous appelez-vous ?</string>
     <string name="onboarding_step_name_placeholder">Votre nom</string>
     <string name="onboarding_step_invite_friends_title">Invitez vos amis</string>
-    <string name="onboarding_step_invite_friends_description">S'entraîner ensemble aide à rester régulier.</string>
-    <string name="onboarding_step_invite_friends_body">Des études montrent que s'entraîner à deux ou en groupe augmente la régularité jusqu'à 600%%</string>
+    <string name="onboarding_step_invite_friends_description">S\'entraîner ensemble aide à rester régulier.</string>
+    <string name="onboarding_step_invite_friends_body">Des études montrent que s\'entraîner à deux ou en groupe augmente la régularité jusqu\'à 600%%</string>
     <string name="share_msg">Je viens de commencer mes intervalles 4x4 ! Essayez Norwy avec moi : https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
     <string name="welcome">Bienvenue %1$s</string>
     <string name="home_next_up">Prochain</string>
@@ -111,7 +111,7 @@
     <string name="free_trial">Essai gratuit</string>
     <string name="onboarding_hook_title">Votre cœur est sur le point de rajeunir considérablement.</string>
     <string name="onboarding_hook_description">Des intervalles fondés sur la science. À partir de votre niveau actuel.</string>
-    <string name="onboarding_hook_body">Le 4x4 norvégien est l'une des choses les plus efficaces pour votre santé à long terme. Norwy vous y guide, séance après séance.</string>
+    <string name="onboarding_hook_body">Le 4x4 norvégien est l\'une des choses les plus efficaces pour votre santé à long terme. Norwy vous y guide, séance après séance.</string>
     <string name="onboarding_fitness_title">Quel est votre niveau de forme ?</string>
     <string name="onboarding_fitness_description">Cela nous aide à adapter vos entraînements</string>
     <string name="onboarding_fitness_beginner">Débutant</string>
