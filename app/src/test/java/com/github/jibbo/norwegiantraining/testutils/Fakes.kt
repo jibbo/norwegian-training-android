@@ -20,6 +20,7 @@ class FakeSettingsRepository : SettingsRepository {
     private var announcePhaseDesc = true
     private var announceCountdown = true
     private var announceOneMinute = true
+    private var announcePause = true
     private var vibrationEnabled = true
     private var analyticsEnabled = true
     private var crashReportingEnabled = true
@@ -60,6 +61,12 @@ class FakeSettingsRepository : SettingsRepository {
     }
 
     override fun getAnnounceOneMinute(): Boolean = announceOneMinute
+
+    override fun setAnnouncePause(enabled: Boolean) {
+        announcePause = enabled
+    }
+
+    override fun getAnnouncePause(): Boolean = announcePause
 
     override fun setVibrationEnabled(enabled: Boolean) {
         vibrationEnabled = enabled
@@ -214,6 +221,10 @@ class FakeAnalytics : Analytics {
 
     override fun logAnnounceOneMinute(enabled: Boolean) {
         calls += "announce_one_minute:$enabled"
+    }
+
+    override fun logAnnouncePause(enabled: Boolean) {
+        calls += "announcePause:$enabled"
     }
 
     override fun logTimerNotificationEnabled(enabled: Boolean) {

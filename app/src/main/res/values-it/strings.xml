@@ -39,6 +39,8 @@
     <string name="announce_phase_description">Descrizione della fase</string>
     <string name="announce_countdown">Conto alla rovescia prima della fine della fase</string>
     <string name="announce_one_minute">Avviso un minuto prima della fine</string>
+    <string name="announce_pause">App in pausa</string>
+    <string name="app_paused">App in pausa</string>
     <string name="vibration">Vibrazione all\'avvio/in pausa del timer</string>
     <string name="title_privacy_section">Privacy</string>
     <string name="enable_analytics">Raccolta Dati</string>

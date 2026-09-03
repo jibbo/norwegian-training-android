@@ -282,6 +282,19 @@ private fun TTSCard(viewModel: SettingsViewModel) {
                 modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 Text(
+                    text = R.string.announce_pause.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                MySwitch(checked = state.value.announcePause, onCheckedChange = {
+                    viewModel.setAnnouncePause(it)
+                })
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Text(
                     text = R.string.announce_one_minute.localizable(),
                     style = Typography.bodyMedium,
                     modifier = Modifier.weight(1f)

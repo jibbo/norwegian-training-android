@@ -35,6 +35,8 @@
     <string name="announce_phase_description">阶段描述</string>
     <string name="announce_countdown">阶段结束前的倒计时</string>
     <string name="announce_one_minute">一分钟提醒</string>
+    <string name="announce_pause">应用已暂停</string>
+    <string name="app_paused">应用已暂停</string>
     <string name="vibration">计时器开始/暂停时振动</string>
     <string name="title_privacy_section">隐私</string>
     <string name="enable_analytics">分析数据</string>

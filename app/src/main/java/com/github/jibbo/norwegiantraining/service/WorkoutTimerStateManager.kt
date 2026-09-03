@@ -143,6 +143,7 @@ class WorkoutTimerStateManager @Inject constructor(
     fun shouldAnnouncePhaseDesc(): Boolean = settingsRepository.getAnnouncePhaseDesc()
     fun shouldAnnounceCountdown(): Boolean = settingsRepository.getAnnounceCountdown()
     fun shouldAnnounceOneMinute(): Boolean = settingsRepository.getAnnounceOneMinute()
+    fun shouldAnnouncePause(): Boolean = settingsRepository.getAnnouncePause()
 
     private suspend fun updateState(newState: WorkoutTimerState) {
         _state.value = newState

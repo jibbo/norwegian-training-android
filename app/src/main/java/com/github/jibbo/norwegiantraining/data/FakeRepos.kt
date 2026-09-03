@@ -53,6 +53,12 @@ class FakeSettingsRepository : SettingsRepository {
 
     override fun getAnnounceOneMinute(): Boolean = false
 
+    override fun setAnnouncePause(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAnnouncePause(): Boolean = false
+
     override fun setVibrationEnabled(enabled: Boolean) {
         TODO("Not yet implemented")
     }
@@ -123,6 +129,10 @@ class FakeTracker : Analytics {
     }
 
     override fun logAnnounceOneMinute(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun logAnnouncePause(enabled: Boolean) {
         TODO("Not yet implemented")
     }
 
