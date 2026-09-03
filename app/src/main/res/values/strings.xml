@@ -138,6 +138,9 @@
     <string name="workout_category_intermediate">Intermediate</string>
     <string name="workout_category_expert">Expert</string>
     <string name="workout_first_steps">🐾 First steps</string>
+    <string name="steps_today">Steps today</string>
+    <string name="steps_count">%1$s steps</string>
+    <string name="steps_distance">%1$s km</string>
     <string name="workout_beginner_1">👣 Beginner 1</string>
     <string name="workout_beginner_2">🦶 Beginner 2</string>
     <string name="workout_beginner_3">🦶🦶 Beginner 3</string>

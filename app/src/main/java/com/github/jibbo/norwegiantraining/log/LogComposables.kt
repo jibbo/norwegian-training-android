@@ -1,6 +1,5 @@
 package com.github.jibbo.norwegiantraining.log
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,14 +25,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
-import com.github.jibbo.norwegiantraining.components.Toolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import com.github.jibbo.norwegiantraining.ui.theme.Gray
+import com.github.jibbo.norwegiantraining.ui.theme.Primary
+import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -41,7 +45,8 @@ import kotlin.random.Random
 @Composable
 internal fun Logs(
     innerPadding: PaddingValues,
-    uiState: UiState.Loaded
+    uiState: UiState.Loaded,
+    todaySteps: Long?
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -58,20 +63,60 @@ internal fun Logs(
             listState,
             null
         )
-        Row(
-            modifier = Modifier
-                .testTag("stats")
-                .fillMaxWidth()
-        ) {
-            // Your stats content here
-        }
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxWidth()
         ) {
+            item { StepsCard(todaySteps) }
             items(12) { month ->
                 Month(month, uiState)
             }
+        }
+    }
+}
+
+@Composable
+private fun StepsCard(steps: Long?, modifier: Modifier = Modifier) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .testTag("steps_card"),
+        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = R.string.steps_today.localizable(),
+                style = Typography.bodyLarge,
+                color = Primary
+            )
+            Text(
+                text = R.string.steps_count.localizable(steps ?: "Couldn't read"),
+                style = Typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+private fun DistanceCard(steps: Long?, modifier: Modifier = Modifier) {
+    ElevatedCard(
+        modifier = modifier
+            .testTag("steps_card"),
+        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = R.string.steps_today.localizable(),
+                style = Typography.bodyLarge,
+                color = Primary
+            )
+            Text(
+                text = R.string.steps_count.localizable(steps ?: "N/A"),
+                style = Typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -158,7 +203,7 @@ fun Preview() {
     )
     NorwegianTrainingTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Logs(innerPadding, lol)
+            Logs(innerPadding, lol, todaySteps = 7_452)
         }
     }
 }
