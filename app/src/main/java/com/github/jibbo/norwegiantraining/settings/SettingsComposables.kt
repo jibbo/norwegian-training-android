@@ -113,6 +113,7 @@ internal fun SettingsScreen(
             item { ProfileCard(viewModel) }
             item { SubscriptionCard(viewModel) }
             item { TTSCard(viewModel) }
+            item { VibrationCard(viewModel) }
             item { OnboardingCard(viewModel) }
             item { PrivacyCard(viewModel) }
             item { GetInTouchCard() }
@@ -289,6 +290,20 @@ private fun TTSCard(viewModel: SettingsViewModel) {
                     viewModel.setAnnounceOneMinute(it)
                 })
             }
+        }
+    }
+}
+
+@Composable
+private fun VibrationCard(viewModel: SettingsViewModel) {
+    val state = viewModel.uiState.collectAsState()
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
+        Column(modifier = Modifier.padding(6.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(horizontal = 8.dp)
