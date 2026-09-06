@@ -2,6 +2,8 @@ package com.github.jibbo.norwegiantraining.log
 
 import android.os.Bundle
 import android.os.Build
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.health.connect.client.HealthConnectClient
@@ -20,10 +22,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import com.github.jibbo.norwegiantraining.components.BaseActivity
+import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
@@ -31,15 +35,14 @@ import java.time.ZonedDateTime
 class LogActivity : BaseActivity() {
 
     private val viewModel: LogViewModel by viewModels()
-    private var todaySteps = mutableStateOf<Long?>(null)
-    private var hasRequestedHealthPermission = false
+    private var todayStatsUiState = mutableStateOf<TodayStatsUiState>(TodayStatsUiState.Loading)
+
+    @Inject lateinit var settingsRepository: SettingsRepository
 
     private val healthPermissionsLauncher = registerForActivityResult(
         PermissionController.createRequestPermissionResultContract()
     ) { grantedPermissions ->
-        if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
-            loadTodaySteps()
-        }
+        loadTodayStats()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +71,13 @@ class LogActivity : BaseActivity() {
                             Logs(
                                 innerPadding = innerPadding,
                                 uiState = uiState.value as UiState.Loaded,
-                                todaySteps = todaySteps.value
+                                todayStatsUiState = todayStatsUiState.value,
+                                onHideTodayStats = {
+                                    settingsRepository.setShowTodayStatsInActivitySection(false)
+                                    todayStatsUiState.value = TodayStatsUiState.Hidden
+                                },
+                                onRequestPermissions = { healthPermissionsLauncher.launch(requiredHealthPermissions()) },
+                                onOpenHealthConnect = { openHealthConnectStore() }
                             )
                         }
                     }
@@ -79,21 +88,34 @@ class LogActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadTodaySteps()
+        loadTodayStats()
     }
 
-    private fun loadTodaySteps() {
+    private fun loadTodayStats() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-        if (HealthConnectClient.getSdkStatus(this) != HealthConnectClient.SDK_AVAILABLE) return
+        if (!settingsRepository.getShowTodayStatsInActivitySection()) {
+            todayStatsUiState.value = TodayStatsUiState.Hidden
+            return
+        }
+
+        todayStatsUiState.value = TodayStatsUiState.Loading
+
+        val sdkStatus = HealthConnectClient.getSdkStatus(this)
+        if (sdkStatus == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) {
+            todayStatsUiState.value = TodayStatsUiState.InstallHealthConnect
+            return
+        }
+        if (sdkStatus != HealthConnectClient.SDK_AVAILABLE && Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            todayStatsUiState.value = TodayStatsUiState.Stats(0L)
+            return
+        }
 
         val client = HealthConnectClient.getOrCreate(this)
         lifecycleScope.launch {
-            val readStepsPermission = HealthPermission.getReadPermission(StepsRecord::class)
-            if (readStepsPermission !in client.permissionController.getGrantedPermissions()) {
-                if (!hasRequestedHealthPermission) {
-                    hasRequestedHealthPermission = true
-                    healthPermissionsLauncher.launch(setOf(readStepsPermission))
-                }
+            val grantedPermissions = client.permissionController.getGrantedPermissions()
+            val requiredPermissions = requiredHealthPermissions()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && !grantedPermissions.containsAll(requiredPermissions)) {
+                todayStatsUiState.value = TodayStatsUiState.RequestHealthConnectPermissions
                 return@launch
             }
 
@@ -108,8 +130,23 @@ class LogActivity : BaseActivity() {
                     )
                 )[StepsRecord.COUNT_TOTAL] ?: 0L
             }.onSuccess { steps ->
-                todaySteps.value = steps
+                todayStatsUiState.value = TodayStatsUiState.Stats(steps)
+            }.onFailure {
+                todayStatsUiState.value = TodayStatsUiState.Stats(0L)
             }
+        }
+    }
+
+    private fun requiredHealthPermissions(): Set<String> =
+        setOf(HealthPermission.getReadPermission(StepsRecord::class))
+
+    private fun openHealthConnectStore() {
+        val packageUri = Uri.parse("market://details?id=com.google.android.apps.healthdata")
+        val webUri = Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata")
+        runCatching {
+            startActivity(Intent(Intent.ACTION_VIEW, packageUri))
+        }.getOrElse {
+            startActivity(Intent(Intent.ACTION_VIEW, webUri))
         }
     }
 

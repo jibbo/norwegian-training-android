@@ -19,10 +19,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +35,7 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.*
 import com.github.jibbo.norwegiantraining.ui.theme.Gray
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -48,7 +51,10 @@ import kotlin.random.Random
 internal fun Logs(
     innerPadding: PaddingValues,
     uiState: UiState.Loaded,
-    todaySteps: Long?
+    todayStatsUiState: TodayStatsUiState,
+    onHideTodayStats: () -> Unit,
+    onRequestPermissions: () -> Unit,
+    onOpenHealthConnect: () -> Unit,
 ) {
     val listState = rememberLazyListState()
     Column(
@@ -70,16 +76,78 @@ internal fun Logs(
             modifier = Modifier.fillMaxWidth()
         ) {
             item {
-                CaloriesCard(todaySteps)
+                TodayStatsArea(todayStatsUiState, onHideTodayStats, onRequestPermissions, onOpenHealthConnect)
             }
-            item {
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    StepsCard(todaySteps)
-                    DistanceCard(todaySteps)
+            if (todayStatsUiState is Stats) {
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        StepsCard(todayStatsUiState.steps)
+                        DistanceCard(todayStatsUiState.steps)
+                    }
                 }
             }
             items(12) { month ->
                 Month(month, uiState)
+            }
+        }
+    }
+}
+
+@Composable
+private fun TodayStatsArea(
+    state: TodayStatsUiState,
+    onHideTodayStats: () -> Unit,
+    onRequestPermissions: () -> Unit,
+    onOpenHealthConnect: () -> Unit,
+) {
+    when (state) {
+        Hidden -> Unit
+        Loading -> ElevatedCard(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.elevatedCardColors(containerColor = Gray)) {
+            Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        is Stats -> CaloriesCard(state.steps)
+        InstallHealthConnect -> HealthConnectCard(
+            message = "Install Health Connect to see more stats here",
+            onCardClick = onOpenHealthConnect,
+            onHide = onHideTodayStats,
+            tag = "today_stats_install_health_connect_card"
+        )
+        RequestHealthConnectPermissions -> HealthConnectCard(
+            message = "Allow Health Connect to see more stats here",
+            onCardClick = onRequestPermissions,
+            onHide = onHideTodayStats,
+            tag = "today_stats_permissions_card"
+        )
+    }
+}
+
+@Composable
+private fun HealthConnectCard(
+    message: String,
+    onCardClick: () -> Unit,
+    onHide: () -> Unit,
+    tag: String,
+) {
+    ElevatedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .testTag(tag),
+        onClick = onCardClick,
+        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Health Connect", style = Typography.headlineSmall, color = Primary)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = message, style = Typography.bodyMedium, color = White)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                Text(
+                    text = "Hide",
+                    color = Primary,
+                    modifier = Modifier.testTag("today_stats_hide_button").clickable { onHide() }
+                )
             }
         }
     }
@@ -239,8 +307,8 @@ fun Preview() {
         mapOf(1 to createSessions(10))
     )
     NorwegianTrainingTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Logs(innerPadding, lol, todaySteps = 7_452)
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            Logs(innerPadding, lol, TodayStatsUiState.Stats(7_452), {}, {}, {})
         }
     }
 }
