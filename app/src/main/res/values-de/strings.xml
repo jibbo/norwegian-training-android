@@ -122,6 +122,10 @@
     <string name="level_up_title">Glückwunsch!</string>
     <string name="level_up_subtitle">Du bist auf Stufe %1$s aufgestiegen</string>
     <string name="level_up_button">WEITER</string>
+    <string name="steps_today">Schritte heute</string>
+    <string name="distance_today">Distanz heute</string>
+    <string name="steps_distance">%1$s km</string>
+    <string name="calories_burned">Verbrannte Kalorien</string>
 
     <string name="app_language">App-Sprache</string>
     <string name="default_language">Systemstandard</string>

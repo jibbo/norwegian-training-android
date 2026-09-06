@@ -21,21 +21,23 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
-import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Gray
+import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
+import com.github.jibbo.norwegiantraining.ui.theme.White
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -67,7 +69,15 @@ internal fun Logs(
             state = listState,
             modifier = Modifier.fillMaxWidth()
         ) {
-            item { StepsCard(todaySteps) }
+            item {
+                CaloriesCard(todaySteps)
+            }
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    StepsCard(todaySteps)
+                    DistanceCard(todaySteps)
+                }
+            }
             items(12) { month ->
                 Month(month, uiState)
             }
@@ -79,21 +89,21 @@ internal fun Logs(
 private fun StepsCard(steps: Long?, modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier
-            .fillMaxWidth()
             .padding(bottom = 16.dp)
             .testTag("steps_card"),
         colors = CardDefaults.elevatedCardColors(containerColor = Gray)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp),horizontalAlignment = Alignment.End) {
             Text(
-                text = R.string.steps_today.localizable(),
-                style = Typography.bodyLarge,
-                color = Primary
+                text = "${steps ?: 0}",
+                style = Typography.headlineMedium,
+                color = Primary,
+                fontWeight = FontWeight.Bold
             )
             Text(
-                text = R.string.steps_count.localizable(steps ?: "Couldn't read"),
-                style = Typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                text = R.string.steps_today.localizable(),
+                style = Typography.headlineSmall,
+                color = White
             )
         }
     }
@@ -101,21 +111,48 @@ private fun StepsCard(steps: Long?, modifier: Modifier = Modifier) {
 
 @Composable
 private fun DistanceCard(steps: Long?, modifier: Modifier = Modifier) {
+    val distance = "%.2f".format(steps?.times(0.70)?.div(1000) ?: 0.0)
     ElevatedCard(
         modifier = modifier
-            .testTag("steps_card"),
+            .testTag("distance_card"),
         colors = CardDefaults.elevatedCardColors(containerColor = Gray)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
             Text(
-                text = R.string.steps_today.localizable(),
-                style = Typography.bodyLarge,
-                color = Primary
+                text = R.string.steps_distance.localizable(distance),
+                style = Typography.headlineMedium,
+                color = Primary,
+                fontWeight = FontWeight.Bold
             )
             Text(
-                text = R.string.steps_count.localizable(steps ?: "N/A"),
+                text = R.string.distance_today.localizable(),
+                style = Typography.headlineSmall,
+                color = White,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CaloriesCard(steps: Long?, modifier: Modifier = Modifier) {
+    val kCal = "%.2f".format(steps?.times(0.044) ?: 0.0)
+    ElevatedCard(
+        modifier = modifier
+            .padding(bottom = 16.dp)
+            .testTag("calories_card"),
+        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
+    ) {
+        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
+            Text(
+                text = kCal,
                 style = Typography.headlineMedium,
+                color = Primary,
                 fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = R.string.calories_burned.localizable(),
+                style = Typography.headlineSmall,
+                color = White,
             )
         }
     }
