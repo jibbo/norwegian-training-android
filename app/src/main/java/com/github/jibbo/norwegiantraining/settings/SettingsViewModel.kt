@@ -38,6 +38,7 @@ internal class SettingsViewModel @Inject constructor(
             announceOneMinute = settingsRepository.getAnnounceOneMinute(),
             announcePause = settingsRepository.getAnnouncePause(),
             vibrationEnabled = settingsRepository.getVibrationEnabled(),
+            showTodayStatsInActivitySection = settingsRepository.getShowTodayStatsInActivitySection(),
             isCrashReportingEnabled = settingsRepository.getCrashReportingEnabled(),
             isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled(),
             isFreeTrial = settingsRepository.getFreeTrialEndDate()?.after(Date()) == true,
@@ -111,6 +112,11 @@ internal class SettingsViewModel @Inject constructor(
     fun setVibrationEnabled(enabled: Boolean) {
         settingsRepository.setVibrationEnabled(enabled)
         uiStates.value = uiStates.value.copy(vibrationEnabled = enabled)
+    }
+
+    fun setShowTodayStatsInActivitySection(enabled: Boolean) {
+        settingsRepository.setShowTodayStatsInActivitySection(enabled)
+        uiStates.value = uiStates.value.copy(showTodayStatsInActivitySection = enabled)
     }
 
     fun toggleAnalytics(enabled: Boolean) {

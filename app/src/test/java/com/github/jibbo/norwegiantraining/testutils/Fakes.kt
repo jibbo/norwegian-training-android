@@ -31,6 +31,7 @@ class FakeSettingsRepository : SettingsRepository {
     private var lastProgressionDate: Date? = null
     private var lastWorkoutId: Long? = null
     private var appLanguage: Locale? = null
+    private var showTodayStatsInActivitySection = true
 
     override fun setUserName(name: String?) {
         userName = name
@@ -135,6 +136,12 @@ class FakeSettingsRepository : SettingsRepository {
     }
 
     override fun getAppLanguage(): Locale? = appLanguage
+
+    override fun setShowTodayStatsInActivitySection(enabled: Boolean) {
+        showTodayStatsInActivitySection = enabled
+    }
+
+    override fun getShowTodayStatsInActivitySection(): Boolean = showTodayStatsInActivitySection
 }
 
 class FakeSessionRepository : SessionRepository {

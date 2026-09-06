@@ -56,6 +56,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -111,6 +112,7 @@ internal fun SettingsScreen(
             state = listState,
         ) {
             item { ProfileCard(viewModel) }
+            item { GeneralCard(viewModel) }
             item { SubscriptionCard(viewModel) }
             item { TTSCard(viewModel) }
             item { VibrationCard(viewModel) }
@@ -126,6 +128,42 @@ internal fun SettingsScreen(
             item { VersionCard() }
 
             item { Spacer(modifier = Modifier.size(32.dp)) }
+        }
+    }
+}
+
+@Composable
+private fun GeneralCard(viewModel: SettingsViewModel) {
+    val state = viewModel.uiState.collectAsState()
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Gray
+        ),
+    ) {
+        Column(modifier = Modifier.padding(6.dp)) {
+            Text(
+                text = "General",
+                style = Typography.bodyLarge,
+                modifier = Modifier.padding(8.dp),
+                color = Primary
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .testTag("settings_show_today_stats_switch")
+            ) {
+                Text(
+                    text = "Show today stats in activity section",
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                MySwitch(
+                    checked = state.value.showTodayStatsInActivitySection,
+                    onCheckedChange = { viewModel.setShowTodayStatsInActivitySection(it) }
+                )
+            }
         }
     }
 }
