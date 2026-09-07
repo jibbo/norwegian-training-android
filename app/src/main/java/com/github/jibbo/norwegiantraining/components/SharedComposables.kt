@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.components
 
+import android.os.Build
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.animateFloatAsState
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalAccessibilityManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -41,7 +43,7 @@ import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import kotlin.math.sqrt
 
-private const val GLOW_DURATION_MS = 20_000
+private const val GLOW_DURATION_MS = 5_000
 private const val GLOW_ALPHA = 0.35f
 private const val GLOW_RADIUS_FACTOR = 0.7f
 private val GLOW_EASING = EaseInOut
@@ -85,8 +87,17 @@ fun AnimatedBackground(modifier: Modifier = Modifier) {
 
 @Composable
 private fun rememberGlowPhase(): Float {
-    var phase by remember { mutableStateOf(0f) }
-    LaunchedEffect(Unit) {
+    // TODO get it from settings
+//    val reduceMotion = LocalAccessibilityManager.current
+//        ?.takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.R }
+//        ?.isReduceMotionEnabled ?: false
+    val reduceMotion = false
+    var phase by remember { mutableStateOf(if (reduceMotion) 0.5f else 0f) }
+    LaunchedEffect(reduceMotion) {
+        if (reduceMotion) {
+            phase = 0.5f
+            return@LaunchedEffect
+        }
         val startNanos = withFrameNanos { it }
         while (true) {
             val frameNanos = withFrameNanos { it }
