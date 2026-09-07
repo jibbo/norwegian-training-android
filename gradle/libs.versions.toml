@@ -15,7 +15,6 @@ hilt = "2.60.1"
 hilt-compiler = "2.60.1"
 room = "2.8.4"
 health = "1.1.0"
-exoplayer = "2.19.1"
 google-services = "4.5.0"
 firebase = "34.16.0"
 revenuecat = "10.14.0"
@@ -52,7 +51,6 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 health-connect = { group = "androidx.health.connect", name = "connect-client", version.ref = "health" }
-exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer", version.ref = "exoplayer" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }

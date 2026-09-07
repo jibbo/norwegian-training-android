@@ -100,7 +100,6 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    implementation(libs.exoplayer.core)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
