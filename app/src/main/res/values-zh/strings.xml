@@ -122,6 +122,10 @@
     <string name="level_up_title">恭喜！</string>
     <string name="level_up_subtitle">你已升至 %1$s 级</string>
     <string name="level_up_button">继续</string>
+    <string name="steps_today">今日步数</string>
+    <string name="distance_today">今日距离</string>
+    <string name="steps_distance">%1$s 公里</string>
+    <string name="calories_burned">消耗的卡路里</string>
 
     <string name="app_language">应用语言</string>
     <string name="default_language">系统默认</string>

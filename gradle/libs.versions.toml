@@ -14,7 +14,7 @@ ksp = "2.3.10"
 hilt = "2.60.1"
 hilt-compiler = "2.60.1"
 room = "2.8.4"
-health = "1.0.0"
+health = "1.1.0"
 exoplayer = "2.19.1"
 google-services = "4.5.0"
 firebase = "34.16.0"
@@ -23,6 +23,9 @@ gson = "2.14.0"
 konfetti = "2.0.5"
 datastore = "1.2.1"
 lottie = "6.7.1"
+appcompat = "1.6.1"
+activityKtx = "1.13.0"
+constraintlayout = "2.1.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,7 +51,7 @@ dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compi
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-health-connect = { group = "androidx.health", name = "health-connect-client", version.ref = "health" }
+health-connect = { group = "androidx.health.connect", name = "connect-client", version.ref = "health" }
 exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer", version.ref = "exoplayer" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
@@ -60,6 +63,9 @@ konfetti = { group = "nl.dionsegijn", name = "konfetti-compose", version.ref = "
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

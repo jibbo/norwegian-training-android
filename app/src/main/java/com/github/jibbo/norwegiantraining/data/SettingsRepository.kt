@@ -53,6 +53,8 @@ interface SettingsRepository {
     fun getLastWorkoutId(): Long?
     fun setAppLanguage(locale: Locale?)
     fun getAppLanguage(): Locale?
+    fun setShowTodayStatsInActivitySection(enabled: Boolean)
+    fun getShowTodayStatsInActivitySection(): Boolean
 }
 
 @Singleton
@@ -208,6 +210,13 @@ class SharedPreferencesSettingsRepository @Inject constructor(
             null
         }
 
+    override fun setShowTodayStatsInActivitySection(enabled: Boolean) {
+        sp.edit { putBoolean(KEY_SHOW_TODAY_STATS_IN_ACTIVITY_SECTION, enabled) }
+    }
+
+    override fun getShowTodayStatsInActivitySection(): Boolean =
+        sp.getBoolean(KEY_SHOW_TODAY_STATS_IN_ACTIVITY_SECTION, true)
+
     companion object {
         const val KEY_ANNOUNCE_PHASE = "announce_phase"
         const val KEY_USERNAME = "username"
@@ -225,6 +234,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_LAST_WORKOUT_ID = "last_workout_id"
         const val KEY_APP_LANGUAGE_CODE = "app_language"
         const val KEY_VIBRATION_ENABLED = "vibration_enabled"
+        const val KEY_SHOW_TODAY_STATS_IN_ACTIVITY_SECTION = "show_today_stats_in_activity_section"
 
         fun isEuUser(context: Context): Boolean {
             val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?

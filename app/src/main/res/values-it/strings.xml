@@ -144,6 +144,10 @@
     <string name="level_up_title">Livello superato!</string>
     <string name="level_up_subtitle">Sei avanzato a %1$s! Continua così.</string>
     <string name="level_up_button">CONTINUA</string>
+    <string name="steps_today">Passi di oggi</string>
+    <string name="distance_today">Distanza di oggi</string>
+    <string name="steps_distance">%1$s km</string>
+    <string name="calories_burned">Calorie bruciate</string>
 
     <string name="app_language">Lingua dell\'app</string>
     <string name="default_language">Predefinita di sistema</string>

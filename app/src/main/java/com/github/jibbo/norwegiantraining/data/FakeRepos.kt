@@ -105,6 +105,10 @@ class FakeSettingsRepository : SettingsRepository {
     override fun getLastWorkoutId(): Long? = null
     override fun setAppLanguage(locale: Locale?) {}
     override fun getAppLanguage(): Locale = Locale.getDefault()
+
+    override fun setShowTodayStatsInActivitySection(enabled: Boolean) {}
+
+    override fun getShowTodayStatsInActivitySection(): Boolean = true
 }
 
 class FakeTracker : Analytics {

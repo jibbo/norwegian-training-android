@@ -122,6 +122,10 @@
     <string name="level_up_title">Félicitations !</string>
     <string name="level_up_subtitle">Vous venez de passer au niveau %1$s</string>
     <string name="level_up_button">CONTINUER</string>
+    <string name="steps_today">Pas de la journée</string>
+    <string name="distance_today">Distance de la journée</string>
+    <string name="steps_distance">%1$s km</string>
+    <string name="calories_burned">Calories brûlées</string>
 
     <string name="app_language">Langue de l\'app</string>
     <string name="default_language">Par défaut du système</string>

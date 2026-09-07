@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-sdk tools:overrideLibrary="androidx.health.connect.client" />
 
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
@@ -9,10 +12,13 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+
         <intent>
             <action android:name="android.intent.action.SENDTO" />
 
@@ -39,8 +45,8 @@
         <activity
             android:name=".onboarding.OnboardingActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.NorwegianTraining" />
+            android:theme="@style/Theme.NorwegianTraining"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".log.LogActivity"
             android:exported="false" />
@@ -48,8 +54,8 @@
             android:name=".settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.NorwegianTraining" />
+            android:theme="@style/Theme.NorwegianTraining"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".paywall.PaywallActivity"
             android:theme="@style/Theme.NorwegianTraining" />
@@ -77,6 +83,34 @@
         <receiver
             android:name=".alarm.AlarmReceiver"
             android:exported="true" />
+
+        <!--
+       For supported versions through Android 13, create an activity to show the rationale
+       of Health Connect permissions once users click the privacy policy link.
+        -->
+        <activity
+            android:name=".PermissionsRationaleActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+        </activity>
+        <!--
+ For versions starting Android 14, create an activity alias to show the rationale
+             of Health Connect permissions once users click the privacy policy link.
+        -->
+        <activity-alias
+            android:name=".ViewPermissionUsageActivity"
+            android:exported="true"
+            android:permission="android.permission.START_VIEW_PERMISSION_USAGE"
+            android:targetActivity=".PermissionsRationaleActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>
     </application>
 
 </manifest>
