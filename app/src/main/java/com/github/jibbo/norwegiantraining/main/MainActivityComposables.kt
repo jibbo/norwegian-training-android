@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -150,6 +151,23 @@ internal fun MainView(
                         position = Position.Relative(0.5, 0.3)
                     )
                 )
+            )
+        }
+        if (state.showCloseWorkoutConfirmation) {
+            AlertDialog(
+                onDismissRequest = { mainViewModel.dismissCloseWorkoutConfirmation() },
+                title = { Text(R.string.stop_workout_confirmation_title.localizable()) },
+                text = { Text(R.string.stop_workout_confirmation_message.localizable()) },
+                confirmButton = {
+                    TextButton(onClick = { mainViewModel.closeWorkout() }) {
+                        Text(R.string.stop_workout.localizable())
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { mainViewModel.dismissCloseWorkoutConfirmation() }) {
+                        Text(R.string.keep_training.localizable())
+                    }
+                }
             )
         }
     }
@@ -300,7 +318,7 @@ internal fun Header(viewModel: MainViewModel, isDebugMode: Boolean) {
                 )
             }
         }
-        IconButton(onClick = { viewModel.closeWorkout() }) {
+        IconButton(onClick = { viewModel.requestCloseWorkout() }) {
             Icon(
                 painter = painterResource(R.drawable.outline_close_24),
                 contentDescription = ""

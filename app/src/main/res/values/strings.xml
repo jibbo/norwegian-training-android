@@ -26,6 +26,10 @@
     <!-- MainActivity -->
     <string name="home_workout_name">%1$s</string>
     <string name="next_up">Next Up >> %1$s</string>
+    <string name="stop_workout_confirmation_title">Stop workout?</string>
+    <string name="stop_workout_confirmation_message">The timer is still running. Do you want to stop this workout?</string>
+    <string name="stop_workout">Stop workout</string>
+    <string name="keep_training">Keep training</string>
 
     <!-- Exercise descriptions -->
     <string name="get_ready_desc">Start with a warmup</string>

@@ -19,6 +19,10 @@
     <string name="current_phases">%1$s / %2$s</string>
     <string name="home_workout_name">%1$s</string>
     <string name="next_up">下一个 >> %1$s</string>
+    <string name="stop_workout_confirmation_title">停止训练？</string>
+    <string name="stop_workout_confirmation_message">计时器仍在运行。要停止本次训练吗？</string>
+    <string name="stop_workout">停止训练</string>
+    <string name="keep_training">继续训练</string>
     <string name="get_ready_desc">从热身开始</string>
     <string name="warmup_desc">轻度运动：热身时你应该能够正常说话</string>
     <string name="hit_cardio_desc">尽全力坚持到底。你可以做到的！</string>

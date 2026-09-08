@@ -16,6 +16,7 @@ data class UiState(
     val showConfetti: Boolean = false,
     val isServiceBound: Boolean = false,
     val progressionResult: ProgressionResult? = null,
+    val showCloseWorkoutConfirmation: Boolean = false,
 ) {
     val isCompleted = step.name == PhaseName.COMPLETED
     val mainButtonText: Int
