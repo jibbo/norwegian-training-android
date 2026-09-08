@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.home
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.app.ActivityOptions
 import androidx.activity.compose.setContent
@@ -8,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.material3.Scaffold
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
 import com.github.jibbo.norwegiantraining.main.MainActivity
@@ -74,7 +76,11 @@ class HomeActivity : BaseActivity() {
         newIntent.putExtra("workout_id", workoutId)
         val bounds = WorkoutTransitionBounds.get(workoutId)
         WorkoutTransitionState.beginLaunch(workoutId, bounds)
-        if (bounds != null && bounds.width > 0f && bounds.height > 0f) {
+        val useCardTransition = bounds != null &&
+            bounds.width > 0f &&
+            bounds.height > 0f &&
+            resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
+        if (useCardTransition) {
             newIntent.putExtra(MainActivity.EXTRA_TRANSITION_LEFT, bounds.left)
             newIntent.putExtra(MainActivity.EXTRA_TRANSITION_TOP, bounds.top)
             newIntent.putExtra(MainActivity.EXTRA_TRANSITION_WIDTH, bounds.width)
@@ -89,7 +95,12 @@ class HomeActivity : BaseActivity() {
             // platform's default horizontal transition for the activity left behind.
             overridePendingTransition(0, 0)
         } else {
-            startActivity(newIntent)
+            val options = ActivityOptions.makeCustomAnimation(
+                this,
+                R.anim.workout_fallback_enter,
+                R.anim.workout_no_anim,
+            )
+            startActivity(newIntent, options.toBundle())
             overridePendingTransition(0, 0)
         }
     }
