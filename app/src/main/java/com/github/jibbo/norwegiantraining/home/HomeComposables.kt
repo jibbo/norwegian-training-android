@@ -38,13 +38,15 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
@@ -91,6 +93,7 @@ internal object WorkoutTransitionBounds {
 internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val transitionOverlay by WorkoutTransitionState.overlay.collectAsState()
 
     Box(
         modifier = Modifier
@@ -112,6 +115,58 @@ internal fun HomeView(viewModel: HomeViewModel, innerPadding: PaddingValues) {
     } else {
         PortraitLayout(viewModel, innerPadding)
     }
+
+    TransitionOverlay(transitionOverlay)
+}
+
+@Composable
+private fun TransitionOverlay(overlay: WorkoutTransitionState.OverlayState?) {
+    val targetAlpha = if (overlay == null) 0f else 1f
+    val alpha = androidx.compose.animation.core.animateFloatAsState(
+        targetValue = targetAlpha,
+        animationSpec = androidx.compose.animation.core.tween(
+            durationMillis = WorkoutTransitionState.TRANSITION_DURATION_MS.toInt(),
+            easing = androidx.compose.animation.core.FastOutSlowInEasing,
+        ),
+        label = "homeTransitionOverlay",
+    ).value
+    if (alpha <= 0f) return
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .drawBehind {
+                drawTransitionDim(alpha, overlay?.bounds)
+            }
+    )
+}
+
+private fun DrawScope.drawTransitionDim(alpha: Float, bounds: Rect?) {
+    val highlight = bounds?.takeIf { it.width > 0f && it.height > 0f }
+    if (highlight == null) {
+        drawRect(Color.Black.copy(alpha = 0.5f * alpha))
+        return
+    }
+
+    val baseDim = 0.32f * alpha
+    val extraDim = 0.18f * alpha
+    drawRect(Color.Black.copy(alpha = baseDim))
+    drawRect(Color.Black.copy(alpha = extraDim), size = androidx.compose.ui.geometry.Size(size.width, highlight.top.coerceAtLeast(0f)))
+    drawRect(
+        Color.Black.copy(alpha = extraDim),
+        topLeft = Offset(0f, highlight.bottom.coerceAtMost(size.height)),
+        size = androidx.compose.ui.geometry.Size(size.width, (size.height - highlight.bottom).coerceAtLeast(0f)),
+    )
+    drawRect(
+        Color.Black.copy(alpha = extraDim),
+        topLeft = Offset(0f, highlight.top.coerceAtLeast(0f)),
+        size = androidx.compose.ui.geometry.Size(highlight.left.coerceAtLeast(0f), highlight.height),
+    )
+    drawRect(
+        Color.Black.copy(alpha = extraDim),
+        topLeft = Offset(highlight.right.coerceAtMost(size.width), highlight.top.coerceAtLeast(0f)),
+        size = androidx.compose.ui.geometry.Size((size.width - highlight.right).coerceAtLeast(0f), highlight.height),
+    )
 }
 
 @Composable

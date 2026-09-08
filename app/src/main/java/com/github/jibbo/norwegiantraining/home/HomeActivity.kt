@@ -15,11 +15,13 @@ import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.settings.SettingsActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeActivity : BaseActivity() {
 
     private val homeViewModel: HomeViewModel by viewModels()
+    private var isTransitioning = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,15 @@ class HomeActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         homeViewModel.refresh()
+        if (WorkoutTransitionState.overlay.value != null) {
+            lifecycleScope.launch {
+                delay(WorkoutTransitionState.TRANSITION_DURATION_MS)
+                WorkoutTransitionState.clear()
+                isTransitioning = false
+            }
+        } else {
+            isTransitioning = false
+        }
     }
 
     fun showOnboarding() {
@@ -57,9 +68,12 @@ class HomeActivity : BaseActivity() {
     }
 
     fun showWorkout(workoutId: Long) {
+        if (isTransitioning) return
+        isTransitioning = true
         val newIntent = Intent(this@HomeActivity, MainActivity::class.java)
         newIntent.putExtra("workout_id", workoutId)
         val bounds = WorkoutTransitionBounds.get(workoutId)
+        WorkoutTransitionState.beginLaunch(workoutId, bounds)
         if (bounds != null && bounds.width > 0f && bounds.height > 0f) {
             newIntent.putExtra(MainActivity.EXTRA_TRANSITION_LEFT, bounds.left)
             newIntent.putExtra(MainActivity.EXTRA_TRANSITION_TOP, bounds.top)
