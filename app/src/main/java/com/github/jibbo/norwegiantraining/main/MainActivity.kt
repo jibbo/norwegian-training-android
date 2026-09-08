@@ -11,11 +11,14 @@ import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.compose.setContent
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -26,6 +29,7 @@ import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
 import com.github.jibbo.norwegiantraining.service.WorkoutServiceBinder
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerAndroidService
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerService
+import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -39,6 +43,7 @@ class MainActivity : BaseActivity() {
     private var timerService: WorkoutTimerService? = null
     private var serviceStartRequested = false
     private var serviceBindRequested = false
+    private var closing = false
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
@@ -144,6 +149,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun closeToHome() {
+        if (closing) return
         val left = intent.getFloatExtra(EXTRA_TRANSITION_LEFT, Float.NaN)
         val top = intent.getFloatExtra(EXTRA_TRANSITION_TOP, Float.NaN)
         val width = intent.getFloatExtra(EXTRA_TRANSITION_WIDTH, Float.NaN)
@@ -158,15 +164,29 @@ class MainActivity : BaseActivity() {
         val targetHeight = height / view.height
         view.pivotX = left + width / 2f
         view.pivotY = top + height / 2f
+        closing = true
+        val overlay = View(this).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            setBackgroundColor(Black.toArgb())
+            alpha = 0f
+        }
+        (view as? ViewGroup)?.addView(overlay)
         view.animate()
             .scaleX(targetWidth)
             .scaleY(targetHeight)
-            .alpha(0f)
+            .setDuration(280)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
+        overlay.animate()
+            .alpha(1f)
             .setDuration(280)
             .setInterpolator(AccelerateDecelerateInterpolator())
             .withEndAction {
                 finish()
-                // The decor-view animation above is the complete exit transition.
+                // The overlay alpha fade above, plus this finish, is the complete exit transition.
                 overridePendingTransition(0, 0)
             }
             .start()
