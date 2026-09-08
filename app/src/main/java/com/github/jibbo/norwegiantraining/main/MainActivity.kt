@@ -4,21 +4,14 @@ import android.Manifest
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.Outline
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
-import android.view.View
-import android.view.ViewOutlineProvider
 import android.view.WindowManager
-import android.view.animation.PathInterpolator
 import androidx.activity.compose.setContent
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -26,7 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.components.BaseActivity
-import com.github.jibbo.norwegiantraining.home.WorkoutTransitionState
+import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.levelup.LevelUpActivity
 import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
 import com.github.jibbo.norwegiantraining.service.WorkoutServiceBinder
@@ -45,7 +38,6 @@ class MainActivity : BaseActivity() {
     private var timerService: WorkoutTimerService? = null
     private var serviceStartRequested = false
     private var serviceBindRequested = false
-    private var isTransitioning = false
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
@@ -151,86 +143,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun closeToHome() {
-        if (isTransitioning) return
-        isTransitioning = true
-
-        val view = window.decorView
-        val bounds = transitionBounds()
-        val workoutId = intent.getLongExtra("workout_id", -1L)
-        WorkoutTransitionState.beginReturn(workoutId, bounds?.let {
-            androidx.compose.ui.geometry.Rect(it.left, it.top, it.right, it.bottom)
-        })
-
-        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE || bounds == null) {
-            runCenteredClose(view)
-        } else {
-            runBoundsClose(view, bounds)
-        }
-    }
-
-    private fun runBoundsClose(view: View, bounds: android.graphics.RectF) {
-        val scaleX = bounds.width() / view.width
-        val scaleY = bounds.height() / view.height
-        val outlineProvider = TransitionOutlineProvider(cardCornerRadiusPx())
-        view.outlineProvider = outlineProvider
-        view.clipToOutline = true
-
-        view.pivotX = 0f
-        view.pivotY = 0f
-        view.animate()
-            .translationX(bounds.left)
-            .translationY(bounds.top)
-            .scaleX(scaleX)
-            .scaleY(scaleY)
-            .alpha(0f)
-            .setDuration(WorkoutTransitionState.TRANSITION_DURATION_MS)
-            .setInterpolator(CLOSE_INTERPOLATOR)
-            .withEndAction { finishWithoutPlatformAnimation(view) }
-            .start()
-    }
-
-    private fun runCenteredClose(view: View) {
-        val outlineProvider = TransitionOutlineProvider(cardCornerRadiusPx())
-        view.outlineProvider = outlineProvider
-        view.clipToOutline = true
-        view.pivotX = view.width / 2f
-        view.pivotY = view.height / 2f
-        view.animate()
-            .scaleX(0.92f)
-            .scaleY(0.92f)
-            .alpha(0f)
-            .setDuration(WorkoutTransitionState.TRANSITION_DURATION_MS)
-            .setInterpolator(CLOSE_INTERPOLATOR)
-            .withEndAction { finishWithoutPlatformAnimation(view) }
-            .start()
-    }
-
-    private fun finishWithoutPlatformAnimation(view: View) {
-        view.clipToOutline = false
         finish()
-        // The animated activity surface is the complete return transition.
-        overridePendingTransition(0, 0)
-    }
-
-    private fun transitionBounds(): android.graphics.RectF? {
-        val left = intent.getFloatExtra(EXTRA_TRANSITION_LEFT, Float.NaN)
-        val top = intent.getFloatExtra(EXTRA_TRANSITION_TOP, Float.NaN)
-        val width = intent.getFloatExtra(EXTRA_TRANSITION_WIDTH, Float.NaN)
-        val height = intent.getFloatExtra(EXTRA_TRANSITION_HEIGHT, Float.NaN)
-        return if (left.isNaN() || top.isNaN() || width <= 0f || height <= 0f) {
-            null
-        } else {
-            android.graphics.RectF(left, top, left + width, top + height)
-        }
-    }
-
-    private fun cardCornerRadiusPx(): Float = 12f * resources.displayMetrics.density
-
-    private class TransitionOutlineProvider(private val cornerRadius: Float) : ViewOutlineProvider() {
-        override fun getOutline(view: View, outline: Outline) {
-            outline.setRoundRect(0, 0, view.width, view.height, cornerRadius)
-        }
     }
 
     private fun navigateTo(
@@ -318,10 +231,5 @@ class MainActivity : BaseActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
-        private val CLOSE_INTERPOLATOR = PathInterpolator(0f, 0f, 0.2f, 1f)
-        const val EXTRA_TRANSITION_LEFT = "transition_left"
-        const val EXTRA_TRANSITION_TOP = "transition_top"
-        const val EXTRA_TRANSITION_WIDTH = "transition_width"
-        const val EXTRA_TRANSITION_HEIGHT = "transition_height"
     }
 }

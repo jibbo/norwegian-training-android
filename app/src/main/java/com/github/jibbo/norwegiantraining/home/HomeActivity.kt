@@ -1,15 +1,12 @@
 package com.github.jibbo.norwegiantraining.home
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
-import android.app.ActivityOptions
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.Scaffold
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
 import com.github.jibbo.norwegiantraining.main.MainActivity
@@ -17,13 +14,11 @@ import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
 import com.github.jibbo.norwegiantraining.paywall.PaywallActivity
 import com.github.jibbo.norwegiantraining.settings.SettingsActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeActivity : BaseActivity() {
 
     private val homeViewModel: HomeViewModel by viewModels()
-    private var isTransitioning = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,15 +46,6 @@ class HomeActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         homeViewModel.refresh()
-        if (WorkoutTransitionState.overlay.value != null) {
-            lifecycleScope.launch {
-                delay(WorkoutTransitionState.TRANSITION_DURATION_MS)
-                WorkoutTransitionState.clear()
-                isTransitioning = false
-            }
-        } else {
-            isTransitioning = false
-        }
     }
 
     fun showOnboarding() {
@@ -70,39 +56,9 @@ class HomeActivity : BaseActivity() {
     }
 
     fun showWorkout(workoutId: Long) {
-        if (isTransitioning) return
-        isTransitioning = true
         val newIntent = Intent(this@HomeActivity, MainActivity::class.java)
         newIntent.putExtra("workout_id", workoutId)
-        val bounds = WorkoutTransitionBounds.get(workoutId)
-        WorkoutTransitionState.beginLaunch(workoutId, bounds)
-        val useCardTransition = bounds != null &&
-            bounds.width > 0f &&
-            bounds.height > 0f &&
-            resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
-        if (useCardTransition) {
-            newIntent.putExtra(MainActivity.EXTRA_TRANSITION_LEFT, bounds.left)
-            newIntent.putExtra(MainActivity.EXTRA_TRANSITION_TOP, bounds.top)
-            newIntent.putExtra(MainActivity.EXTRA_TRANSITION_WIDTH, bounds.width)
-            newIntent.putExtra(MainActivity.EXTRA_TRANSITION_HEIGHT, bounds.height)
-            val options = ActivityOptions.makeScaleUpAnimation(
-                window.decorView,
-                bounds.left.toInt(), bounds.top.toInt(),
-                bounds.width.toInt(), bounds.height.toInt()
-            )
-            startActivity(newIntent, options.toBundle())
-            // The scale-up is the complete enter transition. Suppress the
-            // platform's default horizontal transition for the activity left behind.
-            overridePendingTransition(0, 0)
-        } else {
-            val options = ActivityOptions.makeCustomAnimation(
-                this,
-                R.anim.workout_fallback_enter,
-                R.anim.workout_no_anim,
-            )
-            startActivity(newIntent, options.toBundle())
-            overridePendingTransition(0, 0)
-        }
+        startActivity(newIntent)
     }
 
     private fun showSettings() {
