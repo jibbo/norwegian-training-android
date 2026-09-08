@@ -34,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -44,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.BuildConfig
 import com.github.jibbo.norwegiantraining.R
-import com.github.jibbo.norwegiantraining.components.VideoBackground
+import com.github.jibbo.norwegiantraining.components.AnimatedBackground
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -67,9 +66,7 @@ internal fun MainView(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
-        if (!LocalInspectionMode.current) {
-            VideoBackground(R.raw.bg)
-        }
+        AnimatedBackground()
         Column(
             modifier = Modifier
                 .fillMaxSize()
