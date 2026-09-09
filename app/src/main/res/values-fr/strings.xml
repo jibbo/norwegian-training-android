@@ -9,6 +9,7 @@
     <string name="back">retour</string>
     <string name="share">Partager</string>
     <string name="buy">ACHETER</string>
+    <string name="ok">OK</string>
     <string name="get_ready">Préparez-vous</string>
     <string name="warmup">Échauffement</string>
     <string name="hit_cardio">Phase intense</string>
@@ -62,6 +63,10 @@
     <string name="app_version">Version %1$s</string>
     <string name="subscription_section_never">à vie</string>
     <string name="title_activity_logs">Activité</string>
+    <string name="health_connect_title">Health Connect</string>
+    <string name="health_connect_install_message">Installez Health Connect pour voir plus de statistiques ici</string>
+    <string name="health_connect_permission_message">Autorisez Health Connect à accéder à vos données pour voir plus de statistiques ici</string>
+    <string name="hide">Masquer pour toujours</string>
     <string name="onboarding_step_1_title">Bienvenue dans l\'application Norwy !</string>
     <string name="onboarding_step_1_description">Des séances adaptées à votre niveau et vos objectifs</string>
     <string name="onboarding_step_1_name">Markus R.</string>
