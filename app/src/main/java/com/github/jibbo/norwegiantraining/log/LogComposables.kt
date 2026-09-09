@@ -109,13 +109,13 @@ private fun TodayStatsArea(
         }
         is Stats -> CaloriesCard(state.steps)
         InstallHealthConnect -> HealthConnectCard(
-            message = "Install Health Connect to see more stats here",
+            message = R.string.health_connect_install_message.localizable(),
             onCardClick = onOpenHealthConnect,
             onHide = onHideTodayStats,
             tag = "today_stats_install_health_connect_card"
         )
         RequestHealthConnectPermissions -> HealthConnectCard(
-            message = "Allow Health Connect to see more stats here",
+            message = R.string.health_connect_permission_message.localizable(),
             onCardClick = onRequestPermissions,
             onHide = onHideTodayStats,
             tag = "today_stats_permissions_card"
@@ -139,12 +139,12 @@ private fun HealthConnectCard(
         colors = CardDefaults.elevatedCardColors(containerColor = Gray)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Health Connect", style = Typography.headlineSmall, color = Primary)
+            Text(text = R.string.health_connect_title.localizable(), style = Typography.headlineSmall, color = Primary)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = message, style = Typography.bodyMedium, color = White)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 Text(
-                    text = "Hide",
+                    text = R.string.hide.localizable(),
                     color = Primary,
                     modifier = Modifier.testTag("today_stats_hide_button").clickable { onHide() }
                 )

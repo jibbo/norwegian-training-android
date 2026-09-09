@@ -88,6 +88,10 @@
 
     <!-- Logs -->
     <string name="title_activity_logs">Your Activity</string>
+    <string name="health_connect_title">Health Connect</string>
+    <string name="health_connect_install_message">Install Health Connect to see more stats here</string>
+    <string name="health_connect_permission_message">Allow Health Connect to see more stats here</string>
+    <string name="hide">Hide</string>
 
     <!-- Onboarding -->
     <string name="onboarding_step_1_title">Welcome to the Norwy app!</string>

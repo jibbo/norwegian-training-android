@@ -64,6 +64,10 @@
 
     <string name="subscription_section_never">para siempre</string>
     <string name="title_activity_logs">Tu actividad</string>
+    <string name="health_connect_title">Health Connect</string>
+    <string name="health_connect_install_message">Instala Health Connect para ver aquí más estadísticas</string>
+    <string name="health_connect_permission_message">Permite el acceso de Health Connect para ver aquí más estadísticas</string>
+    <string name="hide">Ocultar</string>
 
     <string name="onboarding_step_1_title">¡Bienvenidos en l\'app Norwy!</string>
     <string name="onboarding_step_1_description">Tu mejor compañera para el cardio</string>
