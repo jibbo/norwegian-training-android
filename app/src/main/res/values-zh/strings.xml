@@ -9,6 +9,7 @@
     <string name="back">返回</string>
     <string name="share">分享</string>
     <string name="buy">购买</string>
+    <string name="ok">确定</string>
     <string name="get_ready">做好准备</string>
     <string name="warmup">热身</string>
     <string name="hit_cardio">高强度阶段</string>
@@ -65,7 +66,7 @@
     <string name="health_connect_title">Health Connect</string>
     <string name="health_connect_install_message">安装 Health Connect，即可在此查看更多统计数据</string>
     <string name="health_connect_permission_message">允许 Health Connect 访问数据，即可在此查看更多统计数据</string>
-    <string name="hide">隐藏</string>
+    <string name="hide">永久隐藏</string>
     <string name="onboarding_step_1_title">欢迎使用 Norwy 应用！</string>
     <string name="onboarding_step_1_description">根据你的水平和目标定制训练课程</string>
     <string name="onboarding_step_1_name">Markus R.</string>

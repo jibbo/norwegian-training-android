@@ -9,6 +9,7 @@
     <string name="back">indietro</string>
 
     <string name="buy">ACQUISTA</string>
+    <string name="ok">OK</string>
     <string name="get_ready">Preparati</string>
     <string name="warmup">Riscaldamento</string>
     <string name="hit_cardio">Fase intensa</string>
@@ -66,7 +67,7 @@
     <string name="health_connect_title">Health Connect</string>
     <string name="health_connect_install_message">Installa Health Connect per vedere qui più statistiche</string>
     <string name="health_connect_permission_message">Consenti a Health Connect di accedere ai dati per vedere qui più statistiche</string>
-    <string name="hide">Nascondi</string>
+    <string name="hide">Nascondi per sempre</string>
 
     <string name="onboarding_step_1_title">Benvenuti nell\'app Norwy!</string>
     <string name="onboarding_step_1_description">La miglior compagna per il tuo allenamento cardio</string>
