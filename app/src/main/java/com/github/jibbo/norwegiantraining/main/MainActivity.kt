@@ -67,7 +67,7 @@ class MainActivity : BaseActivity() {
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() = closeToHome()
+            override fun handleOnBackPressed() = mainViewModel.requestCloseWorkout()
         })
 
         observe()

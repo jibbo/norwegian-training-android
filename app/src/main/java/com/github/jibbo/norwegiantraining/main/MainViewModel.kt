@@ -50,7 +50,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
             workoutName = serviceState.workoutName,
             showConfetti = serviceState.isCompleted && !currentState.showConfetti,
             isServiceBound = currentState.isServiceBound,
-            progressionResult = serviceState.progressionResult
+            progressionResult = serviceState.progressionResult,
+            showCloseWorkoutConfirmation = currentState.showCloseWorkoutConfirmation && serviceState.isTimerRunning
         )
     }
 
@@ -91,6 +92,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun closeWorkout() {
         viewModelScope.launch {
+            states.value = states.value.copy(showCloseWorkoutConfirmation = false)
             val progression = states.value.progressionResult
             serviceBinder?.closeWorkout()
             if (progression is ProgressionResult.LevelUp) {
@@ -99,6 +101,18 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 events.emit(UiCommands.CLOSE)
             }
         }
+    }
+
+    fun requestCloseWorkout() {
+        if (states.value.isTimerRunning) {
+            states.value = states.value.copy(showCloseWorkoutConfirmation = true)
+        } else {
+            closeWorkout()
+        }
+    }
+
+    fun dismissCloseWorkoutConfirmation() {
+        states.value = states.value.copy(showCloseWorkoutConfirmation = false)
     }
 
     fun debugShowConfetti() {

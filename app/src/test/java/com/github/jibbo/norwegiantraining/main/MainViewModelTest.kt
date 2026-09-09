@@ -72,6 +72,55 @@ class MainViewModelTest {
         assertTrue(viewModel.uiStates.value.showConfetti)
     }
 
+    @Test
+    fun requestCloseShowsConfirmationWhenTimerIsRunning() = runTest {
+        val binder = RecordingService()
+        val viewModel = MainViewModel()
+        viewModel.bindToService(binder)
+        viewModel.updateFromService(WorkoutTimerState(isTimerRunning = true))
+
+        viewModel.requestCloseWorkout()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiStates.value.showCloseWorkoutConfirmation)
+        assertTrue(binder.calls.isEmpty())
+
+        viewModel.closeWorkout()
+        advanceUntilIdle()
+
+        assertFalse(viewModel.uiStates.value.showCloseWorkoutConfirmation)
+        assertEquals(listOf("close"), binder.calls)
+    }
+
+    @Test
+    fun requestCloseClosesImmediatelyWhenTimerIsNotRunning() = runTest {
+        val binder = RecordingService()
+        val viewModel = MainViewModel()
+        viewModel.bindToService(binder)
+        viewModel.updateFromService(WorkoutTimerState(isTimerRunning = false))
+
+        viewModel.requestCloseWorkout()
+        advanceUntilIdle()
+
+        assertFalse(viewModel.uiStates.value.showCloseWorkoutConfirmation)
+        assertEquals(listOf("close"), binder.calls)
+    }
+
+    @Test
+    fun dismissCloseConfirmationKeepsWorkoutOpen() = runTest {
+        val binder = RecordingService()
+        val viewModel = MainViewModel()
+        viewModel.bindToService(binder)
+        viewModel.updateFromService(WorkoutTimerState(isTimerRunning = true))
+
+        viewModel.requestCloseWorkout()
+        viewModel.dismissCloseWorkoutConfirmation()
+        advanceUntilIdle()
+
+        assertFalse(viewModel.uiStates.value.showCloseWorkoutConfirmation)
+        assertTrue(binder.calls.isEmpty())
+    }
+
     private class RecordingService : WorkoutTimerService {
         val calls = mutableListOf<String>()
         override val timerState: StateFlow<WorkoutTimerState> = MutableStateFlow(WorkoutTimerState())

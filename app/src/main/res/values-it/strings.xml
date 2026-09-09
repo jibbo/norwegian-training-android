@@ -20,6 +20,10 @@
 
     <string name="home_workout_name">%1$s</string>
     <string name="next_up">Fasse successiva >> %1$s</string>
+    <string name="stop_workout_confirmation_title">Interrompere l\'allenamento?</string>
+    <string name="stop_workout_confirmation_message">Il timer è ancora in esecuzione. Vuoi interrompere questo allenamento?</string>
+    <string name="stop_workout">Interrompi allenamento</string>
+    <string name="keep_training">Continua ad allenarti</string>
 
     <string name="get_ready_desc">inizia il riscaldamento</string>
     <string name="warmup_desc">Fai esercizio leggero: dovresti essere in grado di parlare durante il riscaldamento</string>

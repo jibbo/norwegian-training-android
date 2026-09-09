@@ -21,6 +21,10 @@
 
     <string name="home_workout_name">%1$s</string>
     <string name="next_up">Siguiente fase >> %1$s</string>
+    <string name="stop_workout_confirmation_title">¿Detener entrenamiento?</string>
+    <string name="stop_workout_confirmation_message">El temporizador sigue en marcha. ¿Quieres detener este entrenamiento?</string>
+    <string name="stop_workout">Detener entrenamiento</string>
+    <string name="keep_training">Seguir entrenando</string>
 
     <string name="get_ready_desc">Comienza el calentamiento</string>
     <string name="warmup_desc">Haz ejercicio ligero: deberías poder hablar durante el calentamiento</string>
@@ -145,6 +149,10 @@
     <string name="level_up_title">¡Subiste de nivel!</string>
     <string name="level_up_subtitle">Has avanzado a %1$s. ¡Sigue superándote!</string>
     <string name="level_up_button">CONTINUAR</string>
+    <string name="steps_today">Pasos de hoy</string>
+    <string name="distance_today">Distancia de hoy</string>
+    <string name="steps_distance">%1$s km</string>
+    <string name="calories_burned">Calorías quemadas</string>
 
     <string name="app_language">Idioma de la app</string>
     <string name="default_language">Predeterminado del sistema</string>
