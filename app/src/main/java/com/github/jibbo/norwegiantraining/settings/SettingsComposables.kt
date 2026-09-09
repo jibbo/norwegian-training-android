@@ -112,10 +112,9 @@ internal fun SettingsScreen(
             state = listState,
         ) {
             item { ProfileCard(viewModel) }
-            item { GeneralCard(viewModel) }
             item { SubscriptionCard(viewModel) }
+            item { GeneralCard(viewModel) }
             item { TTSCard(viewModel) }
-            item { VibrationCard(viewModel) }
             item { OnboardingCard(viewModel) }
             item { PrivacyCard(viewModel) }
             item { GetInTouchCard() }
@@ -163,6 +162,19 @@ private fun GeneralCard(viewModel: SettingsViewModel) {
                     checked = state.value.showTodayStatsInActivitySection,
                     onCheckedChange = { viewModel.setShowTodayStatsInActivitySection(it) }
                 )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Text(
+                    text = R.string.vibration.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                MySwitch(checked = state.value.vibrationEnabled, onCheckedChange = {
+                    viewModel.setVibrationEnabled(it)
+                })
             }
         }
     }
@@ -339,33 +351,6 @@ private fun TTSCard(viewModel: SettingsViewModel) {
                 )
                 MySwitch(checked = state.value.announceOneMinute, onCheckedChange = {
                     viewModel.setAnnounceOneMinute(it)
-                })
-            }
-        }
-    }
-}
-
-@Composable
-private fun VibrationCard(viewModel: SettingsViewModel) {
-    val state = viewModel.uiState.collectAsState()
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = Gray
-        ),
-    ) {
-        Column(modifier = Modifier.padding(6.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            ) {
-                Text(
-                    text = R.string.vibration.localizable(),
-                    style = Typography.bodyMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                MySwitch(checked = state.value.vibrationEnabled, onCheckedChange = {
-                    viewModel.setVibrationEnabled(it)
                 })
             }
         }
