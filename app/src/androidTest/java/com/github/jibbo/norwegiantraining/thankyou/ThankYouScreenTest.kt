@@ -74,14 +74,17 @@ class ThankYouScreenTest {
     }
 
     @Test
-    fun buttonRemainsReachableInCompactAndLargeFontLayouts() {
+    fun buttonRemainsReachableInCompactLayout() {
         composeRule.setContent {
             Box(Modifier.height(300.dp)) {
                 ThankYouScreen(onContinue = {})
             }
         }
         composeRule.onNodeWithText("LET'S GO!").performScrollTo().assertIsDisplayed()
+    }
 
+    @Test
+    fun buttonRemainsReachableInLargeFontLayout() {
         composeRule.setContent {
             CompositionLocalProvider(LocalDensity provides Density(1f, fontScale = 2f)) {
                 ThankYouScreen(onContinue = {})
