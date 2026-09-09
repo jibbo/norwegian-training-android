@@ -126,6 +126,9 @@
     <string name="level_up_title">Félicitations !</string>
     <string name="level_up_subtitle">Vous venez de passer au niveau %1$s</string>
     <string name="level_up_button">CONTINUER</string>
+    <string name="thank_you_title">Merci pour votre achat !</string>
+    <string name="thank_you_body">Votre soutien m’aide, en tant que développeur indépendant, à améliorer Norwy, mais surtout, il marque le début de votre parcours !</string>
+    <string name="thank_you_button">C\'EST PARTI !</string>
     <string name="steps_today">Pas de la journée</string>
     <string name="distance_today">Distance de la journée</string>
     <string name="steps_distance">%1$s km</string>

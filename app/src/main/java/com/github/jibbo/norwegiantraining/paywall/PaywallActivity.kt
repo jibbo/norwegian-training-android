@@ -24,6 +24,7 @@ import com.github.jibbo.norwegiantraining.data.SharedPreferencesSettingsReposito
 import com.github.jibbo.norwegiantraining.freetrial.FreeTrialActivity
 import com.github.jibbo.norwegiantraining.home.HomeActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
+import com.github.jibbo.norwegiantraining.thankyou.ThankYouActivity
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -61,7 +62,20 @@ class PaywallActivity : BaseActivity() {
                                         customerInfo: CustomerInfo,
                                         storeTransaction: StoreTransaction
                                     ) {
-                                        goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
+                                        if (customerInfo.entitlements.active.isNotEmpty()) {
+                                            sharedPreferencesSettingsRepository.onboardingCompleted()
+                                            startActivity(
+                                                Intent(
+                                                    this@PaywallActivity,
+                                                    ThankYouActivity::class.java
+                                                ).apply {
+                                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                                                        Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                                }
+                                            )
+                                        } else {
+                                            goToMainActivityIfPaid(customerInfo, freeTrialEndDate)
+                                        }
                                     }
 
                                     override fun onRestoreCompleted(customerInfo: CustomerInfo) {
