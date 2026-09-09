@@ -749,31 +749,14 @@ private fun CreditsCard() {
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        append("Video by ")
+                        append("App Icon by ")
                         withLink(
                             LinkAnnotation.Url(
-                                "https://www.pexels.com/video/woman-running-through-the-stairs-3048202/",
+                                "https://www.fiverr.com/altaf_rai/design-professional-ios-or-android-app-icon?source=order_page_summary_gig_link_image&funnel=fab5ce34516941869099520388da10d4",
                                 TextLinkStyles(style = SpanStyle(color = Primary))
                             )
                         ) {
-                            append("Fauxels")
-                        }
-                    }, style = Typography.bodyMedium, color = White.copy(alpha = 0.6f)
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.Top, modifier = Modifier.padding(8.dp)
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        append("Picture by ")
-                        withLink(
-                            LinkAnnotation.Url(
-                                "https://unsplash.com/@silverkblack?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash",
-                                TextLinkStyles(style = SpanStyle(color = Primary))
-                            )
-                        ) {
-                            append("Vitaly Gariev")
+                            append("Altaf Rai")
                         }
                     }, style = Typography.bodyMedium, color = White.copy(alpha = 0.6f)
                 )
