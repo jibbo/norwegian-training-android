@@ -149,8 +149,8 @@
     <string name="level_up_title">¡Subiste de nivel!</string>
     <string name="level_up_subtitle">Has avanzado a %1$s. ¡Sigue superándote!</string>
     <string name="level_up_button">CONTINUAR</string>
-    <string name="thank_you_title">¡Gracias! Tu viaje comienza ahora.</string>
-    <string name="thank_you_body">Desarrollo Norwy por mi cuenta. Tu apoyo significa mucho para mí y me ayuda a seguir mejorando la aplicación.</string>
+    <string name="thank_you_title">¡Gracias por tu compra!</string>
+    <string name="thank_you_body">Tu apoyo me ayuda a mejorar Norwy como desarrollador independiente, pero, sobre todo, ¡marca el comienzo de tu viaje!</string>
     <string name="thank_you_button">¡VAMOS!</string>
     <string name="steps_today">Pasos de hoy</string>
     <string name="distance_today">Distancia de hoy</string>

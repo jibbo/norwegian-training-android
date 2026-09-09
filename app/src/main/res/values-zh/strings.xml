@@ -126,8 +126,8 @@
     <string name="level_up_title">恭喜！</string>
     <string name="level_up_subtitle">你已升至 %1$s 级</string>
     <string name="level_up_button">继续</string>
-    <string name="thank_you_title">谢谢你！你的旅程现在开始。</string>
-    <string name="thank_you_body">我独自开发 Norwy。你的支持对我意义重大，也帮助我不断改进这款应用。</string>
+    <string name="thank_you_title">感谢你的购买！</string>
+    <string name="thank_you_body">你的支持不仅帮助我这名独立开发者改进 Norwy，更重要的是，它意味着你的旅程就此开始！</string>
     <string name="thank_you_button">出发吧！</string>
     <string name="steps_today">今日步数</string>
     <string name="distance_today">今日距离</string>
