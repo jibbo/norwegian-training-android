@@ -126,6 +126,9 @@
     <string name="level_up_title">Glückwunsch!</string>
     <string name="level_up_subtitle">Du bist auf Stufe %1$s aufgestiegen</string>
     <string name="level_up_button">WEITER</string>
+    <string name="thank_you_title">Vielen Dank! Deine Reise beginnt jetzt.</string>
+    <string name="thank_you_body">Ich entwickle Norwy allein. Deine Unterstützung bedeutet mir sehr viel und hilft mir, die App kontinuierlich zu verbessern.</string>
+    <string name="thank_you_button">LOS GEHT\'S!</string>
     <string name="steps_today">Schritte heute</string>
     <string name="distance_today">Distanz heute</string>
     <string name="steps_distance">%1$s km</string>
