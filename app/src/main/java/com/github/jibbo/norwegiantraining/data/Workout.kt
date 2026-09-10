@@ -38,6 +38,8 @@ data class Workout(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "difficulty") val difficulty: Difficulty,
     @ColumnInfo(name = "content") val content: String,
+    @ColumnInfo(name = "isCustom") val isCustom: Boolean = false,
+    @ColumnInfo(name = "icon") val icon: String? = null,
 ) {
     @Ignore
     val totalTime = content.split("-").map { return@map it.toSeconds() }.sum().div(60)
