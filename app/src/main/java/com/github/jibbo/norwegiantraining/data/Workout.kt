@@ -73,7 +73,10 @@ data class Workout(
     @ColumnInfo(name = "icon") val icon: String? = null,
 ) {
     @Ignore
-    val totalTime = content.split("-").map { return@map it.toSeconds() }.sum().div(60)
+    val totalTime = content.split("-")
+        .mapNotNull { phase -> runCatching { phase.toSeconds() }.getOrNull() }
+        .sum()
+        .div(60)
 
     @Ignore
     val totalPhases = content.split("-").size

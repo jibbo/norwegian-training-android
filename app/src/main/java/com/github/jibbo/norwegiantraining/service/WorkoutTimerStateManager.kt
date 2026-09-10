@@ -5,6 +5,7 @@ import com.github.jibbo.norwegiantraining.data.WorkoutRepository
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.WorkoutToPhasesConverter
 import com.github.jibbo.norwegiantraining.domain.displayLabel
+import com.github.jibbo.norwegiantraining.domain.WorkoutNotFoundException
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
@@ -35,13 +36,16 @@ class WorkoutTimerStateManager @Inject constructor(
         }
     }
 
-    suspend fun startWorkout(workoutId: Long) {
+    suspend fun startWorkout(workoutId: Long): Result<Unit> {
         val currentState = _state.value
         if (currentState.workoutId == workoutId) {
-            return
+            return Result.success(Unit)
         }
 
-        val workout = workoutRepository.getById(workoutId) ?: return
+        val workout = workoutRepository.getById(workoutId)
+            ?: return Result.failure(WorkoutNotFoundException(workoutId))
+        val phases = WorkoutToPhasesConverter.convert(workout)
+            .getOrElse { return Result.failure(it) }
 
         val initialPhase =
             Phase(PhaseName.GET_READY, WorkoutToPhasesConverter.GET_READY_COUNTDOWN_DURATION)
@@ -49,7 +53,7 @@ class WorkoutTimerStateManager @Inject constructor(
             workoutId = workoutId,
             workoutName = workout.displayLabel(),
             currentPhaseIndex = 0,
-            totalPhases = workout.totalPhases,
+            totalPhases = phases.size,
             currentPhase = initialPhase,
             targetTimeMillis = 0L,
             isTimerRunning = false,
@@ -58,6 +62,7 @@ class WorkoutTimerStateManager @Inject constructor(
         )
 
         updateState(newState)
+        return Result.success(Unit)
     }
 
     suspend fun startTimer() {
@@ -96,10 +101,11 @@ class WorkoutTimerStateManager @Inject constructor(
         )
     }
 
-    suspend fun moveToNextPhase() {
+    suspend fun moveToNextPhase(): Result<Unit> {
         val currentState = _state.value
 
         val nextPhase = moveToNextPhase(currentState.workoutId, currentState.currentPhaseIndex)
+            .getOrElse { return Result.failure(it) }
         val nextIndex = currentState.currentPhaseIndex + 1
 
         val isCompleted = nextPhase.name == PhaseName.COMPLETED
@@ -119,6 +125,7 @@ class WorkoutTimerStateManager @Inject constructor(
                 progressionResult = progressionResult
             )
         )
+        return Result.success(Unit)
     }
 
     suspend fun skipPhase() {
