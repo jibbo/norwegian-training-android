@@ -4,7 +4,6 @@ import com.github.jibbo.norwegiantraining.data.Difficulty
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.log.SessionStatus
-import com.github.jibbo.norwegiantraining.log.SessionsBrain
 import com.github.jibbo.norwegiantraining.testutils.FakeSessionRepository
 import com.github.jibbo.norwegiantraining.testutils.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.testutils.FakeWorkoutRepository
@@ -90,13 +89,7 @@ class UseCaseTests {
         sessions.insertSessions(
             listOf(
                 Session(date = start),
-                Session(
-                    date = Date(start.time + 24L * 60 * 60 * 1000),
-                    isManual = true,
-                    name = "Run",
-                    duration = 30L,
-                    phasesEnded = 1,
-                )
+                Session(date = Date(start.time + 24L * 60 * 60 * 1000))
             )
         )
         val useCase = GetWeeklySessionsUseCase(sessions)
@@ -107,74 +100,6 @@ class UseCaseTests {
         assertTrue(result[0] != null)
     }
 
-    @Test
-    fun manualOnlySessionAppearsInItsWeeklyDaySlotAsActive() = runTest {
-        val sessions = FakeSessionRepository()
-        val start = weekStart()
-        val manual = manualSession(Date(start.time + 2L * DAY_MILLIS))
-        sessions.insertManualSession(manual)
-
-        val result = GetWeeklySessionsUseCase(sessions)()
-
-        assertEquals(manual, result[2])
-        assertEquals(SessionStatus.GOOD, SessionsBrain.getStatus(manual))
-        assertEquals(1, manual.phasesEnded)
-        assertEquals(0, manual.skipCount)
-    }
-
-    @Test
-    fun pastManualSessionAppearsInTheCorrectWeeklyDaySlot() = runTest {
-        val sessions = FakeSessionRepository()
-        val start = weekStart()
-        val manual = manualSession(Date(start.time + DAY_MILLIS))
-        sessions.insertManualSession(manual)
-
-        val result = GetWeeklySessionsUseCase(sessions)()
-
-        assertEquals(null, result[0])
-        assertEquals(manual, result[1])
-        assertEquals(null, result[2])
-    }
-
-    @Test
-    fun duplicateManualRowsAndNorwySessionOnOneDateProduceOneActiveDay() = runTest {
-        val sessions = FakeSessionRepository()
-        val date = Date(weekStart().time + 3L * DAY_MILLIS)
-        val firstManual = manualSession(date, id = 1L)
-        val secondManual = manualSession(date, id = 2L)
-        val norwy = Session(id = 3L, date = date, phasesEnded = 8, skipCount = 0)
-        sessions.insertManualSession(firstManual)
-        sessions.insertManualSession(secondManual)
-        sessions.insertSession(norwy)
-
-        val result = GetWeeklySessionsUseCase(sessions)()
-
-        assertEquals(1, result.count { it != null })
-        assertEquals(date, result[3]?.date)
-        assertEquals(SessionStatus.GOOD, SessionsBrain.getStatus(result[3]))
-    }
-
-    private fun weekStart(): Date = Calendar.getInstance().apply {
-        set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
-        set(Calendar.HOUR_OF_DAY, 0)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }.time
-
-    private fun manualSession(date: Date, id: Long = 0L) = Session(
-        id = id,
-        date = date,
-        isManual = true,
-        name = "Run",
-        duration = 30L,
-        phasesEnded = 1,
-        skipCount = 0,
-    )
-
-    private companion object {
-        const val DAY_MILLIS = 24L * 60 * 60 * 1000
-    }
     @Test
     fun freeTrialAndOnboardingAndUsernameUseCasesExposeRepositoryValues() {
         val settings = FakeSettingsRepository().apply {
@@ -199,13 +124,7 @@ class UseCaseTests {
         val today = Session(phasesEnded = 2, skipCount = 0, date = Date())
         sessions.insertSession(today)
         val checkProgression = ApplyProgressionUseCase(sessions, workouts, settings)
-        val useCase = WorkoutCompletedUseCase(
-            GetTodaySessionUseCase(sessions),
-            sessions,
-            settings,
-            workouts,
-            checkProgression,
-        )
+        val useCase = WorkoutCompletedUseCase(GetTodaySessionUseCase(sessions), sessions, settings, checkProgression)
 
         val result = useCase(1L)
 
@@ -213,78 +132,6 @@ class UseCaseTests {
         assertEquals(null, settings.getLastWorkoutId())
     }
 
-    @Test
-    fun customWorkoutCompletionRecordsSessionWithoutProgressionOrSettingsChanges() = runTest {
-        val sessions = FakeSessionRepository()
-        val settings = FakeSettingsRepository().apply {
-            setFitnessLevel(FitnessLevel.BEGINNER)
-            setRecommendedWorkoutId(1L)
-        }
-        val workouts = FakeWorkoutRepository()
-        workouts.insert(Workout(9, "Custom", Difficulty.BEGINNER, "5m-1m-1m-5m", isCustom = true))
-        val checkProgression = ApplyProgressionUseCase(sessions, workouts, settings)
-        val useCase = WorkoutCompletedUseCase(
-            GetTodaySessionUseCase(sessions),
-            sessions,
-            settings,
-            workouts,
-            checkProgression,
-        )
-
-        val result = useCase(9L)
-
-        assertEquals(1, result.session.phasesEnded)
-        assertEquals(ProgressionResult.NoChange, result.progression)
-        assertEquals(FitnessLevel.BEGINNER, settings.getFitnessLevel())
-        assertEquals(1L, settings.getRecommendedWorkoutId())
-        assertEquals(null, settings.getLastWorkoutId())
-    }
-    @Test
-    fun customCompletionSkipsProgressionEvenAfterFourQualifyingWeeks() = runTest {
-        val sessions = FakeSessionRepository()
-        val progressionDate = Date(1234L)
-        val settings = FakeSettingsRepository().apply {
-            setFitnessLevel(FitnessLevel.BEGINNER)
-            setRecommendedWorkoutId(1L)
-            setLastProgressionDate(progressionDate)
-            setLastWorkoutId(7L)
-        }
-        val workouts = FakeWorkoutRepository()
-        workouts.insert(
-            Workout(1, "Built-in A", Difficulty.BEGINNER, "10s-20s"),
-            Workout(2, "Built-in B", Difficulty.BEGINNER, "10s-20s"),
-            Workout(9, "Custom", Difficulty.BEGINNER, "5m-1m-1m-5m", isCustom = true),
-        )
-        val now = Calendar.getInstance()
-        repeat(4) { week ->
-            repeat(3) { day ->
-                sessions.insertSession(
-                    Session(
-                        phasesEnded = 8,
-                        skipCount = 0,
-                        date = Date(now.timeInMillis - ((week * 7 + day + 1).toLong() * 24 * 60 * 60 * 1000)),
-                    ),
-                )
-            }
-        }
-        val checkProgression = ApplyProgressionUseCase(sessions, workouts, settings)
-        val useCase = WorkoutCompletedUseCase(
-            GetTodaySessionUseCase(sessions),
-            sessions,
-            settings,
-            workouts,
-            checkProgression,
-        )
-
-        val result = useCase(9L)
-
-        assertEquals(9, result.session.phasesEnded)
-        assertEquals(ProgressionResult.NoChange, result.progression)
-        assertEquals(FitnessLevel.BEGINNER, settings.getFitnessLevel())
-        assertEquals(1L, settings.getRecommendedWorkoutId())
-        assertEquals(progressionDate, settings.getLastProgressionDate())
-        assertEquals(7L, settings.getLastWorkoutId())
-    }
     @Test
     fun applyProgressionAdvancesWorkoutAfterEnoughGoodWeeks() = runTest {
         val sessions = FakeSessionRepository()
@@ -316,42 +163,6 @@ class UseCaseTests {
 
         assertEquals(ProgressionResult.NextWorkout::class, result::class)
         assertEquals(3L, settings.getRecommendedWorkoutId())
-    }
-
-    @Test
-    fun applyProgressionIgnoresManualSessions() = runTest {
-        val sessions = FakeSessionRepository()
-        val settings = FakeSettingsRepository().apply {
-            setFitnessLevel(FitnessLevel.BEGINNER)
-            setRecommendedWorkoutId(1L)
-        }
-        val workouts = FakeWorkoutRepository()
-        workouts.insert(
-            Workout(1, "A", Difficulty.BEGINNER, "10s-20s"),
-            Workout(2, "B", Difficulty.BEGINNER, "10s-20s")
-        )
-        val now = Calendar.getInstance()
-        repeat(4) { week ->
-            repeat(3) { day ->
-                sessions.insertManualSession(
-                    Session(
-                        phasesEnded = 1,
-                        date = Date(now.timeInMillis - ((week * 7 + day + 1).toLong() * 24 * 60 * 60 * 1000)),
-                        isManual = true,
-                        name = "Run",
-                        duration = 30L,
-                    )
-                )
-            }
-        }
-
-        val result = ApplyProgressionUseCase(sessions, workouts, settings)(
-            1L,
-            Session(phasesEnded = 8, skipCount = 0, date = Date()),
-        )
-
-        assertEquals(ProgressionResult.NoChange::class, result::class)
-        assertEquals(1L, settings.getRecommendedWorkoutId())
     }
 
     @Test

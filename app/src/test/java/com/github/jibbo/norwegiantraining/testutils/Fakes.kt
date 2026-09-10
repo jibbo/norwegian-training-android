@@ -195,7 +195,7 @@ class FakeWorkoutRepository : WorkoutRepository {
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> {
         maybeFail()
-        return workouts.filter { it.difficulty == difficulty }
+        return workouts.filter { !it.isCustom && it.difficulty == difficulty }
     }
 
     override suspend fun getById(id: Long): Workout? {
