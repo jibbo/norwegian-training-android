@@ -66,6 +66,7 @@ import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.displayLabel
 import com.github.jibbo.norwegiantraining.domain.GetWeeklySessionsUseCase
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
@@ -644,7 +645,7 @@ private fun WorkoutCard(
         }
     ) {
         Text(
-            text = workout.name,
+            text = workout.displayLabel(),
             modifier = Modifier.padding(8.dp),
             style = Typography.titleMedium,
             color = White
