@@ -37,6 +37,14 @@ class CustomWorkoutValidationTest {
     }
 
     @Test
+    fun `name with exactly 20 trimmed characters is valid`() {
+        val result = validateCustomWorkoutDraft(CustomWorkoutDraft(name = "  12345678901234567890  "))
+
+        assertTrue(result.isValid)
+        assertEquals("12345678901234567890", result.trimmedName)
+    }
+
+    @Test
     fun `name longer than 20 trimmed characters is rejected`() {
         val result = validateCustomWorkoutDraft(CustomWorkoutDraft(name = "  123456789012345678901  "))
 
