@@ -31,9 +31,28 @@ class WorkoutTimerStateManager @Inject constructor(
 
     suspend fun initialize() {
         val savedState = persistence.loadState()
-        if (savedState != null) {
-            _state.value = savedState
+        if (savedState == null) {
+            persistence.clearState()
+            return
         }
+
+        val workout = workoutRepository.getById(savedState.workoutId)
+        if (workout == null) {
+            persistence.clearState()
+            _state.value = WorkoutTimerState()
+            return
+        }
+
+        val phases = WorkoutToPhasesConverter.convert(workout).getOrElse {
+            persistence.clearState()
+            _state.value = WorkoutTimerState()
+            return
+        }
+
+        _state.value = savedState.copy(
+            workoutName = workout.displayLabel(),
+            totalPhases = phases.size,
+        )
     }
 
     suspend fun startWorkout(workoutId: Long): Result<Unit> {
