@@ -13,6 +13,7 @@ import java.util.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 
 class FakeSettingsRepository : SettingsRepository {
     private var userName: String? = null
@@ -182,50 +183,75 @@ class FakeWorkoutRepository : WorkoutRepository {
     private val workouts = mutableListOf<Workout>()
     private val flow = MutableStateFlow<List<Workout>>(emptyList())
 
+    var failure: Throwable? = null
+
     override fun getAll(): Flow<List<Workout>> = flow.asStateFlow()
 
     override fun getCustomWorkouts(): Flow<List<Workout>> =
-        MutableStateFlow(workouts.filter { it.isCustom }.sortedByDescending { it.id }).asStateFlow()
+        flow.map { values -> values.filter { it.isCustom }.sortedByDescending { it.id } }
 
     override fun getBuiltInWorkouts(): Flow<List<Workout>> =
-        MutableStateFlow(workouts.filterNot { it.isCustom }.sortedBy { it.id }).asStateFlow()
+        flow.map { values -> values.filterNot { it.isCustom }.sortedBy { it.id } }
 
-    override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
-        workouts.filter { it.difficulty == difficulty }
+    override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> {
+        maybeFail()
+        return workouts.filter { it.difficulty == difficulty }
+    }
 
-    override suspend fun getById(id: Long): Workout? = workouts.firstOrNull { it.id == id }
+    override suspend fun getById(id: Long): Workout? {
+        maybeFail()
+        return workouts.firstOrNull { it.id == id }
+    }
 
-    override suspend fun getDifficulties(): List<Difficulty> =
-        workouts.map { it.difficulty }.distinct()
+    override suspend fun getDifficulties(): List<Difficulty> {
+        maybeFail()
+        return workouts.map { it.difficulty }.distinct()
+    }
 
     override suspend fun insertCustom(workout: Workout): Long {
-        this.workouts.add(workout.copy(isCustom = true))
-        flow.value = this.workouts.toList()
-        return workout.id
+        maybeFail()
+        val stored = workout.copy(id = workout.id.takeIf { it != 0L } ?: nextId(), isCustom = true)
+        workouts.add(stored)
+        publish()
+        return stored.id
     }
 
     override suspend fun updateCustom(workout: Workout): Boolean {
+        maybeFail()
         val index = workouts.indexOfFirst { it.id == workout.id && it.isCustom }
         if (index == -1) return false
         workouts[index] = workout.copy(isCustom = true)
-        flow.value = workouts.toList()
+        publish()
         return true
     }
 
     override suspend fun deleteCustom(id: Long): Boolean {
+        maybeFail()
         val deleted = workouts.removeIf { it.id == id && it.isCustom }
-        flow.value = workouts.toList()
+        publish()
         return deleted
     }
 
     override suspend fun insert(vararg workouts: Workout) {
+        maybeFail()
         this.workouts.addAll(workouts)
-        flow.value = this.workouts.toList()
+        publish()
     }
 
     override suspend fun insert(workouts: List<Workout>) {
+        maybeFail()
         this.workouts.addAll(workouts)
-        flow.value = this.workouts.toList()
+        publish()
+    }
+
+    private fun nextId(): Long = (workouts.maxOfOrNull { it.id } ?: 0L) + 1L
+
+    private fun publish() {
+        flow.value = workouts.toList()
+    }
+
+    private fun maybeFail() {
+        failure?.let { throw it }
     }
 }
 
