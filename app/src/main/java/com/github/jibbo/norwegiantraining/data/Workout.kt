@@ -27,6 +27,37 @@ interface WorkoutDao {
     @Query("SELECT DISTINCT difficulty FROM Workout")
     suspend fun getDifficulties(): List<Difficulty>
 
+    @Query("SELECT * FROM Workout WHERE isCustom = 1 ORDER BY id DESC")
+    fun getCustomWorkouts(): Flow<List<Workout>>
+
+    @Query("SELECT * FROM Workout WHERE isCustom = 0 ORDER BY id")
+    fun getBuiltInWorkouts(): Flow<List<Workout>>
+
+    @Insert
+    suspend fun insertCustom(workout: Workout): Long
+
+    @Query(
+        """
+        UPDATE Workout
+        SET name = :name,
+            difficulty = :difficulty,
+            content = :content,
+            isCustom = 1,
+            icon = :icon
+        WHERE id = :id AND isCustom = 1
+        """
+    )
+    suspend fun updateCustomById(
+        id: Long,
+        name: String,
+        difficulty: Difficulty,
+        content: String,
+        icon: String?,
+    ): Int
+
+    @Query("DELETE FROM Workout WHERE id = :id AND isCustom = 1")
+    suspend fun deleteCustomById(id: Long): Int
+
     @Insert
     suspend fun insert(vararg workout: Workout)
 }
