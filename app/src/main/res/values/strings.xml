@@ -5,9 +5,9 @@
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="close">Close</string>
-    <string name="skip">Skip training phase</string>
+    <string name="skip">Skip phase</string>
     <string name="continue_btn">Continue</string>
-    <string name="back">back</string>
+    <string name="back">Back</string>
     <string name="share">Share</string>
     <string name="buy">BUY</string>
     <string name="ok">OK</string>
@@ -15,7 +15,7 @@
 
     <!-- Timer states -->
     <string name="get_ready">Get Ready</string>
-    <string name="warmup">Warmup</string>
+    <string name="warmup">Warm-up</string>
     <string name="hit_cardio">Hard phase</string>
     <string name="light_cardio">Light phase</string>
     <string name="cooldown">Cooldown</string>
@@ -26,19 +26,19 @@
 
     <!-- MainActivity -->
     <string name="home_workout_name">%1$s</string>
-    <string name="next_up">Next Up >> %1$s</string>
+    <string name="next_up">Next up: %1$s</string>
     <string name="stop_workout_confirmation_title">Stop workout?</string>
     <string name="stop_workout_confirmation_message">The timer is still running. Do you want to stop this workout?</string>
     <string name="stop_workout">Stop workout</string>
     <string name="keep_training">Keep training</string>
 
     <!-- Exercise descriptions -->
-    <string name="get_ready_desc">Start with a warmup</string>
-    <string name="warmup_desc">Exercise lightly: you should be able to talk while you warmup</string>
-    <string name="hit_cardio_desc">Go as hard as you can to sustain the whole time. You can do this!</string>
-    <string name="light_cardio_desc">Exercise lightly: steady your heartbeat without stopping</string>
-    <string name="cooldown_desc">Breathe, go at slow and relaxed pace that allows you to calm down your heartrate but don\'t stop now</string>
-    <string name="completed_desc">Congratulations! You arrived at the end of this workout! Come back tomorrow for another one 💪</string>
+    <string name="get_ready_desc">Start with a warm-up</string>
+    <string name="warmup_desc">Exercise lightly: you should be able to talk while you warm up</string>
+    <string name="hit_cardio_desc">Go as hard as you can and maintain that intensity throughout. You can do this!</string>
+    <string name="light_cardio_desc">Exercise lightly: keep your heart rate steady without stopping</string>
+    <string name="cooldown_desc">Breathe and keep a slow, relaxed pace to bring your heart rate down, but don\'t stop yet</string>
+    <string name="completed_desc">Congratulations! You\'ve reached the end of this workout! Come back tomorrow for another one 💪</string>
 
     <!-- TTS -->
     <string name="one_minute_remaining">One minute remaining</string>
@@ -57,25 +57,25 @@
 
     <!-- Settings -->
     <string name="title_activity_settings">Settings</string>
-    <string name="title_profile_section">Profile</string>">
-    <string name="your_name">Your name</string>">
+    <string name="title_profile_section">Profile</string>
+    <string name="your_name">Your name</string>
     <string name="fitness_level_label">Fitness level</string>
-    <string name="title_tts_section">Vocal Cues</string>">
+    <string name="title_tts_section">Vocal Cues</string>
     <string name="announce_phase">Phase name</string>
     <string name="announce_phase_description">Phase description</string>
     <string name="announce_countdown">Countdown before phase ends</string>
     <string name="announce_one_minute">One minute remaining</string>
     <string name="announce_pause">Workout paused</string>
-    <string name="vibration">Vibration on timer start/pause</string>
-    <string name="title_privacy_section">Privacy</string>">
-    <string name="enable_analytics">Data Collection</string>
-    <string name="enable_analytics_description">It lets us improve the app based on which features and options are popular</string>
-    <string name="enable_crash_reporting">Malfunctions Logs</string>
+    <string name="vibration">Vibration when the timer starts or pauses</string>
+    <string name="title_privacy_section">Privacy</string>
+    <string name="enable_analytics">Data collection</string>
+    <string name="enable_analytics_description">This helps us improve the app by showing us which features and options are popular</string>
+    <string name="enable_crash_reporting">Crash reporting</string>
     <string name="enable_crash_reporting_description">It lets us fix bugs and improve the app</string>
-    <string name="title_beta_section">Beta features</string>">
+    <string name="title_beta_section">Beta features</string>
     <string name="beta_section_description">These features are still experimental and can cause unexpected behavior such as loss of workout data.</string>
-    <string name="enable_timer_notification">Notification with timer</string>
-    <string name="onboarding_section_title">Show Onboarding again</string>
+    <string name="enable_timer_notification">Timer notification</string>
+    <string name="onboarding_section_title">Show onboarding again</string>
     <string name="about_dev_section_title">From the developer</string>
     <string name="about_dev_section_description">Hi! I\'m Gio, and I\'d like to thank you for using my app! As a fellow workout enthusiast, I made this because I got tired of fiddling with complicated timers. I hope you find it as useful as I do!</string>
     <string name="about_dev_section_cta">Drop Gio an email</string>
@@ -83,7 +83,7 @@
     <string name="credits_section_cta">Credits</string>
     <string name="subscription_section_title">Subscription</string>
     <string name="subscription_section_status">Status</string>
-    <string name="subscription_section_date">Valid Until: %1$s</string>
+    <string name="subscription_section_date">Valid until: %1$s</string>
     <string name="app_version">Version %1$s</string>
     <string name="subscription_section_never">Forever</string>
 
@@ -91,7 +91,7 @@
     <string name="title_activity_logs">Your Activity</string>
     <string name="health_connect_title">Health Connect</string>
     <string name="health_connect_install_message">Install Health Connect to see more stats here</string>
-    <string name="health_connect_permission_message">Allow Health Connect to see more stats here</string>
+    <string name="health_connect_permission_message">Allow Health Connect to access your data to see more stats here</string>
     <string name="hide">Hide forever</string>
 
     <!-- Onboarding -->
@@ -101,31 +101,31 @@
     <string name="onboarding_step_1_handle">\@marksmeister</string>
     <string name="onboarding_step_1_body">Stoked about this new app I found called "Norwy"! If you\'re into the 4x4 protocol, you have to check this out. It handles all the timings and intervals perfectly, so I can focus on my workout instead of my watch. 🏃‍♀️⌚️ Highly recommend! #runningapp #fitness #HIIT #workout</string>
 
-    <string name="onboarding_step_2_title">Automatic Timers</string>
+    <string name="onboarding_step_2_title">Automatic timers</string>
     <string name="onboarding_step_2_description">Just press \"START\" to begin the workout.</string>
-    <string name="onboarding_step_2_body">No more fiddling with multiple timers required</string>
+    <string name="onboarding_step_2_body">No more fiddling with multiple timers</string>
 
     <string name="onboarding_step_3_title">Why do you want to start the Norwegian Protocol?</string>
     <string name="onboarding_step_3_option_1">Improve my general health</string>
     <string name="onboarding_step_3_option_2">Improve my performance</string>
 
     <string name="onboarding_step_4_title">Let\'s start!</string>
-    <string name="onboarding_step_4_description">The norwegian 4x4 can make your heart 20 years younger</string>
-    <string name="onboarding_step_4_body">Enjoy the benefits already after the first month!</string>
+    <string name="onboarding_step_4_description">The Norwegian 4x4 can make your heart 20 years younger</string>
+    <string name="onboarding_step_4_body">Enjoy the benefits after just one month!</string>
     <string name="onboarding_step_4_cta">Yes!</string>
 
-    <string name="onboarding_step_5_title">Your Progress</string>
-    <string name="onboarding_step_5_description">Under your control anytime</string>
+    <string name="onboarding_step_5_title">Your progress</string>
+    <string name="onboarding_step_5_description">Under your control, anytime</string>
     <string name="onboarding_step_5_body">No more guesswork</string>
 
     <string name="onboarding_step_6_title">Tailored workouts</string>
-    <string name="onboarding_step_6_description">pre-made for any fitness level</string>
-    <string name="onboarding_step_6_body">Becoming a pro or not is your choice</string>
+    <string name="onboarding_step_6_description">Pre-made for any fitness level</string>
+    <string name="onboarding_step_6_body">Whether you become a pro is up to you</string>
 
-    <string name="onboarding_step_notification_permission_title">Allow Notifications</string>
-    <string name="onboarding_step_notification_permission_body">This permission is needed show the remaining time inside a notification. Without this notification the app can\'t work when the screen is off.</string>
+    <string name="onboarding_step_notification_permission_title">Allow notifications</string>
+    <string name="onboarding_step_notification_permission_body">This permission is needed to show the remaining time inside a notification. Without it, the app can\'t work when the screen is off.</string>
 
-    <string name="onboarding_step_activity_recognition_permission_title">Allow Physical Activity Recognition</string>
+    <string name="onboarding_step_activity_recognition_permission_title">Allow physical activity recognition</string>
     <string name="onboarding_step_activity_recognition_permission_body">This permission is needed to count steps and also to keep the app running when the screen is off.</string>
 
     <string name="onboarding_step_name_title">What\'s your name?</string>
@@ -133,16 +133,16 @@
 
     <string name="onboarding_step_invite_friends_title">Tell your friends</string>
     <string name="onboarding_step_invite_friends_description">Working out together makes it easier to stay consistent.</string>
-    <string name="onboarding_step_invite_friends_body">Studies shows that working out with a partner or in a group increases consistency by up to 600%%</string>
+    <string name="onboarding_step_invite_friends_body">Studies show that working out with a partner or in a group increases consistency by up to 600%%</string>
     <string name="share_msg">Just started my 4x4 intervals! Try Norwy with me: https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
 
     <!-- Home -->
     <string name="welcome">Welcome %1$s</string>
-    <string name="home_next_up">Next Up</string>
-    <string name="home_all_workouts">All Workouts</string>
+    <string name="home_next_up">Next up</string>
+    <string name="home_all_workouts">All workouts</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
     <string name="workout_split" translatable="false">%1$sx%1$s</string>
-    <string name="workout_kCal" translatable="false">🔥 ~%1$s kCal</string>
+    <string name="workout_kCal" translatable="false">🔥 ~%1$s kcal</string>
     <string name="workout_category_beginner">Beginner</string>
     <string name="workout_category_intermediate">Intermediate</string>
     <string name="workout_category_expert">Expert</string>
@@ -154,7 +154,7 @@
     <string name="workout_beginner_1">👣 Beginner 1</string>
     <string name="workout_beginner_2">🦶 Beginner 2</string>
     <string name="workout_beginner_3">🦶🦶 Beginner 3</string>
-    <string name="workout_not_so_beginner">👟 Not so beginner</string>
+    <string name="workout_not_so_beginner">👟 No longer a beginner</string>
     <string name="workout_intermediate_1">🎽 Intermediate 1</string>
     <string name="workout_intermediate_2">💨 Intermediate 2</string>
     <string name="workout_intermediate_3">🧠 Intermediate 3</string>
@@ -163,8 +163,8 @@
     <string name="workout_expert_2">💪 Expert 2</string>
 
     <!-- Free Trial -->
-    <string name="free_trial_title">Here is a gift from us.</string>
-    <string name="free_trial_subtitle">Enjoy the access to the app for the next 7 days. No strings attached.</string>
+    <string name="free_trial_title">Here\'s a gift from us.</string>
+    <string name="free_trial_subtitle">Enjoy access to the app for the next 7 days. No strings attached.</string>
     <string name="free_trial_button">CLAIM 7 FREE DAYS NOW</string>
     <string name="free_trial">Free Trial</string>
 
@@ -184,7 +184,7 @@
     <string name="level_up_subtitle">You\'ve advanced to %1$s! Keep pushing your limits.</string>
     <string name="level_up_button">CONTINUE</string>
     <string name="thank_you_title">Thank you for your purchase!</string>
-    <string name="thank_you_body">Your support helps a solo dev improving Norwy, but most importantly it\'s the beginning of your journey!</string>
+    <string name="thank_you_body">Your support helps a solo developer improve Norwy, but most importantly, it\'s the beginning of your journey!</string>
     <string name="thank_you_button">LET\'S GO!</string>
 
     <string name="app_language">App Language</string>
