@@ -124,7 +124,13 @@ class UseCaseTests {
         val today = Session(phasesEnded = 2, skipCount = 0, date = Date())
         sessions.insertSession(today)
         val checkProgression = ApplyProgressionUseCase(sessions, workouts, settings)
-        val useCase = WorkoutCompletedUseCase(GetTodaySessionUseCase(sessions), sessions, settings, checkProgression)
+        val useCase = WorkoutCompletedUseCase(
+            GetTodaySessionUseCase(sessions),
+            sessions,
+            settings,
+            workouts,
+            checkProgression,
+        )
 
         val result = useCase(1L)
 
@@ -132,6 +138,32 @@ class UseCaseTests {
         assertEquals(null, settings.getLastWorkoutId())
     }
 
+    @Test
+    fun customWorkoutCompletionRecordsSessionWithoutProgressionOrSettingsChanges() = runTest {
+        val sessions = FakeSessionRepository()
+        val settings = FakeSettingsRepository().apply {
+            setFitnessLevel(FitnessLevel.BEGINNER)
+            setRecommendedWorkoutId(1L)
+        }
+        val workouts = FakeWorkoutRepository()
+        workouts.insert(Workout(9, "Custom", Difficulty.BEGINNER, "5m-1m-1m-5m", isCustom = true))
+        val checkProgression = ApplyProgressionUseCase(sessions, workouts, settings)
+        val useCase = WorkoutCompletedUseCase(
+            GetTodaySessionUseCase(sessions),
+            sessions,
+            settings,
+            workouts,
+            checkProgression,
+        )
+
+        val result = useCase(9L)
+
+        assertEquals(1, result.session.phasesEnded)
+        assertEquals(ProgressionResult.NoChange, result.progression)
+        assertEquals(FitnessLevel.BEGINNER, settings.getFitnessLevel())
+        assertEquals(1L, settings.getRecommendedWorkoutId())
+        assertEquals(null, settings.getLastWorkoutId())
+    }
     @Test
     fun applyProgressionAdvancesWorkoutAfterEnoughGoodWeeks() = runTest {
         val sessions = FakeSessionRepository()
