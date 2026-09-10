@@ -142,7 +142,8 @@ class UseCaseTests {
         val workouts = FakeWorkoutRepository()
         workouts.insert(
             Workout(1, "A", Difficulty.BEGINNER, "10s-20s"),
-            Workout(2, "B", Difficulty.BEGINNER, "10s-20s")
+            Workout(2, "Custom", Difficulty.BEGINNER, "10s-20s", isCustom = true),
+            Workout(3, "B", Difficulty.BEGINNER, "10s-20s")
         )
         val now = Calendar.getInstance()
         repeat(4) { week ->
@@ -161,7 +162,7 @@ class UseCaseTests {
         val result = useCase(1L, Session(phasesEnded = 8, skipCount = 0, date = Date()))
 
         assertEquals(ProgressionResult.NextWorkout::class, result::class)
-        assertEquals(2L, settings.getRecommendedWorkoutId())
+        assertEquals(3L, settings.getRecommendedWorkoutId())
     }
 
     @Test

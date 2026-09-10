@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WorkoutDao {
-    @Query("SELECT * FROM Workout WHERE difficulty = :difficulty")
+    @Query("SELECT * FROM Workout WHERE difficulty = :difficulty AND isCustom = 0")
     suspend fun getByDifficulty(difficulty: Difficulty): List<Workout>
 
     @Query("SELECT * FROM Workout WHERE id = :id")

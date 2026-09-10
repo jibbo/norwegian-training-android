@@ -174,7 +174,7 @@ class FakeWorkoutRepo : WorkoutRepository {
         kotlinx.coroutines.flow.flow { emit(workouts.filterNot { it.isCustom }.sortedBy { it.id }) }
 
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
-        workouts.filter { it.difficulty == difficulty }
+        workouts.filter { !it.isCustom && it.difficulty == difficulty }
 
     override suspend fun getById(id: Long): Workout? =
         workouts.firstOrNull { it.id == id }
