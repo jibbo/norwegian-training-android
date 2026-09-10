@@ -75,9 +75,9 @@ class TimerStatePersistence @Inject constructor(
 
         if (workoutId == -1L) return null
 
-        val phaseName = preferences[Keys.CURRENT_PHASE_NAME]?.let {
-            PhaseName.valueOf(it)
-        } ?: PhaseName.GET_READY
+        val phaseName = preferences[Keys.CURRENT_PHASE_NAME]?.let { value ->
+            runCatching { PhaseName.valueOf(value) }.getOrNull()
+        } ?: return null
 
         val phaseDuration = preferences[Keys.CURRENT_PHASE_DURATION] ?: 0L
 
@@ -112,10 +112,10 @@ class TimerStatePersistence @Inject constructor(
         ProgressionResult.NoChange, null -> "NoChange"
     }
 
-    private fun deserializeProgressionResult(value: String?): ProgressionResult? {
-        if (value == null || value == "NoChange") return null
+    private fun deserializeProgressionResult(value: String?): ProgressionResult? = runCatching {
+        if (value == null || value == "NoChange") return@runCatching null
         val parts = value.split(":", limit = 3)
-        return when (parts[0]) {
+        when (parts[0]) {
             "LevelUp" -> {
                 val status = parts.getOrNull(2)?.let { SessionStatus.valueOf(it) }
                 ProgressionResult.LevelUp(FitnessLevel.valueOf(parts[1]), status)
@@ -126,5 +126,5 @@ class TimerStatePersistence @Inject constructor(
             }
             else -> null
         }
-    }
+    }.getOrNull()
 }
