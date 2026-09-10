@@ -167,6 +167,12 @@ class FakeWorkoutRepo : WorkoutRepository {
     override fun getAll(): Flow<List<Workout>> =
         kotlinx.coroutines.flow.flow { emit(workouts.toList()) }
 
+    override fun getCustomWorkouts(): Flow<List<Workout>> =
+        kotlinx.coroutines.flow.flow { emit(workouts.filter { it.isCustom }.sortedByDescending { it.id }) }
+
+    override fun getBuiltInWorkouts(): Flow<List<Workout>> =
+        kotlinx.coroutines.flow.flow { emit(workouts.filterNot { it.isCustom }.sortedBy { it.id }) }
+
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
         workouts.filter { it.difficulty == difficulty }
 
@@ -175,6 +181,21 @@ class FakeWorkoutRepo : WorkoutRepository {
 
     override suspend fun getDifficulties(): List<Difficulty> =
         Difficulty.entries.toList()
+
+    override suspend fun insertCustom(workout: Workout): Long {
+        workouts.add(workout.copy(isCustom = true))
+        return workout.id
+    }
+
+    override suspend fun updateCustom(workout: Workout): Boolean {
+        val index = workouts.indexOfFirst { it.id == workout.id && it.isCustom }
+        if (index == -1) return false
+        workouts[index] = workout.copy(isCustom = true)
+        return true
+    }
+
+    override suspend fun deleteCustom(id: Long): Boolean =
+        workouts.removeIf { it.id == id && it.isCustom }
 
     override suspend fun insert(vararg workouts: Workout) {
         this.workouts.addAll(workouts)

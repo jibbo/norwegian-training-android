@@ -184,6 +184,12 @@ class FakeWorkoutRepository : WorkoutRepository {
 
     override fun getAll(): Flow<List<Workout>> = flow.asStateFlow()
 
+    override fun getCustomWorkouts(): Flow<List<Workout>> =
+        MutableStateFlow(workouts.filter { it.isCustom }.sortedByDescending { it.id }).asStateFlow()
+
+    override fun getBuiltInWorkouts(): Flow<List<Workout>> =
+        MutableStateFlow(workouts.filterNot { it.isCustom }.sortedBy { it.id }).asStateFlow()
+
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
         workouts.filter { it.difficulty == difficulty }
 
@@ -191,6 +197,26 @@ class FakeWorkoutRepository : WorkoutRepository {
 
     override suspend fun getDifficulties(): List<Difficulty> =
         workouts.map { it.difficulty }.distinct()
+
+    override suspend fun insertCustom(workout: Workout): Long {
+        this.workouts.add(workout.copy(isCustom = true))
+        flow.value = this.workouts.toList()
+        return workout.id
+    }
+
+    override suspend fun updateCustom(workout: Workout): Boolean {
+        val index = workouts.indexOfFirst { it.id == workout.id && it.isCustom }
+        if (index == -1) return false
+        workouts[index] = workout.copy(isCustom = true)
+        flow.value = workouts.toList()
+        return true
+    }
+
+    override suspend fun deleteCustom(id: Long): Boolean {
+        val deleted = workouts.removeIf { it.id == id && it.isCustom }
+        flow.value = workouts.toList()
+        return deleted
+    }
 
     override suspend fun insert(vararg workouts: Workout) {
         this.workouts.addAll(workouts)
