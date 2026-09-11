@@ -139,6 +139,9 @@
     <!-- Home -->
     <string name="welcome">Welcome %1$s</string>
     <string name="home_next_up">Your workouts</string>
+    <string name="custom_workout_create_title">Create workout</string>
+    <string name="custom_workout_edit_title">Edit workout</string>
+    <string name="custom_workout_form_placeholder">Workout details will appear here.</string>
     <string name="home_all_workouts">All Workouts</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
     <string name="workout_split" translatable="false">%1$sx%1$s</string>
