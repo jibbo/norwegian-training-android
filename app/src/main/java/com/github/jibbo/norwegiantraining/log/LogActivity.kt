@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
+import com.github.jibbo.norwegiantraining.domain.ManualWorkoutViewModel
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -35,6 +36,7 @@ import java.time.ZonedDateTime
 class LogActivity : BaseActivity() {
 
     private val viewModel: LogViewModel by viewModels()
+    private val manualWorkoutViewModel: ManualWorkoutViewModel by viewModels()
     private var todayStatsUiState = mutableStateOf<TodayStatsUiState>(TodayStatsUiState.Loading)
 
     @Inject lateinit var settingsRepository: SettingsRepository
@@ -62,6 +64,7 @@ class LogActivity : BaseActivity() {
                         )
                 ) { innerPadding ->
                     val uiState = viewModel.uiState.collectAsState()
+                    val manualWorkoutUiState = manualWorkoutViewModel.uiState.collectAsState()
                     when (uiState.value) {
                         is UiState.Loading -> {
                             CircularProgressIndicator()
@@ -72,6 +75,9 @@ class LogActivity : BaseActivity() {
                                 innerPadding = innerPadding,
                                 uiState = uiState.value as UiState.Loaded,
                                 todayStatsUiState = todayStatsUiState.value,
+                                manualWorkoutUiState = manualWorkoutUiState.value,
+                                onOpenManualWorkout = { manualWorkoutViewModel.open() },
+                                onDismissManualWorkout = { manualWorkoutViewModel.dismiss() },
                                 onHideTodayStats = {
                                     settingsRepository.setShowTodayStatsInActivitySection(false)
                                     todayStatsUiState.value = TodayStatsUiState.Hidden
