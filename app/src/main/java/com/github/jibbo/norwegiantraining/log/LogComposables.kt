@@ -1,7 +1,21 @@
 package com.github.jibbo.norwegiantraining.log
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -16,10 +30,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.CardDefaults
@@ -27,8 +37,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +54,9 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.domain.ManualWorkoutType
 import com.github.jibbo.norwegiantraining.domain.ManualWorkoutUiState
+import com.github.jibbo.norwegiantraining.domain.ManualWorkoutField
 import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.Hidden
 import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.InstallHealthConnect
 import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.Loading
@@ -53,6 +68,9 @@ import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -68,6 +86,10 @@ internal fun Logs(
     manualWorkoutUiState: ManualWorkoutUiState,
     onOpenManualWorkout: () -> Unit,
     onDismissManualWorkout: () -> Unit,
+    onSelectManualWorkoutType: (ManualWorkoutType?) -> Unit,
+    onUpdateManualWorkoutDate: (LocalDate) -> Unit,
+    onUpdateManualWorkoutHours: (String) -> Unit,
+    onUpdateManualWorkoutMinutes: (String) -> Unit,
     onHideTodayStats: () -> Unit,
     onRequestPermissions: () -> Unit,
     onOpenHealthConnect: () -> Unit,
@@ -121,22 +143,155 @@ internal fun Logs(
         }
     }
     if (manualWorkoutUiState.sheetVisible) {
+        var showDatePicker by remember { mutableStateOf(false) }
+        val draft = manualWorkoutUiState.draft
         ModalBottomSheet(
             onDismissRequest = onDismissManualWorkout,
             modifier = Modifier.testTag("manual_workout_sheet"),
         ) {
-            Column(modifier = Modifier.padding(24.dp)) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+            ) {
                 Text(
                     text = R.string.manual_workout_title.localizable(),
                     style = Typography.headlineSmall,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = R.string.manual_workout_select_type.localizable())
+                Text(text = R.string.manual_workout_type.localizable())
+                ManualWorkoutType.values().forEach { type ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelectManualWorkoutType(type) }
+                            .padding(vertical = 8.dp)
+                            .testTag("manual_workout_type_${type.name}"),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = manualWorkoutTypeLabel(type),
+                            color = if (draft.type == type) Primary else White,
+                            modifier = Modifier.weight(1f),
+                        )
+                        if (draft.type == type) Text("✓", color = Primary)
+                    }
+                }
+                manualWorkoutUiState.fieldErrors[ManualWorkoutField.TYPE]?.let {
+                    ManualWorkoutErrorText(R.string.manual_workout_error_type_required)
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = R.string.manual_workout_date.localizable(),
+                    style = Typography.bodyMedium,
+                )
+                Text(
+                    text = draft.date.toString(),
+                    color = White,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDatePicker = true }
+                        .padding(vertical = 12.dp)
+                        .testTag("manual_workout_date"),
+                )
+                manualWorkoutUiState.fieldErrors[ManualWorkoutField.DATE]?.let {
+                    ManualWorkoutErrorText(R.string.manual_workout_error_date_out_of_range)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = R.string.manual_workout_type.localizable())
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    ManualWorkoutDurationField(
+                        value = draft.hours,
+                        label = R.string.manual_workout_duration_hours.localizable(),
+                        testTag = "manual_workout_hours",
+                        onValueChange = onUpdateManualWorkoutHours,
+                    )
+                    Text(":", style = Typography.titleLarge)
+                    ManualWorkoutDurationField(
+                        value = draft.minutes,
+                        label = R.string.manual_workout_duration_minutes.localizable(),
+                        testTag = "manual_workout_minutes",
+                        onValueChange = onUpdateManualWorkoutMinutes,
+                    )
+                }
                 Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+        if (showDatePicker) {
+            val today = LocalDate.now()
+            val minimum = LocalDate.of(today.year, 1, 1)
+            val pickerState = rememberDatePickerState(
+                initialSelectedDateMillis = manualWorkoutDateMillis(draft.date),
+                selectableDates = object : androidx.compose.material3.SelectableDates {
+                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                        val date = Instant.ofEpochMilli(utcTimeMillis)
+                            .atZone(ZoneId.systemDefault()).toLocalDate()
+                        return !date.isBefore(minimum) && !date.isAfter(today)
+                    }
+                },
+            )
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        pickerState.selectedDateMillis?.let { millis ->
+                            onUpdateManualWorkoutDate(
+                                Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate(),
+                            )
+                        }
+                        showDatePicker = false
+                    }) { Text(R.string.ok.localizable()) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text(R.string.close.localizable())
+                    }
+                },
+            ) {
+                DatePicker(state = pickerState, showModeToggle = false)
             }
         }
     }
 }
+
+@Composable
+private fun ManualWorkoutDurationField(
+    value: String,
+    label: String,
+    testTag: String,
+    onValueChange: (String) -> Unit,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { onValueChange(it.filter(Char::isDigit).take(2)) },
+        label = { Text(label) },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        singleLine = true,
+        modifier = Modifier.testTag(testTag).fillMaxWidth(0.42f),
+    )
+}
+
+@Composable
+private fun ManualWorkoutErrorText(@androidx.annotation.StringRes resourceId: Int) {
+    Text(text = resourceId.localizable(), color = Primary, style = Typography.bodySmall)
+}
+
+@Composable
+private fun manualWorkoutTypeLabel(type: ManualWorkoutType): String = when (type) {
+    ManualWorkoutType.RUN -> R.string.manual_workout_type_run.localizable()
+    ManualWorkoutType.STRENGTH_TRAINING -> R.string.manual_workout_type_strength_training.localizable()
+    ManualWorkoutType.CYCLING -> R.string.manual_workout_type_cycling.localizable()
+    ManualWorkoutType.SWIMMING -> R.string.manual_workout_type_swimming.localizable()
+    ManualWorkoutType.WALKING -> R.string.manual_workout_type_walking.localizable()
+    ManualWorkoutType.HIIT -> R.string.manual_workout_type_hiit.localizable()
+}
+
+private fun manualWorkoutDateMillis(date: LocalDate): Long =
+    date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
 @Composable
 private fun TodayStatsArea(
@@ -385,7 +540,7 @@ fun Preview() {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Logs(innerPadding, lol,
                 //Stats(7_452), {}, {}, {},
-                RequestHealthConnectPermissions, ManualWorkoutUiState(), {}, {}, {}, {}, {}
+                RequestHealthConnectPermissions, ManualWorkoutUiState(), {}, {}, {}, {}, {}, {}, {}, {}, {}
 
           )
         }

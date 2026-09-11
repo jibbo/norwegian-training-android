@@ -35,6 +35,10 @@ class LogManualWorkoutSheetTest {
                     onDismissManualWorkout = {
                         manualState = manualState.copy(sheetVisible = false)
                     },
+                    onSelectManualWorkoutType = {},
+                    onUpdateManualWorkoutDate = {},
+                    onUpdateManualWorkoutHours = {},
+                    onUpdateManualWorkoutMinutes = {},
                     onHideTodayStats = {},
                     onRequestPermissions = {},
                     onOpenHealthConnect = {},
@@ -45,5 +49,6 @@ class LogManualWorkoutSheetTest {
         composeRule.onNodeWithTag("add_manual_workout_button").performClick()
 
         composeRule.onNodeWithTag("manual_workout_sheet").assertIsDisplayed()
+        composeRule.onNodeWithTag("manual_workout_type_CYCLING").assertIsDisplayed()
     }
 }
