@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.data
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
@@ -103,10 +104,15 @@ abstract class AppDatabase : RoomDatabase() {
         override fun onOpen(db: SupportSQLiteDatabase) {
             super.onOpen(db)
             CoroutineScope(Dispatchers.IO).launch {
-                // The database is the source of truth; do not rely on a local flag
-                // that can be missing after an upgrade or restored independently.
-                if (workoutDaoProvider.get().firstWorkout() == null) {
+                // TODO clean and use a Single source
+                val sharedPreferences =
+                    context.getSharedPreferences(
+                        "norwegian_training_prefs",
+                        Context.MODE_PRIVATE
+                    )
+                if (sharedPreferences.getString("prepopulate", null) == null) {
                     prepopulateWorkouts()
+                    sharedPreferences.edit { putString("prepopulate", "done") }
                 }
             }
         }
@@ -150,8 +156,9 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 
 val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE Workout ADD COLUMN isCustom INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("ALTER TABLE Workout ADD COLUMN icon TEXT")
+        db.execSQL("ALTER TABLE Session ADD COLUMN is_manual INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE Session ADD COLUMN name TEXT NOT NULL DEFAULT 'HIIT'")
+        db.execSQL("ALTER TABLE Session ADD COLUMN duration INTEGER NOT NULL DEFAULT 0")
     }
 }
 
