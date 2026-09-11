@@ -63,7 +63,7 @@ class ApplyProgressionUseCase @Inject constructor(
         else
             twentyEightDaysAgo
         val sessions = sessionRepository.getSessionsInRange(from, now.time)
-            .filter { it.getStatus() != SessionStatus.BAD }
+            .filter { !it.isManual && it.getStatus() != SessionStatus.BAD }
 
         val fromMillis = from.time
         val qualifyingWeeks = sessions

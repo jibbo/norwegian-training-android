@@ -89,7 +89,13 @@ class UseCaseTests {
         sessions.insertSessions(
             listOf(
                 Session(date = start),
-                Session(date = Date(start.time + 24L * 60 * 60 * 1000))
+                Session(
+                    date = Date(start.time + 24L * 60 * 60 * 1000),
+                    isManual = true,
+                    name = "Run",
+                    duration = 30L,
+                    phasesEnded = 1,
+                )
             )
         )
         val useCase = GetWeeklySessionsUseCase(sessions)
@@ -162,6 +168,42 @@ class UseCaseTests {
 
         assertEquals(ProgressionResult.NextWorkout::class, result::class)
         assertEquals(2L, settings.getRecommendedWorkoutId())
+    }
+
+    @Test
+    fun applyProgressionIgnoresManualSessions() = runTest {
+        val sessions = FakeSessionRepository()
+        val settings = FakeSettingsRepository().apply {
+            setFitnessLevel(FitnessLevel.BEGINNER)
+            setRecommendedWorkoutId(1L)
+        }
+        val workouts = FakeWorkoutRepository()
+        workouts.insert(
+            Workout(1, "A", Difficulty.BEGINNER, "10s-20s"),
+            Workout(2, "B", Difficulty.BEGINNER, "10s-20s")
+        )
+        val now = Calendar.getInstance()
+        repeat(4) { week ->
+            repeat(3) { day ->
+                sessions.insertManualSession(
+                    Session(
+                        phasesEnded = 1,
+                        date = Date(now.timeInMillis - ((week * 7 + day + 1).toLong() * 24 * 60 * 60 * 1000)),
+                        isManual = true,
+                        name = "Run",
+                        duration = 30L,
+                    )
+                )
+            }
+        }
+
+        val result = ApplyProgressionUseCase(sessions, workouts, settings)(
+            1L,
+            Session(phasesEnded = 8, skipCount = 0, date = Date()),
+        )
+
+        assertEquals(ProgressionResult.NoChange::class, result::class)
+        assertEquals(1L, settings.getRecommendedWorkoutId())
     }
 
     @Test
