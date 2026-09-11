@@ -52,7 +52,7 @@ class CustomWorkoutFormScreenTest {
     fun fieldsCanBeEditedAndBackCallsCallback() {
         val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo())
         var backPressed = false
-        setContent(viewModel, null) { backPressed = true }
+        setContent(viewModel, null, onBack = { backPressed = true })
 
         composeRule.onNodeWithText("Name").performTextReplacement("Morning")
         composeRule.onNodeWithText("Morning").assertIsDisplayed()
@@ -95,17 +95,100 @@ class CustomWorkoutFormScreenTest {
         composeRule.onNodeWithText("invalid").assertIsDisplayed()
     }
 
+    @Test
+    fun deleteConfirmationCanBeCancelled() {
+        val repository = repositoryWithCustomWorkout()
+        val viewModel = CustomWorkoutViewModel(repository)
+        setContent(viewModel, 42L)
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithContentDescription("Delete custom workout").performClick()
+        composeRule.onNodeWithText("Delete workout?").assertIsDisplayed()
+        composeRule.onNodeWithText("Cancel").performClick()
+
+        composeRule.onAllNodesWithText("Delete workout?").assertCountEquals(0)
+        check(runBlocking { repository.getById(42L) != null })
+    }
+
+    @Test
+    fun confirmedDeleteRemovesWorkoutAndCallsBack() {
+        val repository = repositoryWithCustomWorkout()
+        val viewModel = CustomWorkoutViewModel(repository)
+        var backPressed = false
+        setContent(viewModel, 42L, onBack = { backPressed = true })
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithContentDescription("Delete custom workout").performClick()
+        composeRule.onNodeWithText("Delete").performClick()
+        composeRule.waitForIdle()
+
+        check(backPressed)
+        check(runBlocking { repository.getById(42L) == null })
+    }
+
+    @Test
+    fun activeSaveShowsLocalizedBlockingAlert() {
+        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo())
+        viewModel.updateName("Active workout")
+        setContent(
+            viewModel,
+            null,
+            timerState = MutableStateFlow(WorkoutTimerState(workoutId = 42L)),
+        )
+
+        composeRule.onNodeWithText("Save").performClick()
+        composeRule.onNodeWithText("Workout in progress").assertIsDisplayed()
+        composeRule.onNodeWithText("Finish or close the active workout before saving or deleting a custom workout.")
+            .assertIsDisplayed()
+        composeRule.onNodeWithText("OK").performClick()
+        composeRule.onAllNodesWithText("Workout in progress").assertCountEquals(0)
+    }
+
+    @Test
+    fun activeDeleteShowsLocalizedBlockingAlert() {
+        val viewModel = CustomWorkoutViewModel(repositoryWithCustomWorkout())
+        setContent(
+            viewModel,
+            42L,
+            timerState = MutableStateFlow(WorkoutTimerState(workoutId = 42L)),
+        )
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithContentDescription("Delete custom workout").performClick()
+        composeRule.onNodeWithText("Delete").performClick()
+        composeRule.onNodeWithText("Workout in progress").assertIsDisplayed()
+        composeRule.onNodeWithText("OK").performClick()
+        composeRule.onAllNodesWithText("Workout in progress").assertCountEquals(0)
+    }
+
+    private fun repositoryWithCustomWorkout(): FakeWorkoutRepo {
+        val repository = FakeWorkoutRepo()
+        runBlocking {
+            repository.insert(
+                Workout(
+                    id = 42L,
+                    name = "Existing",
+                    difficulty = Difficulty.BEGINNER,
+                    content = "5m-30s-15s-5m",
+                    isCustom = true,
+                ),
+            )
+        }
+        return repository
+    }
+
     private fun setContent(
         viewModel: CustomWorkoutViewModel,
         workoutId: Long?,
         onBack: () -> Unit = {},
+        timerState: MutableStateFlow<WorkoutTimerState> = MutableStateFlow(WorkoutTimerState()),
     ) {
         composeRule.setContent {
             NorwegianTrainingTheme(darkTheme = true) {
                 CustomWorkoutFormScreen(
                     viewModel = viewModel,
                     workoutId = workoutId,
-                    timerState = MutableStateFlow(WorkoutTimerState()),
+                    timerState = timerState,
                     onBack = onBack,
                 )
             }
