@@ -40,6 +40,7 @@ class HomeViewModel @Inject constructor(
     val uiStates = states.asStateFlow()
 
     private val isTrial = isFreeTrial()
+    private var hasEntitlement = false
 
     init {
         viewModelScope.launch {
@@ -74,15 +75,18 @@ class HomeViewModel @Inject constructor(
     }
 
     fun workoutClicked(id: Long) {
-        viewModelScope.launch {
-            when {
-                isTrial -> {
-                    events.emit(UiCommands.SHOW_WORKOUT(id))
-                }
+        val workout = (states.value as? UiState.Loaded)
+            ?.workouts
+            ?.values
+            ?.flatten()
+            ?.firstOrNull { it.id == id }
+            ?: return
 
-                else -> {
-                    events.emit(UiCommands.SHOW_WORKOUT(id))
-                }
+        viewModelScope.launch {
+            if (canLaunchWorkout(workout, isTrial, hasEntitlement)) {
+                events.emit(UiCommands.SHOW_WORKOUT(id))
+            } else {
+                events.emit(UiCommands.SHOW_PAYWALL)
             }
         }
     }
@@ -94,14 +98,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
-        val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
-        if (hasNotPurchased) {
-            if (!isTrial && isOnboardingCompleted()) {
-                viewModelScope.launch {
-                    events.emit(UiCommands.SHOW_PAYWALL)
-                }
-            }
-        }
+        hasEntitlement = customerInfo.entitlements.active.isNotEmpty()
     }
 
     private fun showWorkouts(workouts: Map<Difficulty, List<Workout>>) =
