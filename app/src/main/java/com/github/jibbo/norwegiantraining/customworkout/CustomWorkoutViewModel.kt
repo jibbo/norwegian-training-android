@@ -2,6 +2,7 @@ package com.github.jibbo.norwegiantraining.customworkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.jibbo.norwegiantraining.data.Difficulty
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutDraft
@@ -9,6 +10,7 @@ import com.github.jibbo.norwegiantraining.domain.CustomWorkoutField
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutValidationError
 import com.github.jibbo.norwegiantraining.domain.calculateCustomWorkoutDifficulty
 import com.github.jibbo.norwegiantraining.domain.generateCustomWorkoutContent
+import com.github.jibbo.norwegiantraining.domain.parseCustomWorkoutContent
 import com.github.jibbo.norwegiantraining.domain.validateCustomWorkoutDraft
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,13 +29,18 @@ enum class CustomWorkoutFormMode {
 enum class CustomWorkoutPersistenceError {
     DATABASE_FAILURE,
     NOT_FOUND,
+    MALFORMED_CONTENT,
     ACTIVE_WORKOUT,
 }
 
 data class CustomWorkoutFormState(
     val workoutId: Long? = null,
     val mode: CustomWorkoutFormMode = CustomWorkoutFormMode.CREATE,
+    val isCustom: Boolean = true,
     val draft: CustomWorkoutDraft = CustomWorkoutDraft(),
+    val loadedDraft: CustomWorkoutDraft? = null,
+    val loadedContent: String? = null,
+    val loadedDifficulty: Difficulty? = null,
     val validationErrors: Map<CustomWorkoutField, CustomWorkoutValidationError> = emptyMap(),
     val persistenceError: CustomWorkoutPersistenceError? = null,
     val isLoading: Boolean = false,
@@ -86,12 +93,30 @@ class CustomWorkoutViewModel @Inject constructor(
                         persistenceError = CustomWorkoutPersistenceError.NOT_FOUND,
                     )
                 } else {
-                    states.value = states.value.copy(
-                        isLoading = false,
-                        draft = states.value.draft.copy(
+                    val parsedContent = parseCustomWorkoutContent(workout.content)
+                    val draft = parsedContent?.let {
+                        states.value.draft.copy(
                             name = workout.name,
                             icon = workout.icon,
-                        ),
+                            workMinutes = it.workMinutes,
+                            workSeconds = it.workSeconds,
+                            restMinutes = it.restMinutes,
+                            restSeconds = it.restSeconds,
+                            rounds = it.rounds,
+                        )
+                    }
+                    states.value = states.value.copy(
+                        isLoading = false,
+                        isCustom = workout.isCustom,
+                        draft = draft ?: states.value.draft.copy(name = workout.name, icon = workout.icon),
+                        loadedDraft = draft,
+                        loadedContent = workout.content,
+                        loadedDifficulty = workout.difficulty,
+                        persistenceError = if (draft == null) {
+                            CustomWorkoutPersistenceError.MALFORMED_CONTENT
+                        } else {
+                            null
+                        },
                     )
                 }
             }
@@ -123,7 +148,10 @@ class CustomWorkoutViewModel @Inject constructor(
     }
 
     fun requestDelete() {
-        if (states.value.mode == CustomWorkoutFormMode.EDIT && states.value.workoutId != null) {
+        if (states.value.mode == CustomWorkoutFormMode.EDIT &&
+            states.value.isCustom &&
+            states.value.workoutId != null
+        ) {
             states.value = states.value.copy(deleteRequested = true)
         }
     }
@@ -189,13 +217,23 @@ class CustomWorkoutViewModel @Inject constructor(
             return null
         }
         if (states.value.isSaving) return null
+        if (states.value.mode == CustomWorkoutFormMode.EDIT &&
+            states.value.persistenceError == CustomWorkoutPersistenceError.MALFORMED_CONTENT
+        ) return null
 
         val validation = validateCustomWorkoutDraft(states.value.draft)
         states.value = states.value.copy(validationErrors = validation.errors)
         if (!validation.isValid) return null
 
-        val content = generateCustomWorkoutContent(validation)
-        val difficulty = calculateCustomWorkoutDifficulty(validation)
+        val currentState = states.value
+        val unchangedEdit = currentState.mode == CustomWorkoutFormMode.EDIT &&
+            currentState.draft == currentState.loadedDraft
+        val content = if (unchangedEdit) currentState.loadedContent else generateCustomWorkoutContent(validation)
+        val difficulty = if (unchangedEdit || !currentState.isCustom) {
+            currentState.loadedDifficulty
+        } else {
+            calculateCustomWorkoutDifficulty(validation)
+        }
         if (content == null || difficulty == null) {
             states.value = states.value.copy(
                 persistenceError = CustomWorkoutPersistenceError.DATABASE_FAILURE,
@@ -203,7 +241,6 @@ class CustomWorkoutViewModel @Inject constructor(
             return null
         }
 
-        val currentState = states.value
         states.value = currentState.copy(isSaving = true, persistenceError = null)
         return viewModelScope.launch {
             runCatching {
@@ -212,14 +249,14 @@ class CustomWorkoutViewModel @Inject constructor(
                     name = validation.trimmedName.ifBlank { fallbackName },
                     difficulty = difficulty,
                     content = content,
-                    isCustom = true,
+                    isCustom = if (currentState.mode == CustomWorkoutFormMode.CREATE) true else currentState.isCustom,
                     icon = validation.icon,
                 )
                 if (currentState.mode == CustomWorkoutFormMode.CREATE) {
                     workoutRepository.insertCustom(workout)
                     true
                 } else {
-                    workoutRepository.updateCustom(workout)
+                    workoutRepository.updateById(workout)
                 }
             }.onSuccess { updated ->
                 if (updated) {

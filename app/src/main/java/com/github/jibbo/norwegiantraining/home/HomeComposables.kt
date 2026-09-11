@@ -656,16 +656,12 @@ private fun WorkoutCard(
     viewModel: HomeViewModel,
 ) {
     val cardShape = RoundedCornerShape(12.dp)
-    val editLabel = stringResource(R.string.home_edit_custom_workout)
-    val interactionModifier = if (workout.isCustom) {
-        Modifier.combinedClickable(
-            onClick = { viewModel.workoutClicked(workout.id) },
-            onLongClick = { viewModel.editWorkoutClicked(workout.id) },
-            onLongClickLabel = editLabel,
-        )
-    } else {
-        Modifier.clickable { viewModel.workoutClicked(workout.id) }
-    }
+    val editLabel = stringResource(R.string.home_edit_workout)
+    val interactionModifier = Modifier.combinedClickable(
+        onClick = { viewModel.workoutClicked(workout.id) },
+        onLongClick = { viewModel.editWorkoutClicked(workout.id) },
+        onLongClickLabel = editLabel,
+    )
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = Color.Black

@@ -216,11 +216,11 @@ class FakeWorkoutRepository : WorkoutRepository {
         return stored.id
     }
 
-    override suspend fun updateCustom(workout: Workout): Boolean {
+    override suspend fun updateById(workout: Workout): Boolean {
         maybeFail()
-        val index = workouts.indexOfFirst { it.id == workout.id && it.isCustom }
+        val index = workouts.indexOfFirst { it.id == workout.id }
         if (index == -1) return false
-        workouts[index] = workout.copy(isCustom = true)
+        workouts[index] = workout
         publish()
         return true
     }
