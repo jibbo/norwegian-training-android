@@ -157,8 +157,11 @@ private fun CustomWorkoutFormShell(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding)
-            .padding(16.dp),
+            .padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding(),
+            )
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Spacer(Modifier.weight(1f))
@@ -171,6 +174,7 @@ private fun CustomWorkoutFormShell(
                     keyboardType = KeyboardType.ShortMessage,
                 ),
                 singleLine = true,
+                maxLines = 1,
                 label = { Text(stringResource(R.string.custom_workout_icon)) },
                 isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
                 modifier = Modifier.weight(0.3f)
