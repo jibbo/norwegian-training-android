@@ -111,7 +111,7 @@ fun CustomWorkoutFormScreen(
             TopAppBar(
                 title = { Text(stringResource(title)) },
                 actions = {
-                    if (state.mode == CustomWorkoutFormMode.EDIT) {
+                    if (state.mode == CustomWorkoutFormMode.EDIT && state.isCustom) {
                         IconButton(
                             onClick = viewModel::requestDelete,
                             modifier = Modifier

@@ -160,7 +160,7 @@
     <string name="custom_workout_rest_seconds">Rest seconds</string>
     <string name="custom_workout_rounds">Rounds</string>
     <string name="custom_workout_save_error">Could not save workout.</string>
-    <string name="home_edit_custom_workout">Edit custom workout</string>
+    <string name="home_edit_workout">Edit workout</string>
     <string name="home_all_workouts">All Workouts</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
     <string name="workout_split" translatable="false">%1$sx%1$s</string>
