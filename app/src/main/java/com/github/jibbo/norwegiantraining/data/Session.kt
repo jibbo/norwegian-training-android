@@ -39,7 +39,10 @@ data class Session(
     var id: Long = 0,
     @ColumnInfo(name = "phases_ended") val phasesEnded: Int = 0,
     @ColumnInfo(name = "skip_count") val skipCount: Int = 0,
-    @ColumnInfo(name = "date") val date: Date = Date()
+    @ColumnInfo(name = "date") val date: Date = Date(),
+    @ColumnInfo(name = "is_manual") val isManual: Boolean = false,
+    @ColumnInfo(name = "name") val name: String = "HIIT",
+    @ColumnInfo(name = "duration") val duration: Long = 0L
 )
 
 class SessionConverters {
