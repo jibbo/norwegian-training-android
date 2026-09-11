@@ -99,7 +99,7 @@
     <string name="onboarding_step_invite_friends_body">Des études montrent que s\'entraîner à deux ou en groupe augmente la régularité jusqu\'à 600%%</string>
     <string name="share_msg">Je viens de commencer mes intervalles 4x4 ! Essayez Norwy avec moi : https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
     <string name="welcome">Bienvenue %1$s</string>
-    <string name="home_next_up">Prochain</string>
+    <string name="home_next_up">Vos entraînements</string>
     <string name="home_all_workouts">Tous les entraînements</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
     <string name="workout_category_beginner">Débutant</string>

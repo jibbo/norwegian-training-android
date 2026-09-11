@@ -105,7 +105,7 @@
     <!-- Home -->
     <string name="onboarding_step_name_placeholder">Su nombre</string>
     <string name="welcome">Hola %1$s</string>
-    <string name="home_next_up">Siguiente</string>
+    <string name="home_next_up">Tus entrenamientos</string>
     <string name="home_all_workouts">Todos los entrenamientos</string>
     <string name="workout_time">⏱️ %1$s minutos</string>
     <string name="workout_category_beginner">Principiante</string>

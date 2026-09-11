@@ -99,7 +99,7 @@
     <string name="onboarding_step_invite_friends_body">Studien zeigen, dass Training mit Partnern oder in einer Gruppe die Beständigkeit um bis zu 600%% erhöht</string>
     <string name="share_msg">Ich habe gerade mit meinem 4x4-Intervalltraining begonnen! Probier Norwy mit mir aus: https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
     <string name="welcome">Willkommen %1$s</string>
-    <string name="home_next_up">Nächste</string>
+    <string name="home_next_up">Deine Workouts</string>
     <string name="home_all_workouts">Alle Trainings</string>
     <string name="workout_time">⏱️ %1$s Minuten</string>
     <string name="workout_category_beginner">Anfänger</string>
