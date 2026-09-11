@@ -39,6 +39,8 @@ data class CustomWorkoutFormState(
     val isSaving: Boolean = false,
     val saved: Boolean = false,
     val deleteRequested: Boolean = false,
+    val isDeleting: Boolean = false,
+    val deleted: Boolean = false,
     val notFound: Boolean = false,
 )
 
@@ -123,6 +125,41 @@ class CustomWorkoutViewModel @Inject constructor(
 
     fun clearDeleteRequest() {
         states.value = states.value.copy(deleteRequested = false)
+    }
+
+    fun delete(): Job? {
+        val currentState = states.value
+        val workoutId = currentState.workoutId
+        if (currentState.mode != CustomWorkoutFormMode.EDIT ||
+            workoutId == null ||
+            currentState.isDeleting
+        ) return null
+
+        states.value = currentState.copy(
+            deleteRequested = false,
+            isDeleting = true,
+            persistenceError = null,
+        )
+        return viewModelScope.launch {
+            runCatching { workoutRepository.deleteCustom(workoutId) }
+                .onSuccess { deleted ->
+                    if (deleted) {
+                        states.value = states.value.copy(isDeleting = false, deleted = true)
+                    } else {
+                        states.value = states.value.copy(
+                            isDeleting = false,
+                            notFound = true,
+                            persistenceError = CustomWorkoutPersistenceError.NOT_FOUND,
+                        )
+                    }
+                }
+                .onFailure {
+                    states.value = states.value.copy(
+                        isDeleting = false,
+                        persistenceError = CustomWorkoutPersistenceError.DATABASE_FAILURE,
+                    )
+                }
+        }
     }
 
     fun save(): Job? {
