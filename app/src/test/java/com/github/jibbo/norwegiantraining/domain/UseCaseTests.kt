@@ -4,6 +4,7 @@ import com.github.jibbo.norwegiantraining.data.Difficulty
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.log.SessionStatus
+import com.github.jibbo.norwegiantraining.log.SessionsBrain
 import com.github.jibbo.norwegiantraining.testutils.FakeSessionRepository
 import com.github.jibbo.norwegiantraining.testutils.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.testutils.FakeWorkoutRepository
@@ -106,6 +107,74 @@ class UseCaseTests {
         assertTrue(result[0] != null)
     }
 
+    @Test
+    fun manualOnlySessionAppearsInItsWeeklyDaySlotAsActive() = runTest {
+        val sessions = FakeSessionRepository()
+        val start = weekStart()
+        val manual = manualSession(Date(start.time + 2L * DAY_MILLIS))
+        sessions.insertManualSession(manual)
+
+        val result = GetWeeklySessionsUseCase(sessions)()
+
+        assertEquals(manual, result[2])
+        assertEquals(SessionStatus.GOOD, SessionsBrain.getStatus(manual))
+        assertEquals(1, manual.phasesEnded)
+        assertEquals(0, manual.skipCount)
+    }
+
+    @Test
+    fun pastManualSessionAppearsInTheCorrectWeeklyDaySlot() = runTest {
+        val sessions = FakeSessionRepository()
+        val start = weekStart()
+        val manual = manualSession(Date(start.time + DAY_MILLIS))
+        sessions.insertManualSession(manual)
+
+        val result = GetWeeklySessionsUseCase(sessions)()
+
+        assertEquals(null, result[0])
+        assertEquals(manual, result[1])
+        assertEquals(null, result[2])
+    }
+
+    @Test
+    fun duplicateManualRowsAndNorwySessionOnOneDateProduceOneActiveDay() = runTest {
+        val sessions = FakeSessionRepository()
+        val date = Date(weekStart().time + 3L * DAY_MILLIS)
+        val firstManual = manualSession(date, id = 1L)
+        val secondManual = manualSession(date, id = 2L)
+        val norwy = Session(id = 3L, date = date, phasesEnded = 8, skipCount = 0)
+        sessions.insertManualSession(firstManual)
+        sessions.insertManualSession(secondManual)
+        sessions.insertSession(norwy)
+
+        val result = GetWeeklySessionsUseCase(sessions)()
+
+        assertEquals(1, result.count { it != null })
+        assertEquals(date, result[3]?.date)
+        assertEquals(SessionStatus.GOOD, SessionsBrain.getStatus(result[3]))
+    }
+
+    private fun weekStart(): Date = Calendar.getInstance().apply {
+        set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.time
+
+    private fun manualSession(date: Date, id: Long = 0L) = Session(
+        id = id,
+        date = date,
+        isManual = true,
+        name = "Run",
+        duration = 30L,
+        phasesEnded = 1,
+        skipCount = 0,
+    )
+
+    private companion object {
+        const val DAY_MILLIS = 24L * 60 * 60 * 1000
+    }
     @Test
     fun freeTrialAndOnboardingAndUsernameUseCasesExposeRepositoryValues() {
         val settings = FakeSettingsRepository().apply {
