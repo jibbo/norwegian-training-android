@@ -146,6 +146,22 @@
     <string name="manual_workout_type_swimming">Swimming</string>
     <string name="manual_workout_type_walking">Walking</string>
     <string name="manual_workout_type_hiit">HIIT</string>
+    <string name="manual_workout_title">Log workout</string>
+    <string name="manual_workout_type">Workout type</string>
+    <string name="manual_workout_select_type">Select a workout type</string>
+    <string name="manual_workout_date">Date</string>
+    <string name="manual_workout_duration_hours">Hours</string>
+    <string name="manual_workout_duration_minutes">Minutes</string>
+    <string name="manual_workout_save">Save</string>
+    <string name="manual_workout_error_type_required">Select a workout type</string>
+    <string name="manual_workout_error_date_out_of_range">Choose a date from January 1 through today</string>
+    <string name="manual_workout_error_hours_format">Enter exactly two digits</string>
+    <string name="manual_workout_error_hours_out_of_range">Enter hours from 00 to 24</string>
+    <string name="manual_workout_error_minutes_format">Enter exactly two digits</string>
+    <string name="manual_workout_error_minutes_out_of_range">Enter minutes from 00 to 59</string>
+    <string name="manual_workout_error_duration_zero">Duration must be at least one minute</string>
+    <string name="manual_workout_error_duration_too_long">Duration cannot exceed 24:00</string>
+    <string name="manual_workout_error_save_failed">Could not save workout. Try again.</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
     <string name="workout_split" translatable="false">%1$sx%1$s</string>
     <string name="workout_kCal" translatable="false">🔥 ~%1$s kCal</string>
