@@ -114,10 +114,9 @@ private fun CustomWorkoutFormShell(
             isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
             modifier = Modifier.fillMaxWidth(),
         )
-        OutlinedTextField(
-            value = state.draft.icon.orEmpty(),
-            onValueChange = viewModel::updateIcon,
-            label = { Text(stringResource(R.string.custom_workout_icon)) },
+        CustomWorkoutIconPicker(
+            selectedIcon = state.draft.icon,
+            onIconSelected = viewModel::updateIcon,
             modifier = Modifier.fillMaxWidth(),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
