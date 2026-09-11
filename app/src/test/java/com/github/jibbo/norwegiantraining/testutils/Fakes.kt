@@ -148,6 +148,7 @@ class FakeSettingsRepository : SettingsRepository {
 class FakeSessionRepository : SessionRepository {
     private val sessions = mutableListOf<Session>()
     private val todaySession = MutableStateFlow<Session?>(null)
+    var manualInsertFailure: Throwable? = null
 
     override suspend fun getSessions(limit: Int, offset: Int): List<Session> =
         sessions.sortedByDescending { it.date }.drop(offset).take(limit)
@@ -173,6 +174,7 @@ class FakeSessionRepository : SessionRepository {
     }
 
     override suspend fun insertManualSession(session: Session): Long {
+        manualInsertFailure?.let { throw it }
         sessions.add(session)
         todaySession.value = session
         return session.id
