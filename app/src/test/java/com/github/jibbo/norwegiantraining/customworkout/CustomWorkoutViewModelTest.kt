@@ -136,6 +136,45 @@ class CustomWorkoutViewModelTest {
         assertEquals(CustomWorkoutValidationError.OUT_OF_RANGE, viewModel.uiState.value.validationErrors[CustomWorkoutField.ROUNDS])
     }
 
+    @Test
+    fun `create database failure is exposed without reporting success`() = runTest {
+        val repository = FakeWorkoutRepository().apply { failure = IllegalStateException("db") }
+        val viewModel = CustomWorkoutViewModel(repository)
+
+        viewModel.save()?.join()
+
+        assertFalse(viewModel.uiState.value.saved)
+        assertEquals(CustomWorkoutPersistenceError.DATABASE_FAILURE, viewModel.uiState.value.persistenceError)
+        assertFalse(viewModel.uiState.value.isSaving)
+    }
+
+    @Test
+    fun `edit database failure is exposed without reporting success`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L))
+        val viewModel = CustomWorkoutViewModel(repository)
+        viewModel.initialize(42L)?.join()
+        repository.failure = IllegalStateException("db")
+
+        viewModel.save()?.join()
+
+        assertFalse(viewModel.uiState.value.saved)
+        assertEquals(CustomWorkoutPersistenceError.DATABASE_FAILURE, viewModel.uiState.value.persistenceError)
+        assertFalse(viewModel.uiState.value.isSaving)
+    }
+
+    @Test
+    fun `edit load database failure is not reported as missing`() = runTest {
+        val repository = FakeWorkoutRepository().apply { failure = IllegalStateException("db") }
+        val viewModel = CustomWorkoutViewModel(repository)
+
+        viewModel.initialize(42L)?.join()
+
+        assertFalse(viewModel.uiState.value.notFound)
+        assertEquals(CustomWorkoutPersistenceError.DATABASE_FAILURE, viewModel.uiState.value.persistenceError)
+        assertFalse(viewModel.uiState.value.isLoading)
+    }
+
     private fun workout(id: Long) = Workout(
         id = id,
         name = "Existing",
