@@ -167,21 +167,30 @@ internal fun Logs(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = R.string.manual_workout_type.localizable())
-                ManualWorkoutType.values().forEach { type ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onSelectManualWorkoutType(type) }
-                            .padding(vertical = 8.dp)
-                            .testTag("manual_workout_type_${type.name}"),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = manualWorkoutTypeLabel(type),
-                            color = if (draft.type == type) Primary else White,
-                            modifier = Modifier.weight(1f),
-                        )
-                        if (draft.type == type) Text("✓", color = Primary)
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    ManualWorkoutType.values().forEach { type ->
+                        val selected = draft.type == type
+                        Button(
+                            onClick = { onSelectManualWorkoutType(type) },
+                            modifier = Modifier
+                                .fillMaxWidth(0.48f)
+                                .testTag("manual_workout_type_${type.name}"),
+                            contentPadding = PaddingValues(horizontal = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (selected) Primary else Gray,
+                                contentColor = if (selected) Black else White,
+                            ),
+                        ) {
+                            Text(
+                                text = manualWorkoutTypeLabel(type),
+                                textAlign = TextAlign.Center,
+                                maxLines = 2,
+                            )
+                        }
                     }
                 }
                 manualWorkoutUiState.fieldErrors[ManualWorkoutField.TYPE]?.let {
