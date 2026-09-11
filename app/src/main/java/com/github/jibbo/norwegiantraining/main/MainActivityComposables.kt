@@ -73,7 +73,7 @@ internal fun MainView(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(
-                    top = innerPadding.calculateTopPadding() + 8.dp,
+                    top = innerPadding.calculateTopPadding(),
                     bottom = innerPadding.calculateBottomPadding()
                 )
                 .padding(horizontal = 16.dp)

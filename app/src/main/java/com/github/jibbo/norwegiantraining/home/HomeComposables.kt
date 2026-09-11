@@ -37,6 +37,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
@@ -50,9 +55,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.Toolbar
@@ -66,6 +73,7 @@ import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
 import com.github.jibbo.norwegiantraining.domain.GetUsername
+import com.github.jibbo.norwegiantraining.domain.displayLabel
 import com.github.jibbo.norwegiantraining.domain.GetWeeklySessionsUseCase
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
@@ -285,9 +293,7 @@ private fun PortraitLayout(
             CircularProgressIndicator()
         }
         is UiState.Loaded -> {
-            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
-            val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
-            val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
+            val projection = state.workoutProjection
 
             Column(
                 modifier = Modifier
@@ -312,40 +318,49 @@ private fun PortraitLayout(
                         StreakWidget(viewModel)
                     }
 
-                    // "Next up" section spanning full width
+                    // Your workouts section spanning full width
                     item(span = { GridItemSpan(maxLineSpan) }) {
-                        Text(
-                            text = R.string.home_next_up.localizable(),
-                            style = Typography.titleLarge,
-                            fontWeight = FontWeight.Normal,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = R.string.home_next_up.localizable(),
+                                style = Typography.titleLarge,
+                                fontWeight = FontWeight.Normal,
+                            )
+                            TextButton(onClick = {
+                                viewModel.createWorkoutClicked()
+                            }) {
+                                Text(
+                                    text = "+",
+                                    fontSize = 32.sp,
+                                    color = White,
+                                    fontWeight = FontWeight.Normal,
+                                )
+                            }
+                        }
                     }
 
-                    // Recommended workout or first workout
-                    if (recommendedWorkout != null) {
-                        item {
-                            WorkoutCard(recommendedWorkout, viewModel)
-                        }
-                    } else if (allWorkouts.isNotEmpty()) {
-                        item {
-                            WorkoutCard(allWorkouts[0], viewModel)
-                        }
+                    items(projection.yourWorkouts.size, { projection.yourWorkouts[it].id }) { index ->
+                        WorkoutCard(projection.yourWorkouts[index], viewModel)
                     }
 
-                    // "All workouts" header spanning full width
+                    // All built-in workouts section spanning full width
                     item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(
                             text = R.string.home_all_workouts.localizable(),
                             style = Typography.titleLarge,
                             fontWeight = FontWeight.Normal,
-                            modifier = Modifier.padding(top = 8.dp)
+                            modifier = Modifier.padding(top = 8.dp),
                         )
                     }
 
-                    // Other workouts in grid
-                    items(otherWorkouts.size, { it }) { index ->
-                        WorkoutCard(otherWorkouts[index], viewModel)
+                    items(projection.remainingBuiltIns.size, { projection.remainingBuiltIns[it].id }) { index ->
+                        WorkoutCard(projection.remainingBuiltIns[index], viewModel)
                     }
                 }
             }
@@ -398,23 +413,33 @@ private fun NextUpWorkout(viewModel: HomeViewModel) {
     when (val state = viewModel.uiStates.collectAsState().value) {
         is UiState.Loading -> CircularProgressIndicator(modifier = Modifier.padding(12.dp))
         is UiState.Loaded -> {
-            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
+            val projection = state.workoutProjection
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(12.dp)
             ) {
-                Text(
-                    text = R.string.home_next_up.localizable(),
-                    modifier = Modifier.padding(bottom = 12.dp),
-                    style = Typography.titleLarge,
-                    fontWeight = FontWeight.Normal
-                )
-                val workout = allWorkouts.firstOrNull() ?: return
-                WorkoutCard(
-                    workout,
-                    viewModel
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = R.string.home_next_up.localizable(),
+                        modifier = Modifier.padding(bottom = 12.dp),
+                        style = Typography.titleLarge,
+                        fontWeight = FontWeight.Normal,
+                    )
+                    Text(
+                        text = "+",
+                        modifier = Modifier.clickable { viewModel.createWorkoutClicked() },
+                        style = Typography.headlineMedium,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+                projection.yourWorkouts.forEach { workout ->
+                    WorkoutCard(workout, viewModel)
+                }
             }
         }
     }
@@ -428,8 +453,7 @@ private fun AllWorkouts(viewModel: HomeViewModel) {
         }
 
         is UiState.Loaded -> {
-            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
-            val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
+            val builtInWorkouts = state.workoutProjection.remainingBuiltIns
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -443,8 +467,8 @@ private fun AllWorkouts(viewModel: HomeViewModel) {
                         fontWeight = FontWeight.Normal
                     )
                 }
-                items(otherWorkouts.size, { it }) { index ->
-                    WorkoutCard(otherWorkouts[index], viewModel)
+                items(builtInWorkouts.size, { builtInWorkouts[it].id }) { index ->
+                    WorkoutCard(builtInWorkouts[index], viewModel)
                 }
             }
         }
@@ -579,34 +603,36 @@ internal fun Workouts(viewModel: HomeViewModel) {
         }
 
         is UiState.Loaded -> {
-            val allWorkouts = state.workouts.values.flatten().sortedBy { it.id }
-            val recommendedWorkout = allWorkouts.find { it.id == state.recommendedWorkoutId }
-            val otherWorkouts = allWorkouts.filter { it.id != state.recommendedWorkoutId }
+            val projection = state.workoutProjection
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Text(
-                    text = R.string.home_next_up.localizable(),
-                    style = Typography.titleLarge,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-                if (recommendedWorkout != null) {
-                    WorkoutCard(
-                        recommendedWorkout,
-                        viewModel
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = R.string.home_next_up.localizable(),
+                        style = Typography.titleLarge,
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier.padding(top = 16.dp),
                     )
-                } else if (allWorkouts.isNotEmpty()) {
-                    WorkoutCard(
-                        allWorkouts[0],
-                        viewModel
+                    Text(
+                        text = "+",
+                        modifier = Modifier.clickable { viewModel.createWorkoutClicked() },
+                        style = Typography.headlineMedium,
+                        fontWeight = FontWeight.Normal,
                     )
+                }
+                projection.yourWorkouts.forEach { workout ->
+                    WorkoutCard(workout, viewModel)
                 }
                 Text(
                     text = R.string.home_all_workouts.localizable(),
                     style = Typography.titleLarge,
-                    fontWeight = FontWeight.Normal
+                    fontWeight = FontWeight.Normal,
                 )
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 150.dp),
@@ -614,8 +640,8 @@ internal fun Workouts(viewModel: HomeViewModel) {
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(otherWorkouts.size, { it }) { index ->
-                        WorkoutCard(otherWorkouts[index], viewModel)
+                    items(projection.remainingBuiltIns.size, { projection.remainingBuiltIns[it].id }) { index ->
+                        WorkoutCard(projection.remainingBuiltIns[index], viewModel)
                     }
                 }
             }
@@ -623,12 +649,23 @@ internal fun Workouts(viewModel: HomeViewModel) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun WorkoutCard(
     workout: Workout,
     viewModel: HomeViewModel,
 ) {
     val cardShape = RoundedCornerShape(12.dp)
+    val editLabel = stringResource(R.string.home_edit_custom_workout)
+    val interactionModifier = if (workout.isCustom) {
+        Modifier.combinedClickable(
+            onClick = { viewModel.workoutClicked(workout.id) },
+            onLongClick = { viewModel.editWorkoutClicked(workout.id) },
+            onLongClickLabel = editLabel,
+        )
+    } else {
+        Modifier.clickable { viewModel.workoutClicked(workout.id) }
+    }
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = Color.Black
@@ -636,15 +673,13 @@ private fun WorkoutCard(
         shape = cardShape,
         modifier = Modifier
             .fillMaxWidth()
+            .then(interactionModifier)
             .onGloballyPositioned {
                 WorkoutTransitionBounds.update(workout.id, it.boundsInWindow())
             },
-        onClick = {
-            viewModel.workoutClicked(workout.id)
-        }
     ) {
         Text(
-            text = workout.name,
+            text = workout.displayLabel(),
             modifier = Modifier.padding(8.dp),
             style = Typography.titleMedium,
             color = White

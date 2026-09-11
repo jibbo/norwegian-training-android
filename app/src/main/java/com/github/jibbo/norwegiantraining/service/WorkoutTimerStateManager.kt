@@ -4,6 +4,8 @@ import com.github.jibbo.norwegiantraining.data.SettingsRepository
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.WorkoutToPhasesConverter
+import com.github.jibbo.norwegiantraining.domain.displayLabel
+import com.github.jibbo.norwegiantraining.domain.WorkoutNotFoundException
 import com.github.jibbo.norwegiantraining.domain.Phase
 import com.github.jibbo.norwegiantraining.domain.PhaseName
 import com.github.jibbo.norwegiantraining.domain.SkipPhaseUseCase
@@ -23,32 +25,56 @@ class WorkoutTimerStateManager @Inject constructor(
     private val workoutCompletedUseCase: WorkoutCompletedUseCase,
     private val skipPhaseUseCase: SkipPhaseUseCase,
     private val settingsRepository: SettingsRepository
-) {
+): WorkoutTimerManager {
     private val _state = MutableStateFlow(WorkoutTimerState())
     val state: StateFlow<WorkoutTimerState> = _state.asStateFlow()
 
+    override fun getWorkoutTimerState(): StateFlow<WorkoutTimerState> = _state.asStateFlow()
+
     suspend fun initialize() {
         val savedState = persistence.loadState()
-        if (savedState != null) {
-            _state.value = savedState
-        }
-    }
-
-    suspend fun startWorkout(workoutId: Long) {
-        val currentState = _state.value
-        if (currentState.workoutId == workoutId) {
+        if (savedState == null) {
+            persistence.clearState()
             return
         }
 
-        val workout = workoutRepository.getById(workoutId) ?: return
+        val workout = workoutRepository.getById(savedState.workoutId)
+        if (workout == null) {
+            persistence.clearState()
+            _state.value = WorkoutTimerState()
+            return
+        }
+
+        val phases = WorkoutToPhasesConverter.convert(workout).getOrElse {
+            persistence.clearState()
+            _state.value = WorkoutTimerState()
+            return
+        }
+
+        _state.value = savedState.copy(
+            workoutName = workout.displayLabel(),
+            totalPhases = phases.size,
+        )
+    }
+
+    suspend fun startWorkout(workoutId: Long): Result<Unit> {
+        val currentState = _state.value
+        if (currentState.workoutId == workoutId) {
+            return Result.success(Unit)
+        }
+
+        val workout = workoutRepository.getById(workoutId)
+            ?: return Result.failure(WorkoutNotFoundException(workoutId))
+        val phases = WorkoutToPhasesConverter.convert(workout)
+            .getOrElse { return Result.failure(it) }
 
         val initialPhase =
             Phase(PhaseName.GET_READY, WorkoutToPhasesConverter.GET_READY_COUNTDOWN_DURATION)
         val newState = WorkoutTimerState(
             workoutId = workoutId,
-            workoutName = workout.name,
+            workoutName = workout.displayLabel(),
             currentPhaseIndex = 0,
-            totalPhases = workout.totalPhases,
+            totalPhases = phases.size,
             currentPhase = initialPhase,
             targetTimeMillis = 0L,
             isTimerRunning = false,
@@ -57,6 +83,7 @@ class WorkoutTimerStateManager @Inject constructor(
         )
 
         updateState(newState)
+        return Result.success(Unit)
     }
 
     suspend fun startTimer() {
@@ -95,10 +122,11 @@ class WorkoutTimerStateManager @Inject constructor(
         )
     }
 
-    suspend fun moveToNextPhase() {
+    suspend fun moveToNextPhase(): Result<Unit> {
         val currentState = _state.value
 
         val nextPhase = moveToNextPhase(currentState.workoutId, currentState.currentPhaseIndex)
+            .getOrElse { return Result.failure(it) }
         val nextIndex = currentState.currentPhaseIndex + 1
 
         val isCompleted = nextPhase.name == PhaseName.COMPLETED
@@ -118,6 +146,7 @@ class WorkoutTimerStateManager @Inject constructor(
                 progressionResult = progressionResult
             )
         )
+        return Result.success(Unit)
     }
 
     suspend fun skipPhase() {

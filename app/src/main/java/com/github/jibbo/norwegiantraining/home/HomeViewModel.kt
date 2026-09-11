@@ -40,6 +40,7 @@ class HomeViewModel @Inject constructor(
     val uiStates = states.asStateFlow()
 
     private val isTrial = isFreeTrial()
+    private var hasEntitlement = false
 
     init {
         viewModelScope.launch {
@@ -73,16 +74,27 @@ class HomeViewModel @Inject constructor(
         publishEvent(UiCommands.SHOW_CHARTS)
     }
 
-    fun workoutClicked(id: Long) {
-        viewModelScope.launch {
-            when {
-                isTrial -> {
-                    events.emit(UiCommands.SHOW_WORKOUT(id))
-                }
+    fun createWorkoutClicked() {
+        publishEvent(UiCommands.SHOW_CUSTOM_WORKOUT(null))
+    }
 
-                else -> {
-                    events.emit(UiCommands.SHOW_WORKOUT(id))
-                }
+    fun editWorkoutClicked(id: Long) {
+        publishEvent(UiCommands.SHOW_CUSTOM_WORKOUT(id))
+    }
+
+    fun workoutClicked(id: Long) {
+        val workout = (states.value as? UiState.Loaded)
+            ?.workouts
+            ?.values
+            ?.flatten()
+            ?.firstOrNull { it.id == id }
+            ?: return
+
+        viewModelScope.launch {
+            if (canLaunchWorkout(workout, isTrial, hasEntitlement)) {
+                events.emit(UiCommands.SHOW_WORKOUT(id))
+            } else {
+                events.emit(UiCommands.SHOW_PAYWALL)
             }
         }
     }
@@ -94,14 +106,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun purchasedCheck(): (CustomerInfo) -> Unit = { customerInfo ->
-        val hasNotPurchased = customerInfo.entitlements.active.isEmpty()
-        if (hasNotPurchased) {
-            if (!isTrial && isOnboardingCompleted()) {
-                viewModelScope.launch {
-                    events.emit(UiCommands.SHOW_PAYWALL)
-                }
-            }
-        }
+        hasEntitlement = customerInfo.entitlements.active.isNotEmpty()
     }
 
     private fun showWorkouts(workouts: Map<Difficulty, List<Workout>>) =
@@ -109,7 +114,11 @@ class HomeViewModel @Inject constructor(
             val weeklySessions = getWeeklySessions()
             when (val value = states.value) {
                 is UiState.Loaded -> {
-                    states.value = value.copy(workouts = workouts, weeklySessions = weeklySessions)
+                    states.value = value.copy(
+                        workouts = workouts,
+                        workoutProjection = workouts.toHomeWorkoutProjection(value.recommendedWorkoutId),
+                        weeklySessions = weeklySessions,
+                    )
                 }
 
                 else -> states.value = UiState.Loaded(
@@ -117,6 +126,9 @@ class HomeViewModel @Inject constructor(
                     workouts = workouts,
                     recommendedWorkoutId = getRecommendedWorkoutId(workouts),
                     hasProgressed = getRecommendedWorkoutId.hasProgressed(),
+                    workoutProjection = workouts.toHomeWorkoutProjection(
+                        getRecommendedWorkoutId(workouts),
+                    ),
                     weeklySessions = weeklySessions
                 )
             }
@@ -135,5 +147,6 @@ sealed class UiCommands {
     object SHOW_CHARTS : UiCommands()
     object SHOW_ONBOARDING : UiCommands()
     object SHOW_PAYWALL : UiCommands()
+    data class SHOW_CUSTOM_WORKOUT(val id: Long?) : UiCommands()
     data class SHOW_WORKOUT(val id: Long) : UiCommands()
 }
