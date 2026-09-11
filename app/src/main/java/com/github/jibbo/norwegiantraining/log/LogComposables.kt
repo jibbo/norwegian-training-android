@@ -57,6 +57,7 @@ import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.domain.ManualWorkoutType
 import com.github.jibbo.norwegiantraining.domain.ManualWorkoutUiState
 import com.github.jibbo.norwegiantraining.domain.ManualWorkoutField
+import com.github.jibbo.norwegiantraining.domain.ManualWorkoutValidationError
 import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.Hidden
 import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.InstallHealthConnect
 import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.Loading
@@ -90,6 +91,7 @@ internal fun Logs(
     onUpdateManualWorkoutDate: (LocalDate) -> Unit,
     onUpdateManualWorkoutHours: (String) -> Unit,
     onUpdateManualWorkoutMinutes: (String) -> Unit,
+    onSubmitManualWorkout: (String) -> Unit,
     onHideTodayStats: () -> Unit,
     onRequestPermissions: () -> Unit,
     onOpenHealthConnect: () -> Unit,
@@ -145,6 +147,7 @@ internal fun Logs(
     if (manualWorkoutUiState.sheetVisible) {
         var showDatePicker by remember { mutableStateOf(false) }
         val draft = manualWorkoutUiState.draft
+        val translatedName = draft.type?.let { manualWorkoutTypeLabel(it) } ?: ""
         ModalBottomSheet(
             onDismissRequest = onDismissManualWorkout,
             modifier = Modifier.testTag("manual_workout_sheet"),
@@ -218,6 +221,25 @@ internal fun Logs(
                         onValueChange = onUpdateManualWorkoutMinutes,
                     )
                 }
+                manualWorkoutUiState.fieldErrors.values.distinct().forEach { error ->
+                    ManualWorkoutErrorText(manualWorkoutErrorResource(error))
+                }
+                if (manualWorkoutUiState.persistenceError) {
+                    ManualWorkoutErrorText(R.string.manual_workout_error_save_failed)
+                }
+                Button(
+                    onClick = { onSubmitManualWorkout(translatedName) },
+                    enabled = !manualWorkoutUiState.isSaving,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("manual_workout_save"),
+                ) {
+                    if (manualWorkoutUiState.isSaving) {
+                        CircularProgressIndicator(modifier = Modifier.size(18.dp))
+                    } else {
+                        Text(R.string.manual_workout_save.localizable())
+                    }
+                }
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
@@ -278,6 +300,17 @@ private fun ManualWorkoutDurationField(
 @Composable
 private fun ManualWorkoutErrorText(@androidx.annotation.StringRes resourceId: Int) {
     Text(text = resourceId.localizable(), color = Primary, style = Typography.bodySmall)
+}
+
+private fun manualWorkoutErrorResource(error: ManualWorkoutValidationError): Int = when (error) {
+    ManualWorkoutValidationError.TYPE_REQUIRED -> R.string.manual_workout_error_type_required
+    ManualWorkoutValidationError.DATE_OUT_OF_RANGE -> R.string.manual_workout_error_date_out_of_range
+    ManualWorkoutValidationError.HOURS_FORMAT -> R.string.manual_workout_error_hours_format
+    ManualWorkoutValidationError.HOURS_OUT_OF_RANGE -> R.string.manual_workout_error_hours_out_of_range
+    ManualWorkoutValidationError.MINUTES_FORMAT -> R.string.manual_workout_error_minutes_format
+    ManualWorkoutValidationError.MINUTES_OUT_OF_RANGE -> R.string.manual_workout_error_minutes_out_of_range
+    ManualWorkoutValidationError.DURATION_ZERO -> R.string.manual_workout_error_duration_zero
+    ManualWorkoutValidationError.DURATION_TOO_LONG -> R.string.manual_workout_error_duration_too_long
 }
 
 @Composable
@@ -540,7 +573,7 @@ fun Preview() {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Logs(innerPadding, lol,
                 //Stats(7_452), {}, {}, {},
-                RequestHealthConnectPermissions, ManualWorkoutUiState(), {}, {}, {}, {}, {}, {}, {}, {}, {}
+                RequestHealthConnectPermissions, ManualWorkoutUiState(), {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
 
           )
         }

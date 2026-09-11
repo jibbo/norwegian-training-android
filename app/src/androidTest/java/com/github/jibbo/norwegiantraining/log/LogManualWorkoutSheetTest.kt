@@ -39,6 +39,7 @@ class LogManualWorkoutSheetTest {
                     onUpdateManualWorkoutDate = {},
                     onUpdateManualWorkoutHours = {},
                     onUpdateManualWorkoutMinutes = {},
+                    onSubmitManualWorkout = {},
                     onHideTodayStats = {},
                     onRequestPermissions = {},
                     onOpenHealthConnect = {},
