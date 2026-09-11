@@ -1,7 +1,12 @@
 package com.github.jibbo.norwegiantraining.data
 
 import com.github.jibbo.norwegiantraining.domain.FitnessLevel
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerManager
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.Date
 import java.util.Locale
 
@@ -187,10 +192,10 @@ class FakeWorkoutRepo : WorkoutRepository {
         return workout.id
     }
 
-    override suspend fun updateCustom(workout: Workout): Boolean {
-        val index = workouts.indexOfFirst { it.id == workout.id && it.isCustom }
+    override suspend fun updateById(workout: Workout): Boolean {
+        val index = workouts.indexOfFirst { it.id == workout.id }
         if (index == -1) return false
-        workouts[index] = workout.copy(isCustom = true)
+        workouts[index] = workout
         return true
     }
 
@@ -203,6 +208,14 @@ class FakeWorkoutRepo : WorkoutRepository {
 
     override suspend fun insert(workouts: List<Workout>) {
         this.workouts.addAll(workouts)
+    }
+
+    class FakeWorkoutTimerManager(
+        private val activeWorkoutId: Long? = null,
+    ) : WorkoutTimerManager {
+        override fun getWorkoutTimerState(): StateFlow<WorkoutTimerState> = MutableStateFlow(
+            WorkoutTimerState(workoutId = activeWorkoutId ?: -1L),
+        ).asStateFlow()
     }
 
 }
