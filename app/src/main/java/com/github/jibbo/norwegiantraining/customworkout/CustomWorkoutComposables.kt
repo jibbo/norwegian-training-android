@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -91,7 +92,10 @@ fun CustomWorkoutFormScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { viewModel.delete(isWorkoutActive) }) {
+                TextButton(
+                    onClick = { viewModel.delete(isWorkoutActive) },
+                    modifier = Modifier.testTag("delete"),
+                ) {
                     Text(stringResource(R.string.delete))
                 }
             },
@@ -102,23 +106,28 @@ fun CustomWorkoutFormScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(title)) },
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.testTag("back"),
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.outline_close_24),
+                            contentDescription = stringResource(R.string.back),
+                        )
+                    }
+                },
                 actions = {
                     if (state.mode == CustomWorkoutFormMode.EDIT) {
                         IconButton(
                             onClick = viewModel::requestDelete,
-                            modifier = Modifier.semantics {
-                                contentDescription = deleteLabel
-                            },
+                            modifier = Modifier
+                                .testTag("deleteAction")
+                                .semantics { contentDescription = deleteLabel },
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.outline_delete_outline_24),
-                                contentDescription = ""
-                            )
-                        }
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                painter = painterResource(R.drawable.outline_close_24),
-                                contentDescription = ""
+                                contentDescription = "",
                             )
                         }
                     }

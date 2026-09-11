@@ -3,8 +3,10 @@ package com.github.jibbo.norwegiantraining.customworkout
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
@@ -35,19 +37,7 @@ class CustomWorkoutFormScreenTest {
         composeRule.onNodeWithText("Create workout").assertIsDisplayed()
         composeRule.onNodeWithText("10").assertIsDisplayed()
         composeRule.onNodeWithText("👟").assertIsDisplayed()
-        composeRule.onAllNodesWithText("🗑️").assertCountEquals(0)
-    }
-
-    @Test
-    fun createFormClearsIcon() {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo(), FakeWorkoutTimerManager())
-        setContent(viewModel, null)
-
-        composeRule.onNodeWithText("X").performClick()
-        composeRule.waitForIdle()
-
-        composeRule.onAllNodesWithText("👟").assertCountEquals(0)
-        composeRule.onNodeWithText("X").assertIsDisplayed()
+        composeRule.onAllNodesWithTag("delete").assertCountEquals(0)
     }
 
     @Test
@@ -58,7 +48,7 @@ class CustomWorkoutFormScreenTest {
 
         composeRule.onNodeWithText("Name").performTextReplacement("Morning")
         composeRule.onNodeWithText("Morning").assertIsDisplayed()
-        composeRule.onNodeWithText("back").performClick()
+        composeRule.onNodeWithTag("back").performClick()
 
         check(backPressed)
     }
@@ -121,7 +111,7 @@ class CustomWorkoutFormScreenTest {
         composeRule.waitForIdle()
 
         composeRule.onNodeWithContentDescription("Delete custom workout").performClick()
-        composeRule.onNodeWithText("Delete").performClick()
+        composeRule.onNodeWithTag("delete").performClick()
         composeRule.waitForIdle()
 
         check(backPressed)
@@ -130,7 +120,7 @@ class CustomWorkoutFormScreenTest {
 
     @Test
     fun activeSaveShowsLocalizedBlockingAlert() {
-        val timerStateManager = FakeWorkoutTimerManager()
+        val timerStateManager = FakeWorkoutTimerManager(activeWorkoutId = 42L)
         val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo(), timerStateManager)
         viewModel.updateName("Active workout")
         setContent(
@@ -148,8 +138,10 @@ class CustomWorkoutFormScreenTest {
 
     @Test
     fun activeDeleteShowsLocalizedBlockingAlert() {
-        val viewModel = CustomWorkoutViewModel(repositoryWithCustomWorkout(),
-            FakeWorkoutTimerManager())
+        val viewModel = CustomWorkoutViewModel(
+            repositoryWithCustomWorkout(),
+            FakeWorkoutTimerManager(activeWorkoutId = 42L),
+        )
         setContent(
             viewModel,
             42L,

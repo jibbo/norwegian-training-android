@@ -210,8 +210,12 @@ class FakeWorkoutRepo : WorkoutRepository {
         this.workouts.addAll(workouts)
     }
 
-    class FakeWorkoutTimerManager : WorkoutTimerManager {
-        override fun getWorkoutTimerState(): StateFlow<WorkoutTimerState>  = MutableStateFlow(WorkoutTimerState(workoutId = 42L)).asStateFlow()
+    class FakeWorkoutTimerManager(
+        private val activeWorkoutId: Long? = null,
+    ) : WorkoutTimerManager {
+        override fun getWorkoutTimerState(): StateFlow<WorkoutTimerState> = MutableStateFlow(
+            WorkoutTimerState(workoutId = activeWorkoutId ?: -1L),
+        ).asStateFlow()
     }
 
 }
