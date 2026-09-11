@@ -25,9 +25,11 @@ class WorkoutTimerStateManager @Inject constructor(
     private val workoutCompletedUseCase: WorkoutCompletedUseCase,
     private val skipPhaseUseCase: SkipPhaseUseCase,
     private val settingsRepository: SettingsRepository
-) {
+): WorkoutTimerManager {
     private val _state = MutableStateFlow(WorkoutTimerState())
     val state: StateFlow<WorkoutTimerState> = _state.asStateFlow()
+
+    override fun getWorkoutTimerState(): StateFlow<WorkoutTimerState> = _state.asStateFlow()
 
     suspend fun initialize() {
         val savedState = persistence.loadState()
