@@ -18,6 +18,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -37,6 +41,7 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.domain.ManualWorkoutUiState
 import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.Hidden
 import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.InstallHealthConnect
 import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.Loading
@@ -54,11 +59,15 @@ import java.util.Date
 import kotlin.random.Random
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun Logs(
     innerPadding: PaddingValues,
     uiState: UiState.Loaded,
     todayStatsUiState: TodayStatsUiState,
+    manualWorkoutUiState: ManualWorkoutUiState,
+    onOpenManualWorkout: () -> Unit,
+    onDismissManualWorkout: () -> Unit,
     onHideTodayStats: () -> Unit,
     onRequestPermissions: () -> Unit,
     onOpenHealthConnect: () -> Unit,
@@ -76,7 +85,15 @@ internal fun Logs(
         AnimatedToolbar(
             R.string.title_activity_logs.localizable(),
             listState,
-            null
+            null,
+            trailingContent = {
+                IconButton(
+                    onClick = onOpenManualWorkout,
+                    modifier = Modifier.testTag("add_manual_workout_button"),
+                ) {
+                    Text("+")
+                }
+            },
         )
         LazyColumn(
             state = listState,
@@ -100,6 +117,22 @@ internal fun Logs(
             }
             items(12) { month ->
                 Month(month, uiState)
+            }
+        }
+    }
+    if (manualWorkoutUiState.sheetVisible) {
+        ModalBottomSheet(
+            onDismissRequest = onDismissManualWorkout,
+            modifier = Modifier.testTag("manual_workout_sheet"),
+        ) {
+            Column(modifier = Modifier.padding(24.dp)) {
+                Text(
+                    text = R.string.manual_workout_title.localizable(),
+                    style = Typography.headlineSmall,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = R.string.manual_workout_select_type.localizable())
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
@@ -352,7 +385,7 @@ fun Preview() {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Logs(innerPadding, lol,
                 //Stats(7_452), {}, {}, {},
-                RequestHealthConnectPermissions, {}, {}, {}
+                RequestHealthConnectPermissions, ManualWorkoutUiState(), {}, {}, {}, {}, {}
 
           )
         }
