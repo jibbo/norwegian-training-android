@@ -109,7 +109,11 @@ class HomeViewModel @Inject constructor(
             val weeklySessions = getWeeklySessions()
             when (val value = states.value) {
                 is UiState.Loaded -> {
-                    states.value = value.copy(workouts = workouts, weeklySessions = weeklySessions)
+                    states.value = value.copy(
+                        workouts = workouts,
+                        workoutProjection = workouts.toHomeWorkoutProjection(value.recommendedWorkoutId),
+                        weeklySessions = weeklySessions,
+                    )
                 }
 
                 else -> states.value = UiState.Loaded(
@@ -117,6 +121,9 @@ class HomeViewModel @Inject constructor(
                     workouts = workouts,
                     recommendedWorkoutId = getRecommendedWorkoutId(workouts),
                     hasProgressed = getRecommendedWorkoutId.hasProgressed(),
+                    workoutProjection = workouts.toHomeWorkoutProjection(
+                        getRecommendedWorkoutId(workouts),
+                    ),
                     weeklySessions = weeklySessions
                 )
             }

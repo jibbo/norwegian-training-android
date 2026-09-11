@@ -13,7 +13,12 @@ sealed class UiState {
         val recommendedWorkoutId: Long?,
         val hasProgressed: Boolean,
         val workouts: Map<Difficulty, List<Workout>>,
-        val weeklySessions: List<Session?>
+        val weeklySessions: List<Session?>,
+        val workoutProjection: HomeWorkoutProjection = HomeWorkoutProjection(
+            recommendedBuiltIn = null,
+            customWorkouts = emptyList(),
+            remainingBuiltIns = emptyList(),
+        )
     ) : UiState()
 
 }
