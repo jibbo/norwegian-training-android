@@ -8,7 +8,6 @@
     <string name="skip">Skip training phase</string>
     <string name="continue_btn">Continue</string>
     <string name="back">back</string>
-    <string name="save">Save</string>
     <string name="share">Share</string>
     <string name="buy">BUY</string>
     <string name="ok">OK</string>
@@ -140,52 +139,7 @@
     <!-- Home -->
     <string name="welcome">Welcome %1$s</string>
     <string name="home_next_up">Your workouts</string>
-    <string name="custom_workout_create_title">Create workout</string>
-    <string name="custom_workout_edit_title">Edit workout</string>
-    <string name="custom_workout_form_placeholder">Workout details will appear here.</string>
-    <string name="custom_workout_name">Name</string>
-    <string name="custom_workout_icon">Icon</string>
-    <string name="custom_workout_active_title">Workout in progress</string>
-    <string name="custom_workout_active_message">Finish or close the active workout before saving or deleting a custom workout.</string>
-    <string name="custom_workout_default_name">Custom</string>
-    <string name="custom_workout_delete">Delete custom workout</string>
-    <string name="custom_workout_delete_title">Delete workout?</string>
-    <string name="custom_workout_delete_message">This custom workout will be permanently deleted.</string>
-    <string name="cancel">Cancel</string>
-    <string name="delete">Delete</string>
-    <string name="custom_workout_clear_icon">X</string>
-    <string name="custom_workout_work_minutes">Work minutes</string>
-    <string name="custom_workout_work_seconds">Work seconds</string>
-    <string name="custom_workout_rest_minutes">Rest minutes</string>
-    <string name="custom_workout_rest_seconds">Rest seconds</string>
-    <string name="custom_workout_rounds">Rounds</string>
-    <string name="custom_workout_save_error">Could not save workout.</string>
-    <string name="home_edit_custom_workout">Edit custom workout</string>
     <string name="home_all_workouts">All Workouts</string>
-    <string name="manual_workout_type_run">Run</string>
-    <string name="manual_workout_type_strength_training">Strength training</string>
-    <string name="manual_workout_type_cycling">Cycling</string>
-    <string name="manual_workout_type_swimming">Swimming</string>
-    <string name="manual_workout_type_walking">Walking</string>
-    <string name="manual_workout_type_hiit">HIIT</string>
-    <string name="manual_workout_title">Log workout</string>
-    <string name="manual_workout_add">Add manual workout</string>
-    <string name="manual_workout_type">Workout type</string>
-    <string name="manual_workout_duration">Workout duration</string>
-    <string name="manual_workout_select_type">Select a workout type</string>
-    <string name="manual_workout_date">Date</string>
-    <string name="manual_workout_duration_hours">Hours</string>
-    <string name="manual_workout_duration_minutes">Minutes</string>
-    <string name="manual_workout_save">Save</string>
-    <string name="manual_workout_error_type_required">Select a workout type</string>
-    <string name="manual_workout_error_date_out_of_range">Choose a date from January 1 through today</string>
-    <string name="manual_workout_error_hours_format">Enter exactly two digits</string>
-    <string name="manual_workout_error_hours_out_of_range">Enter hours from 00 to 24</string>
-    <string name="manual_workout_error_minutes_format">Enter exactly two digits</string>
-    <string name="manual_workout_error_minutes_out_of_range">Enter minutes from 00 to 59</string>
-    <string name="manual_workout_error_duration_zero">Duration must be at least one minute</string>
-    <string name="manual_workout_error_duration_too_long">Duration cannot exceed 24:00</string>
-    <string name="manual_workout_error_save_failed">Could not save workout. Try again.</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
     <string name="workout_split" translatable="false">%1$sx%1$s</string>
     <string name="workout_kCal" translatable="false">🔥 ~%1$s kCal</string>
@@ -229,8 +183,8 @@
     <string name="level_up_title">Level Up!</string>
     <string name="level_up_subtitle">You\'ve advanced to %1$s! Keep pushing your limits.</string>
     <string name="level_up_button">CONTINUE</string>
-    <string name="thank_you_title">Thank you! Your journey starts now.</string>
-    <string name="thank_you_body">Your support means a lot to me as a solo developer and helps me keep improving Norwy.</string>
+    <string name="thank_you_title">Thank you for your purchase!</string>
+    <string name="thank_you_body">Your support helps a solo dev improving Norwy, but most importantly it\'s the beginning of your journey!</string>
     <string name="thank_you_button">LET\'S GO!</string>
 
     <string name="app_language">App Language</string>
