@@ -140,6 +140,12 @@
     <string name="welcome">Welcome %1$s</string>
     <string name="home_next_up">Next Up</string>
     <string name="home_all_workouts">All Workouts</string>
+    <string name="manual_workout_type_run">Run</string>
+    <string name="manual_workout_type_strength_training">Strength training</string>
+    <string name="manual_workout_type_cycling">Cycling</string>
+    <string name="manual_workout_type_swimming">Swimming</string>
+    <string name="manual_workout_type_walking">Walking</string>
+    <string name="manual_workout_type_hiit">HIIT</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
     <string name="workout_split" translatable="false">%1$sx%1$s</string>
     <string name="workout_kCal" translatable="false">🔥 ~%1$s kCal</string>

@@ -107,6 +107,12 @@
     <string name="welcome">Hola %1$s</string>
     <string name="home_next_up">Siguiente</string>
     <string name="home_all_workouts">Todos los entrenamientos</string>
+    <string name="manual_workout_type_run">Correr</string>
+    <string name="manual_workout_type_strength_training">Entrenamiento de fuerza</string>
+    <string name="manual_workout_type_cycling">Ciclismo</string>
+    <string name="manual_workout_type_swimming">Natación</string>
+    <string name="manual_workout_type_walking">Caminar</string>
+    <string name="manual_workout_type_hiit">HIIT</string>
     <string name="workout_time">⏱️ %1$s minutos</string>
     <string name="workout_category_beginner">Principiante</string>
     <string name="workout_category_intermediate">Intermedio</string>
