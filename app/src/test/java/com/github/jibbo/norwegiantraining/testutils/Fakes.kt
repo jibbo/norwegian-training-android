@@ -311,4 +311,8 @@ class FakeAnalytics : Analytics {
     override fun logRevenueCatError(name: String, message: String) {
         calls += "revenuecat_error:$name"
     }
+
+    override fun logManualWorkoutLogged() {
+        calls += "manual_workout_logged"
+    }
 }

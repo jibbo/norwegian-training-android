@@ -166,6 +166,10 @@ class FakeTracker : Analytics {
     override fun logRevenueCatError(name: String, message: String) {
         TODO("Not yet implemented")
     }
+
+    override fun logManualWorkoutLogged() {
+        TODO("Not yet implemented")
+    }
 }
 
 class FakeWorkoutRepo : WorkoutRepository {
