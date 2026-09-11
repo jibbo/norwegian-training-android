@@ -74,6 +74,10 @@ class HomeViewModel @Inject constructor(
         publishEvent(UiCommands.SHOW_CHARTS)
     }
 
+    fun createWorkoutClicked() {
+        publishEvent(UiCommands.SHOW_CUSTOM_WORKOUT(null))
+    }
+
     fun workoutClicked(id: Long) {
         val workout = (states.value as? UiState.Loaded)
             ?.workouts
@@ -139,5 +143,6 @@ sealed class UiCommands {
     object SHOW_CHARTS : UiCommands()
     object SHOW_ONBOARDING : UiCommands()
     object SHOW_PAYWALL : UiCommands()
+    data class SHOW_CUSTOM_WORKOUT(val id: Long?) : UiCommands()
     data class SHOW_WORKOUT(val id: Long) : UiCommands()
 }

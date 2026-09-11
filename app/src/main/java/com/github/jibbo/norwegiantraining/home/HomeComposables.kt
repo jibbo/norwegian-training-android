@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
@@ -327,6 +328,7 @@ private fun PortraitLayout(
                             )
                             Text(
                                 text = "+",
+                                modifier = Modifier.clickable { viewModel.createWorkoutClicked() },
                                 style = Typography.headlineMedium,
                                 fontWeight = FontWeight.Normal,
                             )
@@ -420,6 +422,7 @@ private fun NextUpWorkout(viewModel: HomeViewModel) {
                     )
                     Text(
                         text = "+",
+                        modifier = Modifier.clickable { viewModel.createWorkoutClicked() },
                         style = Typography.headlineMedium,
                         fontWeight = FontWeight.Normal,
                     )
@@ -608,6 +611,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
                     )
                     Text(
                         text = "+",
+                        modifier = Modifier.clickable { viewModel.createWorkoutClicked() },
                         style = Typography.headlineMedium,
                         fontWeight = FontWeight.Normal,
                     )

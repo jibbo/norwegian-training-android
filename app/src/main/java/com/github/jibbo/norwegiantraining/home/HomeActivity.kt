@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.components.BaseActivity
+import com.github.jibbo.norwegiantraining.customworkout.CustomWorkoutActivity
 import com.github.jibbo.norwegiantraining.log.LogActivity
 import com.github.jibbo.norwegiantraining.main.MainActivity
 import com.github.jibbo.norwegiantraining.onboarding.OnboardingActivity
@@ -37,6 +38,7 @@ class HomeActivity : BaseActivity() {
                     UiCommands.SHOW_SETTINGS -> showSettings()
                     UiCommands.SHOW_CHARTS -> showCharts()
                     UiCommands.SHOW_PAYWALL -> showPaywall()
+                    is UiCommands.SHOW_CUSTOM_WORKOUT -> showCustomWorkout(it.id)
                     is UiCommands.SHOW_WORKOUT -> showWorkout(it.id)
                 }
             }
@@ -67,6 +69,12 @@ class HomeActivity : BaseActivity() {
 
     private fun showCharts() {
         startActivity(Intent(this@HomeActivity, LogActivity::class.java))
+    }
+
+    fun showCustomWorkout(workoutId: Long?) {
+        val newIntent = Intent(this@HomeActivity, CustomWorkoutActivity::class.java)
+        workoutId?.let { newIntent.putExtra(CustomWorkoutActivity.EXTRA_WORKOUT_ID, it) }
+        startActivity(newIntent)
     }
 
     private fun showPaywall() {
