@@ -41,6 +41,39 @@ class CustomWorkoutViewModelTest {
     }
 
     @Test
+    fun `create form starts with default icon`() {
+        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepository())
+
+        viewModel.initialize(null)
+
+        assertEquals(DEFAULT_CUSTOM_WORKOUT_ICON, viewModel.uiState.value.draft.icon)
+    }
+
+    @Test
+    fun `cleared icon persists as null`() = runTest {
+        val repository = FakeWorkoutRepository()
+        val viewModel = CustomWorkoutViewModel(repository)
+        viewModel.initialize(null)
+        viewModel.updateIcon(null)
+        viewModel.updateName("Plain")
+
+        viewModel.save()?.join()
+
+        assertEquals(null, repository.getCustomWorkouts().first().single().icon)
+    }
+
+    @Test
+    fun `edit loading does not restore default for null icon`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L).copy(icon = null))
+        val viewModel = CustomWorkoutViewModel(repository)
+
+        viewModel.initialize(42L)?.join()
+
+        assertEquals(null, viewModel.uiState.value.draft.icon)
+    }
+
+    @Test
     fun `field updates retain invalid text and clear stale errors`() {
         val viewModel = CustomWorkoutViewModel(FakeWorkoutRepository())
         viewModel.updateRounds("not a number")
