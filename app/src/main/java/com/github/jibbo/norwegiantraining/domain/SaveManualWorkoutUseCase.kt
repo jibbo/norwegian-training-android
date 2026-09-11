@@ -1,4 +1,8 @@
+@file:SuppressLint("NewApi")
+
 package com.github.jibbo.norwegiantraining.domain
+
+import android.annotation.SuppressLint
 
 import com.github.jibbo.norwegiantraining.data.Analytics
 import com.github.jibbo.norwegiantraining.data.Session

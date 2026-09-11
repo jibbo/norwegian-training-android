@@ -1,4 +1,8 @@
+@file:SuppressLint("UnrememberedMutableState")
+
 package com.github.jibbo.norwegiantraining.log
+
+import android.annotation.SuppressLint
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
