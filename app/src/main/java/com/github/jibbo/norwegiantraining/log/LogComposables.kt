@@ -181,7 +181,10 @@ internal fun Logs(
                     }
                 }
                 manualWorkoutUiState.fieldErrors[ManualWorkoutField.TYPE]?.let {
-                    ManualWorkoutErrorText(R.string.manual_workout_error_type_required)
+                    ManualWorkoutErrorText(
+                        R.string.manual_workout_error_type_required,
+                        modifier = Modifier.testTag("manual_workout_error_type"),
+                    )
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
@@ -298,8 +301,11 @@ private fun ManualWorkoutDurationField(
 }
 
 @Composable
-private fun ManualWorkoutErrorText(@androidx.annotation.StringRes resourceId: Int) {
-    Text(text = resourceId.localizable(), color = Primary, style = Typography.bodySmall)
+private fun ManualWorkoutErrorText(
+    @androidx.annotation.StringRes resourceId: Int,
+    modifier: Modifier = Modifier,
+) {
+    Text(text = resourceId.localizable(), color = Primary, style = Typography.bodySmall, modifier = modifier)
 }
 
 private fun manualWorkoutErrorResource(error: ManualWorkoutValidationError): Int = when (error) {
