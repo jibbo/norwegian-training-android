@@ -152,6 +152,7 @@
     <string name="custom_workout_active_title">训练进行中</string>
     <string name="custom_workout_clear_icon">X</string>
     <string name="custom_workout_create_title">创建自定义训练</string>
+    <string name="custom_workout_default_name">自定义</string>
     <string name="custom_workout_delete">删除自定义训练</string>
     <string name="custom_workout_delete_message">此自定义训练将被永久删除。</string>
     <string name="custom_workout_delete_title">删除训练？</string>

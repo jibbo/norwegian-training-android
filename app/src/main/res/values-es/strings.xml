@@ -175,6 +175,7 @@
     <string name="custom_workout_active_title">Entrenamiento en curso</string>
     <string name="custom_workout_clear_icon">X</string>
     <string name="custom_workout_create_title">Crear entrenamiento personalizado</string>
+    <string name="custom_workout_default_name">Personalizado</string>
     <string name="custom_workout_delete">Eliminar entrenamiento personalizado</string>
     <string name="custom_workout_delete_message">Este entrenamiento personalizado se eliminará permanentemente.</string>
     <string name="custom_workout_delete_title">¿Eliminar entrenamiento?</string>

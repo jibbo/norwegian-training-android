@@ -152,6 +152,7 @@
     <string name="custom_workout_active_title">Workout läuft</string>
     <string name="custom_workout_clear_icon">X</string>
     <string name="custom_workout_create_title">Eigenes Workout erstellen</string>
+    <string name="custom_workout_default_name">Eigenes Workout</string>
     <string name="custom_workout_delete">Eigenes Workout löschen</string>
     <string name="custom_workout_delete_message">Dieses eigene Workout wird dauerhaft gelöscht.</string>
     <string name="custom_workout_delete_title">Workout löschen?</string>
