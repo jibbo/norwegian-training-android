@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,11 +30,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutField
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import com.github.jibbo.norwegiantraining.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -155,18 +161,31 @@ private fun CustomWorkoutFormShell(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        OutlinedTextField(
-            value = state.draft.name,
-            onValueChange = onNameChange,
-            label = { Text(stringResource(R.string.custom_workout_name)) },
-            isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        CustomWorkoutIconPicker(
-            selectedIcon = state.draft.icon,
-            onIconSelected = onIconSelected,
-            modifier = Modifier.fillMaxWidth(),
-        )
+        Spacer(Modifier.weight(1f))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedTextField(
+                value = state.draft.icon.orEmpty(),
+                onValueChange = { onIconSelected(it.trim().takeIf(String::isNotBlank)) },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.ShortMessage,
+                ),
+                singleLine = true,
+                label = { Text(stringResource(R.string.custom_workout_icon)) },
+                isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
+                modifier = Modifier.weight(0.3f)
+            )
+            OutlinedTextField(
+                value = state.draft.name,
+                onValueChange = onNameChange,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                ),
+                label = { Text(stringResource(R.string.custom_workout_name)) },
+                isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
+                modifier = Modifier.weight(0.7f),
+            )
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             DurationField(
                 value = state.draft.workMinutes,
@@ -198,19 +217,31 @@ private fun CustomWorkoutFormShell(
         OutlinedTextField(
             value = state.draft.rounds,
             onValueChange = onRoundsChange,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Number
+            ),
             label = { Text(stringResource(R.string.custom_workout_rounds)) },
             isError = state.validationErrors.containsKey(CustomWorkoutField.ROUNDS),
             modifier = Modifier.fillMaxWidth(),
         )
+        Spacer(Modifier.weight(1f))
         state.persistenceError?.let {
             Text(stringResource(R.string.custom_workout_save_error))
         }
         Button(
             onClick = onSave,
             enabled = !state.isSaving && !state.isLoading,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+                .imePadding(),
         ) {
-            Text(stringResource(R.string.save))
+            Text(
+                stringResource(R.string.save),
+                style = Typography.titleLarge,
+                modifier = Modifier.padding(16.dp)
+            )
         }
     }
 }
@@ -271,6 +302,10 @@ private fun RowScope.DurationField(
         onValueChange = onValueChange,
         label = { Text(stringResource(label)) },
         isError = isError,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        ),
         modifier = Modifier.weight(1f),
     )
 }
