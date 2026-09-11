@@ -220,6 +220,7 @@ fun AnimatedToolbar(
                     fontSize = animatedFontSizeSp.sp,
                     lineHeight = animatedLineHeightSp.sp
                 ),
+                modifier = Modifier.weight(1f),
             )
             trailingContent?.invoke()
         }
