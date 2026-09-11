@@ -110,17 +110,6 @@ fun CustomWorkoutFormScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(title)) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBack,
-                        modifier = Modifier.testTag("back"),
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.outline_close_24),
-                            contentDescription = stringResource(R.string.back),
-                        )
-                    }
-                },
                 actions = {
                     if (state.mode == CustomWorkoutFormMode.EDIT) {
                         IconButton(
@@ -134,6 +123,15 @@ fun CustomWorkoutFormScreen(
                                 contentDescription = "",
                             )
                         }
+                    }
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.testTag("back"),
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.outline_close_24),
+                            contentDescription = stringResource(R.string.back),
+                        )
                     }
                 },
             )
