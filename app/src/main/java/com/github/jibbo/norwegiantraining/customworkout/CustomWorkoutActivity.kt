@@ -32,12 +32,17 @@ import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutField
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerState
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerStateManager
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.StateFlow
 
 @AndroidEntryPoint
 class CustomWorkoutActivity : BaseActivity() {
     private val viewModel: CustomWorkoutViewModel by viewModels()
+    @javax.inject.Inject
+    lateinit var timerStateManager: WorkoutTimerStateManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +51,12 @@ class CustomWorkoutActivity : BaseActivity() {
 
         setContent {
             NorwegianTrainingTheme(darkTheme = true) {
-                CustomWorkoutFormScreen(viewModel, workoutId, onBack = ::finish)
+                CustomWorkoutFormScreen(
+                    viewModel,
+                    workoutId,
+                    timerStateManager.state,
+                    onBack = ::finish,
+                )
             }
         }
     }
@@ -62,12 +72,15 @@ class CustomWorkoutActivity : BaseActivity() {
 fun CustomWorkoutFormScreen(
     viewModel: CustomWorkoutViewModel,
     workoutId: Long?,
+    timerState: StateFlow<WorkoutTimerState>,
     onBack: () -> Unit,
 ) {
     LaunchedEffect(workoutId) {
         viewModel.initialize(workoutId)
     }
     val state by viewModel.uiState.collectAsState()
+    val currentTimerState by timerState.collectAsState()
+    val isWorkoutActive = currentTimerState.workoutId != -1L && !currentTimerState.isCompleted
     val deleteLabel = stringResource(R.string.custom_workout_delete)
     val title = when (state.mode) {
         CustomWorkoutFormMode.CREATE -> R.string.custom_workout_create_title
@@ -82,6 +95,19 @@ fun CustomWorkoutFormScreen(
         if (state.deleted) onBack()
     }
 
+    if (state.persistenceError == CustomWorkoutPersistenceError.ACTIVE_WORKOUT) {
+        AlertDialog(
+            onDismissRequest = viewModel::clearPersistenceError,
+            title = { Text(stringResource(R.string.custom_workout_active_title)) },
+            text = { Text(stringResource(R.string.custom_workout_active_message)) },
+            confirmButton = {
+                TextButton(onClick = viewModel::clearPersistenceError) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+        )
+    }
+
     if (state.deleteRequested) {
         AlertDialog(
             onDismissRequest = viewModel::clearDeleteRequest,
@@ -93,7 +119,7 @@ fun CustomWorkoutFormScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { viewModel.delete() }) {
+                TextButton(onClick = { viewModel.delete(isWorkoutActive) }) {
                     Text(stringResource(R.string.delete))
                 }
             },
@@ -128,7 +154,7 @@ fun CustomWorkoutFormScreen(
             innerPadding = innerPadding,
             state = state,
             viewModel = viewModel,
-            onSave = { viewModel.save() },
+            onSave = { viewModel.save(isWorkoutActive) },
         )
     }
 }

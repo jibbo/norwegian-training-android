@@ -145,6 +145,8 @@
     <string name="custom_workout_form_placeholder">Workout details will appear here.</string>
     <string name="custom_workout_name">Name</string>
     <string name="custom_workout_icon">Icon</string>
+    <string name="custom_workout_active_title">Workout in progress</string>
+    <string name="custom_workout_active_message">Finish or close the active workout before saving or deleting a custom workout.</string>
     <string name="custom_workout_delete">Delete custom workout</string>
     <string name="custom_workout_delete_title">Delete workout?</string>
     <string name="custom_workout_delete_message">This custom workout will be permanently deleted.</string>
