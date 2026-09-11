@@ -145,6 +145,7 @@
     <string name="custom_workout_form_placeholder">Workout details will appear here.</string>
     <string name="custom_workout_name">Name</string>
     <string name="custom_workout_icon">Icon</string>
+    <string name="custom_workout_clear_icon">X</string>
     <string name="custom_workout_work_minutes">Work minutes</string>
     <string name="custom_workout_work_seconds">Work seconds</string>
     <string name="custom_workout_rest_minutes">Rest minutes</string>
