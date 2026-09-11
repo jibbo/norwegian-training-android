@@ -62,7 +62,15 @@ class CustomWorkoutViewModel @Inject constructor(
 
         return if (workoutId != null) {
             viewModelScope.launch(Dispatchers.Unconfined) {
-                val workout = runCatching { workoutRepository.getById(workoutId) }.getOrNull()
+                val workout = try {
+                    workoutRepository.getById(workoutId)
+                } catch (_: Throwable) {
+                    states.value = states.value.copy(
+                        isLoading = false,
+                        persistenceError = CustomWorkoutPersistenceError.DATABASE_FAILURE,
+                    )
+                    return@launch
+                }
                 if (workout == null) {
                     states.value = states.value.copy(
                         isLoading = false,
