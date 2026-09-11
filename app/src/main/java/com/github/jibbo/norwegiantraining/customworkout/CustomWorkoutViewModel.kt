@@ -38,6 +38,7 @@ data class CustomWorkoutFormState(
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val saved: Boolean = false,
+    val deleteRequested: Boolean = false,
     val notFound: Boolean = false,
 )
 
@@ -112,6 +113,16 @@ class CustomWorkoutViewModel @Inject constructor(
         val result = validateCustomWorkoutDraft(states.value.draft)
         states.value = states.value.copy(validationErrors = result.errors)
         return result.isValid
+    }
+
+    fun requestDelete() {
+        if (states.value.mode == CustomWorkoutFormMode.EDIT && states.value.workoutId != null) {
+            states.value = states.value.copy(deleteRequested = true)
+        }
+    }
+
+    fun clearDeleteRequest() {
+        states.value = states.value.copy(deleteRequested = false)
     }
 
     fun save(): Job? {

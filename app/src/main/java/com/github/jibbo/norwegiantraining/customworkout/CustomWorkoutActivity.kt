@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,6 +24,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
@@ -63,6 +66,7 @@ fun CustomWorkoutFormScreen(
         viewModel.initialize(workoutId)
     }
     val state by viewModel.uiState.collectAsState()
+    val deleteLabel = stringResource(R.string.custom_workout_delete)
     val title = when (state.mode) {
         CustomWorkoutFormMode.CREATE -> R.string.custom_workout_create_title
         CustomWorkoutFormMode.EDIT -> R.string.custom_workout_edit_title
@@ -79,6 +83,18 @@ fun CustomWorkoutFormScreen(
                 navigationIcon = {
                     Button(onClick = onBack) {
                         Text(stringResource(R.string.back))
+                    }
+                },
+                actions = {
+                    if (state.mode == CustomWorkoutFormMode.EDIT) {
+                        IconButton(
+                            onClick = viewModel::requestDelete,
+                            modifier = Modifier.semantics {
+                                contentDescription = deleteLabel
+                            },
+                        ) {
+                            Text(text = "🗑️")
+                        }
                     }
                 },
             )
