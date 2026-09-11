@@ -27,6 +27,30 @@ class HomeWorkoutProjectionTest {
     }
 
     @Test
+    fun `empty custom state still exposes recommended and remaining built-ins`() {
+        val recommended = workout(2L, "Recommended")
+        val otherBuiltIn = workout(4L, "Other built-in")
+
+        val projection = mapOf(Difficulty.BEGINNER to listOf(otherBuiltIn, recommended))
+            .toHomeWorkoutProjection(recommendedWorkoutId = 2L)
+
+        assertEquals(listOf(recommended), projection.yourWorkouts)
+        assertEquals(listOf(otherBuiltIn), projection.remainingBuiltIns)
+        assertEquals(emptyList<Workout>(), projection.customWorkouts)
+    }
+
+    @Test
+    fun `projection excludes custom rows from all built-ins`() {
+        val builtIn = workout(2L, "Built-in")
+        val custom = workout(3L, "Custom", isCustom = true)
+
+        val projection = mapOf(Difficulty.BEGINNER to listOf(custom, builtIn))
+            .toHomeWorkoutProjection(recommendedWorkoutId = null)
+
+        assertEquals(listOf(custom), projection.yourWorkouts)
+        assertEquals(listOf(builtIn), projection.allBuiltIns)
+    }
+    @Test
     fun `custom workout cannot become the recommended workout`() {
         val custom = workout(9L, "Custom", isCustom = true)
 
