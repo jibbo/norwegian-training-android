@@ -10,6 +10,7 @@ import com.github.jibbo.norwegiantraining.domain.CustomWorkoutValidationError
 import com.github.jibbo.norwegiantraining.domain.calculateCustomWorkoutDifficulty
 import com.github.jibbo.norwegiantraining.domain.generateCustomWorkoutContent
 import com.github.jibbo.norwegiantraining.domain.validateCustomWorkoutDraft
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerStateManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -47,9 +48,13 @@ data class CustomWorkoutFormState(
 @HiltViewModel
 class CustomWorkoutViewModel @Inject constructor(
     private val workoutRepository: WorkoutRepository,
+    private val timerStateManager: WorkoutTimerStateManager
 ) : ViewModel() {
+
     private val states = MutableStateFlow(CustomWorkoutFormState())
     val uiState = states.asStateFlow()
+
+    val timerState = timerStateManager.state
 
     fun initialize(workoutId: Long?): Job? {
         val mode = if (workoutId == null) {
