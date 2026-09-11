@@ -2,12 +2,16 @@ package com.github.jibbo.norwegiantraining.customworkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutDraft
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutField
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutValidationError
+import com.github.jibbo.norwegiantraining.domain.calculateCustomWorkoutDifficulty
+import com.github.jibbo.norwegiantraining.domain.generateCustomWorkoutContent
 import com.github.jibbo.norwegiantraining.domain.validateCustomWorkoutDraft
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +36,8 @@ data class CustomWorkoutFormState(
     val validationErrors: Map<CustomWorkoutField, CustomWorkoutValidationError> = emptyMap(),
     val persistenceError: CustomWorkoutPersistenceError? = null,
     val isLoading: Boolean = false,
+    val isSaving: Boolean = false,
+    val saved: Boolean = false,
     val notFound: Boolean = false,
 )
 
@@ -55,7 +61,7 @@ class CustomWorkoutViewModel @Inject constructor(
         )
 
         return if (workoutId != null) {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.Unconfined) {
                 val workout = runCatching { workoutRepository.getById(workoutId) }.getOrNull()
                 if (workout == null) {
                     states.value = states.value.copy(
@@ -98,5 +104,44 @@ class CustomWorkoutViewModel @Inject constructor(
         val result = validateCustomWorkoutDraft(states.value.draft)
         states.value = states.value.copy(validationErrors = result.errors)
         return result.isValid
+    }
+
+    fun save(): Job? {
+        if (states.value.mode != CustomWorkoutFormMode.CREATE || states.value.isSaving) return null
+
+        val validation = validateCustomWorkoutDraft(states.value.draft)
+        states.value = states.value.copy(validationErrors = validation.errors)
+        if (!validation.isValid) return null
+
+        val content = generateCustomWorkoutContent(validation)
+        val difficulty = calculateCustomWorkoutDifficulty(validation)
+        if (content == null || difficulty == null) {
+            states.value = states.value.copy(
+                persistenceError = CustomWorkoutPersistenceError.DATABASE_FAILURE,
+            )
+            return null
+        }
+
+        states.value = states.value.copy(isSaving = true, persistenceError = null)
+        return viewModelScope.launch {
+            runCatching {
+                workoutRepository.insertCustom(
+                    Workout(
+                        name = validation.trimmedName,
+                        difficulty = difficulty,
+                        content = content,
+                        isCustom = true,
+                        icon = validation.icon,
+                    )
+                )
+            }.onSuccess {
+                states.value = states.value.copy(isSaving = false, saved = true)
+            }.onFailure {
+                states.value = states.value.copy(
+                    isSaving = false,
+                    persistenceError = CustomWorkoutPersistenceError.DATABASE_FAILURE,
+                )
+            }
+        }
     }
 }
