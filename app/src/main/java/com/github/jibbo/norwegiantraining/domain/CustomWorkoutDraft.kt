@@ -1,5 +1,7 @@
 package com.github.jibbo.norwegiantraining.domain
 
+const val DEFAULT_CUSTOM_WORKOUT_ICON = "👟"
+
 /**
  * User-entered values for creating or editing a custom workout.
  *
@@ -8,7 +10,7 @@ package com.github.jibbo.norwegiantraining.domain
  */
 data class CustomWorkoutDraft(
     val name: String = "",
-    val icon: String? = "👟",
+    val icon: String? = DEFAULT_CUSTOM_WORKOUT_ICON,
     val workMinutes: String = "10",
     val workSeconds: String = "0",
     val restMinutes: String = "5",
