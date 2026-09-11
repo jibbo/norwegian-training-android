@@ -27,6 +27,7 @@ interface Analytics {
     fun enabled(enabled: Boolean)
     fun logStartFreeTrial(endDate: Date?)
     fun logRevenueCatError(name: String, message: String)
+    fun logManualWorkoutLogged()
 }
 
 class FirebaseTracker @Inject constructor(
@@ -108,6 +109,10 @@ class FirebaseTracker @Inject constructor(
             putString("name", name)
             putString("message", message)
         })
+    }
+
+    override fun logManualWorkoutLogged() {
+        firebaseAnalytics.logEvent("manual_workout_logged", null)
     }
 
 }
