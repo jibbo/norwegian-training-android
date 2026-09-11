@@ -82,6 +82,7 @@ fun CustomWorkoutFormScreen(
     val currentTimerState by timerState.collectAsState()
     val isWorkoutActive = currentTimerState.workoutId != -1L && !currentTimerState.isCompleted
     val deleteLabel = stringResource(R.string.custom_workout_delete)
+    val fallbackName = stringResource(R.string.custom_workout_default_name)
     val title = when (state.mode) {
         CustomWorkoutFormMode.CREATE -> R.string.custom_workout_create_title
         CustomWorkoutFormMode.EDIT -> R.string.custom_workout_edit_title
@@ -154,7 +155,7 @@ fun CustomWorkoutFormScreen(
             innerPadding = innerPadding,
             state = state,
             viewModel = viewModel,
-            onSave = { viewModel.save(isWorkoutActive) },
+            onSave = { viewModel.save(isWorkoutActive, fallbackName) },
         )
     }
 }

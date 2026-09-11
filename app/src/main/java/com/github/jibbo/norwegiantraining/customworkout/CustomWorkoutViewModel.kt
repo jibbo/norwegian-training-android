@@ -173,7 +173,10 @@ class CustomWorkoutViewModel @Inject constructor(
         states.value = states.value.copy(persistenceError = null)
     }
 
-    fun save(isWorkoutActive: Boolean = false): Job? {
+    fun save(
+        isWorkoutActive: Boolean = false,
+        fallbackName: String = "Custom",
+    ): Job? {
         if (isWorkoutActive) {
             states.value = states.value.copy(
                 persistenceError = CustomWorkoutPersistenceError.ACTIVE_WORKOUT,
@@ -201,7 +204,7 @@ class CustomWorkoutViewModel @Inject constructor(
             runCatching {
                 val workout = Workout(
                     id = currentState.workoutId ?: 0L,
-                    name = validation.trimmedName,
+                    name = validation.trimmedName.ifBlank { fallbackName },
                     difficulty = difficulty,
                     content = content,
                     isCustom = true,

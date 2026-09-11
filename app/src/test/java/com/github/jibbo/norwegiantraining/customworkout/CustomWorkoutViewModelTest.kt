@@ -294,6 +294,21 @@ class CustomWorkoutViewModelTest {
         assertEquals("Existing", repository.getById(42L)?.name)
     }
 
+    @Test
+    fun `blank name fallback remains stored across locale change`() = runTest {
+        val repository = FakeWorkoutRepository()
+        val creator = CustomWorkoutViewModel(repository)
+        creator.initialize(null)
+        creator.save(fallbackName = "Custom")?.join()
+        val stored = repository.getCustomWorkouts().first().single()
+
+        val editor = CustomWorkoutViewModel(repository)
+        editor.initialize(stored.id)?.join()
+
+        assertEquals("Custom", stored.name)
+        assertEquals("Custom", editor.uiState.value.draft.name)
+    }
+
     private fun workout(id: Long) = Workout(
         id = id,
         name = "Existing",
