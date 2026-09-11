@@ -101,6 +101,7 @@ internal fun Logs(
     onOpenHealthConnect: () -> Unit,
 ) {
     val listState = rememberLazyListState()
+    var selectedDay by remember { mutableStateOf<Date?>(null) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -144,7 +145,44 @@ internal fun Logs(
                 }
             }
             items(12) { month ->
-                Month(month, uiState)
+                Month(month, uiState, onDayClick = { selectedDay = it })
+            }
+        }
+    }
+    selectedDay?.let { day ->
+        val sessionsForDay = uiState.logs.values
+            .filterNotNull()
+            .flatten()
+            .filter { it.date.isSameDay(day) }
+        ModalBottomSheet(
+            onDismissRequest = { selectedDay = null },
+            modifier = Modifier.testTag("sessions_for_day_sheet"),
+        ) {
+            Column(modifier = Modifier.padding(24.dp)) {
+                Text(
+                    text = R.string.title_activity_logs.localizable(),
+                    style = Typography.headlineSmall,
+                )
+                Text(
+                    text = SimpleDateFormat("MMMM d").format(day),
+                    style = Typography.bodyMedium,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                sessionsForDay.forEach { session ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(text = session.name, style = Typography.bodyLarge)
+                        Text(
+                            text = R.string.workout_time.localizable(session.duration.toString()),
+                            style = Typography.bodyMedium,
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -511,7 +549,8 @@ private fun CaloriesCard(steps: Long?, modifier: Modifier = Modifier) {
 @Composable
 private fun Month(
     month: Int,
-    uiState: UiState.Loaded
+    uiState: UiState.Loaded,
+    onDayClick: (Date) -> Unit,
 ) {
     val dateFormat = SimpleDateFormat("MMMM")
     val calendar = Calendar.getInstance()
@@ -525,7 +564,7 @@ private fun Month(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         for (i in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-            Day(calendar, i, uiState, month)
+            Day(calendar, i, uiState, month, onDayClick)
         }
     }
     Spacer(
@@ -540,7 +579,8 @@ private fun Day(
     calendar: Calendar,
     index: Int,
     uiState: UiState.Loaded,
-    month: Int
+    month: Int,
+    onDayClick: (Date) -> Unit,
 ) {
     calendar.set(
         Calendar.DAY_OF_MONTH,
@@ -566,6 +606,8 @@ private fun Day(
         Box(
             modifier = modifier
                 .background(item.getStatus().getColor())
+                .clickable { onDayClick(boxDate) }
+                .testTag("calendar_day_${month}_$index")
         ) {
 //        Text(index.toString())
         }
