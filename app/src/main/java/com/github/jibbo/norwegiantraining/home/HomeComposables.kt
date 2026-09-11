@@ -37,7 +37,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
@@ -51,6 +53,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -639,12 +642,23 @@ internal fun Workouts(viewModel: HomeViewModel) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun WorkoutCard(
     workout: Workout,
     viewModel: HomeViewModel,
 ) {
     val cardShape = RoundedCornerShape(12.dp)
+    val editLabel = stringResource(R.string.home_edit_custom_workout)
+    val interactionModifier = if (workout.isCustom) {
+        Modifier.combinedClickable(
+            onClick = { viewModel.workoutClicked(workout.id) },
+            onLongClick = { viewModel.editWorkoutClicked(workout.id) },
+            onLongClickLabel = editLabel,
+        )
+    } else {
+        Modifier.clickable { viewModel.workoutClicked(workout.id) }
+    }
     ElevatedCard(
         colors = CardDefaults.elevatedCardColors(
             containerColor = Color.Black
@@ -652,12 +666,10 @@ private fun WorkoutCard(
         shape = cardShape,
         modifier = Modifier
             .fillMaxWidth()
+            .then(interactionModifier)
             .onGloballyPositioned {
                 WorkoutTransitionBounds.update(workout.id, it.boundsInWindow())
             },
-        onClick = {
-            viewModel.workoutClicked(workout.id)
-        }
     ) {
         Text(
             text = workout.displayLabel(),

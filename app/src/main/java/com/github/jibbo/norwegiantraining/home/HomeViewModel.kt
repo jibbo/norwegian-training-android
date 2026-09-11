@@ -78,6 +78,10 @@ class HomeViewModel @Inject constructor(
         publishEvent(UiCommands.SHOW_CUSTOM_WORKOUT(null))
     }
 
+    fun editWorkoutClicked(id: Long) {
+        publishEvent(UiCommands.SHOW_CUSTOM_WORKOUT(id))
+    }
+
     fun workoutClicked(id: Long) {
         val workout = (states.value as? UiState.Loaded)
             ?.workouts
