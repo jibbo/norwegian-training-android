@@ -40,6 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
@@ -57,6 +59,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.Toolbar
@@ -329,12 +332,16 @@ private fun PortraitLayout(
                                 style = Typography.titleLarge,
                                 fontWeight = FontWeight.Normal,
                             )
-                            Text(
-                                text = "+",
-                                modifier = Modifier.clickable { viewModel.createWorkoutClicked() },
-                                style = Typography.headlineMedium,
-                                fontWeight = FontWeight.Normal,
-                            )
+                            TextButton(onClick = {
+                                viewModel.createWorkoutClicked()
+                            }) {
+                                Text(
+                                    text = "+",
+                                    fontSize = 32.sp,
+                                    color = White,
+                                    fontWeight = FontWeight.Normal,
+                                )
+                            }
                         }
                     }
 
