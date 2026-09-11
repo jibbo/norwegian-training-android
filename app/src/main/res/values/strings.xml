@@ -8,6 +8,7 @@
     <string name="skip">Skip training phase</string>
     <string name="continue_btn">Continue</string>
     <string name="back">back</string>
+    <string name="save">Save</string>
     <string name="share">Share</string>
     <string name="buy">BUY</string>
     <string name="ok">OK</string>
@@ -142,6 +143,14 @@
     <string name="custom_workout_create_title">Create workout</string>
     <string name="custom_workout_edit_title">Edit workout</string>
     <string name="custom_workout_form_placeholder">Workout details will appear here.</string>
+    <string name="custom_workout_name">Name</string>
+    <string name="custom_workout_icon">Icon</string>
+    <string name="custom_workout_work_minutes">Work minutes</string>
+    <string name="custom_workout_work_seconds">Work seconds</string>
+    <string name="custom_workout_rest_minutes">Rest minutes</string>
+    <string name="custom_workout_rest_seconds">Rest seconds</string>
+    <string name="custom_workout_rounds">Rounds</string>
+    <string name="custom_workout_save_error">Could not save workout.</string>
     <string name="home_all_workouts">All Workouts</string>
     <string name="workout_time">⏱️ %1$s minutes</string>
     <string name="workout_split" translatable="false">%1$sx%1$s</string>

@@ -6,10 +6,14 @@ import android.os.Bundle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -22,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
+import com.github.jibbo.norwegiantraining.domain.CustomWorkoutField
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -63,6 +68,10 @@ fun CustomWorkoutFormScreen(
         CustomWorkoutFormMode.EDIT -> R.string.custom_workout_edit_title
     }
 
+    LaunchedEffect(state.saved) {
+        if (state.saved) onBack()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -75,19 +84,102 @@ fun CustomWorkoutFormScreen(
             )
         },
     ) { innerPadding ->
-        CustomWorkoutFormShell(innerPadding)
+        CustomWorkoutFormShell(
+            innerPadding = innerPadding,
+            state = state,
+            viewModel = viewModel,
+            onSave = { viewModel.save() },
+        )
     }
 }
 
 @Composable
-private fun CustomWorkoutFormShell(innerPadding: PaddingValues) {
+private fun CustomWorkoutFormShell(
+    innerPadding: PaddingValues,
+    state: CustomWorkoutFormState,
+    viewModel: CustomWorkoutViewModel,
+    onSave: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(stringResource(R.string.custom_workout_form_placeholder))
+        OutlinedTextField(
+            value = state.draft.name,
+            onValueChange = viewModel::updateName,
+            label = { Text(stringResource(R.string.custom_workout_name)) },
+            isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedTextField(
+            value = state.draft.icon.orEmpty(),
+            onValueChange = viewModel::updateIcon,
+            label = { Text(stringResource(R.string.custom_workout_icon)) },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            DurationField(
+                value = state.draft.workMinutes,
+                label = R.string.custom_workout_work_minutes,
+                isError = state.validationErrors.containsKey(CustomWorkoutField.WORK_MINUTES),
+                onValueChange = viewModel::updateWorkMinutes,
+            )
+            DurationField(
+                value = state.draft.workSeconds,
+                label = R.string.custom_workout_work_seconds,
+                isError = state.validationErrors.containsKey(CustomWorkoutField.WORK_SECONDS),
+                onValueChange = viewModel::updateWorkSeconds,
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            DurationField(
+                value = state.draft.restMinutes,
+                label = R.string.custom_workout_rest_minutes,
+                isError = state.validationErrors.containsKey(CustomWorkoutField.REST_MINUTES),
+                onValueChange = viewModel::updateRestMinutes,
+            )
+            DurationField(
+                value = state.draft.restSeconds,
+                label = R.string.custom_workout_rest_seconds,
+                isError = state.validationErrors.containsKey(CustomWorkoutField.REST_SECONDS),
+                onValueChange = viewModel::updateRestSeconds,
+            )
+        }
+        OutlinedTextField(
+            value = state.draft.rounds,
+            onValueChange = viewModel::updateRounds,
+            label = { Text(stringResource(R.string.custom_workout_rounds)) },
+            isError = state.validationErrors.containsKey(CustomWorkoutField.ROUNDS),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        state.persistenceError?.let {
+            Text(stringResource(R.string.custom_workout_save_error))
+        }
+        Button(
+            onClick = onSave,
+            enabled = !state.isSaving && !state.isLoading,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.save))
+        }
     }
+}
+
+@Composable
+private fun RowScope.DurationField(
+    value: String,
+    label: Int,
+    isError: Boolean,
+    onValueChange: (String) -> Unit,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(stringResource(label)) },
+        isError = isError,
+        modifier = Modifier.weight(1f),
+    )
 }
