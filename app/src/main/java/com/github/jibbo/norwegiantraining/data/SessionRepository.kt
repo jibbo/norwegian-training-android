@@ -13,6 +13,7 @@ interface SessionRepository {
     suspend fun getSessionsInRange(from: Date, to: Date): List<Session>
     suspend fun upsertSession(session: Session): Long
     suspend fun insertSession(session: Session): Long
+    suspend fun insertManualSession(session: Session): Long
     suspend fun insertSessions(sessions: List<Session>)
     suspend fun getTodaySession(): Session?
 }
@@ -32,6 +33,8 @@ class PersistentSessionRepository @Inject constructor(
     override suspend fun upsertSession(session: Session): Long = sessionDao.upsert(session)
 
     override suspend fun insertSession(session: Session): Long = sessionDao.insert(session)
+
+    override suspend fun insertManualSession(session: Session): Long = sessionDao.insertManual(session)
 
     override suspend fun insertSessions(sessions: List<Session>) = sessionDao.insert(sessions)
 

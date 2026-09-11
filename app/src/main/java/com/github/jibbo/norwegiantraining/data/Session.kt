@@ -26,6 +26,9 @@ interface SessionDao {
     suspend fun insert(session: Session): Long
 
     @Insert
+    suspend fun insertManual(session: Session): Long
+
+    @Insert
     suspend fun insert(sessions: List<Session>)
 
     @Query("SELECT * FROM session WHERE date BETWEEN :startOfDay AND :endOfDay LIMIT 1")

@@ -171,6 +171,12 @@ class FakeSessionRepository : SessionRepository {
         return session.id
     }
 
+    override suspend fun insertManualSession(session: Session): Long {
+        sessions.add(session)
+        todaySession.value = session
+        return session.id
+    }
+
     override suspend fun insertSessions(sessions: List<Session>) {
         this.sessions.addAll(sessions)
     }
