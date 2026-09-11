@@ -82,6 +82,7 @@ class LogActivity : BaseActivity() {
                                 onUpdateManualWorkoutDate = manualWorkoutViewModel::updateDate,
                                 onUpdateManualWorkoutHours = manualWorkoutViewModel::updateHours,
                                 onUpdateManualWorkoutMinutes = manualWorkoutViewModel::updateMinutes,
+                                onSubmitManualWorkout = manualWorkoutViewModel::submit,
                                 onHideTodayStats = {
                                     settingsRepository.setShowTodayStatsInActivitySection(false)
                                     todayStatsUiState.value = TodayStatsUiState.Hidden
