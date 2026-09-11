@@ -107,7 +107,7 @@ class CustomWorkoutViewModel @Inject constructor(
     }
 
     fun save(): Job? {
-        if (states.value.mode != CustomWorkoutFormMode.CREATE || states.value.isSaving) return null
+        if (states.value.isSaving) return null
 
         val validation = validateCustomWorkoutDraft(states.value.draft)
         states.value = states.value.copy(validationErrors = validation.errors)
@@ -122,20 +122,34 @@ class CustomWorkoutViewModel @Inject constructor(
             return null
         }
 
-        states.value = states.value.copy(isSaving = true, persistenceError = null)
+        val currentState = states.value
+        states.value = currentState.copy(isSaving = true, persistenceError = null)
         return viewModelScope.launch {
             runCatching {
-                workoutRepository.insertCustom(
-                    Workout(
-                        name = validation.trimmedName,
-                        difficulty = difficulty,
-                        content = content,
-                        isCustom = true,
-                        icon = validation.icon,
-                    )
+                val workout = Workout(
+                    id = currentState.workoutId ?: 0L,
+                    name = validation.trimmedName,
+                    difficulty = difficulty,
+                    content = content,
+                    isCustom = true,
+                    icon = validation.icon,
                 )
-            }.onSuccess {
-                states.value = states.value.copy(isSaving = false, saved = true)
+                if (currentState.mode == CustomWorkoutFormMode.CREATE) {
+                    workoutRepository.insertCustom(workout)
+                    true
+                } else {
+                    workoutRepository.updateCustom(workout)
+                }
+            }.onSuccess { updated ->
+                if (updated) {
+                    states.value = states.value.copy(isSaving = false, saved = true)
+                } else {
+                    states.value = states.value.copy(
+                        isSaving = false,
+                        persistenceError = CustomWorkoutPersistenceError.NOT_FOUND,
+                        notFound = true,
+                    )
+                }
             }.onFailure {
                 states.value = states.value.copy(
                     isSaving = false,

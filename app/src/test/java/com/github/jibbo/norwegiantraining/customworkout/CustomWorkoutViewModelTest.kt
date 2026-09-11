@@ -96,6 +96,34 @@ class CustomWorkoutViewModelTest {
     }
 
     @Test
+    fun `edit saves regenerated workout with stable id and cleared icon`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L))
+        val viewModel = CustomWorkoutViewModel(repository)
+
+        viewModel.initialize(42L)?.join()
+        viewModel.updateDraft(
+            CustomWorkoutDraft(
+                name = "Updated",
+                icon = null,
+                workMinutes = "1",
+                workSeconds = "0",
+                restMinutes = "0",
+                restSeconds = "30",
+                rounds = "10",
+            ),
+        )
+        viewModel.save()?.join()
+
+        val updated = repository.getById(42L)
+        assertTrue(viewModel.uiState.value.saved)
+        assertEquals(42L, updated?.id)
+        assertEquals("Updated", updated?.name)
+        assertEquals(null, updated?.icon)
+        assertEquals("5m-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-5m", updated?.content)
+        assertEquals(Difficulty.INTERMEDIATE, updated?.difficulty)
+    }
+    @Test
     fun `invalid create retains errors and does not insert`() = runTest {
         val repository = FakeWorkoutRepository()
         val viewModel = CustomWorkoutViewModel(repository)
