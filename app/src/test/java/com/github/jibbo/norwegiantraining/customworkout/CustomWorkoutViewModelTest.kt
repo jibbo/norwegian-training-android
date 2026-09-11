@@ -226,6 +226,49 @@ class CustomWorkoutViewModelTest {
         assertFalse(editViewModel.uiState.value.deleteRequested)
     }
 
+    @Test
+    fun `confirmed delete removes custom workout and reports deleted`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L))
+        val viewModel = CustomWorkoutViewModel(repository)
+        viewModel.initialize(42L)?.join()
+        viewModel.requestDelete()
+
+        viewModel.delete()?.join()
+
+        assertTrue(viewModel.uiState.value.deleted)
+        assertEquals(null, repository.getById(42L))
+    }
+
+    @Test
+    fun `clearing delete request does not mutate workout`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L))
+        val viewModel = CustomWorkoutViewModel(repository)
+        viewModel.initialize(42L)?.join()
+        viewModel.requestDelete()
+        viewModel.clearDeleteRequest()
+
+        assertFalse(viewModel.uiState.value.deleted)
+        assertEquals("Existing", repository.getById(42L)?.name)
+    }
+
+    @Test
+    fun `delete database failure is exposed without reporting deletion`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L))
+        val viewModel = CustomWorkoutViewModel(repository)
+        viewModel.initialize(42L)?.join()
+        repository.failure = IllegalStateException("db")
+
+        viewModel.requestDelete()
+        viewModel.delete()?.join()
+
+        assertFalse(viewModel.uiState.value.deleted)
+        assertEquals(CustomWorkoutPersistenceError.DATABASE_FAILURE, viewModel.uiState.value.persistenceError)
+        assertFalse(viewModel.uiState.value.isDeleting)
+    }
+
     private fun workout(id: Long) = Workout(
         id = id,
         name = "Existing",
