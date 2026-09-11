@@ -13,6 +13,8 @@ import com.github.jibbo.norwegiantraining.data.Difficulty
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerState
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
+import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo.FakeWorkoutTimerManager
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerStateManager
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
@@ -27,7 +29,7 @@ class CustomWorkoutFormScreenTest {
 
     @Test
     fun createFormShowsDefaultsAndNoDeleteAction() {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo())
+        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo(), FakeWorkoutTimerManager())
         setContent(viewModel, null)
 
         composeRule.onNodeWithText("Create workout").assertIsDisplayed()
@@ -38,7 +40,7 @@ class CustomWorkoutFormScreenTest {
 
     @Test
     fun createFormClearsIcon() {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo())
+        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo(), FakeWorkoutTimerManager())
         setContent(viewModel, null)
 
         composeRule.onNodeWithText("X").performClick()
@@ -50,7 +52,7 @@ class CustomWorkoutFormScreenTest {
 
     @Test
     fun fieldsCanBeEditedAndBackCallsCallback() {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo())
+        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo(), FakeWorkoutTimerManager())
         var backPressed = false
         setContent(viewModel, null, onBack = { backPressed = true })
 
@@ -75,7 +77,7 @@ class CustomWorkoutFormScreenTest {
             )
             )
         }
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = CustomWorkoutViewModel(repository, FakeWorkoutTimerManager())
         setContent(viewModel, 42L)
 
         composeRule.waitForIdle()
@@ -85,7 +87,7 @@ class CustomWorkoutFormScreenTest {
 
     @Test
     fun invalidRoundsTextIsRetainedAfterSave() {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo())
+        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo(), FakeWorkoutTimerManager())
         setContent(viewModel, null)
 
         composeRule.onNodeWithText("8").performTextReplacement("invalid")
@@ -98,7 +100,7 @@ class CustomWorkoutFormScreenTest {
     @Test
     fun deleteConfirmationCanBeCancelled() {
         val repository = repositoryWithCustomWorkout()
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo(), FakeWorkoutTimerManager())
         setContent(viewModel, 42L)
         composeRule.waitForIdle()
 
@@ -113,7 +115,7 @@ class CustomWorkoutFormScreenTest {
     @Test
     fun confirmedDeleteRemovesWorkoutAndCallsBack() {
         val repository = repositoryWithCustomWorkout()
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = CustomWorkoutViewModel(repository, FakeWorkoutTimerManager())
         var backPressed = false
         setContent(viewModel, 42L, onBack = { backPressed = true })
         composeRule.waitForIdle()
@@ -128,12 +130,12 @@ class CustomWorkoutFormScreenTest {
 
     @Test
     fun activeSaveShowsLocalizedBlockingAlert() {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo())
+        val timerStateManager = FakeWorkoutTimerManager()
+        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo(), timerStateManager)
         viewModel.updateName("Active workout")
         setContent(
             viewModel,
             null,
-            timerState = MutableStateFlow(WorkoutTimerState(workoutId = 42L)),
         )
 
         composeRule.onNodeWithText("Save").performClick()
@@ -146,11 +148,11 @@ class CustomWorkoutFormScreenTest {
 
     @Test
     fun activeDeleteShowsLocalizedBlockingAlert() {
-        val viewModel = CustomWorkoutViewModel(repositoryWithCustomWorkout())
+        val viewModel = CustomWorkoutViewModel(repositoryWithCustomWorkout(),
+            FakeWorkoutTimerManager())
         setContent(
             viewModel,
             42L,
-            timerState = MutableStateFlow(WorkoutTimerState(workoutId = 42L)),
         )
         composeRule.waitForIdle()
 
@@ -181,14 +183,12 @@ class CustomWorkoutFormScreenTest {
         viewModel: CustomWorkoutViewModel,
         workoutId: Long?,
         onBack: () -> Unit = {},
-        timerState: MutableStateFlow<WorkoutTimerState> = MutableStateFlow(WorkoutTimerState()),
     ) {
         composeRule.setContent {
             NorwegianTrainingTheme(darkTheme = true) {
                 CustomWorkoutFormScreen(
                     viewModel = viewModel,
                     workoutId = workoutId,
-                    timerState = timerState,
                     onBack = onBack,
                 )
             }

@@ -1,7 +1,12 @@
 package com.github.jibbo.norwegiantraining.data
 
 import com.github.jibbo.norwegiantraining.domain.FitnessLevel
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerManager
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.Date
 import java.util.Locale
 
@@ -203,6 +208,10 @@ class FakeWorkoutRepo : WorkoutRepository {
 
     override suspend fun insert(workouts: List<Workout>) {
         this.workouts.addAll(workouts)
+    }
+
+    class FakeWorkoutTimerManager : WorkoutTimerManager {
+        override fun getWorkoutTimerState(): StateFlow<WorkoutTimerState>  = MutableStateFlow(WorkoutTimerState(workoutId = 42L)).asStateFlow()
     }
 
 }
