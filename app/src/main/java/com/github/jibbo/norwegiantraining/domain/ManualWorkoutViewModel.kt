@@ -1,4 +1,8 @@
+@file:SuppressLint("NewApi")
+
 package com.github.jibbo.norwegiantraining.domain
+
+import android.annotation.SuppressLint
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

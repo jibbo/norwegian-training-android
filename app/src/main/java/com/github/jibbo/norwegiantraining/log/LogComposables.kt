@@ -1,4 +1,8 @@
+@file:SuppressLint("NewApi")
+
 package com.github.jibbo.norwegiantraining.log
+
+import android.annotation.SuppressLint
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
