@@ -208,6 +208,24 @@ class CustomWorkoutViewModelTest {
         assertFalse(viewModel.uiState.value.isLoading)
     }
 
+    @Test
+    fun `delete request is available only in edit mode`() = runTest {
+        val createViewModel = CustomWorkoutViewModel(FakeWorkoutRepository())
+        createViewModel.initialize(null)
+        createViewModel.requestDelete()
+        assertFalse(createViewModel.uiState.value.deleteRequested)
+
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L))
+        val editViewModel = CustomWorkoutViewModel(repository)
+        editViewModel.initialize(42L)?.join()
+        editViewModel.requestDelete()
+
+        assertTrue(editViewModel.uiState.value.deleteRequested)
+        editViewModel.clearDeleteRequest()
+        assertFalse(editViewModel.uiState.value.deleteRequested)
+    }
+
     private fun workout(id: Long) = Workout(
         id = id,
         name = "Existing",
