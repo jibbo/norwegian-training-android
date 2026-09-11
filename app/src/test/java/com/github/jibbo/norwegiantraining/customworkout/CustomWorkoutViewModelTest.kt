@@ -269,6 +269,31 @@ class CustomWorkoutViewModelTest {
         assertFalse(viewModel.uiState.value.isDeleting)
     }
 
+    @Test
+    fun `active workout blocks save without inserting`() = runTest {
+        val repository = FakeWorkoutRepository()
+        val viewModel = CustomWorkoutViewModel(repository)
+        viewModel.initialize(null)
+        viewModel.updateName("Blocked")
+
+        assertEquals(null, viewModel.save(isWorkoutActive = true))
+        assertEquals(CustomWorkoutPersistenceError.ACTIVE_WORKOUT, viewModel.uiState.value.persistenceError)
+        assertEquals(0, repository.getCustomWorkouts().first().size)
+    }
+
+    @Test
+    fun `active workout blocks delete without deleting`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L))
+        val viewModel = CustomWorkoutViewModel(repository)
+        viewModel.initialize(42L)?.join()
+        viewModel.requestDelete()
+
+        assertEquals(null, viewModel.delete(isWorkoutActive = true))
+        assertEquals(CustomWorkoutPersistenceError.ACTIVE_WORKOUT, viewModel.uiState.value.persistenceError)
+        assertEquals("Existing", repository.getById(42L)?.name)
+    }
+
     private fun workout(id: Long) = Workout(
         id = id,
         name = "Existing",

@@ -127,7 +127,14 @@ class CustomWorkoutViewModel @Inject constructor(
         states.value = states.value.copy(deleteRequested = false)
     }
 
-    fun delete(): Job? {
+    fun delete(isWorkoutActive: Boolean = false): Job? {
+        if (isWorkoutActive) {
+            states.value = states.value.copy(
+                deleteRequested = false,
+                persistenceError = CustomWorkoutPersistenceError.ACTIVE_WORKOUT,
+            )
+            return null
+        }
         val currentState = states.value
         val workoutId = currentState.workoutId
         if (currentState.mode != CustomWorkoutFormMode.EDIT ||
@@ -162,7 +169,17 @@ class CustomWorkoutViewModel @Inject constructor(
         }
     }
 
-    fun save(): Job? {
+    fun clearPersistenceError() {
+        states.value = states.value.copy(persistenceError = null)
+    }
+
+    fun save(isWorkoutActive: Boolean = false): Job? {
+        if (isWorkoutActive) {
+            states.value = states.value.copy(
+                persistenceError = CustomWorkoutPersistenceError.ACTIVE_WORKOUT,
+            )
+            return null
+        }
         if (states.value.isSaving) return null
 
         val validation = validateCustomWorkoutDraft(states.value.draft)
