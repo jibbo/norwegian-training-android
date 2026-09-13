@@ -156,7 +156,7 @@
     <string name="custom_workout_delete">Eigenes Workout löschen</string>
     <string name="custom_workout_delete_message">Dieses eigene Workout wird dauerhaft gelöscht.</string>
     <string name="custom_workout_delete_title">Workout löschen?</string>
-    <string name="custom_workout_edit_title">Eigenes Workout bearbeiten</string>
+    <string name="custom_workout_edit_title">Workout bearbeiten</string>
     <string name="custom_workout_form_placeholder">Workout-Details werden hier angezeigt.</string>
     <string name="custom_workout_icon">Symbol</string>
     <string name="custom_workout_name">Name</string>
@@ -171,7 +171,7 @@
     <string name="empty">leer</string>
     <string name="five">fünf</string>
     <string name="four">vier</string>
-    <string name="home_edit_custom_workout">Eigenes Workout bearbeiten</string>
+    <string name="home_edit_workout">Workout bearbeiten</string>
     <string name="nine">neun</string>
     <string name="one">eins</string>
     <string name="save">Speichern</string>

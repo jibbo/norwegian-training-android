@@ -64,4 +64,18 @@ class CustomWorkoutContentTest {
 
         assertNull(generateCustomWorkoutContent(validation))
     }
+
+    @Test
+    fun `persisted content is parsed into form fields`() {
+        assertEquals(
+            ParsedWorkoutContent("1", "30", "0", "45", "2"),
+            parseCustomWorkoutContent("5m-90s-45s-90s-45s-5m"),
+        )
+    }
+
+    @Test
+    fun `malformed or non-repeating content is rejected`() {
+        assertNull(parseCustomWorkoutContent("not-a-workout"))
+        assertNull(parseCustomWorkoutContent("5m-1m-30s-2m-30s-5m"))
+    }
 }

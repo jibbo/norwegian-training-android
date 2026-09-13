@@ -16,7 +16,7 @@ interface WorkoutRepository {
     suspend fun getById(id: Long): Workout?
     suspend fun getDifficulties(): List<Difficulty>
     suspend fun insertCustom(workout: Workout): Long
-    suspend fun updateCustom(workout: Workout): Boolean
+    suspend fun updateById(workout: Workout): Boolean
     suspend fun deleteCustom(id: Long): Boolean
     suspend fun insert(vararg workouts: Workout)
     suspend fun insert(workouts: List<Workout>)
@@ -49,12 +49,13 @@ class PersistentWorkoutRepository @Inject constructor(
 
     override suspend fun insertCustom(workout: Workout): Long = workoutDao.insertCustom(workout)
 
-    override suspend fun updateCustom(workout: Workout): Boolean =
-        workoutDao.updateCustomById(
+    override suspend fun updateById(workout: Workout): Boolean =
+        workoutDao.updateById(
             id = workout.id,
             name = workout.name,
             difficulty = workout.difficulty,
             content = workout.content,
+            isCustom = workout.isCustom,
             icon = workout.icon,
         ) == 1
 

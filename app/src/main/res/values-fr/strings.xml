@@ -156,7 +156,7 @@
     <string name="custom_workout_delete">Supprimer l’entraînement personnalisé</string>
     <string name="custom_workout_delete_message">Cet entraînement personnalisé sera définitivement supprimé.</string>
     <string name="custom_workout_delete_title">Supprimer l’entraînement ?</string>
-    <string name="custom_workout_edit_title">Modifier l’entraînement personnalisé</string>
+    <string name="custom_workout_edit_title">Modifier l’entraînement</string>
     <string name="custom_workout_form_placeholder">Les détails de l’entraînement apparaîtront ici.</string>
     <string name="custom_workout_icon">Icône</string>
     <string name="custom_workout_name">Nom</string>
@@ -171,7 +171,7 @@
     <string name="empty">vide</string>
     <string name="five">cinq</string>
     <string name="four">quatre</string>
-    <string name="home_edit_custom_workout">Modifier l’entraînement personnalisé</string>
+    <string name="home_edit_workout">Modifier l’entraînement</string>
     <string name="nine">neuf</string>
     <string name="one">un</string>
     <string name="save">Enregistrer</string>

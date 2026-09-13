@@ -62,6 +62,16 @@ class HomeWorkoutsScreenTest {
             .performTouchInput { longClick() }
     }
 
+    @Test
+    fun builtInCardsAlsoExposeLongPressEdit() {
+        val viewModel = homeViewModel(repositoryWithWorkouts())
+        setContent(viewModel)
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithText("Built-in")
+            .performTouchInput { longClick() }
+    }
+
     private fun setContent(viewModel: HomeViewModel) {
         composeRule.setContent {
             NorwegianTrainingTheme(darkTheme = true) {

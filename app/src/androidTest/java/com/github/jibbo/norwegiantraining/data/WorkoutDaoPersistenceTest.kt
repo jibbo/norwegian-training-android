@@ -46,11 +46,12 @@ class WorkoutDaoPersistenceTest {
     fun updatePreservesIdAndClearedIcon() = runBlocking {
         val id = dao.insertCustom(workout(name = "Before", icon = "🔥"))
 
-        val updated = dao.updateCustomById(
+        val updated = dao.updateById(
             id = id,
             name = "After",
             difficulty = Difficulty.EXPERT,
             content = "5m-2m-1m-5m",
+            isCustom = true,
             icon = null,
         )
 
@@ -84,12 +85,29 @@ class WorkoutDaoPersistenceTest {
         val id = dao.insertCustom(workout(name = "First"))
         assertEquals("First", dao.getCustomWorkouts().first().single().name)
 
-        dao.updateCustomById(id, "Changed", Difficulty.BEGINNER, "5m-1m-1m-5m", "🏃")
+        dao.updateById(id, "Changed", Difficulty.BEGINNER, "5m-1m-1m-5m", true, "🏃")
         assertEquals("Changed", dao.getCustomWorkouts().first().single().name)
         assertEquals("🏃", dao.getCustomWorkouts().first().single().icon)
 
         dao.deleteCustomById(id)
         assertTrue(dao.getCustomWorkouts().first().isEmpty())
+    }
+
+    @Test
+    fun updateByIdCanUpdateBuiltInRows() = runBlocking {
+        dao.insert(workout(id = 1, name = "Built-in", isCustom = false))
+
+        assertEquals(
+            1,
+            dao.updateById(1, "Edited", Difficulty.EXPERT, "5m-2m-1m-5m", false, "🏃"),
+        )
+        val stored = dao.getById(1)
+        assertEquals(1L, stored?.id)
+        assertEquals("Edited", stored?.name)
+        assertEquals(Difficulty.EXPERT, stored?.difficulty)
+        assertEquals("5m-2m-1m-5m", stored?.content)
+        assertFalse(stored?.isCustom == true)
+        assertEquals("🏃", stored?.icon)
     }
 
     private fun workout(

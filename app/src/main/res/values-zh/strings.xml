@@ -156,7 +156,7 @@
     <string name="custom_workout_delete">删除自定义训练</string>
     <string name="custom_workout_delete_message">此自定义训练将被永久删除。</string>
     <string name="custom_workout_delete_title">删除训练？</string>
-    <string name="custom_workout_edit_title">编辑自定义训练</string>
+    <string name="custom_workout_edit_title">编辑训练</string>
     <string name="custom_workout_form_placeholder">训练详情会显示在这里。</string>
     <string name="custom_workout_icon">图标</string>
     <string name="custom_workout_name">名称</string>
@@ -171,7 +171,7 @@
     <string name="empty">空</string>
     <string name="five">五</string>
     <string name="four">四</string>
-    <string name="home_edit_custom_workout">编辑自定义训练</string>
+    <string name="home_edit_workout">编辑训练</string>
     <string name="nine">九</string>
     <string name="one">一</string>
     <string name="save">保存</string>

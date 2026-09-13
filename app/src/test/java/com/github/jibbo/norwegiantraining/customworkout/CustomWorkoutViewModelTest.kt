@@ -1,10 +1,12 @@
 package com.github.jibbo.norwegiantraining.customworkout
 
 import com.github.jibbo.norwegiantraining.data.Difficulty
+import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo.FakeWorkoutTimerManager
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutDraft
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutField
 import com.github.jibbo.norwegiantraining.domain.CustomWorkoutValidationError
+import com.github.jibbo.norwegiantraining.domain.DEFAULT_CUSTOM_WORKOUT_ICON
 import com.github.jibbo.norwegiantraining.testutils.FakeWorkoutRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -14,9 +16,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class CustomWorkoutViewModelTest {
+    private fun viewModel(repository: FakeWorkoutRepository = FakeWorkoutRepository()) =
+        CustomWorkoutViewModel(repository, FakeWorkoutTimerManager())
+
     @Test
     fun `null id selects create mode`() {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepository())
+        val viewModel = viewModel()
 
         viewModel.initialize(null)
 
@@ -30,7 +35,7 @@ class CustomWorkoutViewModelTest {
         val repository = FakeWorkoutRepository()
         repository.insert(workout(42L))
         assertEquals("Existing", repository.getById(42L)?.name)
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
 
         viewModel.initialize(42L)?.join()
 
@@ -42,7 +47,7 @@ class CustomWorkoutViewModelTest {
 
     @Test
     fun `create form starts with default icon`() {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepository())
+        val viewModel = viewModel()
 
         viewModel.initialize(null)
 
@@ -52,7 +57,7 @@ class CustomWorkoutViewModelTest {
     @Test
     fun `cleared icon persists as null`() = runTest {
         val repository = FakeWorkoutRepository()
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
         viewModel.initialize(null)
         viewModel.updateIcon(null)
         viewModel.updateName("Plain")
@@ -66,7 +71,7 @@ class CustomWorkoutViewModelTest {
     fun `edit loading does not restore default for null icon`() = runTest {
         val repository = FakeWorkoutRepository()
         repository.insert(workout(42L).copy(icon = null))
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
 
         viewModel.initialize(42L)?.join()
 
@@ -75,7 +80,7 @@ class CustomWorkoutViewModelTest {
 
     @Test
     fun `field updates retain invalid text and clear stale errors`() {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepository())
+        val viewModel = viewModel()
         viewModel.updateRounds("not a number")
 
         assertEquals("not a number", viewModel.uiState.value.draft.rounds)
@@ -93,7 +98,7 @@ class CustomWorkoutViewModelTest {
 
     @Test
     fun `missing edit id is represented as not found`() = runTest {
-        val viewModel = CustomWorkoutViewModel(FakeWorkoutRepository())
+        val viewModel = viewModel()
 
         viewModel.initialize(99L)?.join()
 
@@ -105,7 +110,7 @@ class CustomWorkoutViewModelTest {
     @Test
     fun `valid create saves generated custom workout and returns success`() = runTest {
         val repository = FakeWorkoutRepository()
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
         viewModel.initialize(null)
         viewModel.updateDraft(
             CustomWorkoutDraft(
@@ -132,7 +137,7 @@ class CustomWorkoutViewModelTest {
     fun `edit saves regenerated workout with stable id and cleared icon`() = runTest {
         val repository = FakeWorkoutRepository()
         repository.insert(workout(42L))
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
 
         viewModel.initialize(42L)?.join()
         viewModel.updateDraft(
@@ -156,10 +161,70 @@ class CustomWorkoutViewModelTest {
         assertEquals("5m-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-1m-30s-5m", updated?.content)
         assertEquals(Difficulty.INTERMEDIATE, updated?.difficulty)
     }
+
+    @Test
+    fun `built-in edit loads fields and saves unchanged content and metadata`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(
+            workout(42L).copy(
+                name = "Built-in",
+                difficulty = Difficulty.EXPERT,
+                content = "5m-198s-198s-198s-198s-198s-198s-5m",
+                isCustom = false,
+                icon = "🏃",
+            ),
+        )
+        val viewModel = viewModel(repository)
+
+        viewModel.initialize(42L)?.join()
+
+        assertEquals("Built-in", viewModel.uiState.value.draft.name)
+        assertEquals("3", viewModel.uiState.value.draft.workMinutes)
+        assertEquals("18", viewModel.uiState.value.draft.workSeconds)
+        assertEquals("3", viewModel.uiState.value.draft.rounds)
+        assertFalse(viewModel.uiState.value.isCustom)
+        viewModel.save()?.join()
+
+        val updated = repository.getById(42L)
+        assertTrue(viewModel.uiState.value.saved)
+        assertEquals(42L, updated?.id)
+        assertEquals("5m-198s-198s-198s-198s-198s-198s-5m", updated?.content)
+        assertEquals(Difficulty.EXPERT, updated?.difficulty)
+        assertFalse(updated?.isCustom == true)
+        assertEquals("🏃", updated?.icon)
+    }
+
+    @Test
+    fun `built-in edit cannot request deletion and can update by id`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L).copy(isCustom = false))
+        val viewModel = viewModel(repository)
+        viewModel.initialize(42L)?.join()
+
+        viewModel.requestDelete()
+        viewModel.updateName("Edited")
+        viewModel.save()?.join()
+
+        assertFalse(viewModel.uiState.value.deleteRequested)
+        assertEquals("Edited", repository.getById(42L)?.name)
+        assertFalse(repository.getById(42L)?.isCustom == true)
+    }
+
+    @Test
+    fun `malformed edit content exposes an error`() = runTest {
+        val repository = FakeWorkoutRepository()
+        repository.insert(workout(42L).copy(isCustom = false, content = "broken"))
+        val viewModel = viewModel(repository)
+
+        viewModel.initialize(42L)?.join()
+
+        assertEquals(CustomWorkoutPersistenceError.MALFORMED_CONTENT, viewModel.uiState.value.persistenceError)
+        assertFalse(viewModel.uiState.value.notFound)
+    }
     @Test
     fun `invalid create retains errors and does not insert`() = runTest {
         val repository = FakeWorkoutRepository()
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
         viewModel.initialize(null)
         viewModel.updateRounds("0")
 
@@ -172,7 +237,7 @@ class CustomWorkoutViewModelTest {
     @Test
     fun `create database failure is exposed without reporting success`() = runTest {
         val repository = FakeWorkoutRepository().apply { failure = IllegalStateException("db") }
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
 
         viewModel.save()?.join()
 
@@ -185,7 +250,7 @@ class CustomWorkoutViewModelTest {
     fun `edit database failure is exposed without reporting success`() = runTest {
         val repository = FakeWorkoutRepository()
         repository.insert(workout(42L))
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
         viewModel.initialize(42L)?.join()
         repository.failure = IllegalStateException("db")
 
@@ -199,7 +264,7 @@ class CustomWorkoutViewModelTest {
     @Test
     fun `edit load database failure is not reported as missing`() = runTest {
         val repository = FakeWorkoutRepository().apply { failure = IllegalStateException("db") }
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
 
         viewModel.initialize(42L)?.join()
 
@@ -210,14 +275,14 @@ class CustomWorkoutViewModelTest {
 
     @Test
     fun `delete request is available only in edit mode`() = runTest {
-        val createViewModel = CustomWorkoutViewModel(FakeWorkoutRepository())
+        val createViewModel = viewModel()
         createViewModel.initialize(null)
         createViewModel.requestDelete()
         assertFalse(createViewModel.uiState.value.deleteRequested)
 
         val repository = FakeWorkoutRepository()
         repository.insert(workout(42L))
-        val editViewModel = CustomWorkoutViewModel(repository)
+        val editViewModel = viewModel(repository)
         editViewModel.initialize(42L)?.join()
         editViewModel.requestDelete()
 
@@ -230,7 +295,7 @@ class CustomWorkoutViewModelTest {
     fun `confirmed delete removes custom workout and reports deleted`() = runTest {
         val repository = FakeWorkoutRepository()
         repository.insert(workout(42L))
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
         viewModel.initialize(42L)?.join()
         viewModel.requestDelete()
 
@@ -244,7 +309,7 @@ class CustomWorkoutViewModelTest {
     fun `clearing delete request does not mutate workout`() = runTest {
         val repository = FakeWorkoutRepository()
         repository.insert(workout(42L))
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
         viewModel.initialize(42L)?.join()
         viewModel.requestDelete()
         viewModel.clearDeleteRequest()
@@ -257,7 +322,7 @@ class CustomWorkoutViewModelTest {
     fun `delete database failure is exposed without reporting deletion`() = runTest {
         val repository = FakeWorkoutRepository()
         repository.insert(workout(42L))
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
         viewModel.initialize(42L)?.join()
         repository.failure = IllegalStateException("db")
 
@@ -272,7 +337,7 @@ class CustomWorkoutViewModelTest {
     @Test
     fun `active workout blocks save without inserting`() = runTest {
         val repository = FakeWorkoutRepository()
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
         viewModel.initialize(null)
         viewModel.updateName("Blocked")
 
@@ -285,7 +350,7 @@ class CustomWorkoutViewModelTest {
     fun `active workout blocks delete without deleting`() = runTest {
         val repository = FakeWorkoutRepository()
         repository.insert(workout(42L))
-        val viewModel = CustomWorkoutViewModel(repository)
+        val viewModel = viewModel(repository)
         viewModel.initialize(42L)?.join()
         viewModel.requestDelete()
 
@@ -297,12 +362,12 @@ class CustomWorkoutViewModelTest {
     @Test
     fun `blank name fallback remains stored across locale change`() = runTest {
         val repository = FakeWorkoutRepository()
-        val creator = CustomWorkoutViewModel(repository)
+        val creator = viewModel(repository)
         creator.initialize(null)
         creator.save(fallbackName = "Custom")?.join()
         val stored = repository.getCustomWorkouts().first().single()
 
-        val editor = CustomWorkoutViewModel(repository)
+        val editor = viewModel(repository)
         editor.initialize(stored.id)?.join()
 
         assertEquals("Custom", stored.name)

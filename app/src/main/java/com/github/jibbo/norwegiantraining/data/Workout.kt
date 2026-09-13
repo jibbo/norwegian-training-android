@@ -42,16 +42,17 @@ interface WorkoutDao {
         SET name = :name,
             difficulty = :difficulty,
             content = :content,
-            isCustom = 1,
+            isCustom = :isCustom,
             icon = :icon
-        WHERE id = :id AND isCustom = 1
+        WHERE id = :id
         """
     )
-    suspend fun updateCustomById(
+    suspend fun updateById(
         id: Long,
         name: String,
         difficulty: Difficulty,
         content: String,
+        isCustom: Boolean,
         icon: String?,
     ): Int
 

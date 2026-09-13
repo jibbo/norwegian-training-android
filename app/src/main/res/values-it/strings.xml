@@ -178,7 +178,7 @@
     <string name="custom_workout_delete">Elimina allenamento personalizzato</string>
     <string name="custom_workout_delete_message">Questo allenamento personalizzato verrà eliminato definitivamente.</string>
     <string name="custom_workout_delete_title">Eliminare l’allenamento?</string>
-    <string name="custom_workout_edit_title">Modifica allenamento personalizzato</string>
+    <string name="custom_workout_edit_title">Modifica allenamento</string>
     <string name="custom_workout_form_placeholder">I dettagli dell’allenamento verranno mostrati qui.</string>
     <string name="custom_workout_icon">Icona</string>
     <string name="custom_workout_name">Nome</string>
@@ -193,7 +193,7 @@
     <string name="empty">vuoto</string>
     <string name="five">cinque</string>
     <string name="four">quattro</string>
-    <string name="home_edit_custom_workout">Modifica allenamento personalizzato</string>
+    <string name="home_edit_workout">Modifica allenamento</string>
     <string name="nine">nove</string>
     <string name="one">uno</string>
     <string name="save">Salva</string>
