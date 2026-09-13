@@ -51,6 +51,11 @@
             android:name=".log.LogActivity"
             android:exported="false" />
         <activity
+            android:name=".log.ManualWorkoutActivity"
+            android:exported="false"
+            android:theme="@style/Theme.NorwegianTraining"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".customworkout.CustomWorkoutActivity"
             android:exported="false"
             android:theme="@style/Theme.NorwegianTraining"
