@@ -148,12 +148,21 @@ class FakeSettingsRepository : SettingsRepository {
 class FakeSessionRepository : SessionRepository {
     private val sessions = mutableListOf<Session>()
     private val todaySession = MutableStateFlow<Session?>(null)
+    var manualInsertFailure: Throwable? = null
+    val rangeQueries = mutableListOf<Pair<Date, Date>>()
+
+    fun replaceSessions(replacement: List<Session>) {
+        sessions.clear()
+        sessions.addAll(replacement)
+    }
 
     override suspend fun getSessions(limit: Int, offset: Int): List<Session> =
         sessions.sortedByDescending { it.date }.drop(offset).take(limit)
 
     override suspend fun getSessionsInRange(from: Date, to: Date): List<Session> =
-        sessions.filter { it.date >= from && it.date <= to }
+        sessions.filter { it.date >= from && it.date <= to }.also {
+            rangeQueries += from to to
+        }
 
     override suspend fun upsertSession(session: Session): Long {
         val existingIndex = sessions.indexOfFirst { it.id == session.id && session.id != 0L }
@@ -167,6 +176,13 @@ class FakeSessionRepository : SessionRepository {
     }
 
     override suspend fun insertSession(session: Session): Long {
+        sessions.add(session)
+        todaySession.value = session
+        return session.id
+    }
+
+    override suspend fun insertManualSession(session: Session): Long {
+        manualInsertFailure?.let { throw it }
         sessions.add(session)
         todaySession.value = session
         return session.id
@@ -304,5 +320,9 @@ class FakeAnalytics : Analytics {
 
     override fun logRevenueCatError(name: String, message: String) {
         calls += "revenuecat_error:$name"
+    }
+
+    override fun logManualWorkoutLogged() {
+        calls += "manual_workout_logged"
     }
 }

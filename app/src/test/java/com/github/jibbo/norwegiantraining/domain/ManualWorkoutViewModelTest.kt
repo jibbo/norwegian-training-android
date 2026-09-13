@@ -3,8 +3,10 @@ package com.github.jibbo.norwegiantraining.domain
 import com.github.jibbo.norwegiantraining.testutils.FakeAnalytics
 import com.github.jibbo.norwegiantraining.testutils.FakeSessionRepository
 import com.github.jibbo.norwegiantraining.testutils.MainDispatcherRule
+import com.github.jibbo.norwegiantraining.data.Session
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.launch
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -104,6 +106,8 @@ class ManualWorkoutViewModelTest {
         val viewModel = ManualWorkoutViewModel(
             SaveManualWorkoutUseCase(repository, analytics),
         )
+        val savedSessions = mutableListOf<Session>()
+        val eventJob = launch { viewModel.savedSessionEvent.collect { savedSessions += it } }
         viewModel.open(LocalDate.now())
         viewModel.selectType(ManualWorkoutType.RUN)
 
@@ -114,7 +118,10 @@ class ManualWorkoutViewModelTest {
         assertFalse(state.sheetVisible)
         assertFalse(state.isSaving)
         assertTrue(state.saveCompleted)
+        assertEquals(1, savedSessions.size)
+        assertEquals(repository.getSessions().single().date, savedSessions.single().date)
         assertEquals(listOf("manual_workout_logged"), analytics.calls)
+        eventJob.cancel()
     }
 
     @Test

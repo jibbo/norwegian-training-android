@@ -6,8 +6,12 @@ import android.annotation.SuppressLint
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.jibbo.norwegiantraining.data.Session
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -28,6 +32,8 @@ class ManualWorkoutViewModel @Inject constructor(
 ) : ViewModel() {
     private val states = MutableStateFlow(ManualWorkoutUiState())
     val uiState = states.asStateFlow()
+    private val savedSessionEvents = MutableSharedFlow<Session>(extraBufferCapacity = 1)
+    val savedSessionEvent: SharedFlow<Session> = savedSessionEvents.asSharedFlow()
 
     fun open(today: LocalDate = LocalDate.now()) {
         states.value = ManualWorkoutUiState(
@@ -80,6 +86,7 @@ class ManualWorkoutViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = saveManualWorkout(validation, translatedName)) {
                 is ManualWorkoutSaveResult.Success -> {
+                    savedSessionEvents.emit(result.session)
                     states.value = states.value.copy(
                         sheetVisible = false,
                         isSaving = false,
