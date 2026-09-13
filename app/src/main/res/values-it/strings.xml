@@ -113,6 +113,7 @@
     <string name="manual_workout_type_walking">Camminata</string>
     <string name="manual_workout_type_hiit">HIIT</string>
     <string name="manual_workout_title">Registra allenamento</string>
+    <string name="manual_workout_add">Aggiungi allenamento manuale</string>
     <string name="manual_workout_type">Tipo di allenamento</string>
     <string name="manual_workout_select_type">Seleziona un tipo di allenamento</string>
     <string name="manual_workout_date">Data</string>

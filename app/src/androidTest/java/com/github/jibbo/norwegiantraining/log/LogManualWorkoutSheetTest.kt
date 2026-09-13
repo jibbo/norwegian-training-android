@@ -8,10 +8,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.jibbo.norwegiantraining.data.Session
@@ -23,6 +25,8 @@ import com.github.jibbo.norwegiantraining.domain.ManualWorkoutValidationError
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import java.util.Calendar
 import java.util.Date
+import java.time.LocalDate
+import java.time.ZoneId
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -154,6 +158,90 @@ class LogManualWorkoutSheetTest {
         composeRule.onNodeWithTag("sessions_for_day_sheet").assertIsDisplayed()
         composeRule.onNodeWithText("Morning run").assertIsDisplayed()
         composeRule.onNodeWithText("Evening ride").assertIsDisplayed()
+    }
+
+    @Test
+    fun clickingEmptyDayShowsDaySheet() {
+        composeRule.setContent {
+            NorwegianTrainingTheme(darkTheme = true) {
+                Logs(
+                    innerPadding = androidx.compose.foundation.layout.PaddingValues(),
+                    uiState = UiState.Loaded(emptyMap()),
+                    todayStatsUiState = TodayStatsUiState.Hidden,
+                    manualWorkoutUiState = ManualWorkoutUiState(),
+                    onOpenManualWorkout = {},
+                    onDismissManualWorkout = {},
+                    onSelectManualWorkoutType = {},
+                    onUpdateManualWorkoutDate = {},
+                    onUpdateManualWorkoutHours = {},
+                    onUpdateManualWorkoutMinutes = {},
+                    onSubmitManualWorkout = {},
+                    onHideTodayStats = {},
+                    onRequestPermissions = {},
+                    onOpenHealthConnect = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("calendar_day_0_1").performClick()
+
+        composeRule.onNodeWithTag("sessions_for_day_sheet").assertIsDisplayed()
+    }
+
+    @Test
+    fun occupiedDayCanOpenManualWorkoutForSelectedDate() {
+        val day = Calendar.getInstance().apply {
+            set(Calendar.MONTH, Calendar.JANUARY)
+            set(Calendar.DAY_OF_MONTH, 15)
+            set(Calendar.HOUR_OF_DAY, 12)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+        var selectedDate: LocalDate? = null
+        composeRule.setContent {
+            var manualState by mutableStateOf(ManualWorkoutUiState())
+            NorwegianTrainingTheme(darkTheme = true) {
+                Logs(
+                    innerPadding = androidx.compose.foundation.layout.PaddingValues(),
+                    uiState = UiState.Loaded(
+                        mapOf(
+                            Calendar.JANUARY to listOf(
+                                Session(id = 1L, date = day, phasesEnded = 1),
+                            ),
+                        ),
+                    ),
+                    todayStatsUiState = TodayStatsUiState.Hidden,
+                    manualWorkoutUiState = manualState,
+                    onOpenManualWorkout = { date ->
+                        selectedDate = date
+                        manualState = manualState.copy(
+                            sheetVisible = true,
+                            draft = manualState.draft.copy(date = date),
+                        )
+                    },
+                    onDismissManualWorkout = {
+                        manualState = manualState.copy(sheetVisible = false)
+                    },
+                    onSelectManualWorkoutType = {},
+                    onUpdateManualWorkoutDate = {},
+                    onUpdateManualWorkoutHours = {},
+                    onUpdateManualWorkoutMinutes = {},
+                    onSubmitManualWorkout = {},
+                    onHideTodayStats = {},
+                    onRequestPermissions = {},
+                    onOpenHealthConnect = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("calendar_day_0_15").performClick()
+        composeRule.onNodeWithTag("add_manual_workout_for_day").performClick()
+
+        assert(selectedDate == day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+        composeRule.onAllNodesWithTag("sessions_for_day_sheet").assertCountEquals(0)
+        composeRule.onNodeWithTag("manual_workout_sheet").assertIsDisplayed()
+        composeRule.onNodeWithTag("manual_workout_date").assertTextContains(selectedDate.toString())
     }
 
     @Test

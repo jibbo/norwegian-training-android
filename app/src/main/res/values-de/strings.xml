@@ -108,6 +108,7 @@
     <string name="manual_workout_type_walking">Gehen</string>
     <string name="manual_workout_type_hiit">HIIT</string>
     <string name="manual_workout_title">Training protokollieren</string>
+    <string name="manual_workout_add">Manuelles Training hinzufügen</string>
     <string name="manual_workout_type">Trainingsart</string>
     <string name="manual_workout_select_type">Trainingsart auswählen</string>
     <string name="manual_workout_date">Datum</string>

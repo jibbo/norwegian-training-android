@@ -76,7 +76,7 @@ class LogActivity : BaseActivity() {
                                 uiState = uiState.value as UiState.Loaded,
                                 todayStatsUiState = todayStatsUiState.value,
                                 manualWorkoutUiState = manualWorkoutUiState.value,
-                                onOpenManualWorkout = { manualWorkoutViewModel.open() },
+                                onOpenManualWorkout = { date -> manualWorkoutViewModel.open(date) },
                                 onDismissManualWorkout = { manualWorkoutViewModel.dismiss() },
                                 onSelectManualWorkoutType = manualWorkoutViewModel::selectType,
                                 onUpdateManualWorkoutDate = manualWorkoutViewModel::updateDate,
