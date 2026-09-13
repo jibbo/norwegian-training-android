@@ -148,7 +148,10 @@ fun Toolbar(
 
 @Composable
 fun AnimatedToolbar(
-    name: String, listState: LazyListState, backDispatcher: OnBackPressedDispatcher? = null
+    name: String,
+    listState: LazyListState,
+    backDispatcher: OnBackPressedDispatcher? = null,
+    trailingContent: (@Composable () -> Unit)? = null,
 ) {
     val density = LocalDensity.current
     val initialFontSizeSp = Typography.displayLarge.fontSize.value
@@ -217,7 +220,9 @@ fun AnimatedToolbar(
                     fontSize = animatedFontSizeSp.sp,
                     lineHeight = animatedLineHeightSp.sp
                 ),
+                modifier = Modifier.weight(1f),
             )
+            trailingContent?.invoke()
         }
 
     }
