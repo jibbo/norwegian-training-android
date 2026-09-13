@@ -27,7 +27,7 @@ class ManualWorkoutViewModelTest {
 
         val state = viewModel.uiState.value
         assertTrue(state.sheetVisible)
-        assertEquals(ManualWorkoutDraft(date = date), state.draft)
+        assertEquals(ManualWorkoutDraft(type = ManualWorkoutType.HIIT, date = date), state.draft)
         assertTrue(state.fieldErrors.isEmpty())
     }
 
@@ -61,6 +61,7 @@ class ManualWorkoutViewModelTest {
             SaveManualWorkoutUseCase(FakeSessionRepository(), FakeAnalytics()),
         )
         viewModel.open(LocalDate.now())
+        viewModel.selectType(null)
 
         viewModel.submit("Run")
 

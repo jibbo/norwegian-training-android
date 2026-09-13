@@ -110,6 +110,7 @@
     <string name="manual_workout_title">Enregistrer un entraînement</string>
     <string name="manual_workout_add">Ajouter un entraînement manuel</string>
     <string name="manual_workout_type">Type d\'entraînement</string>
+    <string name="manual_workout_duration">Durée de l\'entraînement</string>
     <string name="manual_workout_select_type">Sélectionner un type d\'entraînement</string>
     <string name="manual_workout_date">Date</string>
     <string name="manual_workout_duration_hours">Heures</string>

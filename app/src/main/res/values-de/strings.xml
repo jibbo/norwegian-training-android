@@ -110,6 +110,7 @@
     <string name="manual_workout_title">Training protokollieren</string>
     <string name="manual_workout_add">Manuelles Training hinzufügen</string>
     <string name="manual_workout_type">Trainingsart</string>
+    <string name="manual_workout_duration">Trainingsdauer</string>
     <string name="manual_workout_select_type">Trainingsart auswählen</string>
     <string name="manual_workout_date">Datum</string>
     <string name="manual_workout_duration_hours">Stunden</string>
