@@ -97,7 +97,6 @@ class CustomWorkoutViewModel @Inject constructor(
                     val draft = parsedContent?.let {
                         states.value.draft.copy(
                             name = workout.name,
-                            icon = workout.icon,
                             workMinutes = it.workMinutes,
                             workSeconds = it.workSeconds,
                             restMinutes = it.restMinutes,
@@ -108,7 +107,7 @@ class CustomWorkoutViewModel @Inject constructor(
                     states.value = states.value.copy(
                         isLoading = false,
                         isCustom = workout.isCustom,
-                        draft = draft ?: states.value.draft.copy(name = workout.name, icon = workout.icon),
+                        draft = draft ?: states.value.draft.copy(name = workout.name),
                         loadedDraft = draft,
                         loadedContent = workout.content,
                         loadedDifficulty = workout.difficulty,
@@ -134,7 +133,6 @@ class CustomWorkoutViewModel @Inject constructor(
     }
 
     fun updateName(value: String) = updateDraft(states.value.draft.copy(name = value))
-    fun updateIcon(value: String?) = updateDraft(states.value.draft.copy(icon = value))
     fun updateWorkMinutes(value: String) = updateDraft(states.value.draft.copy(workMinutes = value))
     fun updateWorkSeconds(value: String) = updateDraft(states.value.draft.copy(workSeconds = value))
     fun updateRestMinutes(value: String) = updateDraft(states.value.draft.copy(restMinutes = value))
@@ -250,7 +248,6 @@ class CustomWorkoutViewModel @Inject constructor(
                     difficulty = difficulty,
                     content = content,
                     isCustom = if (currentState.mode == CustomWorkoutFormMode.CREATE) true else currentState.isCustom,
-                    icon = validation.icon,
                 )
                 if (currentState.mode == CustomWorkoutFormMode.CREATE) {
                     workoutRepository.insertCustom(workout)

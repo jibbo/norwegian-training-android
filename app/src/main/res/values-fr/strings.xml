@@ -174,7 +174,6 @@
     <string name="cancel">Annuler</string>
     <string name="custom_workout_active_message">Terminez ou fermez l’entraînement actif avant d’enregistrer ou de supprimer un entraînement personnalisé.</string>
     <string name="custom_workout_active_title">Entraînement en cours</string>
-    <string name="custom_workout_clear_icon">X</string>
     <string name="custom_workout_create_title">Créer un entraînement personnalisé</string>
     <string name="custom_workout_default_name">Personnalisé</string>
     <string name="custom_workout_delete">Supprimer l’entraînement personnalisé</string>
@@ -182,7 +181,6 @@
     <string name="custom_workout_delete_title">Supprimer l’entraînement ?</string>
     <string name="custom_workout_edit_title">Modifier l’entraînement</string>
     <string name="custom_workout_form_placeholder">Les détails de l’entraînement apparaîtront ici.</string>
-    <string name="custom_workout_icon">Icône</string>
     <string name="custom_workout_name">Nom</string>
     <string name="custom_workout_rest_minutes">Minutes de repos</string>
     <string name="custom_workout_rest_seconds">Secondes de repos</string>

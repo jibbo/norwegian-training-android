@@ -1,7 +1,6 @@
 package com.github.jibbo.norwegiantraining.domain
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Test
 
 class CustomWorkoutDraftTest {
@@ -10,7 +9,6 @@ class CustomWorkoutDraftTest {
         val draft = CustomWorkoutDraft()
 
         assertEquals("", draft.name)
-        assertEquals("👟", draft.icon)
         assertEquals("10", draft.workMinutes)
         assertEquals("0", draft.workSeconds)
         assertEquals("5", draft.restMinutes)
@@ -22,7 +20,6 @@ class CustomWorkoutDraftTest {
     fun `draft preserves user-entered values`() {
         val draft = CustomWorkoutDraft(
             name = "  Morning  ",
-            icon = null,
             workMinutes = "x",
             workSeconds = "60",
             restMinutes = "",
@@ -31,7 +28,6 @@ class CustomWorkoutDraftTest {
         )
 
         assertEquals("  Morning  ", draft.name)
-        assertNull(draft.icon)
         assertEquals("x", draft.workMinutes)
         assertEquals("60", draft.workSeconds)
         assertEquals("", draft.restMinutes)

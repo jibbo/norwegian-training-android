@@ -40,9 +40,8 @@ class FakeWorkoutRepositoryTest {
         repository.insertCustom(workout(name = "Before"))
         val existing = repository.getCustomWorkouts().first().single()
 
-        assertTrue(repository.updateById(existing.copy(name = "After", icon = "🔥")))
+        assertTrue(repository.updateById(existing.copy(name = "After")))
         assertEquals("After", repository.getById(existing.id)?.name)
-        assertEquals("🔥", repository.getById(existing.id)?.icon)
         assertEquals(existing.id, repository.getById(existing.id)?.id)
         assertFalse(repository.updateById(workout(id = 999, name = "Missing", isCustom = true)))
     }

@@ -154,7 +154,6 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
         db.execSQL("ALTER TABLE Session ADD COLUMN name TEXT NOT NULL DEFAULT 'HIIT'")
         db.execSQL("ALTER TABLE Session ADD COLUMN duration INTEGER NOT NULL DEFAULT 0")
         db.execSQL("ALTER TABLE Workout ADD COLUMN isCustom INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("ALTER TABLE Workout ADD COLUMN icon TEXT")
     }
 }
 

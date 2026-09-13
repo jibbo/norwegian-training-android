@@ -13,7 +13,6 @@ class WorkoutTest {
         )
 
         assertEquals(false, workout.isCustom)
-        assertEquals(null, workout.icon)
     }
 
     @Test
@@ -23,11 +22,9 @@ class WorkoutTest {
             difficulty = Difficulty.INTERMEDIATE,
             content = "5m-1m-1m-5m",
             isCustom = true,
-            icon = "🔥",
         )
 
         assertEquals(true, workout.isCustom)
-        assertEquals("🔥", workout.icon)
     }
 
     @Test

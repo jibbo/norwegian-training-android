@@ -141,7 +141,6 @@ fun CustomWorkoutFormScreen(
             innerPadding = innerPadding,
             state = state,
             onNameChange = viewModel::updateName,
-            onIconSelected = viewModel::updateIcon,
             onWorkMinutesChange = viewModel::updateWorkMinutes,
             onWorkSecondsChange = viewModel::updateWorkSeconds,
             onRestMinutesChange = viewModel::updateRestMinutes,
@@ -157,7 +156,6 @@ private fun CustomWorkoutFormShell(
     innerPadding: PaddingValues,
     state: CustomWorkoutFormState,
     onNameChange: (String) -> Unit,
-    onIconSelected: (String?) -> Unit,
     onWorkMinutesChange: (String) -> Unit,
     onWorkSecondsChange: (String) -> Unit,
     onRestMinutesChange: (String) -> Unit,
@@ -177,21 +175,7 @@ private fun CustomWorkoutFormShell(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Spacer(Modifier.weight(1f))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(
-                value = state.draft.icon.orEmpty(),
-                onValueChange = { onIconSelected(it.trim().takeIf(String::isNotBlank)) },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.ShortMessage,
-                ),
-                singleLine = true,
-                maxLines = 1,
-                label = { Text(stringResource(R.string.custom_workout_icon)) },
-                isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
-                modifier = Modifier.weight(0.3f)
-            )
-            OutlinedTextField(
+        OutlinedTextField(
                 value = state.draft.name,
                 onValueChange = onNameChange,
                 keyboardOptions = KeyboardOptions(
@@ -199,9 +183,8 @@ private fun CustomWorkoutFormShell(
                 ),
                 label = { Text(stringResource(R.string.custom_workout_name)) },
                 isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
-                modifier = Modifier.weight(0.7f),
-            )
-        }
+                modifier = Modifier.fillMaxWidth(),
+        )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             DurationField(
                 value = state.draft.workMinutes,
@@ -294,7 +277,6 @@ private fun CustomWorkoutFormPreview() {
                 innerPadding = innerPadding,
                 state = CustomWorkoutFormState(),
                 onNameChange = {},
-                onIconSelected = {},
                 onWorkMinutesChange = {},
                 onWorkSecondsChange = {},
                 onRestMinutesChange = {},

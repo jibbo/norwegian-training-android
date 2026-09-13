@@ -7,7 +7,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -41,11 +40,17 @@ class AppDatabaseMigrationTest {
 
             MIGRATION_3_4.migrate(database)
 
+            database.query("PRAGMA table_info(Workout)").use { cursor ->
+                val columns = buildList {
+                    while (cursor.moveToNext()) add(cursor.getString(1))
+                }
+                assertFalse(columns.contains("icon"))
+            }
             database.query("SELECT COUNT(*) FROM Workout").use { cursor ->
                 assertTrue(cursor.moveToFirst())
                 assertEquals(2, cursor.getInt(0))
             }
-            database.query("SELECT id, name, difficulty, content, isCustom, icon FROM Workout ORDER BY id")
+            database.query("SELECT id, name, difficulty, content, isCustom FROM Workout ORDER BY id")
                 .use { cursor ->
                     assertTrue(cursor.moveToFirst())
                     assertEquals(7L, cursor.getLong(0))
@@ -53,7 +58,6 @@ class AppDatabaseMigrationTest {
                     assertEquals(0, cursor.getInt(2))
                     assertEquals("5m-30s-5m", cursor.getString(3))
                     assertFalse(cursor.getInt(4) != 0)
-                    assertNull(cursor.getString(5))
 
                     assertTrue(cursor.moveToNext())
                     assertEquals(12L, cursor.getLong(0))
@@ -61,7 +65,6 @@ class AppDatabaseMigrationTest {
                     assertEquals(2, cursor.getInt(2))
                     assertEquals("5m-1m-1m-5m", cursor.getString(3))
                     assertFalse(cursor.getInt(4) != 0)
-                    assertNull(cursor.getString(5))
                     assertFalse(cursor.moveToNext())
                 }
             database.query("SELECT phases_ended, skip_count, date FROM Session WHERE id = 3")
