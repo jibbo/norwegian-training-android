@@ -108,6 +108,7 @@
     <string name="manual_workout_type_walking">步行</string>
     <string name="manual_workout_type_hiit">HIIT</string>
     <string name="manual_workout_title">记录训练</string>
+    <string name="manual_workout_add">添加手动训练</string>
     <string name="manual_workout_type">训练类型</string>
     <string name="manual_workout_select_type">选择训练类型</string>
     <string name="manual_workout_date">日期</string>

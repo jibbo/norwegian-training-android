@@ -108,6 +108,7 @@
     <string name="manual_workout_type_walking">Marche</string>
     <string name="manual_workout_type_hiit">HIIT</string>
     <string name="manual_workout_title">Enregistrer un entraînement</string>
+    <string name="manual_workout_add">Ajouter un entraînement manuel</string>
     <string name="manual_workout_type">Type d\'entraînement</string>
     <string name="manual_workout_select_type">Sélectionner un type d\'entraînement</string>
     <string name="manual_workout_date">Date</string>

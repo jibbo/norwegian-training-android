@@ -54,6 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
@@ -89,7 +90,7 @@ internal fun Logs(
     uiState: UiState.Loaded,
     todayStatsUiState: TodayStatsUiState,
     manualWorkoutUiState: ManualWorkoutUiState,
-    onOpenManualWorkout: () -> Unit,
+    onOpenManualWorkout: (LocalDate) -> Unit,
     onDismissManualWorkout: () -> Unit,
     onSelectManualWorkoutType: (ManualWorkoutType?) -> Unit,
     onUpdateManualWorkoutDate: (LocalDate) -> Unit,
@@ -117,10 +118,10 @@ internal fun Logs(
             null,
             trailingContent = {
                 IconButton(
-                    onClick = onOpenManualWorkout,
+                    onClick = { onOpenManualWorkout(LocalDate.now()) },
                     modifier = Modifier.testTag("add_manual_workout_button"),
                 ) {
-                    Text("+")
+                    Text("+", fontSize = 32.sp)
                 }
             },
         )
@@ -159,10 +160,30 @@ internal fun Logs(
             modifier = Modifier.testTag("sessions_for_day_sheet"),
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
-                Text(
-                    text = R.string.title_activity_logs.localizable(),
-                    style = Typography.headlineSmall,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = R.string.title_activity_logs.localizable(),
+                        style = Typography.headlineSmall,
+                    )
+                    IconButton(
+                        onClick = {
+                            selectedDay = null
+                            onOpenManualWorkout(
+                                day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                            )
+                        },
+                        modifier = Modifier.testTag("add_manual_workout_for_day"),
+                    ) {
+                        Text(
+                            text = "+",
+                            style = Typography.headlineSmall,
+                        )
+                    }
+                }
                 Text(
                     text = SimpleDateFormat("MMMM d").format(day),
                     style = Typography.bodyMedium,
@@ -183,6 +204,7 @@ internal fun Logs(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
@@ -601,7 +623,14 @@ private fun Day(
         .clip(CircleShape)
 
     if (item == null) {
-        Text(index.toString(), textAlign = TextAlign.Center, modifier = modifier.fillMaxSize())
+        Text(
+            index.toString(),
+            textAlign = TextAlign.Center,
+            modifier = modifier
+                .fillMaxSize()
+                .clickable { onDayClick(boxDate) }
+                .testTag("calendar_day_${month}_$index"),
+        )
     } else {
         Box(
             modifier = modifier
