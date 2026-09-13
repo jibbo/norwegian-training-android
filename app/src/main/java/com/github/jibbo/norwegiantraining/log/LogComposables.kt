@@ -166,7 +166,7 @@ internal fun Logs(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = R.string.title_activity_logs.localizable(),
+                        text = SimpleDateFormat("MMMM d").format(day),
                         style = Typography.headlineSmall,
                     )
                     IconButton(
@@ -184,10 +184,10 @@ internal fun Logs(
                         )
                     }
                 }
-                Text(
-                    text = SimpleDateFormat("MMMM d").format(day),
-                    style = Typography.bodyMedium,
-                )
+//                Text(
+//                    text = SimpleDateFormat("MMMM d").format(day),
+//                    style = Typography.bodyMedium,
+//                )
                 Spacer(modifier = Modifier.height(16.dp))
                 sessionsForDay.forEach { session ->
                     Row(
@@ -226,7 +226,7 @@ internal fun Logs(
                     style = Typography.headlineSmall,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = R.string.manual_workout_duration.localizable())
+                Text(text = R.string.manual_workout_type.localizable())
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -277,7 +277,7 @@ internal fun Logs(
                     ManualWorkoutErrorText(R.string.manual_workout_error_date_out_of_range)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = R.string.manual_workout_type.localizable())
+                Text(text = R.string.manual_workout_duration.localizable())
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -303,6 +303,7 @@ internal fun Logs(
                 if (manualWorkoutUiState.persistenceError) {
                     ManualWorkoutErrorText(R.string.manual_workout_error_save_failed)
                 }
+                Spacer(Modifier.height(24.dp))
                 Button(
                     onClick = { onSubmitManualWorkout(translatedName) },
                     enabled = !manualWorkoutUiState.isSaving,
