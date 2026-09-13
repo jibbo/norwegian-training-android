@@ -37,7 +37,6 @@ class CustomWorkoutFormScreenTest {
 
         composeRule.onNodeWithText("Create workout").assertIsDisplayed()
         composeRule.onNodeWithText("10").assertIsDisplayed()
-        composeRule.onNodeWithText("👟").assertIsDisplayed()
         composeRule.onAllNodesWithTag("delete").assertCountEquals(0)
     }
 

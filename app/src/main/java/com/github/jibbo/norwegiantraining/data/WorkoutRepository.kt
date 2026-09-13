@@ -56,7 +56,6 @@ class PersistentWorkoutRepository @Inject constructor(
             difficulty = workout.difficulty,
             content = workout.content,
             isCustom = workout.isCustom,
-            icon = workout.icon,
         ) == 1
 
     override suspend fun deleteCustom(id: Long): Boolean = workoutDao.deleteCustomById(id) == 1

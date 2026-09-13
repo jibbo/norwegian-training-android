@@ -43,8 +43,8 @@ class WorkoutDaoPersistenceTest {
     }
 
     @Test
-    fun updatePreservesIdAndClearedIcon() = runBlocking {
-        val id = dao.insertCustom(workout(name = "Before", icon = "🔥"))
+    fun updatePreservesIdAndMetadata() = runBlocking {
+        val id = dao.insertCustom(workout(name = "Before"))
 
         val updated = dao.updateById(
             id = id,
@@ -52,7 +52,6 @@ class WorkoutDaoPersistenceTest {
             difficulty = Difficulty.EXPERT,
             content = "5m-2m-1m-5m",
             isCustom = true,
-            icon = null,
         )
 
         assertEquals(1, updated)
@@ -62,7 +61,6 @@ class WorkoutDaoPersistenceTest {
         assertEquals(Difficulty.EXPERT, stored?.difficulty)
         assertEquals("5m-2m-1m-5m", stored?.content)
         assertTrue(stored?.isCustom == true)
-        assertEquals(null, stored?.icon)
     }
 
     @Test
@@ -85,9 +83,8 @@ class WorkoutDaoPersistenceTest {
         val id = dao.insertCustom(workout(name = "First"))
         assertEquals("First", dao.getCustomWorkouts().first().single().name)
 
-        dao.updateById(id, "Changed", Difficulty.BEGINNER, "5m-1m-1m-5m", true, "🏃")
+        dao.updateById(id, "Changed", Difficulty.BEGINNER, "5m-1m-1m-5m", true)
         assertEquals("Changed", dao.getCustomWorkouts().first().single().name)
-        assertEquals("🏃", dao.getCustomWorkouts().first().single().icon)
 
         dao.deleteCustomById(id)
         assertTrue(dao.getCustomWorkouts().first().isEmpty())
@@ -99,7 +96,7 @@ class WorkoutDaoPersistenceTest {
 
         assertEquals(
             1,
-            dao.updateById(1, "Edited", Difficulty.EXPERT, "5m-2m-1m-5m", false, "🏃"),
+            dao.updateById(1, "Edited", Difficulty.EXPERT, "5m-2m-1m-5m", false),
         )
         val stored = dao.getById(1)
         assertEquals(1L, stored?.id)
@@ -107,20 +104,17 @@ class WorkoutDaoPersistenceTest {
         assertEquals(Difficulty.EXPERT, stored?.difficulty)
         assertEquals("5m-2m-1m-5m", stored?.content)
         assertFalse(stored?.isCustom == true)
-        assertEquals("🏃", stored?.icon)
     }
 
     private fun workout(
         id: Long = 0,
         name: String,
         isCustom: Boolean = true,
-        icon: String? = null,
     ) = Workout(
         id = id,
         name = name,
         difficulty = Difficulty.BEGINNER,
         content = "5m-1m-1m-5m",
         isCustom = isCustom,
-        icon = icon,
     )
 }

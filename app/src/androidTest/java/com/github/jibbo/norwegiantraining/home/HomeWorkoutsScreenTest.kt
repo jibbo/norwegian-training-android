@@ -42,23 +42,23 @@ class HomeWorkoutsScreenTest {
         composeRule.onNodeWithText("All Workouts").assertIsDisplayed()
         composeRule.onNodeWithText("+").assertIsDisplayed()
         composeRule.onNodeWithText("Recommended", substring = true).assertIsDisplayed()
-        composeRule.onNodeWithText("⭐ Newer").assertIsDisplayed()
-        composeRule.onNodeWithText("🧘 Older").assertIsDisplayed()
+        composeRule.onNodeWithText("Newer").assertIsDisplayed()
+        composeRule.onNodeWithText("Older").assertIsDisplayed()
         composeRule.onNodeWithText("Built-in").assertIsDisplayed()
         composeRule.onAllNodesWithText("Built-in").assertCountEquals(1)
 
-        val newerTop = composeRule.onNodeWithText("⭐ Newer").fetchSemanticsNode().boundsInRoot.top
-        val olderTop = composeRule.onNodeWithText("🧘 Older").fetchSemanticsNode().boundsInRoot.top
+        val newerTop = composeRule.onNodeWithText("Newer").fetchSemanticsNode().boundsInRoot.top
+        val olderTop = composeRule.onNodeWithText("Older").fetchSemanticsNode().boundsInRoot.top
         check(newerTop < olderTop)
     }
 
     @Test
-    fun customCardsExposeLongPressEditAndRenderIconNames() {
+    fun customCardsExposeLongPressEdit() {
         val viewModel = homeViewModel(repositoryWithWorkouts())
         setContent(viewModel)
         composeRule.waitForIdle()
 
-        composeRule.onNodeWithText("⭐ Newer")
+        composeRule.onNodeWithText("Newer")
             .performTouchInput { longClick() }
     }
 
@@ -111,7 +111,6 @@ class HomeWorkoutsScreenTest {
                     difficulty = Difficulty.BEGINNER,
                     content = "5m-30s-15s-5m",
                     isCustom = true,
-                    icon = "🧘",
                 ),
             )
             repository.insert(
@@ -121,7 +120,6 @@ class HomeWorkoutsScreenTest {
                     difficulty = Difficulty.BEGINNER,
                     content = "5m-30s-15s-5m",
                     isCustom = true,
-                    icon = "⭐",
                 ),
             )
             repository.insert(
