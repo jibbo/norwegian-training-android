@@ -1,7 +1,12 @@
 package com.github.jibbo.norwegiantraining.data
 
 import com.github.jibbo.norwegiantraining.domain.FitnessLevel
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerManager
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.Date
 import java.util.Locale
 
@@ -167,8 +172,14 @@ class FakeWorkoutRepo : WorkoutRepository {
     override fun getAll(): Flow<List<Workout>> =
         kotlinx.coroutines.flow.flow { emit(workouts.toList()) }
 
+    override fun getCustomWorkouts(): Flow<List<Workout>> =
+        kotlinx.coroutines.flow.flow { emit(workouts.filter { it.isCustom }.sortedByDescending { it.id }) }
+
+    override fun getBuiltInWorkouts(): Flow<List<Workout>> =
+        kotlinx.coroutines.flow.flow { emit(workouts.filterNot { it.isCustom }.sortedBy { it.id }) }
+
     override suspend fun getByDifficulty(difficulty: Difficulty): List<Workout> =
-        workouts.filter { it.difficulty == difficulty }
+        workouts.filter { !it.isCustom && it.difficulty == difficulty }
 
     override suspend fun getById(id: Long): Workout? =
         workouts.firstOrNull { it.id == id }
@@ -176,12 +187,35 @@ class FakeWorkoutRepo : WorkoutRepository {
     override suspend fun getDifficulties(): List<Difficulty> =
         Difficulty.entries.toList()
 
+    override suspend fun insertCustom(workout: Workout): Long {
+        workouts.add(workout.copy(isCustom = true))
+        return workout.id
+    }
+
+    override suspend fun updateCustom(workout: Workout): Boolean {
+        val index = workouts.indexOfFirst { it.id == workout.id && it.isCustom }
+        if (index == -1) return false
+        workouts[index] = workout.copy(isCustom = true)
+        return true
+    }
+
+    override suspend fun deleteCustom(id: Long): Boolean =
+        workouts.removeIf { it.id == id && it.isCustom }
+
     override suspend fun insert(vararg workouts: Workout) {
         this.workouts.addAll(workouts)
     }
 
     override suspend fun insert(workouts: List<Workout>) {
         this.workouts.addAll(workouts)
+    }
+
+    class FakeWorkoutTimerManager(
+        private val activeWorkoutId: Long? = null,
+    ) : WorkoutTimerManager {
+        override fun getWorkoutTimerState(): StateFlow<WorkoutTimerState> = MutableStateFlow(
+            WorkoutTimerState(workoutId = activeWorkoutId ?: -1L),
+        ).asStateFlow()
     }
 
 }

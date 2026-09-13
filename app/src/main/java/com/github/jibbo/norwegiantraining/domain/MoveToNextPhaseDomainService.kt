@@ -5,43 +5,63 @@ import com.github.jibbo.norwegiantraining.data.WorkoutRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import javax.inject.Inject
 
+class WorkoutNotFoundException(id: Long) :
+    IllegalArgumentException("Workout not found: $id")
+
+class MalformedWorkoutException(message: String, cause: Throwable? = null) :
+    IllegalArgumentException(message, cause)
+
 class MoveToNextPhaseDomainService @Inject constructor(
-    val workoutRepository: WorkoutRepository,
+    private val workoutRepository: WorkoutRepository,
 ) {
-
-    private val workoutToPhasesConverter = WorkoutToPhasesConverter
-
-    suspend operator fun invoke(id: Long, step: Int): Phase {
+    suspend operator fun invoke(id: Long, step: Int): Result<Phase> {
         val workout = workoutRepository.getById(id)
-        if (workout == null && FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled) {
-            FirebaseCrashlytics.getInstance()
-                .log("[MoveToNextPhaseDomainService] Workout not found: $id")
+        if (workout == null) {
+            if (FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled) {
+                FirebaseCrashlytics.getInstance()
+                    .log("[MoveToNextPhaseDomainService] Workout not found: $id")
+            }
+            return Result.failure(WorkoutNotFoundException(id))
         }
-        val phases = workoutToPhasesConverter.convert(workout!!)
+
+        val phases = WorkoutToPhasesConverter.convert(workout).getOrElse {
+            return Result.failure(it)
+        }
         val nextStep = (step + 1) % phases.size
-        return phases[nextStep]
+        return Result.success(phases[nextStep])
     }
 }
 
 object WorkoutToPhasesConverter {
-
     const val GET_READY_COUNTDOWN_DURATION = 10_000L
 
-    fun convert(workout: Workout): List<Phase> {
-        val phases = workout.getSplit()
-        val list = mutableListOf<Phase>()
-        list.add(Phase(PhaseName.GET_READY, GET_READY_COUNTDOWN_DURATION))
-        list.add(Phase(PhaseName.WARMUP, phases[0]))
-        for (i in 1..phases.size - 2) {
-            val name = if (i % 2 == 0) {
-                PhaseName.SOFT_PHASE
-            } else {
-                PhaseName.HARD_PHASE
-            }
-            list.add(Phase(name, phases[i]))
+    fun convert(workout: Workout): Result<List<Phase>> = runCatching {
+        val phases = try {
+            workout.getSplit()
+        } catch (error: RuntimeException) {
+            throw MalformedWorkoutException(
+                "Malformed workout content for ${workout.id}",
+                error,
+            )
         }
-        list.add(Phase(PhaseName.REST_PHASE, phases[phases.size - 1]))
-        list.add(Phase(PhaseName.COMPLETED, 0L))
-        return list
+
+        if (phases.size < 2 || phases.any { it <= 0L }) {
+            throw MalformedWorkoutException("Workout ${workout.id} has invalid phase content")
+        }
+
+        buildList {
+            add(Phase(PhaseName.GET_READY, GET_READY_COUNTDOWN_DURATION))
+            add(Phase(PhaseName.WARMUP, phases.first()))
+            for (i in 1 until phases.lastIndex) {
+                val name = if (i % 2 == 0) {
+                    PhaseName.SOFT_PHASE
+                } else {
+                    PhaseName.HARD_PHASE
+                }
+                add(Phase(name, phases[i]))
+            }
+            add(Phase(PhaseName.REST_PHASE, phases.last()))
+            add(Phase(PhaseName.COMPLETED, 0L))
+        }
     }
 }
