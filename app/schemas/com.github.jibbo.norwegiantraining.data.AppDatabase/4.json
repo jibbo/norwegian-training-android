@@ -60,7 +60,7 @@
       },
       {
         "tableName": "Workout",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `difficulty` INTEGER NOT NULL, `content` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `difficulty` INTEGER NOT NULL, `content` TEXT NOT NULL, `isCustom` INTEGER NOT NULL, `icon` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -85,6 +85,17 @@
             "columnName": "content",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "isCustom",
+            "columnName": "isCustom",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "icon",
+            "columnName": "icon",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {

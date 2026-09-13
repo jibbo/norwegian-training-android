@@ -10,23 +10,27 @@ class GetRecommendedWorkoutId @Inject constructor(
     private val settingsRepository: SettingsRepository,
 ) {
     operator fun invoke(workouts: Map<Difficulty, List<Workout>>): Long? {
+        val builtInWorkouts = workouts.mapValues { (_, values) ->
+            values.filterNot { it.isCustom }
+        }
+
         // If progression has already set a specific workout, validate it still exists
         settingsRepository.getRecommendedWorkoutId()?.let { id ->
-            if (workouts.values.flatten().any { it.id == id }) return id
+            if (builtInWorkouts.values.flatten().any { it.id == id }) return id
             settingsRepository.clearRecommendedWorkoutId()
         }
         // Otherwise fall back to the first workout of the onboarding-selected difficulty
         val fitnessLevel = settingsRepository.getFitnessLevel()
         val difficulty = fitnessLevel.toDifficulty()
-        val fallbackId = workouts[difficulty]?.firstOrNull()?.id
-            ?: workouts.entries.firstOrNull()?.value?.firstOrNull()?.id
+        val fallbackId = builtInWorkouts[difficulty]?.firstOrNull()?.id
+            ?: builtInWorkouts.entries.firstOrNull()?.value?.firstOrNull()?.id
 
         // Override with last completed workout if it's "higher" (non-BAD)
         settingsRepository.getLastWorkoutId()?.let { lastWorkoutId ->
-            val lastWorkout = workouts.values.flatten().find { it.id == lastWorkoutId }
+            val lastWorkout = builtInWorkouts.values.flatten().find { it.id == lastWorkoutId }
             if (lastWorkout != null) {
                 val recommendedId = fallbackId
-                if (isHigherWorkout(lastWorkout, recommendedId, workouts)) {
+                if (isHigherWorkout(lastWorkout, recommendedId, builtInWorkouts)) {
                     return lastWorkout.id
                 }
             }
