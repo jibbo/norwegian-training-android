@@ -149,12 +149,20 @@ class FakeSessionRepository : SessionRepository {
     private val sessions = mutableListOf<Session>()
     private val todaySession = MutableStateFlow<Session?>(null)
     var manualInsertFailure: Throwable? = null
+    val rangeQueries = mutableListOf<Pair<Date, Date>>()
+
+    fun replaceSessions(replacement: List<Session>) {
+        sessions.clear()
+        sessions.addAll(replacement)
+    }
 
     override suspend fun getSessions(limit: Int, offset: Int): List<Session> =
         sessions.sortedByDescending { it.date }.drop(offset).take(limit)
 
     override suspend fun getSessionsInRange(from: Date, to: Date): List<Session> =
-        sessions.filter { it.date >= from && it.date <= to }
+        sessions.filter { it.date >= from && it.date <= to }.also {
+            rangeQueries += from to to
+        }
 
     override suspend fun upsertSession(session: Session): Long {
         val existingIndex = sessions.indexOfFirst { it.id == session.id && session.id != 0L }

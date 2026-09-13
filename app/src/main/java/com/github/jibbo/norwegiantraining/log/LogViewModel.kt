@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,5 +35,28 @@ internal class LogViewModel @Inject constructor(
             sessionsByMonth.getOrPut(month) { mutableListOf() }.add(session)
         }
         return sessionsByMonth
+    }
+
+    fun refreshMonth(date: Date) {
+        viewModelScope.launch {
+            val calendar = Calendar.getInstance().apply {
+                time = date
+                set(Calendar.DAY_OF_MONTH, 1)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val from = calendar.time
+            calendar.add(Calendar.MONTH, 1)
+            val to = Date(calendar.timeInMillis - 1)
+            val sessions = sessionRepository.getSessionsInRange(from, to)
+            val month = Calendar.getInstance().apply { time = date }.get(Calendar.MONTH)
+
+            val current = uiStates.value
+            if (current is UiState.Loaded) {
+                uiStates.value = UiState.Loaded(current.logs + (month to sessions))
+            }
+        }
     }
 }
