@@ -1,9 +1,13 @@
+@file:android.annotation.SuppressLint("NewApi")
+
 package com.github.jibbo.norwegiantraining.log
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Build
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.health.connect.client.HealthConnectClient
@@ -18,13 +22,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import com.github.jibbo.norwegiantraining.components.BaseActivity
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
-import com.github.jibbo.norwegiantraining.domain.ManualWorkoutViewModel
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
@@ -32,12 +34,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
+import java.util.Date
 
+@SuppressLint("NewApi")
 @AndroidEntryPoint
 class LogActivity : BaseActivity() {
 
     private val viewModel: LogViewModel by viewModels()
-    private val manualWorkoutViewModel: ManualWorkoutViewModel by viewModels()
     private var todayStatsUiState = mutableStateOf<TodayStatsUiState>(TodayStatsUiState.Loading)
 
     @Inject lateinit var settingsRepository: SettingsRepository
@@ -48,14 +51,19 @@ class LogActivity : BaseActivity() {
         loadTodayStats()
     }
 
+    private val manualWorkoutLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.getStringExtra(ManualWorkoutActivity.EXTRA_SAVED_DATE)
+                ?.let { runCatching { java.time.LocalDate.parse(it) }.getOrNull() }
+                ?.let { viewModel.refreshMonth(Date.from(it.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant())) }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LaunchedEffect(Unit) {
-                manualWorkoutViewModel.savedSessionEvent.collect { session ->
-                    viewModel.refreshMonth(session.date)
-                }
-            }
             NorwegianTrainingTheme(darkTheme = true) {
                 Scaffold(
                     modifier = Modifier
@@ -70,7 +78,6 @@ class LogActivity : BaseActivity() {
                         )
                 ) { innerPadding ->
                     val uiState = viewModel.uiState.collectAsState()
-                    val manualWorkoutUiState = manualWorkoutViewModel.uiState.collectAsState()
                     when (uiState.value) {
                         is UiState.Loading -> {
                             CircularProgressIndicator()
@@ -81,14 +88,7 @@ class LogActivity : BaseActivity() {
                                 innerPadding = innerPadding,
                                 uiState = uiState.value as UiState.Loaded,
                                 todayStatsUiState = todayStatsUiState.value,
-                                manualWorkoutUiState = manualWorkoutUiState.value,
-                                onOpenManualWorkout = { date -> manualWorkoutViewModel.open(date) },
-                                onDismissManualWorkout = { manualWorkoutViewModel.dismiss() },
-                                onSelectManualWorkoutType = manualWorkoutViewModel::selectType,
-                                onUpdateManualWorkoutDate = manualWorkoutViewModel::updateDate,
-                                onUpdateManualWorkoutHours = manualWorkoutViewModel::updateHours,
-                                onUpdateManualWorkoutMinutes = manualWorkoutViewModel::updateMinutes,
-                                onSubmitManualWorkout = manualWorkoutViewModel::submit,
+                                onOpenManualWorkout = ::openManualWorkout,
                                 onHideTodayStats = {
                                     settingsRepository.setShowTodayStatsInActivitySection(false)
                                     todayStatsUiState.value = TodayStatsUiState.Hidden
@@ -101,6 +101,13 @@ class LogActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun openManualWorkout(date: java.time.LocalDate) {
+        manualWorkoutLauncher.launch(
+            Intent(this, ManualWorkoutActivity::class.java)
+                .putExtra(ManualWorkoutActivity.EXTRA_INITIAL_DATE, date.toString()),
+        )
     }
 
     override fun onResume() {
