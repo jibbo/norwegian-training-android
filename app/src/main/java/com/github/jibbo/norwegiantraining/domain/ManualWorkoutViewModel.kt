@@ -32,7 +32,7 @@ class ManualWorkoutViewModel @Inject constructor(
     fun open(today: LocalDate = LocalDate.now()) {
         states.value = ManualWorkoutUiState(
             sheetVisible = true,
-            draft = ManualWorkoutDraft(date = today),
+            draft = ManualWorkoutDraft(type = ManualWorkoutType.HIIT, date = today),
         )
     }
 

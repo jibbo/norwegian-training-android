@@ -171,6 +171,7 @@
     <string name="manual_workout_title">Log workout</string>
     <string name="manual_workout_add">Add manual workout</string>
     <string name="manual_workout_type">Workout type</string>
+    <string name="manual_workout_duration">Workout duration</string>
     <string name="manual_workout_select_type">Select a workout type</string>
     <string name="manual_workout_date">Date</string>
     <string name="manual_workout_duration_hours">Hours</string>

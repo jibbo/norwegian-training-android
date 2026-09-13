@@ -219,14 +219,14 @@ internal fun Logs(
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(24.dp),
+                    .padding(horizontal = 24.dp),
             ) {
                 Text(
                     text = R.string.manual_workout_title.localizable(),
                     style = Typography.headlineSmall,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = R.string.manual_workout_type.localizable())
+                Text(text = R.string.manual_workout_duration.localizable())
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
