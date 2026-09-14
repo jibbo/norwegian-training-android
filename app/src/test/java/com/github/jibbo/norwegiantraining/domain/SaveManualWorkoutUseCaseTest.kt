@@ -35,6 +35,7 @@ class SaveManualWorkoutUseCaseTest {
         assertTrue(session.isManual)
         assertEquals("Run", session.name)
         assertEquals(90L, session.duration)
+        assertEquals("RUN", session.activityType)
         assertEquals(1, session.phasesEnded)
         assertEquals(0, session.skipCount)
         assertEquals(listOf("manual_workout_logged"), analytics.calls)

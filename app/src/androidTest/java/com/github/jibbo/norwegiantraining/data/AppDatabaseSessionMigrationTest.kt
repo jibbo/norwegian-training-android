@@ -30,7 +30,7 @@ class AppDatabaseSessionMigrationTest {
         createVersionThreeDatabase(name)
 
         database = Room.databaseBuilder(context, AppDatabase::class.java, name)
-            .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
 
         val session = runBlocking { database!!.recordDao().getAll().single() }
@@ -41,6 +41,7 @@ class AppDatabaseSessionMigrationTest {
         assertFalse(session.isManual)
         assertEquals("HIIT", session.name)
         assertEquals(0L, session.duration)
+        assertEquals("HIIT", session.activityType)
     }
 
     private fun createVersionThreeDatabase(name: String) {

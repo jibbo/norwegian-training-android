@@ -35,6 +35,7 @@ class SaveManualWorkoutUseCase @Inject constructor(
             isManual = true,
             name = translatedName,
             duration = value.durationMinutes,
+            activityType = value.type.name,
             phasesEnded = 1,
             skipCount = 0,
         )
