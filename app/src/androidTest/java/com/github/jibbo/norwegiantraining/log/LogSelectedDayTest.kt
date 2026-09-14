@@ -48,4 +48,18 @@ class LogSelectedDayTest {
         assert(selectedDate == day.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate())
     }
 
+    @Test
+    fun todayToolbarScrollsToTodayAndOpensDaySheet() {
+        composeRule.setContent {
+            NorwegianTrainingTheme(darkTheme = true) {
+                Logs(PaddingValues(), UiState.Loaded(emptyMap()), TodayStatsUiState.Hidden, {}, {}, {}, {})
+            }
+        }
+
+        val today = LocalDate.now()
+        composeRule.onNodeWithTag("today").performClick()
+        composeRule.onNodeWithTag("sessions_for_day_sheet").assertIsDisplayed()
+        composeRule.onNodeWithTag("calendar_day_${today.monthValue - 1}_${today.dayOfMonth}").assertIsDisplayed()
+    }
+
 }
