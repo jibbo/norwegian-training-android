@@ -6,7 +6,7 @@
     <string name="close">Chiudi</string>
     <string name="skip">Salta fase</string>
     <string name="continue_btn">Continua</string>
-    <string name="back">indietro</string>
+    <string name="back">Indietro</string>
 
     <string name="buy">ACQUISTA</string>
     <string name="ok">OK</string>
@@ -20,17 +20,17 @@
     <string name="current_phases">%1$s di %2$s</string>
 
     <string name="home_workout_name">%1$s</string>
-    <string name="next_up">Fasse successiva >> %1$s</string>
+    <string name="next_up">Fase successiva: %1$s</string>
     <string name="stop_workout_confirmation_title">Interrompere l\'allenamento?</string>
     <string name="stop_workout_confirmation_message">Il timer è ancora in esecuzione. Vuoi interrompere questo allenamento?</string>
     <string name="stop_workout">Interrompi allenamento</string>
     <string name="keep_training">Continua ad allenarti</string>
 
-    <string name="get_ready_desc">inizia il riscaldamento</string>
+    <string name="get_ready_desc">Inizia con il riscaldamento</string>
     <string name="warmup_desc">Fai esercizio leggero: dovresti essere in grado di parlare durante il riscaldamento</string>
-    <string name="hit_cardio_desc">Vai il più forte che puoi per sostenere tutto il tempo. Puoi farcela!</string>
+    <string name="hit_cardio_desc">Dai il massimo per tutta la fase. Puoi farcela!</string>
     <string name="light_cardio_desc">Fai esercizio leggero: stabilizza il battito cardiaco senza fermarti</string>
-    <string name="cooldown_desc">Respira, vai a un ritmo lento e rilassato che ti permetta di calmare il cuore ma non fermarti adesso</string>
+    <string name="cooldown_desc">Respira e procedi a un ritmo lento e rilassato per ridurre la frequenza cardiaca, ma non fermarti ancora.</string>
     <string name="completed_desc">Congratulazioni! Sei arrivato alla fine di questo allenamento! Torna domani per un altro 💪</string>
 
     <string name="one_minute_remaining">Manca un minuto</string>
@@ -108,16 +108,16 @@
     <string name="home_all_workouts">Tutti gli allenamenti</string>
     <string name="workout_time">⏱️ %1$s minuti</string>
     <string name="workout_category_beginner">Principiante</string>
-    <string name="workout_category_intermediate">Esordiente</string>
+    <string name="workout_category_intermediate">Intermedio</string>
     <string name="workout_category_expert">Pro</string>
     <string name="workout_first_steps">🐾 Primi passi</string>
     <string name="workout_beginner_1">👣 Principiante 1</string>
     <string name="workout_beginner_2">🦶 Principiante 2</string>
     <string name="workout_beginner_3">🦶🦶 Principiante 3</string>
     <string name="workout_not_so_beginner">👟 Non più principiante</string>
-    <string name="workout_intermediate_1">🎽 Esordiente 1</string>
-    <string name="workout_intermediate_2">💨 Esordiente 2</string>
-    <string name="workout_intermediate_3">🧠 Esordiente 3</string>
+    <string name="workout_intermediate_1">🎽 Intermedio 1</string>
+    <string name="workout_intermediate_2">💨 Intermedio 2</string>
+    <string name="workout_intermediate_3">🧠 Intermedio 3</string>
     <string name="workout_true_norwegian">🇳🇴 Vero 4x4 Norvegese</string>
     <string name="workout_expert_1">🏃‍♀️ Pro 1</string>
     <string name="workout_expert_2">💪 Pro 2</string>

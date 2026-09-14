@@ -21,7 +21,7 @@
     <string name="current_phases">%1$s de %2$s</string>
 
     <string name="home_workout_name">%1$s</string>
-    <string name="next_up">Siguiente fase >> %1$s</string>
+    <string name="next_up">Siguiente: %1$s</string>
     <string name="stop_workout_confirmation_title">¿Detener entrenamiento?</string>
     <string name="stop_workout_confirmation_message">El temporizador sigue en marcha. ¿Quieres detener este entrenamiento?</string>
     <string name="stop_workout">Detener entrenamiento</string>
@@ -31,7 +31,7 @@
     <string name="warmup_desc">Haz ejercicio ligero: deberías poder hablar durante el calentamiento</string>
     <string name="hit_cardio_desc">Da tu máximo esfuerzo durante toda la fase. ¡Tú puedes!</string>
     <string name="light_cardio_desc">Ejercicio ligero: estabiliza tu ritmo cardíaco sin detenerte</string>
-    <string name="cooldown_desc">Respira y baja el ritmo, relájate sin parar completamente para calmar tu corazón</string>
+    <string name="cooldown_desc">Respira, baja el ritmo y relájate para reducir tu frecuencia cardíaca, pero no te detengas todavía.</string>
     <string name="completed_desc">¡Felicidades! Has terminado este entrenamiento. ¡Vuelve mañana por otro! 💪</string>
 
     <string name="one_minute_remaining">Queda un minuto</string>
@@ -39,7 +39,7 @@
     <string name="title_activity_settings">Ajustes</string>
     <string name="title_profile_section">Perfil</string>
     <string name="your_name">Tu nombre</string>
-    <string name="fitness_level_label">Nivel de fitness</string>
+    <string name="fitness_level_label">Nivel de forma física</string>
     <string name="title_tts_section">Indicaciones por voz</string>
     <string name="announce_phase">Nombre de la fase</string>
     <string name="announce_phase_description">Descripción de la fase</string>
@@ -70,7 +70,7 @@
     <string name="health_connect_permission_message">Permite el acceso de Health Connect para ver aquí más estadísticas</string>
     <string name="hide">Ocultar para siempre</string>
 
-    <string name="onboarding_step_1_title">¡Bienvenidos en l\'app Norwy!</string>
+    <string name="onboarding_step_1_title">¡Te damos la bienvenida a la aplicación Norwy!</string>
     <string name="onboarding_step_1_description">Tu mejor compañera para el cardio</string>
     <string name="onboarding_step_1_name">Markus R.</string>
     <string name="onboarding_step_1_handle">\@marksmeister</string>
@@ -103,14 +103,14 @@
     <string name="share_msg">¡Acabo de empezar mis intervalos 4x4! Prueba Norwy conmigo: https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
 
     <!-- Home -->
-    <string name="onboarding_step_name_placeholder">Su nombre</string>
+    <string name="onboarding_step_name_placeholder">Tu nombre</string>
     <string name="welcome">Hola %1$s</string>
     <string name="home_next_up">Tus entrenamientos</string>
     <string name="home_all_workouts">Todos los entrenamientos</string>
     <string name="workout_time">⏱️ %1$s minutos</string>
     <string name="workout_category_beginner">Principiante</string>
     <string name="workout_category_intermediate">Intermedio</string>
-    <string name="workout_category_expert">Pro</string>
+    <string name="workout_category_expert">Experto</string>
     <string name="workout_first_steps">🐾 Primeros pasos</string>
     <string name="workout_beginner_1">👣 Principiante 1</string>
     <string name="workout_beginner_2">🦶 Principiante 2</string>
@@ -120,8 +120,8 @@
     <string name="workout_intermediate_2">💨 Intermedio 2</string>
     <string name="workout_intermediate_3">🧠 Intermedio 3</string>
     <string name="workout_true_norwegian">🇳🇴 Verdadero 4x4 Noruego</string>
-    <string name="workout_expert_1">🏃‍♀️ Pro 1</string>
-    <string name="workout_expert_2">💪 Pro 2</string>
+    <string name="workout_expert_1">🏃‍♀️ Experto 1</string>
+    <string name="workout_expert_2">💪 Experto 2</string>
     <string name="onboarding_step_notification_permission_title">Permitir notificaciones</string>
     <string name="onboarding_step_notification_permission_body">Este permiso es necesario para mostrar el tiempo restante como notificación. Sin esta notificación, la aplicación no funcionará con la pantalla apagada.</string>
     <string name="onboarding_step_activity_recognition_permission_title">Permitir el reconocimiento de la actividad física</string>
@@ -134,13 +134,13 @@
     <string name="free_trial_button">RECLAMA TUS 7 DÍAS GRATIS AHORA</string>
     <string name="share">Compartir</string>
     <string name="subscription_section_title">Suscripción</string>
-    <string name="subscription_section_status">estado de suscripción</string>
+    <string name="subscription_section_status">Estado</string>
     <string name="subscription_section_date">Válido hasta: %1$s</string>
     <string name="free_trial">Prueba gratuita</string>
     <string name="app_version">Versión %1$s</string>
 
     <!-- Onboarding - Hook -->
-    <string name="onboarding_hook_title">Tu corazón está a punto de rejuvenecer mucho.</string>
+    <string name="onboarding_hook_title">Tu corazón está a punto de rejuvenecer notablemente.</string>
     <string name="onboarding_hook_description">Intervalos respaldados por la ciencia. Desde donde estés hoy.</string>
     <string name="onboarding_hook_body">El 4x4 noruego es lo más efectivo que puedes hacer por tu salud a largo plazo. Norwy te lleva hasta ahí una sesión a la vez.</string>
 

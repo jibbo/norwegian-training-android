@@ -21,6 +21,9 @@ class FakeSessionRepo : SessionRepository {
     override suspend fun upsertSession(session: Session): Long = -1
 
     override suspend fun insertSession(session: Session): Long = -1
+    override suspend fun insertManualSession(session: Session): Long {
+        TODO("Not yet implemented")
+    }
 
     override suspend fun insertSessions(sessions: List<Session>) {}
 
@@ -162,6 +165,10 @@ class FakeTracker : Analytics {
     }
 
     override fun logRevenueCatError(name: String, message: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun logManualWorkoutLogged() {
         TODO("Not yet implemented")
     }
 }

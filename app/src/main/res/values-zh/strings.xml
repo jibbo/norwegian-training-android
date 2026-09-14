@@ -19,7 +19,7 @@
     <string name="phases_total">共 %1$s 个阶段</string>
     <string name="current_phases">%1$s / %2$s</string>
     <string name="home_workout_name">%1$s</string>
-    <string name="next_up">下一个 >> %1$s</string>
+    <string name="next_up">接下来：%1$s</string>
     <string name="stop_workout_confirmation_title">停止训练？</string>
     <string name="stop_workout_confirmation_message">计时器仍在运行。要停止本次训练吗？</string>
     <string name="stop_workout">停止训练</string>
@@ -28,7 +28,7 @@
     <string name="warmup_desc">轻度运动：热身时你应该能够正常说话</string>
     <string name="hit_cardio_desc">尽全力坚持到底。你可以做到的！</string>
     <string name="light_cardio_desc">轻度运动：保持心率平稳，不要停下</string>
-    <string name="cooldown_desc">深呼吸，放慢节奏让心率恢复平静，但此刻不要停下</string>
+    <string name="cooldown_desc">深呼吸，放慢节奏并保持放松，让心率逐渐恢复平稳，但现在还不要停下来。</string>
     <string name="completed_desc">恭喜！你完成了本次训练！明天再来挑战一次 💪</string>
     <string name="one_minute_remaining">还剩一分钟</string>
     <string name="title_activity_settings">设置</string>
@@ -51,7 +51,7 @@
     <string name="title_beta_section">测试功能</string>
     <string name="beta_section_description">访问实验性功能</string>
     <string name="enable_timer_notification">计时器通知</string>
-    <string name="onboarding_section_title">设置</string>
+    <string name="onboarding_section_title">再次显示引导</string>
     <string name="about_dev_section_title">开发者的话</string>
     <string name="about_dev_section_description">你好！我是 Gio，非常感谢你使用我的应用！作为一名健身爱好者，我开发这款应用是因为我厌倦了摆弄那些复杂的计时器。希望你能发现它的实用之处！</string>
     <string name="about_dev_section_cta">给 Gio 发邮件</string>
@@ -68,13 +68,13 @@
     <string name="health_connect_permission_message">允许 Health Connect 访问数据，即可在此查看更多统计数据</string>
     <string name="hide">永久隐藏</string>
     <string name="onboarding_step_1_title">欢迎使用 Norwy 应用！</string>
-    <string name="onboarding_step_1_description">根据你的水平和目标定制训练课程</string>
+    <string name="onboarding_step_1_description">最适合你的有氧训练伙伴</string>
     <string name="onboarding_step_1_name">Markus R.</string>
     <string name="onboarding_step_1_handle">\@marksmeister</string>
-    <string name="onboarding_step_1_body">根据你的水平和目标定制训练课程</string>
+    <string name="onboarding_step_1_body">我刚发现了一个叫 Norwy 的新应用，太惊喜了！如果你喜欢 4x4 训练协议，一定要试试。它能完美处理所有计时和间歇，让我可以专注于训练，而不是盯着手表。🏃‍♀️⌚️ 强烈推荐！#runningapp #fitness #HIIT #workout</string>
     <string name="onboarding_step_2_title">自动计时器</string>
-    <string name="onboarding_step_2_description">随时跟踪你的进步</string>
-    <string name="onboarding_step_2_body">随时跟踪你的进步</string>
+    <string name="onboarding_step_2_description">只需按下“开始”，即可开始训练。</string>
+    <string name="onboarding_step_2_body">不用再反复操作多个计时器</string>
     <string name="onboarding_step_3_title">你为什么想开始挪威训练协议？</string>
     <string name="onboarding_step_3_option_1">改善我的整体健康</string>
     <string name="onboarding_step_3_option_2">提升我的运动表现</string>
@@ -113,7 +113,7 @@
     <string name="workout_intermediate_1">🎽 中级 1</string>
     <string name="workout_intermediate_2">💨 中级 2</string>
     <string name="workout_intermediate_3">🧠 中级 3</string>
-    <string name="workout_true_norwegian">"🇳🇴  真正的挪威人 4x4 "</string>
+    <string name="workout_true_norwegian">🇳🇴 正宗挪威 4x4</string>
     <string name="workout_expert_1">🏃‍♀️ 专家 1</string>
     <string name="workout_expert_2">💪 专家 2</string>
     <string name="free_trial_title">这是我们送给你的礼物！</string>
