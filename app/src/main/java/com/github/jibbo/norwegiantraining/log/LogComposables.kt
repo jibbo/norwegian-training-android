@@ -26,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -82,8 +84,13 @@ internal fun Logs(
             trailingContent = {
                 IconButton(
                     onClick = { onOpenManualWorkout(LocalDate.now()) },
-                    modifier = Modifier.testTag("add_manual_workout_button"),
-                ) { Text("+", fontSize = 32.sp) }
+                    modifier = Modifier.testTag("today"),
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_calendar_today_24),
+                        contentDescription = "",
+                    )
+                }
             },
         )
         LazyColumn(state = listState, modifier = Modifier.fillMaxWidth()) {
