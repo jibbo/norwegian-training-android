@@ -3,6 +3,8 @@
 package com.github.jibbo.norwegiantraining.log
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,9 +35,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +66,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +81,11 @@ internal fun Logs(
     onOpenHealthConnect: () -> Unit,
 ) {
     val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val today = remember { LocalDate.now() }
+    val todayDate = remember(today) { Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()) }
     var selectedDay by remember { mutableStateOf<Date?>(null) }
+    var todayHighlightToken by remember { mutableIntStateOf(0) }
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(
             top = innerPadding.calculateTopPadding(), bottom = innerPadding.calculateBottomPadding(),
@@ -83,7 +95,16 @@ internal fun Logs(
             R.string.title_activity_logs.localizable(), listState, null,
             trailingContent = {
                 IconButton(
-                    onClick = { onOpenManualWorkout(LocalDate.now()) },
+                    onClick = {
+                        val monthItemIndex = 1 +
+                            (if (todayStatsUiState is TodayStatsUiState.Stats) 1 else 0) +
+                            today.monthValue - 1
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(monthItemIndex)
+                            selectedDay = todayDate
+                            todayHighlightToken++
+                        }
+                    },
                     modifier = Modifier.testTag("today"),
                 ) {
                     Icon(
@@ -101,7 +122,9 @@ internal fun Logs(
                     DistanceCard(todayStatsUiState.steps)
                 } }
             }
-            items(12) { month -> Month(month, uiState) { selectedDay = it } }
+            items(12) { month ->
+                Month(month, uiState, todayDate, todayHighlightToken) { selectedDay = it }
+            }
         }
     }
     selectedDay?.let { day ->
@@ -171,22 +194,70 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
     }
 }
 
-@Composable private fun Month(month: Int, uiState: UiState.Loaded, onDayClick: (Date) -> Unit) {
-    val calendar = Calendar.getInstance().apply { set(Calendar.MONTH, month) }
+@Composable private fun Month(
+    month: Int,
+    uiState: UiState.Loaded,
+    today: Date,
+    todayHighlightToken: Int,
+    onDayClick: (Date) -> Unit,
+) {
+    val calendar = Calendar.getInstance().apply {
+        set(Calendar.MONTH, month)
+        set(Calendar.DAY_OF_MONTH, 1)
+    }
     Text(SimpleDateFormat("MMMM").format(calendar.time).capitalizeFirstLetter(), Modifier.padding(horizontal = 4.dp))
     FlowRow(Modifier.padding(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        for (i in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) Day(calendar, i, uiState, month, onDayClick)
+        for (i in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+            Day(calendar, i, uiState, month, today, todayHighlightToken, onDayClick)
+        }
     }
     Spacer(Modifier.fillMaxWidth().height(32.dp))
 }
 
-@Composable private fun Day(calendar: Calendar, index: Int, uiState: UiState.Loaded, month: Int, onDayClick: (Date) -> Unit) {
+@Composable private fun Day(
+    calendar: Calendar,
+    index: Int,
+    uiState: UiState.Loaded,
+    month: Int,
+    today: Date,
+    todayHighlightToken: Int,
+    onDayClick: (Date) -> Unit,
+) {
     calendar.set(Calendar.DAY_OF_MONTH, index); calendar.set(Calendar.HOUR_OF_DAY, 0); calendar.set(Calendar.MINUTE, 0); calendar.set(Calendar.SECOND, 0); calendar.set(Calendar.MILLISECOND, 0)
     val date = calendar.time
     val item = uiState.logs[month]?.find { it.date.isSameDay(date) }
-    val modifier = Modifier.size(32.dp).padding(4.dp).clip(CircleShape).clickable { onDayClick(date) }.testTag("calendar_day_${month}_$index")
-    if (item == null) Text(index.toString(), textAlign = TextAlign.Center, modifier = modifier.fillMaxSize())
-    else Box(modifier.background(item.getStatus().getColor()))
+    val isToday = date.isSameDay(today)
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val blinkAlpha = remember { Animatable(1f) }
+    val modifier = Modifier
+        .size(32.dp)
+        .padding(4.dp)
+        .clip(CircleShape)
+        .clickable { onDayClick(date) }
+        .then(if (isToday) Modifier.bringIntoViewRequester(bringIntoViewRequester) else Modifier)
+        .testTag("calendar_day_${month}_$index")
+
+    LaunchedEffect(todayHighlightToken) {
+        if (isToday && todayHighlightToken > 0) {
+            bringIntoViewRequester.bringIntoView()
+            repeat(3) {
+                blinkAlpha.animateTo(0f, tween(200))
+                blinkAlpha.animateTo(1f, tween(200))
+            }
+        }
+    }
+
+    val backgroundColor = item?.getStatus()?.getColor() ?: if (isToday) White else null
+    val textColor = if (isToday) Black else White
+    if (backgroundColor == null) {
+        Text(index.toString(), color = textColor, textAlign = TextAlign.Center, modifier = modifier.fillMaxSize())
+    } else {
+        Box(modifier.background(backgroundColor.copy(alpha = blinkAlpha.value))) {
+            if (item == null) {
+                Text(index.toString(), textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize(), color = textColor)
+            }
+        }
+    }
 }
 
 private fun Date.isSameDay(other: Date): Boolean {
