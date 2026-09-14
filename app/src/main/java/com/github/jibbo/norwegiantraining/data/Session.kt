@@ -45,7 +45,8 @@ data class Session(
     @ColumnInfo(name = "date") val date: Date = Date(),
     @ColumnInfo(name = "is_manual") val isManual: Boolean = false,
     @ColumnInfo(name = "name") val name: String = "HIIT",
-    @ColumnInfo(name = "duration") val duration: Long = 0L
+    @ColumnInfo(name = "duration") val duration: Long = 0L,
+    @ColumnInfo(name = "activity_type") val activityType: String = "HIIT",
 )
 
 class SessionConverters {

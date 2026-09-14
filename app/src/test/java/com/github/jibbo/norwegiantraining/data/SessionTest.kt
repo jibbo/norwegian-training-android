@@ -5,7 +5,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Date
-
 class SessionTest {
     @Test
     fun `legacy defaults identify a non-manual HIIT session`() {
@@ -14,6 +13,7 @@ class SessionTest {
         assertFalse(session.isManual)
         assertEquals("HIIT", session.name)
         assertEquals(0L, session.duration)
+        assertEquals("HIIT", session.activityType)
     }
 
     @Test
@@ -26,11 +26,13 @@ class SessionTest {
             isManual = true,
             name = "Run",
             duration = 90L,
+            activityType = "RUN",
         )
 
         assertTrue(session.isManual)
         assertEquals("Run", session.name)
         assertEquals(90L, session.duration)
+        assertEquals("RUN", session.activityType)
         assertEquals(date, session.date)
         assertEquals(1, session.phasesEnded)
         assertEquals(0, session.skipCount)

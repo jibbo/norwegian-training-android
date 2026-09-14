@@ -32,6 +32,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +57,9 @@ import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
+import com.github.jibbo.norwegiantraining.domain.calculateCalories
+import com.github.jibbo.norwegiantraining.domain.calculateTotalCalories
+import com.github.jibbo.norwegiantraining.domain.toManualWorkoutType
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.Gray
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
@@ -69,6 +73,7 @@ import java.util.Calendar
 import java.util.Date
 import kotlinx.coroutines.launch
 import kotlin.random.Random
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -147,7 +152,23 @@ internal fun Logs(
                 sessionsForDay.forEach { session ->
                     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), Arrangement.SpaceBetween) {
                         Text(session.name, style = Typography.bodyLarge)
-                        Text(R.string.workout_time.localizable(session.duration.toString()), style = Typography.bodyMedium)
+                        Text(
+                            "${R.string.workout_time.localizable(session.duration.toString())} " +
+                                R.string.workout_kCal.localizable(
+                                    calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
+                                ),
+                            style = Typography.bodyMedium,
+                        )
+                    }
+                }
+                if (sessionsForDay.isNotEmpty()) {
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), Arrangement.SpaceBetween) {
+                        Text(R.string.calories_burned.localizable(), style = Typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+                        Text(
+                            R.string.workout_kCal.localizable(calculateTotalCalories(sessionsForDay).roundToInt()),
+                            style = Typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        )
                     }
                 }
                 Spacer(Modifier.height(24.dp))

@@ -112,6 +112,7 @@ class LogActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        viewModel.refreshMonth(Date())
         loadTodayStats()
     }
 
