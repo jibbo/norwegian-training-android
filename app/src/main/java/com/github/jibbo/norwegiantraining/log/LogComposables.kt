@@ -35,6 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -123,7 +124,7 @@ internal fun Logs(
                 } }
             }
             items(12) { month ->
-                Month(month, uiState, todayDate, todayHighlightToken) { selectedDay = it }
+                Month(month, uiState, todayDate, todayHighlightToken, { todayHighlightToken = 0 }) { selectedDay = it }
             }
         }
     }
@@ -199,6 +200,7 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
     uiState: UiState.Loaded,
     today: Date,
     todayHighlightToken: Int,
+    onTodayBlinkFinished: () -> Unit,
     onDayClick: (Date) -> Unit,
 ) {
     val calendar = Calendar.getInstance().apply {
@@ -208,7 +210,7 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
     Text(SimpleDateFormat("MMMM").format(calendar.time).capitalizeFirstLetter(), Modifier.padding(horizontal = 4.dp))
     FlowRow(Modifier.padding(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         for (i in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-            Day(calendar, i, uiState, month, today, todayHighlightToken, onDayClick)
+            Day(calendar, i, uiState, month, today, todayHighlightToken, onTodayBlinkFinished, onDayClick)
         }
     }
     Spacer(Modifier.fillMaxWidth().height(32.dp))
@@ -221,6 +223,7 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
     month: Int,
     today: Date,
     todayHighlightToken: Int,
+    onTodayBlinkFinished: () -> Unit,
     onDayClick: (Date) -> Unit,
 ) {
     calendar.set(Calendar.DAY_OF_MONTH, index); calendar.set(Calendar.HOUR_OF_DAY, 0); calendar.set(Calendar.MINUTE, 0); calendar.set(Calendar.SECOND, 0); calendar.set(Calendar.MILLISECOND, 0)
@@ -244,7 +247,12 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
                 blinkAlpha.animateTo(0f, tween(200))
                 blinkAlpha.animateTo(1f, tween(200))
             }
+            onTodayBlinkFinished()
         }
+    }
+    DisposableEffect(isToday, todayHighlightToken) {
+        if (!isToday || todayHighlightToken == 0) return@DisposableEffect onDispose { }
+        onDispose { onTodayBlinkFinished() }
     }
 
     val backgroundColor = item?.getStatus()?.getColor() ?: if (isToday) White else null
