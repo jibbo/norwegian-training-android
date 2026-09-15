@@ -63,6 +63,10 @@ class HomeViewModel @Inject constructor(
             }
         } else {
             refreshUsername()
+            viewModelScope.launch {
+                val current = states.value as? UiState.Loaded ?: return@launch
+                states.value = current.copy(weeklySessions = getWeeklySessions())
+            }
         }
     }
 

@@ -150,7 +150,7 @@ class WorkoutTimerStateManager @Inject constructor(
     }
 
     suspend fun skipPhase() {
-        skipPhaseUseCase()
+        skipPhaseUseCase(_state.value.workoutId)
         moveToNextPhase()
     }
 

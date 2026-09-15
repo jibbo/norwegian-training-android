@@ -29,7 +29,7 @@ import javax.inject.Singleton
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
     ],
-    version = 4,
+    version = 7,
     exportSchema = true
 )
 @TypeConverters(SessionConverters::class, WorkoutConverters::class)
@@ -151,7 +151,58 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE Workout ADD COLUMN isCustom INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("ALTER TABLE Workout ADD COLUMN icon TEXT")
+    }
+}
+
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE Session ADD COLUMN activity_type INTEGER NOT NULL DEFAULT 5")
+    }
+}
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE Session_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                phases_ended INTEGER NOT NULL,
+                skip_count INTEGER NOT NULL,
+                date INTEGER NOT NULL,
+                is_manual INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                duration INTEGER NOT NULL,
+                activity_type TEXT NOT NULL
+            )
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            INSERT INTO Session_new (
+                id, phases_ended, skip_count, date, is_manual, name, duration, activity_type
+            )
+            SELECT
+                id, phases_ended, skip_count, date, is_manual, name, duration,
+                CASE activity_type
+                    WHEN 0 THEN 'RUN'
+                    WHEN 1 THEN 'STRENGTH_TRAINING'
+                    WHEN 2 THEN 'CYCLING'
+                    WHEN 3 THEN 'SWIMMING'
+                    WHEN 4 THEN 'WALKING'
+                    WHEN 5 THEN 'HIIT'
+                    ELSE 'HIIT'
+                END
+            FROM Session
+            """.trimIndent(),
+        )
+        db.execSQL("DROP TABLE Session")
+        db.execSQL("ALTER TABLE Session_new RENAME TO Session")
+    }
+}
+
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE Session ADD COLUMN workout_id INTEGER")
     }
 }
 
@@ -167,7 +218,7 @@ class DatabaseModule {
         context,
         AppDatabase::class.java,
         "norwegiantrainingdb"
-    ).addMigrations(MIGRATION_2_3, MIGRATION_3_4).addCallback(callback).build()
+    ).addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7).addCallback(callback).build()
 
     @Provides
     fun provideRecordDao(database: AppDatabase) = database.recordDao()

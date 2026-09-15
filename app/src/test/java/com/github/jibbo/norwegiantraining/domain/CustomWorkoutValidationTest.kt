@@ -11,7 +11,6 @@ class CustomWorkoutValidationTest {
         val result = validateCustomWorkoutDraft(
             CustomWorkoutDraft(
                 name = "  Morning  ",
-                icon = "",
                 workMinutes = "1",
                 workSeconds = "59",
                 restMinutes = "0",
@@ -22,7 +21,6 @@ class CustomWorkoutValidationTest {
 
         assertTrue(result.isValid)
         assertEquals("Morning", result.trimmedName)
-        assertEquals("", result.icon)
         assertEquals(1, result.workMinutes)
         assertEquals(59, result.workSeconds)
         assertEquals(0, result.restMinutes)
@@ -126,9 +124,9 @@ class CustomWorkoutValidationTest {
     }
 
     @Test
-    fun `duplicate names and empty icons are valid`() {
-        val first = validateCustomWorkoutDraft(CustomWorkoutDraft(name = "Same", icon = null))
-        val second = validateCustomWorkoutDraft(CustomWorkoutDraft(name = "Same", icon = ""))
+    fun `duplicate names are valid`() {
+        val first = validateCustomWorkoutDraft(CustomWorkoutDraft(name = "Same"))
+        val second = validateCustomWorkoutDraft(CustomWorkoutDraft(name = "Same"))
 
         assertTrue(first.isValid)
         assertTrue(second.isValid)

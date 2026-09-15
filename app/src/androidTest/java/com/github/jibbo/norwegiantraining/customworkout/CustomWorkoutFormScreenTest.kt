@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -36,7 +37,6 @@ class CustomWorkoutFormScreenTest {
 
         composeRule.onNodeWithText("Create workout").assertIsDisplayed()
         composeRule.onNodeWithText("10").assertIsDisplayed()
-        composeRule.onNodeWithText("👟").assertIsDisplayed()
         composeRule.onAllNodesWithTag("delete").assertCountEquals(0)
     }
 
@@ -73,6 +73,28 @@ class CustomWorkoutFormScreenTest {
         composeRule.waitForIdle()
         composeRule.onNodeWithText("Edit workout").assertIsDisplayed()
         composeRule.onNodeWithContentDescription("Delete custom workout").assertIsDisplayed()
+    }
+
+    @Test
+    fun builtInEditFormDoesNotShowDeleteAction() {
+        val repository = FakeWorkoutRepo()
+        runBlocking {
+            repository.insert(
+                Workout(
+                    id = 43L,
+                    name = "Built-in",
+                    difficulty = Difficulty.BEGINNER,
+                    content = "5m-30s-15s-5m",
+                    isCustom = false,
+                ),
+            )
+        }
+        val viewModel = CustomWorkoutViewModel(repository, FakeWorkoutTimerManager())
+        setContent(viewModel, 43L)
+
+        composeRule.waitForIdle()
+        composeRule.onNodeWithText("Edit workout").assertIsDisplayed()
+        composeRule.onAllNodesWithContentDescription("Delete custom workout").assertCountEquals(0)
     }
 
     @Test

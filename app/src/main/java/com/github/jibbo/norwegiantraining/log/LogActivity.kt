@@ -1,9 +1,13 @@
+@file:android.annotation.SuppressLint("NewApi")
+
 package com.github.jibbo.norwegiantraining.log
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Build
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.health.connect.client.HealthConnectClient
@@ -30,7 +34,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
+import java.util.Date
 
+@SuppressLint("NewApi")
 @AndroidEntryPoint
 class LogActivity : BaseActivity() {
 
@@ -43,6 +49,16 @@ class LogActivity : BaseActivity() {
         PermissionController.createRequestPermissionResultContract()
     ) { grantedPermissions ->
         loadTodayStats()
+    }
+
+    private val manualWorkoutLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.getStringExtra(ManualWorkoutActivity.EXTRA_SAVED_DATE)
+                ?.let { runCatching { java.time.LocalDate.parse(it) }.getOrNull() }
+                ?.let { viewModel.refreshMonth(Date.from(it.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant())) }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +88,7 @@ class LogActivity : BaseActivity() {
                                 innerPadding = innerPadding,
                                 uiState = uiState.value as UiState.Loaded,
                                 todayStatsUiState = todayStatsUiState.value,
+                                onOpenManualWorkout = ::openManualWorkout,
                                 onHideTodayStats = {
                                     settingsRepository.setShowTodayStatsInActivitySection(false)
                                     todayStatsUiState.value = TodayStatsUiState.Hidden
@@ -86,8 +103,16 @@ class LogActivity : BaseActivity() {
         }
     }
 
+    private fun openManualWorkout(date: java.time.LocalDate) {
+        manualWorkoutLauncher.launch(
+            Intent(this, ManualWorkoutActivity::class.java)
+                .putExtra(ManualWorkoutActivity.EXTRA_INITIAL_DATE, date.toString()),
+        )
+    }
+
     override fun onResume() {
         super.onResume()
+        viewModel.refreshMonth(Date())
         loadTodayStats()
     }
 

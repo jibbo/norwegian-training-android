@@ -1,6 +1,12 @@
+@file:SuppressLint("NewApi")
+
 package com.github.jibbo.norwegiantraining.log
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,362 +21,315 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
 import com.github.jibbo.norwegiantraining.data.Session
-import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.Hidden
-import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.InstallHealthConnect
-import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.Loading
-import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.RequestHealthConnectPermissions
-import com.github.jibbo.norwegiantraining.log.TodayStatsUiState.Stats
+import com.github.jibbo.norwegiantraining.domain.calculateCalories
+import com.github.jibbo.norwegiantraining.domain.calculateTotalCalories
+import com.github.jibbo.norwegiantraining.domain.toManualWorkoutType
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.Gray
-import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Primary
+import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
+import kotlinx.coroutines.launch
 import kotlin.random.Random
+import kotlin.math.roundToInt
 
+internal fun Session.logName(): String = name.take(20) + if (name.length > 20) "…" else ""
 
+internal fun Session.logDetails(): LogDetails? = when {
+    isManual || workoutId == null -> null
+    getStatus() == SessionStatus.GOOD -> LogDetails.DurationAndCalories
+    else -> LogDetails.SkippedPhasesAndCalories
+}
+
+internal enum class LogDetails {
+    DurationAndCalories,
+    SkippedPhasesAndCalories,
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun Logs(
     innerPadding: PaddingValues,
     uiState: UiState.Loaded,
     todayStatsUiState: TodayStatsUiState,
+    onOpenManualWorkout: (LocalDate) -> Unit,
     onHideTodayStats: () -> Unit,
     onRequestPermissions: () -> Unit,
     onOpenHealthConnect: () -> Unit,
 ) {
     val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val today = remember { LocalDate.now() }
+    val todayDate = remember(today) { Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()) }
+    var selectedDay by remember { mutableStateOf<Date?>(null) }
+    var todayHighlightToken by remember { mutableIntStateOf(0) }
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(
-                top = innerPadding.calculateTopPadding(),
-                bottom = innerPadding.calculateBottomPadding()
-            )
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(
+            top = innerPadding.calculateTopPadding(), bottom = innerPadding.calculateBottomPadding(),
+        ),
     ) {
         AnimatedToolbar(
-            R.string.title_activity_logs.localizable(),
-            listState,
-            null
-        )
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            item {
-                TodayStatsArea(
-                    todayStatsUiState,
-                    onHideTodayStats,
-                    onRequestPermissions,
-                    onOpenHealthConnect
-                )
-            }
-            if (todayStatsUiState is Stats) {
-                item {
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        StepsCard(todayStatsUiState.steps)
-                        DistanceCard(todayStatsUiState.steps)
-                    }
+            R.string.title_activity_logs.localizable(), listState, null,
+            trailingContent = {
+                IconButton(
+                    onClick = {
+                        val monthItemIndex = 1 +
+                            (if (todayStatsUiState is TodayStatsUiState.Stats) 1 else 0) +
+                            today.monthValue - 1
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(monthItemIndex)
+                            selectedDay = todayDate
+                            todayHighlightToken++
+                        }
+                    },
+                    modifier = Modifier.testTag("today"),
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_calendar_today_24),
+                        contentDescription = "",
+                    )
                 }
+            },
+        )
+        LazyColumn(state = listState, modifier = Modifier.fillMaxWidth()) {
+            item { TodayStatsArea(todayStatsUiState, onHideTodayStats, onRequestPermissions, onOpenHealthConnect) }
+            if (todayStatsUiState is TodayStatsUiState.Stats) {
+                item { Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    StepsCard(todayStatsUiState.steps)
+                    DistanceCard(todayStatsUiState.steps)
+                } }
             }
             items(12) { month ->
-                Month(month, uiState)
+                Month(month, uiState, todayDate, todayHighlightToken, { todayHighlightToken = 0 }) { selectedDay = it }
             }
         }
     }
-}
-
-@Composable
-private fun TodayStatsArea(
-    state: TodayStatsUiState,
-    onHideTodayStats: () -> Unit,
-    onRequestPermissions: () -> Unit,
-    onOpenHealthConnect: () -> Unit,
-) {
-    when (state) {
-        Hidden -> Unit
-        Loading -> ElevatedCard(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.elevatedCardColors(containerColor = Gray)
+    selectedDay?.let { day ->
+        val sessionsForDay = uiState.logs.values.filterNotNull().flatten().filter { it.date.isSameDay(day) }
+        ModalBottomSheet(
+            onDismissRequest = { selectedDay = null }, modifier = Modifier.testTag("sessions_for_day_sheet"),
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-
-        is Stats -> CaloriesCard(state.steps)
-        InstallHealthConnect -> HealthConnectCard(
-            message = R.string.health_connect_install_message.localizable(),
-            onCardClick = onOpenHealthConnect,
-            onHide = onHideTodayStats,
-            tag = "today_stats_install_health_connect_card"
-        )
-
-        RequestHealthConnectPermissions -> HealthConnectCard(
-            message = R.string.health_connect_permission_message.localizable(),
-            onCardClick = onRequestPermissions,
-            onHide = onHideTodayStats,
-            tag = "today_stats_permissions_card"
-        )
-    }
-}
-
-@Composable
-private fun HealthConnectCard(
-    message: String,
-    onCardClick: () -> Unit,
-    onHide: () -> Unit,
-    tag: String,
-) {
-    ElevatedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp)
-            .testTag(tag),
-        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = R.string.health_connect_title.localizable(),
-                    style = Typography.headlineSmall,
-                    color = Primary
-                )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(text = message, style = Typography.bodyMedium, color = White)
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(onClick = onHide) {
-                    Text(text = R.string.hide.localizable())
+            Column(modifier = Modifier.padding(24.dp)) {
+                Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                    Text(SimpleDateFormat("MMMM d").format(day), style = Typography.headlineSmall)
+                    IconButton(
+                        onClick = {
+                            selectedDay = null
+                            onOpenManualWorkout(day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                        }, modifier = Modifier.testTag("add_manual_workout_for_day"),
+                    ) { Text("+", style = Typography.headlineSmall) }
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Button(
-                    onClick = onCardClick,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Primary,
-                        contentColor = Black
-                    )
-                ) {
-                    Text(text = R.string.ok.localizable())
+                Spacer(Modifier.height(16.dp))
+                sessionsForDay.forEach { session ->
+                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), Arrangement.SpaceBetween) {
+                        Text(if (session.workoutId != null) session.logName() else session.name, style = Typography.bodyLarge)
+                        if (session.isManual) {
+                            Text(
+                                "${R.string.workout_time.localizable(session.duration.toString())} " +
+                                    R.string.workout_kCal.localizable(
+                                        calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
+                                    ),
+                                style = Typography.bodyMedium,
+                            )
+                        } else if (session.workoutId != null) {
+                            Text(
+                                when (session.logDetails()) {
+                                    LogDetails.DurationAndCalories -> "${R.string.workout_time.localizable(session.duration.toString())} "
+                                    LogDetails.SkippedPhasesAndCalories -> pluralStringResource(
+                                        R.plurals.skipped_phases,
+                                        session.skipCount,
+                                        session.skipCount,
+                                    )
+                                    null -> ""
+                                } + R.string.workout_kCal.localizable(
+                                    calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
+                                ),
+                                style = Typography.bodyMedium,
+                            )
+                        }
+                    }
                 }
+                if (sessionsForDay.isNotEmpty()) {
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), Arrangement.SpaceBetween) {
+                        Text(R.string.calories_burned.localizable(), style = Typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+                        Text(
+                            R.string.workout_kCal.localizable(calculateTotalCalories(sessionsForDay).roundToInt()),
+                            style = Typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
             }
         }
     }
 }
 
 @Composable
-private fun StepsCard(steps: Long?, modifier: Modifier = Modifier) {
-    ElevatedCard(
-        modifier = modifier
-            .padding(bottom = 16.dp)
-            .testTag("steps_card"),
-        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
-    ) {
-        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
-            Text(
-                text = "${steps ?: 0}",
-                style = Typography.headlineMedium,
-                color = Primary,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = R.string.steps_today.localizable(),
-                style = Typography.headlineSmall,
-                color = White
-            )
+private fun TodayStatsArea(state: TodayStatsUiState, onHide: () -> Unit, onRequest: () -> Unit, onOpen: () -> Unit) {
+    when (state) {
+        TodayStatsUiState.Hidden -> Unit
+        TodayStatsUiState.Loading -> ElevatedCard(Modifier.fillMaxWidth(), colors = CardDefaults.elevatedCardColors(containerColor = Gray)) {
+            Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         }
+        is TodayStatsUiState.Stats -> CaloriesCard(state.steps)
+        TodayStatsUiState.InstallHealthConnect -> HealthConnectCard(R.string.health_connect_install_message.localizable(), onOpen, onHide, "today_stats_install_health_connect_card")
+        TodayStatsUiState.RequestHealthConnectPermissions -> HealthConnectCard(R.string.health_connect_permission_message.localizable(), onRequest, onHide, "today_stats_permissions_card")
     }
 }
 
 @Composable
-private fun DistanceCard(steps: Long?, modifier: Modifier = Modifier) {
-    val distance = "%.2f".format(steps?.times(0.70)?.div(1000) ?: 0.0)
-    ElevatedCard(
-        modifier = modifier
-            .testTag("distance_card"),
-        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
-    ) {
-        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
-            Text(
-                text = R.string.steps_distance.localizable(distance),
-                style = Typography.headlineMedium,
-                color = Primary,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = R.string.distance_today.localizable(),
-                style = Typography.headlineSmall,
-                color = White,
-            )
+private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: () -> Unit, tag: String) {
+    ElevatedCard(Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag(tag), colors = CardDefaults.elevatedCardColors(containerColor = Gray)) {
+        Column(Modifier.padding(16.dp)) {
+            Text(R.string.health_connect_title.localizable(), style = Typography.headlineSmall, color = Primary)
+            Spacer(Modifier.height(12.dp)); Text(message, style = Typography.bodyMedium, color = White)
+            Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End) {
+                androidx.compose.material3.TextButton(onClick = onHide) { Text(R.string.hide.localizable()) }
+                androidx.compose.material3.TextButton(onClick = onCardClick) { Text(R.string.ok.localizable()) }
+            }
         }
     }
 }
 
-@Composable
-private fun CaloriesCard(steps: Long?, modifier: Modifier = Modifier) {
-    val kCal = "%.2f".format(steps?.times(0.044) ?: 0.0)
-    ElevatedCard(
-        modifier = modifier
-            .padding(bottom = 16.dp)
-            .testTag("calories_card"),
-        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
-    ) {
-        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
-            Text(
-                text = kCal,
-                style = Typography.headlineMedium,
-                color = Primary,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = R.string.calories_burned.localizable(),
-                style = Typography.headlineSmall,
-                color = White,
-            )
+@Composable private fun StepsCard(steps: Long?) { MetricCard(steps?.toString() ?: "0", R.string.steps_today.localizable(), "steps_card") }
+@Composable private fun DistanceCard(steps: Long?) { MetricCard("%.2f".format(steps?.times(0.70)?.div(1000) ?: 0.0), R.string.distance_today.localizable(), "distance_card") }
+@Composable private fun CaloriesCard(steps: Long?) { MetricCard("%.2f".format(steps?.times(0.044) ?: 0.0), R.string.calories_burned.localizable(), "calories_card") }
+@Composable private fun MetricCard(value: String, label: String, tag: String) {
+    ElevatedCard(Modifier.padding(bottom = 16.dp).testTag(tag), colors = CardDefaults.elevatedCardColors(containerColor = Gray)) {
+        Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
+            Text(value, style = Typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
+            Text(label, style = Typography.headlineSmall, color = White)
         }
     }
 }
 
-@Composable
-private fun Month(
+@Composable private fun Month(
     month: Int,
-    uiState: UiState.Loaded
+    uiState: UiState.Loaded,
+    today: Date,
+    todayHighlightToken: Int,
+    onTodayBlinkFinished: () -> Unit,
+    onDayClick: (Date) -> Unit,
 ) {
-    val dateFormat = SimpleDateFormat("MMMM")
-    val calendar = Calendar.getInstance()
-    calendar.set(Calendar.MONTH, month)
-    Text(
-        text = dateFormat.format(calendar.time).capitalizeFirstLetter(),
-        modifier = Modifier.padding(horizontal = 4.dp)
-    )
-    FlowRow(
-        modifier = Modifier.padding(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
+    val calendar = Calendar.getInstance().apply {
+        set(Calendar.MONTH, month)
+        set(Calendar.DAY_OF_MONTH, 1)
+    }
+    Text(SimpleDateFormat("MMMM").format(calendar.time).capitalizeFirstLetter(), Modifier.padding(horizontal = 4.dp))
+    FlowRow(Modifier.padding(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         for (i in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-            Day(calendar, i, uiState, month)
+            Day(calendar, i, uiState, month, today, todayHighlightToken, onTodayBlinkFinished, onDayClick)
         }
     }
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(32.dp)
-    )
+    Spacer(Modifier.fillMaxWidth().height(32.dp))
 }
 
-@Composable
-private fun Day(
+@Composable private fun Day(
     calendar: Calendar,
     index: Int,
     uiState: UiState.Loaded,
-    month: Int
+    month: Int,
+    today: Date,
+    todayHighlightToken: Int,
+    onTodayBlinkFinished: () -> Unit,
+    onDayClick: (Date) -> Unit,
 ) {
-    calendar.set(
-        Calendar.DAY_OF_MONTH,
-        index
-    )
-    calendar.set(Calendar.HOUR_OF_DAY, 0)
-    calendar.set(Calendar.MINUTE, 0)
-    calendar.set(Calendar.SECOND, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
-    val boxDate = calendar.time
-
-    val item =
-        uiState.logs[month]?.find { it.date.isSameDay(boxDate) }
-
+    calendar.set(Calendar.DAY_OF_MONTH, index); calendar.set(Calendar.HOUR_OF_DAY, 0); calendar.set(Calendar.MINUTE, 0); calendar.set(Calendar.SECOND, 0); calendar.set(Calendar.MILLISECOND, 0)
+    val date = calendar.time
+    val item = uiState.logs[month]?.find { it.date.isSameDay(date) }
+    val isToday = date.isSameDay(today)
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val blinkAlpha = remember { Animatable(1f) }
     val modifier = Modifier
         .size(32.dp)
         .padding(4.dp)
         .clip(CircleShape)
+        .clickable { onDayClick(date) }
+        .then(if (isToday) Modifier.bringIntoViewRequester(bringIntoViewRequester) else Modifier)
+        .testTag("calendar_day_${month}_$index")
 
-    if (item == null) {
-        Text(index.toString(), textAlign = TextAlign.Center, modifier = modifier.fillMaxSize())
+    LaunchedEffect(todayHighlightToken) {
+        if (isToday && todayHighlightToken > 0) {
+            bringIntoViewRequester.bringIntoView()
+            repeat(3) {
+                blinkAlpha.animateTo(0f, tween(200))
+                blinkAlpha.animateTo(1f, tween(200))
+            }
+            onTodayBlinkFinished()
+        }
+    }
+    DisposableEffect(isToday, todayHighlightToken) {
+        if (!isToday || todayHighlightToken == 0) return@DisposableEffect onDispose { }
+        onDispose { onTodayBlinkFinished() }
+    }
+
+    val backgroundColor = item?.getStatus()?.getColor() ?: if (isToday) White else null
+    val textColor = if (isToday) Black else White
+    if (backgroundColor == null) {
+        Text(index.toString(), color = textColor, textAlign = TextAlign.Center, modifier = modifier.fillMaxSize())
     } else {
-        Box(
-            modifier = modifier
-                .background(item.getStatus().getColor())
-        ) {
-//        Text(index.toString())
+        Box(modifier.background(backgroundColor.copy(alpha = blinkAlpha.value))) {
+            if (item == null) {
+                Text(index.toString(), textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize(), color = textColor)
+            }
         }
     }
 }
 
 private fun Date.isSameDay(other: Date): Boolean {
-    val cal1 = Calendar.getInstance()
-    cal1.time = this
-    val cal2 = Calendar.getInstance()
-    cal2.time = other
-    return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-            cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+    val first = Calendar.getInstance().apply { time = this@isSameDay }
+    val second = Calendar.getInstance().apply { time = other }
+    return first.get(Calendar.YEAR) == second.get(Calendar.YEAR) && first.get(Calendar.DAY_OF_YEAR) == second.get(Calendar.DAY_OF_YEAR)
 }
 
+private fun String.capitalizeFirstLetter() = if (isNotEmpty()) this[0].uppercase() + substring(1) else this
 
 @Composable
-@Preview
-fun Preview() {
-    val lol = UiState.Loaded(
-        mapOf(1 to createSessions(10))
-    )
-    NorwegianTrainingTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Logs(innerPadding, lol,
-                //Stats(7_452), {}, {}, {},
-                RequestHealthConnectPermissions, {}, {}, {}
-
-          )
-        }
-    }
+@androidx.compose.ui.tooling.preview.Preview
+private fun Preview() {
+    NorwegianTrainingTheme { Logs(PaddingValues(), UiState.Loaded(emptyMap()), TodayStatsUiState.Hidden, {}, {}, {}, {}) }
 }
-
-private fun createSessions(sessionCount: Int): List<Session> {
-    return buildList(capacity = sessionCount) {
-        repeat(sessionCount) { index ->
-            add(
-                Session(
-                    skipCount = Random.nextInt(0, 101),
-                    date = Date()
-                )
-            )
-        }
-    }
-}
-
-private fun String.capitalizeFirstLetter() =
-    if (this.isNotEmpty()) this[0].uppercase() + this.substring(1) else this

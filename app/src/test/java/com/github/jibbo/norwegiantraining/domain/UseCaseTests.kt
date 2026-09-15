@@ -29,6 +29,30 @@ class UseCaseTests {
     }
 
     @Test
+    fun getTodaySessionDoesNotReuseManualWorkout() = runTest {
+        val sessions = FakeSessionRepository()
+        sessions.insertManualSession(Session(isManual = true, name = "Run", duration = 30L))
+        val useCase = GetTodaySessionUseCase(sessions)
+
+        val result = useCase()
+
+        assertFalse(result.isManual)
+        assertEquals(2, sessions.getSessions().size)
+    }
+
+    @Test
+    fun newNormalSessionSnapshotsWorkoutMetadata() = runTest {
+        val sessions = FakeSessionRepository()
+        val workout = Workout(7, "Snapshot name", Difficulty.BEGINNER, "1m-2m")
+
+        val result = GetTodaySessionUseCase(sessions)(workout)
+
+        assertEquals(7L, result.workoutId)
+        assertEquals("Snapshot name", result.name)
+        assertEquals(workout.totalTime.toLong(), result.duration)
+    }
+
+    @Test
     fun getAllWorkoutsGroupsByDifficulty() = runTest {
         val workouts = FakeWorkoutRepository()
         workouts.insert(

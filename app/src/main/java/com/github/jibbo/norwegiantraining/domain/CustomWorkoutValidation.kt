@@ -22,7 +22,6 @@ enum class CustomWorkoutValidationError {
 
 data class CustomWorkoutValidationResult(
     val trimmedName: String,
-    val icon: String?,
     val workMinutes: Int?,
     val workSeconds: Int?,
     val restMinutes: Int?,
@@ -57,7 +56,6 @@ fun validateCustomWorkoutDraft(draft: CustomWorkoutDraft): CustomWorkoutValidati
 
     return CustomWorkoutValidationResult(
         trimmedName = trimmedName,
-        icon = draft.icon,
         workMinutes = workMinutes,
         workSeconds = workSeconds,
         restMinutes = restMinutes,
