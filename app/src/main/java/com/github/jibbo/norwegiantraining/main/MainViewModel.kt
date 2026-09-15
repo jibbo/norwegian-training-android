@@ -40,13 +40,19 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     fun updateFromService(serviceState: WorkoutTimerState) {
         val currentState = states.value
+        val userFacingTotalPhases = (serviceState.totalPhases - 2).coerceAtLeast(0)
+        val userFacingCurrentPhaseIndex = when (serviceState.currentPhase.name) {
+            PhaseName.GET_READY -> 0
+            PhaseName.COMPLETED -> userFacingTotalPhases
+            else -> serviceState.currentPhaseIndex
+        }
         states.value = UiState(
             step = serviceState.currentPhase,
             isTimerRunning = serviceState.isTimerRunning,
             targetTimeMillis = serviceState.targetTimeMillis,
             remainingTimeOnPauseMillis = serviceState.remainingTimeOnPauseMillis,
-            currentPhaseIndex = serviceState.currentPhaseIndex,
-            totalPhases = serviceState.totalPhases,
+            currentPhaseIndex = userFacingCurrentPhaseIndex,
+            totalPhases = userFacingTotalPhases,
             workoutName = serviceState.workoutName,
             showConfetti = serviceState.isCompleted && !currentState.showConfetti,
             isServiceBound = currentState.isServiceBound,
