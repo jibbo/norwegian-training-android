@@ -196,7 +196,7 @@ private fun ColumnScope.Timer(
 }
 
 @Composable
-private fun Instructions(state: UiState) {
+internal fun ColumnScope.Instructions(state: UiState) {
     Spacer(modifier = Modifier.height(64.dp))
     Text(
         text = state.step.name.message().localizable(),
@@ -213,6 +213,9 @@ private fun Instructions(state: UiState) {
         textAlign = TextAlign.Center,
     )
     val phasesText: String = when {
+        state.isCompleted -> {
+            R.string.current_phases.localizable(state.totalPhases, state.totalPhases)
+        }
         state.currentPhaseIndex == 0 -> {
             R.string.phases_total.localizable(state.totalPhases)
         }
