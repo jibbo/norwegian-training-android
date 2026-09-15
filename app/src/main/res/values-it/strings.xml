@@ -20,7 +20,6 @@
     <string name="current_phases">%1$s di %2$s</string>
 
     <string name="home_workout_name">%1$s</string>
-    <string name="next_up">Fase successiva: %1$s</string>
     <string name="stop_workout_confirmation_title">Interrompere l\'allenamento?</string>
     <string name="stop_workout_confirmation_message">Il timer è ancora in esecuzione. Vuoi interrompere questo allenamento?</string>
     <string name="stop_workout">Interrompi allenamento</string>
@@ -52,9 +51,6 @@
     <string name="enable_analytics_description">Ci permette di migliorare l\'app in base a quali funzionalità e opzioni sono popolari</string>
     <string name="enable_crash_reporting">Riporta Malfunzionamenti</string>
     <string name="enable_crash_reporting_description">Ci permette di correggere bug e migliorare l\'app</string>
-    <string name="title_beta_section">Funzionalità beta</string>
-    <string name="beta_section_description">Queste funzionalità sono ancora sperimentali e possono causare comportamenti inattesi come la perdita di dati relativi agli allenamenti</string>
-    <string name="enable_timer_notification">Notifica con timer</string>
     <string name="onboarding_section_title">Mostra nuovamente l\'Onboarding</string>
     <string name="about_dev_section_title">Dallo sviluppatore</string>
     <string name="about_dev_section_description">Ciao! Sono Gio e vorrei ringraziarti per usare la mia app! Essendo un appassionato di allenamento, l\'ho creata perché ero stufo di armeggiare con timer complicati. Spero che tu la possa trovare utile quanto me!</string>
@@ -69,36 +65,6 @@
     <string name="health_connect_permission_message">Consenti a Health Connect di accedere ai dati per vedere qui più statistiche</string>
     <string name="hide">Nascondi per sempre</string>
 
-    <string name="onboarding_step_1_title">Benvenuti nell\'app Norwy!</string>
-    <string name="onboarding_step_1_description">La miglior compagna per il tuo allenamento cardio</string>
-    <string name="onboarding_step_1_name">Markus R.</string>
-    <string name="onboarding_step_1_handle">\@marksmeister</string>
-    <string name="onboarding_step_1_body">Entusiasta di questa nuova app che ho trovato, "Norwy"! Se ti piace il protocollo 4x4, devi provarla. Gestisce perfettamente tutti i tempi e gli intervalli, così posso concentrarmi sul mio allenamento invece che sul mio orologio. 🏃‍♀️⌚️ La consiglio vivamente! #runningapp #fitness #HIIT #workout</string>
-
-    <string name="onboarding_step_2_title">Timer automatici</string>
-    <string name="onboarding_step_2_description">Basta premere \"INIZIA\" per iniziare l\'allenamento.</string>
-    <string name="onboarding_step_2_body">Non c\'è più bisogno di perdere tempo con più timer</string>
-
-    <string name="onboarding_step_3_title">Perché vuoi iniziare il Protocollo Norvegese?</string>
-    <string name="onboarding_step_3_option_1">Migliorare la mia salute generale</string>
-    <string name="onboarding_step_3_option_2">Migliorare le mie prestazioni</string>
-
-    <string name="onboarding_step_4_title">Iniziamo!</string>
-    <string name="onboarding_step_4_description">Il 4x4 norvegese può ringiovanire il tuo cuore di 20 anni</string>
-    <string name="onboarding_step_4_body">Goditi i benefici già dopo il primo mese!</string>
-    <string name="onboarding_step_4_cta">Sì!</string>
-
-    <string name="onboarding_step_5_title">I tuoi Progressi</string>
-    <string name="onboarding_step_5_description">Sotto il tuo controllo in qualsiasi momento</string>
-    <string name="onboarding_step_5_body">Niente più incertezze</string>
-
-    <string name="onboarding_step_6_title">Allenamenti personalizzati</string>
-    <string name="onboarding_step_6_description">preparati in anticipo per ogni livello di fitness</string>
-    <string name="onboarding_step_6_body">Diventare pro o no è una tua scelta</string>
-
-    <string name="onboarding_step_invite_friends_title">Dillo ai tuoi amici</string>
-    <string name="onboarding_step_invite_friends_description">Allenarsi insieme rende più facile mantenere la costanza.</string>
-    <string name="onboarding_step_invite_friends_body">Studi dimostrano che allenarsi in coppia o in gruppo aumenta la costanza fino al 600%%</string>
     <string name="share_msg">Ho appena iniziato il mio allenamento a intervalli 4x4! Prova Norwy con me: https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
 
     <!-- Home -->
@@ -158,7 +124,6 @@
     <string name="thank_you_button">SI PARTE!</string>
     <string name="steps_today">Passi di oggi</string>
     <string name="distance_today">Distanza di oggi</string>
-    <string name="steps_distance">%1$s km</string>
     <string name="calories_burned">Calorie bruciate</string>
 
     <string name="app_language">Lingua dell\'app</string>
@@ -178,7 +143,6 @@
     <string name="custom_workout_delete_message">Questo allenamento personalizzato verrà eliminato definitivamente.</string>
     <string name="custom_workout_delete_title">Eliminare l’allenamento?</string>
     <string name="custom_workout_edit_title">Modifica allenamento</string>
-    <string name="custom_workout_form_placeholder">I dettagli dell’allenamento verranno mostrati qui.</string>
     <string name="custom_workout_name">Nome</string>
     <string name="custom_workout_rest_minutes">Minuti di riposo</string>
     <string name="custom_workout_rest_seconds">Secondi di riposo</string>
@@ -201,5 +165,8 @@
     <string name="three">tre</string>
     <string name="two">due</string>
     <string name="workout_kCal">🔥 %1$s kcal</string>
-    <string name="workout_split">%1$s×%1$s</string>
+    <plurals name="skipped_phases">
+        <item quantity="one">%1$d fase saltata</item>
+        <item quantity="other">%1$d fasi saltate</item>
+    </plurals>
 </resources>

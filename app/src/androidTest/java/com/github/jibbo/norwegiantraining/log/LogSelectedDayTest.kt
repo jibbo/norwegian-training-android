@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -60,6 +61,29 @@ class LogSelectedDayTest {
         composeRule.onNodeWithTag("today").performClick()
         composeRule.onNodeWithTag("sessions_for_day_sheet").assertIsDisplayed()
         composeRule.onNodeWithTag("calendar_day_${today.monthValue - 1}_${today.dayOfMonth}").assertIsDisplayed()
+    }
+
+    @Test
+    fun legacySessionShowsOnlyItsName() {
+        val today = Date()
+        composeRule.setContent {
+            NorwegianTrainingTheme(darkTheme = true) {
+                Logs(
+                    PaddingValues(),
+                    UiState.Loaded(
+                        mapOf(Calendar.getInstance().get(Calendar.MONTH) to listOf(
+                            Session(date = today, name = "HIIT", duration = 30L),
+                        )),
+                    ),
+                    TodayStatsUiState.Hidden,
+                    {}, {}, {}, {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("today").performClick()
+        composeRule.onNodeWithTag("sessions_for_day_sheet").assertIsDisplayed()
+        composeRule.onNodeWithText("HIIT").assertIsDisplayed()
     }
 
 }

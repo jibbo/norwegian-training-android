@@ -47,6 +47,7 @@ data class Session(
     @ColumnInfo(name = "name") val name: String = "HIIT",
     @ColumnInfo(name = "duration") val duration: Long = 0L,
     @ColumnInfo(name = "activity_type") val activityType: String = "HIIT",
+    @ColumnInfo(name = "workout_id") val workoutId: Long? = null,
 )
 
 class SessionConverters {

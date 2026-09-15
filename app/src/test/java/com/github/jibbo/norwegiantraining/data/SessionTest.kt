@@ -14,6 +14,7 @@ class SessionTest {
         assertEquals("HIIT", session.name)
         assertEquals(0L, session.duration)
         assertEquals("HIIT", session.activityType)
+        assertEquals(null, session.workoutId)
     }
 
     @Test

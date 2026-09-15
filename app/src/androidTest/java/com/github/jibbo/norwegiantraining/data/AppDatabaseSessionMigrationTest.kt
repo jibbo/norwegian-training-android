@@ -30,7 +30,7 @@ class AppDatabaseSessionMigrationTest {
         createVersionThreeDatabase(name)
 
         database = Room.databaseBuilder(context, AppDatabase::class.java, name)
-            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             .build()
 
         val session = runBlocking { database!!.recordDao().getAll().single() }
@@ -42,6 +42,7 @@ class AppDatabaseSessionMigrationTest {
         assertEquals("HIIT", session.name)
         assertEquals(0L, session.duration)
         assertEquals("HIIT", session.activityType)
+        assertEquals(null, session.workoutId)
     }
 
     private fun createVersionThreeDatabase(name: String) {
@@ -53,7 +54,10 @@ class AppDatabaseSessionMigrationTest {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "phases_ended INTEGER NOT NULL, " +
                 "skip_count INTEGER NOT NULL, " +
-                "date INTEGER NOT NULL)",
+                "date INTEGER NOT NULL, " +
+                "is_manual INTEGER NOT NULL DEFAULT 0, " +
+                "name TEXT NOT NULL DEFAULT 'HIIT', " +
+                "duration INTEGER NOT NULL DEFAULT 0)",
         )
         sqlite.execSQL(
             "CREATE TABLE Workout (" +

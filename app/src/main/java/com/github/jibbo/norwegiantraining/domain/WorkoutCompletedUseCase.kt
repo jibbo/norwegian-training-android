@@ -20,10 +20,10 @@ class WorkoutCompletedUseCase @Inject constructor(
     private val checkProgression: ApplyProgressionUseCase
 ) {
     suspend operator fun invoke(workoutId: Long): WorkoutCompletedResult {
-        val session = getTodaySession()
+        val workout = workoutRepository.getById(workoutId)
+        val session = getTodaySession(workout)
         val updated = session.copy(phasesEnded = session.phasesEnded + 1)
         sessionRepository.upsertSession(updated)
-        val workout = workoutRepository.getById(workoutId)
         val progression = if (workout?.isCustom == true) {
             ProgressionResult.NoChange
         } else {

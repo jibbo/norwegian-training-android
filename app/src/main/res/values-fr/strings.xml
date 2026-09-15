@@ -19,7 +19,6 @@
     <string name="phases_total">%1$s phases au total</string>
     <string name="current_phases">%1$s sur %2$s</string>
     <string name="home_workout_name">%1$s</string>
-    <string name="next_up">À suivre : %1$s</string>
     <string name="stop_workout_confirmation_title">Arrêter l\'entraînement ?</string>
     <string name="stop_workout_confirmation_message">Le minuteur est encore en marche. Voulez-vous arrêter cet entraînement ?</string>
     <string name="stop_workout">Arrêter l\'entraînement</string>
@@ -48,9 +47,6 @@
     <string name="enable_analytics_description">Cela nous permet d’améliorer l’application en fonction des fonctionnalités et options les plus populaires.</string>
     <string name="enable_crash_reporting">Rapports de plantage</string>
     <string name="enable_crash_reporting_description">Cela nous permet de corriger les bugs et d’améliorer l’application.</string>
-    <string name="title_beta_section">Fonctionnalités bêta</string>
-    <string name="beta_section_description">Ces fonctionnalités sont encore expérimentales et peuvent entraîner un comportement inattendu, comme la perte de données d’entraînement.</string>
-    <string name="enable_timer_notification">Notification du minuteur</string>
     <string name="onboarding_section_title">Revoir l\'introduction</string>
     <string name="about_dev_section_title">Du développeur</string>
     <string name="about_dev_section_description">Salut ! Je m\'appelle Gio et je tiens à vous remercier d\'utiliser mon application ! En tant que passionné de fitness, j\'ai créé cet outil car j\'en avais assez de me battre avec des minuteurs compliqués. J\'espère que vous le trouverez aussi utile que moi !</string>
@@ -67,36 +63,12 @@
     <string name="health_connect_install_message">Installez Health Connect pour voir plus de statistiques ici</string>
     <string name="health_connect_permission_message">Autorisez Health Connect à accéder à vos données pour voir plus de statistiques ici</string>
     <string name="hide">Masquer pour toujours</string>
-    <string name="onboarding_step_1_title">Bienvenue dans l\'application Norwy !</string>
-    <string name="onboarding_step_1_description">Des séances adaptées à votre niveau et vos objectifs</string>
-    <string name="onboarding_step_1_name">Markus R.</string>
-    <string name="onboarding_step_1_handle">\@marksmeister</string>
-    <string name="onboarding_step_1_body">Des séances adaptées à votre niveau et vos objectifs</string>
-    <string name="onboarding_step_2_title">Minuteurs automatiques</string>
-    <string name="onboarding_step_2_description">Suivez vos améliorations au fil du temps</string>
-    <string name="onboarding_step_2_body">Suivez vos améliorations au fil du temps</string>
-    <string name="onboarding_step_3_title">Pourquoi voulez-vous commencer le protocole norvégien ?</string>
-    <string name="onboarding_step_3_option_1">Améliorer ma santé générale</string>
-    <string name="onboarding_step_3_option_2">Améliorer mes performances</string>
-    <string name="onboarding_step_4_title">Commençons !</string>
-    <string name="onboarding_step_4_description">Profitez des bénéfices dès le premier mois !</string>
-    <string name="onboarding_step_4_body">Profitez des bénéfices dès le premier mois !</string>
-    <string name="onboarding_step_4_cta">Oui !</string>
-    <string name="onboarding_step_5_title">Vos progrès</string>
-    <string name="onboarding_step_5_description">Autoriser les notifications pour les rappels d\'entraînement</string>
-    <string name="onboarding_step_5_body">Nous utiliserons les notifications pour vous rappeler de vous entraîner</string>
-    <string name="onboarding_step_6_title">Entraînements adaptés</string>
-    <string name="onboarding_step_6_description">Autoriser la reconnaissance d\'activité pour suivre vos entraînements</string>
-    <string name="onboarding_step_6_body">Cela permet à Norwy de détecter automatiquement quand vous vous entraînez</string>
     <string name="onboarding_step_notification_permission_title">Autoriser les notifications</string>
     <string name="onboarding_step_notification_permission_body">Nous avons besoin de cette autorisation pour vous envoyer des rappels d\'entraînement</string>
     <string name="onboarding_step_activity_recognition_permission_title">Autoriser la reconnaissance d\'activité</string>
     <string name="onboarding_step_activity_recognition_permission_body">Nous avons besoin de cette autorisation pour détecter vos mouvements</string>
     <string name="onboarding_step_name_title">Comment vous appelez-vous ?</string>
     <string name="onboarding_step_name_placeholder">Votre nom</string>
-    <string name="onboarding_step_invite_friends_title">Invitez vos amis</string>
-    <string name="onboarding_step_invite_friends_description">S\'entraîner ensemble aide à rester régulier.</string>
-    <string name="onboarding_step_invite_friends_body">Des études montrent que s\'entraîner à deux ou en groupe augmente la régularité jusqu\'à 600%%</string>
     <string name="share_msg">Je viens de commencer mes intervalles 4x4 ! Essayez Norwy avec moi : https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
     <string name="welcome">Bienvenue %1$s</string>
     <string name="home_next_up">Vos entraînements</string>
@@ -136,7 +108,6 @@
     <string name="thank_you_button">C\'EST PARTI !</string>
     <string name="steps_today">Pas de la journée</string>
     <string name="distance_today">Distance de la journée</string>
-    <string name="steps_distance">%1$s km</string>
     <string name="calories_burned">Calories brûlées</string>
 
     <string name="app_language">Langue de l\'app</string>
@@ -156,7 +127,6 @@
     <string name="custom_workout_delete_message">Cet entraînement personnalisé sera définitivement supprimé.</string>
     <string name="custom_workout_delete_title">Supprimer l’entraînement ?</string>
     <string name="custom_workout_edit_title">Modifier l’entraînement</string>
-    <string name="custom_workout_form_placeholder">Les détails de l’entraînement apparaîtront ici.</string>
     <string name="custom_workout_name">Nom</string>
     <string name="custom_workout_rest_minutes">Minutes de repos</string>
     <string name="custom_workout_rest_seconds">Secondes de repos</string>
@@ -179,5 +149,8 @@
     <string name="three">trois</string>
     <string name="two">deux</string>
     <string name="workout_kCal">🔥 %1$s kcal</string>
-    <string name="workout_split">%1$s×%1$s</string>
+    <plurals name="skipped_phases">
+        <item quantity="one">%1$d phase ignorée</item>
+        <item quantity="other">%1$d phases ignorées</item>
+    </plurals>
 </resources>

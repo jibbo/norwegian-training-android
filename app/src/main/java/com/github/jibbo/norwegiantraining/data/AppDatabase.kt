@@ -29,7 +29,7 @@ import javax.inject.Singleton
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
     ],
-    version = 6,
+    version = 7,
     exportSchema = true
 )
 @TypeConverters(SessionConverters::class, WorkoutConverters::class)
@@ -200,6 +200,12 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
     }
 }
 
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE Session ADD COLUMN workout_id INTEGER")
+    }
+}
+
 @Module
 @InstallIn(SingletonComponent::class)
 class DatabaseModule {
@@ -212,7 +218,7 @@ class DatabaseModule {
         context,
         AppDatabase::class.java,
         "norwegiantrainingdb"
-    ).addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6).addCallback(callback).build()
+    ).addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7).addCallback(callback).build()
 
     @Provides
     fun provideRecordDao(database: AppDatabase) = database.recordDao()

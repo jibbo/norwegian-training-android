@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -74,6 +75,19 @@ import java.util.Date
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.math.roundToInt
+
+internal fun Session.logName(): String = name.take(20) + if (name.length > 20) "…" else ""
+
+internal fun Session.logDetails(): LogDetails? = when {
+    isManual || workoutId == null -> null
+    getStatus() == SessionStatus.GOOD -> LogDetails.DurationAndCalories
+    else -> LogDetails.SkippedPhasesAndCalories
+}
+
+internal enum class LogDetails {
+    DurationAndCalories,
+    SkippedPhasesAndCalories,
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,14 +165,31 @@ internal fun Logs(
                 Spacer(Modifier.height(16.dp))
                 sessionsForDay.forEach { session ->
                     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), Arrangement.SpaceBetween) {
-                        Text(session.name, style = Typography.bodyLarge)
-                        Text(
-                            "${R.string.workout_time.localizable(session.duration.toString())} " +
-                                R.string.workout_kCal.localizable(
+                        Text(if (session.workoutId != null) session.logName() else session.name, style = Typography.bodyLarge)
+                        if (session.isManual) {
+                            Text(
+                                "${R.string.workout_time.localizable(session.duration.toString())} " +
+                                    R.string.workout_kCal.localizable(
+                                        calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
+                                    ),
+                                style = Typography.bodyMedium,
+                            )
+                        } else if (session.workoutId != null) {
+                            Text(
+                                when (session.logDetails()) {
+                                    LogDetails.DurationAndCalories -> "${R.string.workout_time.localizable(session.duration.toString())} "
+                                    LogDetails.SkippedPhasesAndCalories -> pluralStringResource(
+                                        R.plurals.skipped_phases,
+                                        session.skipCount,
+                                        session.skipCount,
+                                    )
+                                    null -> ""
+                                } + R.string.workout_kCal.localizable(
                                     calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
                                 ),
-                            style = Typography.bodyMedium,
-                        )
+                                style = Typography.bodyMedium,
+                            )
+                        }
                     }
                 }
                 if (sessionsForDay.isNotEmpty()) {
