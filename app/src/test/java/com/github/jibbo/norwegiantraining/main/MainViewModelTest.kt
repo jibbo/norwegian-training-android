@@ -140,6 +140,31 @@ class MainViewModelTest {
     }
 
     @Test
+    fun requestCloseShowsConfirmationWhenWorkoutIsPaused() = runTest {
+        val binder = RecordingService()
+        val viewModel = MainViewModel()
+        viewModel.bindToService(binder)
+        viewModel.updateFromService(
+            WorkoutTimerState(
+                isTimerRunning = false,
+                remainingTimeOnPauseMillis = 1_000L,
+            )
+        )
+
+        viewModel.requestCloseWorkout()
+        viewModel.updateFromService(
+            WorkoutTimerState(
+                isTimerRunning = false,
+                remainingTimeOnPauseMillis = 1_000L,
+            )
+        )
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiStates.value.showCloseWorkoutConfirmation)
+        assertTrue(binder.calls.isEmpty())
+    }
+
+    @Test
     fun requestCloseClosesImmediatelyWhenTimerIsNotRunning() = runTest {
         val binder = RecordingService()
         val viewModel = MainViewModel()

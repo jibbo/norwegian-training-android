@@ -17,6 +17,7 @@ interface SessionRepository {
     suspend fun insertSessions(sessions: List<Session>)
     suspend fun getTodaySession(): Session?
     suspend fun getSession(id: Long): Session?
+    suspend fun deleteSession(id: Long)
     suspend fun getNormalSessionForWorkoutInRange(workoutId: Long, from: Date, to: Date): Session?
     suspend fun getLegacyNormalSessionInRange(name: String, duration: Long, from: Date, to: Date): Session?
     suspend fun incrementPhasesEnded(sessionId: Long): Session?
@@ -57,6 +58,8 @@ class PersistentSessionRepository @Inject constructor(
     }
 
     override suspend fun getSession(id: Long): Session? = sessionDao.getById(id)
+
+    override suspend fun deleteSession(id: Long) = sessionDao.deleteById(id)
 
     override suspend fun getNormalSessionForWorkoutInRange(workoutId: Long, from: Date, to: Date): Session? =
         sessionDao.getNormalForWorkoutInRange(workoutId, from.time, to.time)

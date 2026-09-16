@@ -157,6 +157,10 @@
     <string name="language_italian">Italiano</string>
     <string name="language_chinese">中文</string>
     <string name="cancel">Annulla</string>
+    <string name="log_delete_title">Eliminare la sessione?</string>
+    <string name="log_delete_message">Questa sessione di allenamento verrà eliminata definitivamente.</string>
+    <string name="log_delete_active_title">Allenamento in corso</string>
+    <string name="log_delete_active_message">La sessione corrente non può essere eliminata. Completa o chiudi prima l’allenamento.</string>
     <string name="custom_workout_active_message">Completa o chiudi l’allenamento attivo prima di salvare o eliminare un allenamento personalizzato.</string>
     <string name="custom_workout_active_title">Allenamento in corso</string>
     <string name="custom_workout_create_title">Crea allenamento personalizzato</string>

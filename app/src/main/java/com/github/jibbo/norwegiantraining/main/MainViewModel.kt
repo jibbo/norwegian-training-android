@@ -57,7 +57,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
             showConfetti = serviceState.isCompleted && !currentState.showConfetti,
             isServiceBound = currentState.isServiceBound,
             progressionResult = serviceState.progressionResult,
-            showCloseWorkoutConfirmation = currentState.showCloseWorkoutConfirmation && serviceState.isTimerRunning
+            showCloseWorkoutConfirmation = currentState.showCloseWorkoutConfirmation &&
+                (serviceState.isTimerRunning || serviceState.remainingTimeOnPauseMillis > 0)
         )
     }
 
@@ -110,7 +111,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun requestCloseWorkout() {
-        if (states.value.isTimerRunning) {
+        if (states.value.isTimerRunning || states.value.remainingTimeOnPauseMillis > 0) {
             states.value = states.value.copy(showCloseWorkoutConfirmation = true)
         } else {
             closeWorkout()

@@ -119,6 +119,10 @@
     <string name="language_italian">Italiano</string>
     <string name="language_chinese">中文</string>
     <string name="cancel">Abbrechen</string>
+    <string name="log_delete_title">Training löschen?</string>
+    <string name="log_delete_message">Diese Trainingseinheit wird dauerhaft gelöscht.</string>
+    <string name="log_delete_active_title">Workout läuft</string>
+    <string name="log_delete_active_message">Die aktuelle Trainingseinheit kann nicht gelöscht werden. Beende oder schließe das Workout zuerst.</string>
     <string name="custom_workout_active_message">Beende oder schließe das aktive Workout, bevor du ein eigenes Workout speicherst oder löschst.</string>
     <string name="custom_workout_active_title">Workout läuft</string>
     <string name="custom_workout_create_title">Eigenes Workout erstellen</string>

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SessionRepository
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,12 +15,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class LogViewModel @Inject constructor(
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
+    private val workoutTimerManager: WorkoutTimerManager,
 ) : ViewModel() {
     private val uiStates: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiState = uiStates.asStateFlow()
+    private val _activeSessionId = MutableStateFlow<Long?>(null)
+    val activeSessionId = _activeSessionId.asStateFlow()
+
+    private val _deleteBlocked = MutableStateFlow(false)
+    val deleteBlocked = _deleteBlocked.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            workoutTimerManager.getWorkoutTimerState().collect { state ->
+                _activeSessionId.value = state.sessionId.takeUnless { state.isCompleted }
+            }
+        }
         viewModelScope.launch {
             uiStates.value = UiState.Loaded(prepareSession())
         }
@@ -58,5 +70,21 @@ internal class LogViewModel @Inject constructor(
                 uiStates.value = UiState.Loaded(current.logs + (month to sessions))
             }
         }
+    }
+
+    fun deleteSession(session: Session, onSuccess: () -> Unit = {}) {
+        viewModelScope.launch {
+            if (activeSessionId.value == session.id) {
+                _deleteBlocked.value = true
+                return@launch
+            }
+            sessionRepository.deleteSession(session.id)
+            refreshMonth(session.date)
+            onSuccess()
+        }
+    }
+
+    fun dismissDeleteBlockedMessage() {
+        _deleteBlocked.value = false
     }
 }

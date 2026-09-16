@@ -29,6 +29,7 @@ class FakeSessionRepo : SessionRepository {
 
     override suspend fun getTodaySession(): Session? = null
     override suspend fun getSession(id: Long): Session? = null
+    override suspend fun deleteSession(id: Long) {}
     override suspend fun getNormalSessionForWorkoutInRange(workoutId: Long, from: Date, to: Date): Session? = null
     override suspend fun getLegacyNormalSessionInRange(name: String, duration: Long, from: Date, to: Date): Session? = null
     override suspend fun incrementPhasesEnded(sessionId: Long): Session? = null

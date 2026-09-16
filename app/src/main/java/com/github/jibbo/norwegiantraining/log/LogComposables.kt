@@ -26,12 +26,16 @@ import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -44,6 +48,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -99,12 +104,17 @@ internal fun Logs(
     onHideTodayStats: () -> Unit,
     onRequestPermissions: () -> Unit,
     onOpenHealthConnect: () -> Unit,
+    activeSessionId: Long? = null,
+    onDeleteSession: (Session, () -> Unit) -> Unit = { _, _ -> },
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val today = remember { LocalDate.now() }
     val todayDate = remember(today) { Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()) }
     var selectedDay by remember { mutableStateOf<Date?>(null) }
+    var sessionPendingDeletion by remember { mutableStateOf<Session?>(null) }
+    var closeSheetAfterDeletion by remember { mutableStateOf(false) }
+    var blockedSession by remember { mutableStateOf<Session?>(null) }
     var todayHighlightToken by remember { mutableIntStateOf(0) }
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(
@@ -164,32 +174,18 @@ internal fun Logs(
                 }
                 Spacer(Modifier.height(16.dp))
                 sessionsForDay.forEach { session ->
-                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), Arrangement.SpaceBetween) {
-                        Text(if (session.workoutId != null) session.logName() else session.name, style = Typography.bodyLarge)
-                        if (session.isManual) {
-                            Text(
-                                "${R.string.workout_time.localizable(session.duration.toString())} " +
-                                    R.string.workout_kCal.localizable(
-                                        calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
-                                    ),
-                                style = Typography.bodyMedium,
-                            )
-                        } else if (session.workoutId != null) {
-                            Text(
-                                when (session.logDetails()) {
-                                    LogDetails.DurationAndCalories -> "${R.string.workout_time.localizable(session.duration.toString())} "
-                                    LogDetails.CompletedAndSkippedPhases ->
-                                        pluralStringResource(R.plurals.completed_phases, session.phasesEnded, session.phasesEnded) + ", " +
-                                            pluralStringResource(R.plurals.skipped_phases, session.skipCount, session.skipCount)
-                                    null -> ""
-                                } + if (session.logDetails() == LogDetails.DurationAndCalories) {
-                                    R.string.workout_kCal.localizable(
-                                        calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
-                                    )
-                                } else "",
-                                style = Typography.bodyMedium,
-                            )
-                        }
+                    key(session.id) {
+                        SessionLogRow(
+                            session = session,
+                            onRequestDelete = {
+                                if (session.id == activeSessionId) {
+                                    blockedSession = session
+                                } else {
+                                    closeSheetAfterDeletion = sessionsForDay.size == 1
+                                    sessionPendingDeletion = session
+                                }
+                            },
+                        )
                     }
                 }
                 if (sessionsForDay.isNotEmpty()) {
@@ -210,6 +206,86 @@ internal fun Logs(
             }
         }
     }
+    sessionPendingDeletion?.let { session ->
+        AlertDialog(
+            onDismissRequest = { sessionPendingDeletion = null },
+            title = { Text(R.string.log_delete_title.localizable()) },
+            text = { Text(R.string.log_delete_message.localizable()) },
+            confirmButton = {
+                TextButton(onClick = {
+                    sessionPendingDeletion = null
+                    onDeleteSession(session) {
+                        if (closeSheetAfterDeletion) selectedDay = null
+                    }
+                }) { Text(R.string.delete.localizable()) }
+            },
+            dismissButton = { TextButton(onClick = { sessionPendingDeletion = null }) { Text(R.string.cancel.localizable()) } },
+        )
+    }
+    blockedSession?.let { session ->
+        AlertDialog(
+            onDismissRequest = { blockedSession = null },
+            title = { Text(R.string.log_delete_active_title.localizable()) },
+            text = { Text(R.string.log_delete_active_message.localizable()) },
+            confirmButton = { TextButton(onClick = { blockedSession = null }) { Text(R.string.ok.localizable()) } },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SessionLogRow(session: Session, onRequestDelete: () -> Unit) {
+    val dismissState = androidx.compose.material3.rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) onRequestDelete()
+            false
+        },
+    )
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = false,
+        backgroundContent = {
+            Box(
+                Modifier.fillMaxSize().background(Primary).padding(horizontal = 16.dp),
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_delete_outline_24),
+                    contentDescription = R.string.delete.localizable(),
+                    tint = White,
+                )
+            }
+        },
+        content = {
+            Row(Modifier.fillMaxWidth().background(Black).padding(vertical = 8.dp), Arrangement.SpaceBetween) {
+                Text(if (session.workoutId != null) session.logName() else session.name, style = Typography.bodyLarge)
+                if (session.isManual) {
+                    Text(
+                        "${R.string.workout_time.localizable(session.duration.toString())} " +
+                            R.string.workout_kCal.localizable(
+                                calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
+                            ),
+                        style = Typography.bodyMedium,
+                    )
+                } else if (session.workoutId != null) {
+                    Text(
+                        when (session.logDetails()) {
+                            LogDetails.DurationAndCalories -> "${R.string.workout_time.localizable(session.duration.toString())} "
+                            LogDetails.CompletedAndSkippedPhases ->
+                                pluralStringResource(R.plurals.completed_phases, session.phasesEnded, session.phasesEnded) + ", " +
+                                    pluralStringResource(R.plurals.skipped_phases, session.skipCount, session.skipCount)
+                            null -> ""
+                        } + if (session.logDetails() == LogDetails.DurationAndCalories) {
+                            R.string.workout_kCal.localizable(
+                                calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
+                            )
+                        } else "",
+                        style = Typography.bodyMedium,
+                    )
+                }
+            }
+        },
+    )
 }
 
 @Composable
