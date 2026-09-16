@@ -193,6 +193,29 @@ class FakeSessionRepository : SessionRepository {
     }
 
     override suspend fun getTodaySession(): Session? = todaySession.value
+    override suspend fun getSession(id: Long): Session? = sessions.firstOrNull { it.id == id }
+
+    override suspend fun getNormalSessionForWorkoutInRange(workoutId: Long, from: Date, to: Date): Session? =
+        sessions.filter { it.id != 0L && !it.isManual && it.workoutId == workoutId && it.date >= from && it.date <= to }
+            .maxByOrNull { it.date }
+
+    override suspend fun getLegacyNormalSessionInRange(name: String, duration: Long, from: Date, to: Date): Session? =
+        sessions.filter { it.id != 0L && !it.isManual && it.workoutId == null && it.name == name && it.duration == duration && it.date >= from && it.date <= to }
+            .maxByOrNull { it.date }
+
+    override suspend fun incrementPhasesEnded(sessionId: Long): Session? {
+        val session = getSession(sessionId) ?: return null
+        val updated = session.copy(phasesEnded = session.phasesEnded + 1)
+        sessions[sessions.indexOf(session)] = updated
+        return updated
+    }
+
+    override suspend fun incrementSkipCount(sessionId: Long): Session? {
+        val session = getSession(sessionId) ?: return null
+        val updated = session.copy(skipCount = session.skipCount + 1)
+        sessions[sessions.indexOf(session)] = updated
+        return updated
+    }
 }
 
 class FakeWorkoutRepository : WorkoutRepository {

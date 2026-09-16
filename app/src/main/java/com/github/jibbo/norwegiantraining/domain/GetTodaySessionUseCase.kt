@@ -29,4 +29,9 @@ class GetTodaySessionUseCase @Inject constructor(
         val id = sessionRepository.insertSession(newSession)
         return newSession.copy(id = id)
     }
+
+    suspend fun createSession(workout: Workout): Session {
+        val session = Session(workoutId = workout.id, name = workout.name, duration = workout.totalTime.toLong())
+        return session.copy(id = sessionRepository.insertSession(session))
+    }
 }

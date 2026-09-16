@@ -23,7 +23,7 @@ class ApplyProgressionUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(completedWorkoutId: Long, session: Session): ProgressionResult {
         val status = session.getStatus()
-        return applyTimeBased(status)
+        return applyTimeBased(status, session.date)
     }
 
     private suspend fun advanceFrom(
@@ -53,11 +53,14 @@ class ApplyProgressionUseCase @Inject constructor(
         return ProgressionResult.LevelUp(nextLevel)
     }
 
-    private suspend fun applyTimeBased(status: SessionStatus): ProgressionResult {
+    private suspend fun applyTimeBased(status: SessionStatus, completedDate: java.util.Date): ProgressionResult {
         val now = Calendar.getInstance()
         val twentyEightDaysAgo =
             Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -28) }.time
         val lastProgression = settingsRepository.getLastProgressionDate()
+        if (lastProgression != null && isSameLocalDay(lastProgression, completedDate)) {
+            return ProgressionResult.NoChange
+        }
         val from = if (lastProgression != null && lastProgression.after(twentyEightDaysAgo))
             lastProgression
         else
@@ -65,12 +68,14 @@ class ApplyProgressionUseCase @Inject constructor(
         val sessions = sessionRepository.getSessionsInRange(from, now.time)
             .filter { !it.isManual && it.getStatus() != SessionStatus.BAD }
 
-        val fromMillis = from.time
         val qualifyingWeeks = sessions
             .groupBy { session ->
-                TimeUnit.MILLISECONDS.toDays(session.date.time - fromMillis) / 7
+                TimeUnit.MILLISECONDS.toDays(session.date.time - from.time) / 7
             }
-            .count { (_, weekSessions) -> weekSessions.size >= 3 }
+            .mapValues { (_, weekSessions) ->
+                weekSessions.map { localDayKey(it.date) }.distinct().size
+            }
+            .count { (_, workoutDays) -> workoutDays >= 3 }
 
         if (qualifyingWeeks < 4) return ProgressionResult.NoChange
 
@@ -106,4 +111,12 @@ class ApplyProgressionUseCase @Inject constructor(
         settingsRepository.setLastProgressionDate(now.time)
         return ProgressionResult.LevelUp(nextLevel, status)
     }
+
+    private fun localDayKey(date: java.util.Date): Pair<Int, Int> =
+        Calendar.getInstance().apply { time = date }.let {
+            it.get(Calendar.YEAR) to it.get(Calendar.DAY_OF_YEAR)
+        }
+
+    private fun isSameLocalDay(first: java.util.Date, second: java.util.Date): Boolean =
+        localDayKey(first) == localDayKey(second)
 }

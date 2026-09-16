@@ -19,11 +19,12 @@ class WorkoutCompletedUseCase @Inject constructor(
     private val workoutRepository: WorkoutRepository,
     private val checkProgression: ApplyProgressionUseCase
 ) {
-    suspend operator fun invoke(workoutId: Long): WorkoutCompletedResult {
+    suspend operator fun invoke(workoutId: Long, sessionId: Long): WorkoutCompletedResult {
         val workout = workoutRepository.getById(workoutId)
-        val session = getTodaySession(workout)
-        val updated = session.copy(phasesEnded = session.phasesEnded + 1)
-        sessionRepository.upsertSession(updated)
+        val session = sessionRepository.getSession(sessionId)
+            ?: error("Session $sessionId was not found")
+        val updated = sessionRepository.incrementPhasesEnded(sessionId)
+            ?: error("Session $sessionId was not found")
         val progression = if (workout?.isCustom == true) {
             ProgressionResult.NoChange
         } else {

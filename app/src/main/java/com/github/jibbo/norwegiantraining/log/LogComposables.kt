@@ -280,7 +280,9 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
 ) {
     calendar.set(Calendar.DAY_OF_MONTH, index); calendar.set(Calendar.HOUR_OF_DAY, 0); calendar.set(Calendar.MINUTE, 0); calendar.set(Calendar.SECOND, 0); calendar.set(Calendar.MILLISECOND, 0)
     val date = calendar.time
-    val item = uiState.logs[month]?.find { it.date.isSameDay(date) }
+    val item = uiState.logs[month].orEmpty()
+        .filter { it.date.isSameDay(date) }
+        .summarizeDailySessions()
     val isToday = date.isSameDay(today)
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val blinkAlpha = remember { Animatable(1f) }

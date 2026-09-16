@@ -31,8 +31,23 @@ interface SessionDao {
     @Insert
     suspend fun insert(sessions: List<Session>)
 
-    @Query("SELECT * FROM session WHERE date BETWEEN :startOfDay AND :endOfDay LIMIT 1")
+    @Query("SELECT * FROM session WHERE is_manual = 0 AND date BETWEEN :startOfDay AND :endOfDay ORDER BY date DESC LIMIT 1")
     suspend fun getTodaySession(startOfDay: Long, endOfDay: Long): Session?
+
+    @Query("SELECT * FROM session WHERE id = :id")
+    suspend fun getById(id: Long): Session?
+
+    @Query("SELECT * FROM session WHERE workout_id = :workoutId AND is_manual = 0 AND date BETWEEN :from AND :to ORDER BY date DESC LIMIT 1")
+    suspend fun getNormalForWorkoutInRange(workoutId: Long, from: Long, to: Long): Session?
+
+    @Query("SELECT * FROM session WHERE workout_id IS NULL AND is_manual = 0 AND name = :name AND duration = :duration AND date BETWEEN :from AND :to ORDER BY date DESC LIMIT 1")
+    suspend fun getLegacyNormalInRange(name: String, duration: Long, from: Long, to: Long): Session?
+
+    @Query("UPDATE session SET phases_ended = phases_ended + 1 WHERE id = :id")
+    suspend fun incrementPhasesEnded(id: Long): Int
+
+    @Query("UPDATE session SET skip_count = skip_count + 1 WHERE id = :id")
+    suspend fun incrementSkipCount(id: Long): Int
 }
 
 @Entity

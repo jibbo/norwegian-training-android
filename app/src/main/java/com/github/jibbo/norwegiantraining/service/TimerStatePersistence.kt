@@ -23,6 +23,7 @@ private val Context.timerDataStore: DataStore<Preferences> by preferencesDataSto
 
 data class WorkoutTimerState(
     val workoutId: Long = -1L,
+    val sessionId: Long? = null,
     val workoutName: String = "",
     val currentPhaseIndex: Int = 0,
     val totalPhases: Int = 0,
@@ -42,6 +43,7 @@ class TimerStatePersistence @Inject constructor(
 
     private object Keys {
         val WORKOUT_ID = longPreferencesKey("workout_id")
+        val SESSION_ID = longPreferencesKey("session_id")
         val WORKOUT_NAME = stringPreferencesKey("workout_name")
         val CURRENT_PHASE_INDEX = intPreferencesKey("current_phase_index")
         val CURRENT_PHASE_NAME = stringPreferencesKey("current_phase_name")
@@ -56,6 +58,8 @@ class TimerStatePersistence @Inject constructor(
     suspend fun saveState(state: WorkoutTimerState) {
         dataStore.edit { preferences ->
             preferences[Keys.WORKOUT_ID] = state.workoutId
+            if (state.sessionId == null) preferences.remove(Keys.SESSION_ID)
+            else preferences[Keys.SESSION_ID] = state.sessionId
             preferences[Keys.WORKOUT_NAME] = state.workoutName
             preferences[Keys.CURRENT_PHASE_INDEX] = state.currentPhaseIndex
             preferences[Keys.CURRENT_PHASE_NAME] = state.currentPhase.name.name
@@ -83,6 +87,7 @@ class TimerStatePersistence @Inject constructor(
 
         return WorkoutTimerState(
             workoutId = workoutId,
+            sessionId = preferences[Keys.SESSION_ID],
             workoutName = preferences[Keys.WORKOUT_NAME] ?: "",
             currentPhaseIndex = preferences[Keys.CURRENT_PHASE_INDEX] ?: 0,
             currentPhase = Phase(phaseName, phaseDuration),

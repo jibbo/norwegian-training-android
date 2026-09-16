@@ -40,6 +40,18 @@ fun Session.getStatus(): SessionStatus {
     return SessionsBrain.getStatus(this)
 }
 
+/** Selects the execution whose status best represents a day's activity. */
+fun Iterable<Session>.summarizeDailySessions(): Session? = maxWithOrNull(
+    compareBy<Session> { session ->
+        when (session.getStatus()) {
+            SessionStatus.GOOD -> 3
+            SessionStatus.ALMOST -> 2
+            SessionStatus.BAD -> 1
+            SessionStatus.NOT_DONE -> 0
+        }
+    }.thenBy(Session::date).thenBy(Session::id)
+)
+
 fun SessionStatus.getColor() = when (this) {
     SessionStatus.GOOD -> Primary
     SessionStatus.ALMOST -> Orange

@@ -33,4 +33,13 @@ class SessionsBrainTest {
             Session(workoutId = 1L, phasesEnded = 1, skipCount = 4).logDetails(),
         )
     }
+
+    @Test
+    fun dailySummaryUsesTheStrongestExecutionAndKeepsTheLatestTie() {
+        val almost = Session(id = 1, phasesEnded = 1, skipCount = 2, date = Date(1))
+        val good = Session(id = 2, phasesEnded = 5, date = Date(2))
+        val laterGood = Session(id = 3, phasesEnded = 5, date = Date(3))
+
+        assertEquals(laterGood, listOf(almost, good, laterGood).summarizeDailySessions())
+    }
 }

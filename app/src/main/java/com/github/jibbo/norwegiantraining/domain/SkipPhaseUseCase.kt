@@ -10,12 +10,8 @@ class SkipPhaseUseCase @Inject constructor(
     private val sessionRepository: SessionRepository,
     private val workoutRepository: WorkoutRepository,
 ) {
-    suspend operator fun invoke(workoutId: Long): Session {
-        val session = getTodaySession(workoutRepository.getById(workoutId))
-        val out = session.copy(
-            skipCount = session.skipCount + 1
-        )
-        sessionRepository.upsertSession(out)
-        return out
+    suspend operator fun invoke(workoutId: Long, sessionId: Long): Session {
+        return sessionRepository.incrementSkipCount(sessionId)
+            ?: error("Session $sessionId was not found")
     }
 }

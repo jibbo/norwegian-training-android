@@ -16,6 +16,11 @@ interface SessionRepository {
     suspend fun insertManualSession(session: Session): Long
     suspend fun insertSessions(sessions: List<Session>)
     suspend fun getTodaySession(): Session?
+    suspend fun getSession(id: Long): Session?
+    suspend fun getNormalSessionForWorkoutInRange(workoutId: Long, from: Date, to: Date): Session?
+    suspend fun getLegacyNormalSessionInRange(name: String, duration: Long, from: Date, to: Date): Session?
+    suspend fun incrementPhasesEnded(sessionId: Long): Session?
+    suspend fun incrementSkipCount(sessionId: Long): Session?
 }
 
 class PersistentSessionRepository @Inject constructor(
@@ -49,6 +54,24 @@ class PersistentSessionRepository @Inject constructor(
         cal.add(java.util.Calendar.DAY_OF_YEAR, 1)
         val endOfDay = cal.timeInMillis - 1
         return sessionDao.getTodaySession(startOfDay, endOfDay)
+    }
+
+    override suspend fun getSession(id: Long): Session? = sessionDao.getById(id)
+
+    override suspend fun getNormalSessionForWorkoutInRange(workoutId: Long, from: Date, to: Date): Session? =
+        sessionDao.getNormalForWorkoutInRange(workoutId, from.time, to.time)
+
+    override suspend fun getLegacyNormalSessionInRange(name: String, duration: Long, from: Date, to: Date): Session? =
+        sessionDao.getLegacyNormalInRange(name, duration, from.time, to.time)
+
+    override suspend fun incrementPhasesEnded(sessionId: Long): Session? {
+        sessionDao.incrementPhasesEnded(sessionId)
+        return sessionDao.getById(sessionId)
+    }
+
+    override suspend fun incrementSkipCount(sessionId: Long): Session? {
+        sessionDao.incrementSkipCount(sessionId)
+        return sessionDao.getById(sessionId)
     }
 }
 
