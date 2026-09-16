@@ -38,6 +38,7 @@ class MainActivity : BaseActivity() {
     private var timerService: WorkoutTimerService? = null
     private var serviceStartRequested = false
     private var serviceBindRequested = false
+    private var launchWorkoutIdConsumed = false
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
@@ -75,20 +76,20 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        if(checkActivityRecognitionPermission()
-            && checkNotificationPermission())
-        {
+        if (checkActivityRecognitionPermission() && checkNotificationPermission()) {
             boundServiceToWorkoutId()
         }
         checkExactAlarmPermission()
     }
 
     private fun boundServiceToWorkoutId() {
-        val workoutId = intent.getLongExtra("workout_id", -1L)
-        if (workoutId > 0) {
+        val workoutId = intent.getLongExtra(WorkoutTimerAndroidService.EXTRA_WORKOUT_ID, -1L)
+        if (workoutId > 0 && !launchWorkoutIdConsumed) {
             startAndBindService(workoutId)
+            launchWorkoutIdConsumed = true
+            intent.removeExtra(WorkoutTimerAndroidService.EXTRA_WORKOUT_ID)
         } else {
-            Log.e(TAG, "Invalid workout ID: $workoutId")
+            bindToService()
         }
     }
 
@@ -107,9 +108,21 @@ class MainActivity : BaseActivity() {
             serviceStartRequested = true
         }
 
-        if (!serviceBindRequested) {
-            val bindIntent = Intent(this, WorkoutTimerAndroidService::class.java)
-            serviceBindRequested = bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+        bindToService()
+    }
+
+    private fun bindToService() {
+        if (serviceBindRequested) return
+        val bindIntent = Intent(this, WorkoutTimerAndroidService::class.java)
+        serviceBindRequested = bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        launchWorkoutIdConsumed = false
+        if (checkActivityRecognitionPermission() && checkNotificationPermission()) {
+            boundServiceToWorkoutId()
         }
     }
 

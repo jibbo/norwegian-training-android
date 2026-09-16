@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -24,7 +25,7 @@ class UseCaseTests {
 
         val result = useCase()
 
-        assertEquals(0L, result.id)
+        assertNotEquals(41L, result.id)
         assertEquals(result, sessions.getTodaySession())
     }
 
@@ -49,6 +50,57 @@ class UseCaseTests {
 
         assertEquals(7L, result.workoutId)
         assertEquals("Snapshot name", result.name)
+        assertEquals(workout.totalTime.toLong(), result.duration)
+    }
+
+    @Test
+    fun workoutSessionDoesNotReuseAnotherWorkoutsSession() = runTest {
+        val sessions = FakeSessionRepository()
+        sessions.replaceSessions(listOf(Session(id = 41L, workoutId = 8L)))
+        val workout = Workout(7, "Requested", Difficulty.BEGINNER, "1m-2m")
+
+        val result = GetTodaySessionUseCase(sessions)(workout)
+
+        assertEquals(7L, result.workoutId)
+        assertEquals(41L, sessions.getSessions().single { it.workoutId == 8L }.id)
+    }
+
+    @Test
+    fun workoutSessionReusesSameWorkoutsNormalSession() = runTest {
+        val sessions = FakeSessionRepository()
+        val existing = Session(id = 41L, workoutId = 7L, name = "Existing")
+        sessions.replaceSessions(listOf(existing))
+        val workout = Workout(7, "Requested", Difficulty.BEGINNER, "1m-2m")
+
+        val result = GetTodaySessionUseCase(sessions)(workout)
+
+        assertEquals(existing, result)
+        assertEquals(1, sessions.getSessions().size)
+    }
+
+    @Test
+    fun workoutSessionIgnoresSameWorkoutsManualSession() = runTest {
+        val sessions = FakeSessionRepository()
+        sessions.replaceSessions(listOf(Session(id = 41L, workoutId = 7L, isManual = true)))
+        val workout = Workout(7, "Requested", Difficulty.BEGINNER, "1m-2m")
+
+        val result = GetTodaySessionUseCase(sessions)(workout)
+
+        assertFalse(result.isManual)
+        assertEquals(2, sessions.getSessions().size)
+    }
+
+    @Test
+    fun workoutSessionCreatesNewSessionWithRequestedMetadataAndId() = runTest {
+        val sessions = FakeSessionRepository()
+        sessions.replaceSessions(listOf(Session(id = 41L, workoutId = 8L)))
+        val workout = Workout(7, "Requested", Difficulty.BEGINNER, "1m-2m")
+
+        val result = GetTodaySessionUseCase(sessions)(workout)
+
+        assertEquals(0L, result.id)
+        assertEquals(7L, result.workoutId)
+        assertEquals("Requested", result.name)
         assertEquals(workout.totalTime.toLong(), result.duration)
     }
 
