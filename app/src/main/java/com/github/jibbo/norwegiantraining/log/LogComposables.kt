@@ -294,7 +294,7 @@ private fun SessionLogRow(
     )
     LaunchedEffect(showSwipeHint) {
         if (!showSwipeHint) return@LaunchedEffect
-        swipeHintOffset.animateTo(-64f, tween(350))
+        swipeHintOffset.animateTo(-200f, tween(350))
         delay(500)
         swipeHintOffset.animateTo(0f, tween(350))
     }
