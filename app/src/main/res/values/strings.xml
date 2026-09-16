@@ -150,6 +150,10 @@
         <item quantity="one">%1$d skipped phase</item>
         <item quantity="other">%1$d skipped phases</item>
     </plurals>
+    <plurals name="completed_phases">
+        <item quantity="one">%1$d completed phase</item>
+        <item quantity="other">%1$d completed phases</item>
+    </plurals>
     <string name="workout_category_beginner">Beginner</string>
     <string name="workout_category_intermediate">Intermediate</string>
     <string name="workout_category_expert">Expert</string>

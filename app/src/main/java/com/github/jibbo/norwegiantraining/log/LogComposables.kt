@@ -81,12 +81,12 @@ internal fun Session.logName(): String = name.take(20) + if (name.length > 20) "
 internal fun Session.logDetails(): LogDetails? = when {
     isManual || workoutId == null -> null
     getStatus() == SessionStatus.GOOD -> LogDetails.DurationAndCalories
-    else -> LogDetails.SkippedPhasesAndCalories
+    else -> LogDetails.CompletedAndSkippedPhases
 }
 
 internal enum class LogDetails {
     DurationAndCalories,
-    SkippedPhasesAndCalories,
+    CompletedAndSkippedPhases,
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -178,15 +178,15 @@ internal fun Logs(
                             Text(
                                 when (session.logDetails()) {
                                     LogDetails.DurationAndCalories -> "${R.string.workout_time.localizable(session.duration.toString())} "
-                                    LogDetails.SkippedPhasesAndCalories -> pluralStringResource(
-                                        R.plurals.skipped_phases,
-                                        session.skipCount,
-                                        session.skipCount,
-                                    )
+                                    LogDetails.CompletedAndSkippedPhases ->
+                                        pluralStringResource(R.plurals.completed_phases, session.phasesEnded, session.phasesEnded) + ", " +
+                                            pluralStringResource(R.plurals.skipped_phases, session.skipCount, session.skipCount)
                                     null -> ""
-                                } + R.string.workout_kCal.localizable(
-                                    calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
-                                ),
+                                } + if (session.logDetails() == LogDetails.DurationAndCalories) {
+                                    R.string.workout_kCal.localizable(
+                                        calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
+                                    )
+                                } else "",
                                 style = Typography.bodyMedium,
                             )
                         }

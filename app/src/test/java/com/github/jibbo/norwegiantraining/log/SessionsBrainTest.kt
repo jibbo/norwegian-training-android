@@ -25,11 +25,11 @@ class SessionsBrainTest {
     @Test
     fun identifiedSessionsShowSkippedPhasesForAlmostAndBadIncludingZero() {
         assertEquals(
-            LogDetails.SkippedPhasesAndCalories,
+            LogDetails.CompletedAndSkippedPhases,
             Session(workoutId = 1L, phasesEnded = 0, skipCount = 0).logDetails(),
         )
         assertEquals(
-            LogDetails.SkippedPhasesAndCalories,
+            LogDetails.CompletedAndSkippedPhases,
             Session(workoutId = 1L, phasesEnded = 1, skipCount = 4).logDetails(),
         )
     }

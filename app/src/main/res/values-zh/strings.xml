@@ -149,6 +149,9 @@
     <string name="three">三</string>
     <string name="two">二</string>
     <string name="workout_kCal">🔥 %1$s 千卡</string>
+    <plurals name="completed_phases">
+        <item quantity="other">已完成 %1$d 个阶段</item>
+    </plurals>
     <plurals name="skipped_phases">
         <item quantity="other">跳过 %1$d 个阶段</item>
     </plurals>
