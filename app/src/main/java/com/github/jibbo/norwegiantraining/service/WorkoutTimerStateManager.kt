@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.service
 
 import com.github.jibbo.norwegiantraining.data.SettingsRepository
+import com.github.jibbo.norwegiantraining.data.SessionRepository
 import com.github.jibbo.norwegiantraining.data.WorkoutRepository
 import com.github.jibbo.norwegiantraining.domain.MoveToNextPhaseDomainService
 import com.github.jibbo.norwegiantraining.domain.WorkoutToPhasesConverter
@@ -14,6 +15,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,10 +29,13 @@ class WorkoutTimerStateManager @Inject constructor(
     private val moveToNextPhase: MoveToNextPhaseDomainService,
     private val workoutCompletedUseCase: WorkoutCompletedUseCase,
     private val skipPhaseUseCase: SkipPhaseUseCase,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val sessionRepository: SessionRepository,
+    private val getTodaySession: com.github.jibbo.norwegiantraining.domain.GetTodaySessionUseCase,
 ): WorkoutTimerManager {
     private val _state = MutableStateFlow(WorkoutTimerState())
     val state: StateFlow<WorkoutTimerState> = _state.asStateFlow()
+    private val commandMutex = Mutex()
 
     override fun getWorkoutTimerState(): StateFlow<WorkoutTimerState> = _state.asStateFlow()
 
@@ -51,42 +59,55 @@ class WorkoutTimerStateManager @Inject constructor(
             return
         }
 
+        val savedSession = savedState.sessionId?.let { sessionRepository.getSession(it) }
+        val session = savedSession?.takeIf { it.workoutId == savedState.workoutId }
+            ?: findOrCreateLegacySession(workout)
         _state.value = savedState.copy(
             workoutName = workout.displayLabel(),
             totalPhases = phases.size,
+            sessionId = session.id,
         )
+        if (savedState.sessionId != session.id) persistence.saveState(_state.value)
     }
 
     suspend fun startWorkout(workoutId: Long): Result<Unit> {
-        val currentState = _state.value
-        if (currentState.workoutId == workoutId) {
-            return Result.success(Unit)
+        return commandMutex.withLock {
+            val currentState = _state.value
+            if (currentState.workoutId == workoutId && !currentState.isCompleted && currentState.sessionId != null) {
+                return@withLock Result.success(Unit)
+            }
+
+            val workout = workoutRepository.getById(workoutId)
+                ?: return@withLock Result.failure(WorkoutNotFoundException(workoutId))
+            val phases = WorkoutToPhasesConverter.convert(workout)
+                .getOrElse { return@withLock Result.failure(it) }
+            val session = getSession(workout)
+
+            val initialPhase =
+                Phase(PhaseName.GET_READY, WorkoutToPhasesConverter.GET_READY_COUNTDOWN_DURATION)
+            val newState = WorkoutTimerState(
+                workoutId = workoutId,
+                sessionId = session.id,
+                workoutName = workout.displayLabel(),
+                currentPhaseIndex = 0,
+                totalPhases = phases.size,
+                currentPhase = initialPhase,
+                targetTimeMillis = 0L,
+                isTimerRunning = false,
+                remainingTimeOnPauseMillis = 0L,
+                isCompleted = false
+            )
+
+            updateState(newState)
+            Result.success(Unit)
         }
-
-        val workout = workoutRepository.getById(workoutId)
-            ?: return Result.failure(WorkoutNotFoundException(workoutId))
-        val phases = WorkoutToPhasesConverter.convert(workout)
-            .getOrElse { return Result.failure(it) }
-
-        val initialPhase =
-            Phase(PhaseName.GET_READY, WorkoutToPhasesConverter.GET_READY_COUNTDOWN_DURATION)
-        val newState = WorkoutTimerState(
-            workoutId = workoutId,
-            workoutName = workout.displayLabel(),
-            currentPhaseIndex = 0,
-            totalPhases = phases.size,
-            currentPhase = initialPhase,
-            targetTimeMillis = 0L,
-            isTimerRunning = false,
-            remainingTimeOnPauseMillis = 0L,
-            isCompleted = false
-        )
-
-        updateState(newState)
-        return Result.success(Unit)
     }
 
     suspend fun startTimer() {
+        commandMutex.withLock { startTimerLocked() }
+    }
+
+    private suspend fun startTimerLocked() {
         val currentState = _state.value
 
         val duration = if (currentState.remainingTimeOnPauseMillis > 0) {
@@ -107,6 +128,10 @@ class WorkoutTimerStateManager @Inject constructor(
     }
 
     suspend fun pauseTimer() {
+        commandMutex.withLock { pauseTimerLocked() }
+    }
+
+    private suspend fun pauseTimerLocked() {
         val currentState = _state.value
         if (!currentState.isTimerRunning) return
 
@@ -122,8 +147,16 @@ class WorkoutTimerStateManager @Inject constructor(
         )
     }
 
-    suspend fun moveToNextPhase(): Result<Unit> {
+    suspend fun moveToNextPhase(expectedPhaseIndex: Int? = null): Result<Unit> {
+        return commandMutex.withLock { moveToNextPhaseLocked(expectedPhaseIndex) }
+    }
+
+    private suspend fun moveToNextPhaseLocked(expectedPhaseIndex: Int? = null): Result<Unit> {
         val currentState = _state.value
+        if (currentState.isCompleted || currentState.sessionId == null) return Result.success(Unit)
+        if (expectedPhaseIndex != null && currentState.currentPhaseIndex != expectedPhaseIndex) {
+            return Result.failure(StalePhaseTransitionException)
+        }
 
         val nextPhase = moveToNextPhase(currentState.workoutId, currentState.currentPhaseIndex)
             .getOrElse { return Result.failure(it) }
@@ -132,7 +165,7 @@ class WorkoutTimerStateManager @Inject constructor(
         val isCompleted = nextPhase.name == PhaseName.COMPLETED
 
         val progressionResult = if (isCompleted) {
-            workoutCompletedUseCase(currentState.workoutId).progression
+            workoutCompletedUseCase(currentState.workoutId, currentState.sessionId).progression
         } else null
 
         updateState(
@@ -149,14 +182,23 @@ class WorkoutTimerStateManager @Inject constructor(
         return Result.success(Unit)
     }
 
-    suspend fun skipPhase() {
-        skipPhaseUseCase()
-        moveToNextPhase()
+    suspend fun skipPhase(expectedPhaseIndex: Int? = null): Result<Unit> {
+        return commandMutex.withLock {
+            val currentState = _state.value
+            if (currentState.sessionId == null || currentState.isCompleted) return@withLock Result.success(Unit)
+            if (expectedPhaseIndex != null && currentState.currentPhaseIndex != expectedPhaseIndex) {
+                return@withLock Result.failure(StalePhaseTransitionException)
+            }
+            skipPhaseUseCase(currentState.workoutId, currentState.sessionId)
+            moveToNextPhaseLocked()
+        }
     }
 
     suspend fun closeWorkout() {
-        updateState(WorkoutTimerState())
-        persistence.clearState()
+        commandMutex.withLock {
+            updateState(WorkoutTimerState())
+            persistence.clearState()
+        }
     }
 
     fun getRemainingTimeMillis(): Long {
@@ -178,4 +220,24 @@ class WorkoutTimerStateManager @Inject constructor(
         _state.value = newState
         persistence.saveState(newState)
     }
+
+    private suspend fun getSession(workout: com.github.jibbo.norwegiantraining.data.Workout) =
+        getTodaySession.createSession(workout)
+
+    private suspend fun findOrCreateLegacySession(workout: com.github.jibbo.norwegiantraining.data.Workout) =
+        sessionRepository.getNormalSessionForWorkoutInRange(workout.id, startOfToday(), endOfToday())
+            ?: sessionRepository.getLegacyNormalSessionInRange(workout.name, workout.totalTime.toLong(), startOfToday(), endOfToday())
+            ?: getSession(workout)
+
+    private fun startOfToday(): Date {
+        return Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+        }.time
+    }
+
+    private fun endOfToday(): Date = Calendar.getInstance().apply {
+        add(Calendar.DAY_OF_YEAR, 1); set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0); add(Calendar.MILLISECOND, -1)
+    }.time
 }
+
+object StalePhaseTransitionException : Exception()

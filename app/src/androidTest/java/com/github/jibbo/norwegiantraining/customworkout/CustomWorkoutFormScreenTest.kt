@@ -2,9 +2,11 @@ package com.github.jibbo.norwegiantraining.customworkout
 
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -36,7 +38,6 @@ class CustomWorkoutFormScreenTest {
 
         composeRule.onNodeWithText("Create workout").assertIsDisplayed()
         composeRule.onNodeWithText("10").assertIsDisplayed()
-        composeRule.onNodeWithText("👟").assertIsDisplayed()
         composeRule.onAllNodesWithTag("delete").assertCountEquals(0)
     }
 
@@ -73,6 +74,28 @@ class CustomWorkoutFormScreenTest {
         composeRule.waitForIdle()
         composeRule.onNodeWithText("Edit workout").assertIsDisplayed()
         composeRule.onNodeWithContentDescription("Delete custom workout").assertIsDisplayed()
+    }
+
+    @Test
+    fun builtInEditFormDoesNotShowDeleteAction() {
+        val repository = FakeWorkoutRepo()
+        runBlocking {
+            repository.insert(
+                Workout(
+                    id = 43L,
+                    name = "Built-in",
+                    difficulty = Difficulty.BEGINNER,
+                    content = "5m-30s-15s-5m",
+                    isCustom = false,
+                ),
+            )
+        }
+        val viewModel = CustomWorkoutViewModel(repository, FakeWorkoutTimerManager())
+        setContent(viewModel, 43L)
+
+        composeRule.waitForIdle()
+        composeRule.onNodeWithText("Edit workout").assertIsDisplayed()
+        composeRule.onAllNodesWithContentDescription("Delete custom workout").assertCountEquals(0)
     }
 
     @Test
@@ -119,7 +142,7 @@ class CustomWorkoutFormScreenTest {
     }
 
     @Test
-    fun activeSaveShowsLocalizedBlockingAlert() {
+    fun activeCreateDisablesSave() {
         val timerStateManager = FakeWorkoutTimerManager(activeWorkoutId = 42L)
         val viewModel = CustomWorkoutViewModel(FakeWorkoutRepo(), timerStateManager)
         viewModel.updateName("Active workout")
@@ -128,16 +151,11 @@ class CustomWorkoutFormScreenTest {
             null,
         )
 
-        composeRule.onNodeWithText("Save").performClick()
-        composeRule.onNodeWithText("Workout in progress").assertIsDisplayed()
-        composeRule.onNodeWithText("Finish or close the active workout before saving or deleting a custom workout.")
-            .assertIsDisplayed()
-        composeRule.onNodeWithText("OK").performClick()
-        composeRule.onAllNodesWithText("Workout in progress").assertCountEquals(0)
+        composeRule.onNodeWithText("Save").assertIsNotEnabled()
     }
 
     @Test
-    fun activeDeleteShowsLocalizedBlockingAlert() {
+    fun activeDeleteIsDisabled() {
         val viewModel = CustomWorkoutViewModel(
             repositoryWithCustomWorkout(),
             FakeWorkoutTimerManager(activeWorkoutId = 42L),
@@ -148,11 +166,42 @@ class CustomWorkoutFormScreenTest {
         )
         composeRule.waitForIdle()
 
-        composeRule.onNodeWithContentDescription("Delete custom workout").performClick()
-        composeRule.onNodeWithText("Delete").performClick()
-        composeRule.onNodeWithText("Workout in progress").assertIsDisplayed()
-        composeRule.onNodeWithText("OK").performClick()
-        composeRule.onAllNodesWithText("Workout in progress").assertCountEquals(0)
+        composeRule.onNodeWithContentDescription("Delete custom workout").assertIsNotEnabled()
+    }
+
+    @Test
+    fun activeWorkoutDisablesEditorControls() {
+        val viewModel = CustomWorkoutViewModel(
+            repositoryWithCustomWorkout(),
+            FakeWorkoutTimerManager(
+                timerState = WorkoutTimerState(workoutId = 42L, isTimerRunning = true),
+            ),
+        )
+        setContent(viewModel, 42L)
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithText("Existing").assertIsNotEnabled()
+        composeRule.onNodeWithText("Save").assertIsNotEnabled()
+        composeRule.onNodeWithContentDescription("Delete custom workout").assertIsNotEnabled()
+    }
+
+    @Test
+    fun pausedWorkoutDisablesEditorControls() {
+        val viewModel = CustomWorkoutViewModel(
+            repositoryWithCustomWorkout(),
+            FakeWorkoutTimerManager(
+                timerState = WorkoutTimerState(
+                    workoutId = 42L,
+                    remainingTimeOnPauseMillis = 1_000L,
+                ),
+            ),
+        )
+        setContent(viewModel, 42L)
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithText("Existing").assertIsNotEnabled()
+        composeRule.onNodeWithText("Save").assertIsNotEnabled()
+        composeRule.onNodeWithContentDescription("Delete custom workout").assertIsNotEnabled()
     }
 
     private fun repositoryWithCustomWorkout(): FakeWorkoutRepo {

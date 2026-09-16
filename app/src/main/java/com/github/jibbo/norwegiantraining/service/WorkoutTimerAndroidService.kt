@@ -87,6 +87,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         val alarmPhaseIndex = intent?.getIntExtra(EXTRA_PHASE_INDEX, -1) ?: -1
+        val skipPhaseIndex = intent?.getIntExtra(EXTRA_SKIP_PHASE_INDEX, -1) ?: -1
         Log.d(TAG, "onStartCommand: $action")
 
         serviceScope.launch {
@@ -105,7 +106,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
                     if (state.workoutId != -1L &&
                         (alarmPhaseIndex == -1 || state.currentPhaseIndex == alarmPhaseIndex)
                     ) {
-                        handlePhaseTransition()
+                        handlePhaseTransition(alarmPhaseIndex.takeIf { it != -1 })
                     }
                 }
 
@@ -114,7 +115,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
                 }
 
                 ACTION_SKIP_PHASE -> {
-                    skipPhase()
+                    skipPhase(skipPhaseIndex.takeIf { it != -1 })
                 }
             }
         }
@@ -195,10 +196,15 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
     }
 
     override suspend fun skipPhase() {
+        skipPhase(null)
+    }
+
+    private suspend fun skipPhase(expectedPhaseIndex: Int?) {
         Log.d(TAG, "Skipping phase")
+        val result = stateManager.skipPhase(expectedPhaseIndex)
+        if (result.isFailure) return
         countDownTimer?.cancel()
         cancelAlarm()
-        stateManager.skipPhase()
 
         val state = stateManager.state.value
         if (state.isCompleted) {
@@ -255,11 +261,12 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         stopSelf()
     }
 
-    private suspend fun handlePhaseTransition() {
+    private suspend fun handlePhaseTransition(expectedPhaseIndex: Int? = null) {
         Log.d(TAG, "Handling phase transition from alarm")
+        val transition = stateManager.moveToNextPhase(expectedPhaseIndex)
+        if (transition.isFailure) return
         countDownTimer?.cancel()
         cancelAlarm()
-        stateManager.moveToNextPhase()
 
         val state = stateManager.state.value
         if (state.isCompleted) {
@@ -481,6 +488,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
 
         val skipIntent = Intent(this, WorkoutTimerAndroidService::class.java).apply {
             action = ACTION_SKIP_PHASE
+            putExtra(EXTRA_SKIP_PHASE_INDEX, state.currentPhaseIndex)
         }
         val skipPendingIntent = PendingIntent.getService(
             this,
@@ -577,5 +585,6 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
 
         const val EXTRA_WORKOUT_ID = "workout_id"
         const val EXTRA_PHASE_INDEX = "phase_index"
+        const val EXTRA_SKIP_PHASE_INDEX = "skip_phase_index"
     }
 }

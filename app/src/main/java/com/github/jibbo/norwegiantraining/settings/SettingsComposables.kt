@@ -115,7 +115,6 @@ internal fun SettingsScreen(
             item { SubscriptionCard(viewModel) }
             item { GeneralCard(viewModel) }
             item { TTSCard(viewModel) }
-            item { OnboardingCard(viewModel) }
             item { PrivacyCard(viewModel) }
             item { GetInTouchCard() }
             item { CreditsCard() }
@@ -175,6 +174,26 @@ private fun GeneralCard(viewModel: SettingsViewModel) {
                 MySwitch(checked = state.value.vibrationEnabled, onCheckedChange = {
                     viewModel.setVibrationEnabled(it)
                 })
+            }
+            Row(
+                verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 8.dp)
+            ) {
+                val context = LocalContext.current
+                TextButton(
+                    onClick = {
+
+                        val intent = Intent(
+                            context, OnboardingActivity::class.java
+                        )
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        context.startActivity(intent)
+                    }) {
+                    Text(
+                        text = R.string.onboarding_section_title.localizable(),
+                        style = Typography.bodyLarge,
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }
@@ -588,38 +607,6 @@ private fun GetInTouchCard() {
                     )
                 }
 
-            }
-        }
-    }
-}
-
-@Composable
-private fun OnboardingCard(viewModel: SettingsViewModel) {
-    val context = LocalContext.current
-    val intent = Intent(
-        context, OnboardingActivity::class.java
-    )
-    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = Gray
-        ),
-    ) {
-        Column(modifier = Modifier.padding(vertical = 6.dp)) {
-            Row(
-                verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 8.dp)
-            ) {
-                TextButton(
-                    onClick = {
-                        context.startActivity(intent)
-                    }) {
-                    Text(
-                        text = R.string.onboarding_section_title.localizable(),
-                        style = Typography.bodyLarge,
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }

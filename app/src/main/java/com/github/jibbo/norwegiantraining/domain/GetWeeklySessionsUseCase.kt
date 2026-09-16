@@ -2,7 +2,7 @@ package com.github.jibbo.norwegiantraining.domain
 
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.SessionRepository
-import java.text.SimpleDateFormat
+import com.github.jibbo.norwegiantraining.log.summarizeDailySessions
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
@@ -32,22 +32,20 @@ class GetWeeklySessionsUseCase @Inject constructor(
         val endOfWeek = calendar.time
         
         val sessions = sessionRepository.getSessionsInRange(startOfWeek, endOfWeek)
+        val sessionsByDay = sessions.groupBy { session ->
+            Calendar.getInstance().apply { time = session.date }.let {
+                it.get(Calendar.YEAR) to it.get(Calendar.DAY_OF_YEAR)
+            }
+        }
         
-        // Return a list of 7 sessions (one per day), or null if no session exists for that day
+        // Return one deliberate summary per day, rather than an arbitrary execution.
         return (0 until 7).map { dayIndex ->
             val dayCalendar = Calendar.getInstance()
             dayCalendar.time = startOfWeek
             dayCalendar.add(Calendar.DAY_OF_MONTH, dayIndex)
-            
-            sessions.find { session ->
-                val sessionCal = Calendar.getInstance()
-                sessionCal.time = session.date
-                sessionCal.set(Calendar.HOUR_OF_DAY, 0)
-                sessionCal.set(Calendar.MINUTE, 0)
-                sessionCal.set(Calendar.SECOND, 0)
-                sessionCal.set(Calendar.MILLISECOND, 0)
-                sessionCal.timeInMillis == dayCalendar.timeInMillis
-            }
+            sessionsByDay[
+                dayCalendar.get(Calendar.YEAR) to dayCalendar.get(Calendar.DAY_OF_YEAR)
+            ].orEmpty().summarizeDailySessions()
         }
     }
 }

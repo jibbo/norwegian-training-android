@@ -19,7 +19,6 @@
     <string name="phases_total">共 %1$s 个阶段</string>
     <string name="current_phases">%1$s / %2$s</string>
     <string name="home_workout_name">%1$s</string>
-    <string name="next_up">下一个 >> %1$s</string>
     <string name="stop_workout_confirmation_title">停止训练？</string>
     <string name="stop_workout_confirmation_message">计时器仍在运行。要停止本次训练吗？</string>
     <string name="stop_workout">停止训练</string>
@@ -28,7 +27,7 @@
     <string name="warmup_desc">轻度运动：热身时你应该能够正常说话</string>
     <string name="hit_cardio_desc">尽全力坚持到底。你可以做到的！</string>
     <string name="light_cardio_desc">轻度运动：保持心率平稳，不要停下</string>
-    <string name="cooldown_desc">深呼吸，放慢节奏让心率恢复平静，但此刻不要停下</string>
+    <string name="cooldown_desc">深呼吸，放慢节奏并保持放松，让心率逐渐恢复平稳，但现在还不要停下来。</string>
     <string name="completed_desc">恭喜！你完成了本次训练！明天再来挑战一次 💪</string>
     <string name="one_minute_remaining">还剩一分钟</string>
     <string name="title_activity_settings">设置</string>
@@ -48,10 +47,7 @@
     <string name="enable_analytics_description">通过分享匿名数据帮助改进应用</string>
     <string name="enable_crash_reporting">崩溃报告</string>
     <string name="enable_crash_reporting_description">自动发送崩溃报告</string>
-    <string name="title_beta_section">测试功能</string>
-    <string name="beta_section_description">访问实验性功能</string>
-    <string name="enable_timer_notification">计时器通知</string>
-    <string name="onboarding_section_title">设置</string>
+    <string name="onboarding_section_title">再次显示引导</string>
     <string name="about_dev_section_title">开发者的话</string>
     <string name="about_dev_section_description">你好！我是 Gio，非常感谢你使用我的应用！作为一名健身爱好者，我开发这款应用是因为我厌倦了摆弄那些复杂的计时器。希望你能发现它的实用之处！</string>
     <string name="about_dev_section_cta">给 Gio 发邮件</string>
@@ -67,36 +63,12 @@
     <string name="health_connect_install_message">安装 Health Connect，即可在此查看更多统计数据</string>
     <string name="health_connect_permission_message">允许 Health Connect 访问数据，即可在此查看更多统计数据</string>
     <string name="hide">永久隐藏</string>
-    <string name="onboarding_step_1_title">欢迎使用 Norwy 应用！</string>
-    <string name="onboarding_step_1_description">根据你的水平和目标定制训练课程</string>
-    <string name="onboarding_step_1_name">Markus R.</string>
-    <string name="onboarding_step_1_handle">\@marksmeister</string>
-    <string name="onboarding_step_1_body">根据你的水平和目标定制训练课程</string>
-    <string name="onboarding_step_2_title">自动计时器</string>
-    <string name="onboarding_step_2_description">随时跟踪你的进步</string>
-    <string name="onboarding_step_2_body">随时跟踪你的进步</string>
-    <string name="onboarding_step_3_title">你为什么想开始挪威训练协议？</string>
-    <string name="onboarding_step_3_option_1">改善我的整体健康</string>
-    <string name="onboarding_step_3_option_2">提升我的运动表现</string>
-    <string name="onboarding_step_4_title">开始吧！</string>
-    <string name="onboarding_step_4_description">第一个月就能感受到效果！</string>
-    <string name="onboarding_step_4_body">第一个月就能感受到效果！</string>
-    <string name="onboarding_step_4_cta">开始吧！</string>
-    <string name="onboarding_step_5_title">你的进步</string>
-    <string name="onboarding_step_5_description">允许通知以接收训练提醒</string>
-    <string name="onboarding_step_5_body">我们会通过通知提醒你进行训练</string>
-    <string name="onboarding_step_6_title">量身定制的训练</string>
-    <string name="onboarding_step_6_description">允许活动识别以追踪你的训练</string>
-    <string name="onboarding_step_6_body">这让 Norwy 能够自动检测你何时在训练</string>
     <string name="onboarding_step_notification_permission_title">允许通知</string>
     <string name="onboarding_step_notification_permission_body">我们需要此权限来发送训练提醒</string>
     <string name="onboarding_step_activity_recognition_permission_title">允许活动识别</string>
     <string name="onboarding_step_activity_recognition_permission_body">我们需要此权限来检测你的运动状态</string>
     <string name="onboarding_step_name_title">你叫什么名字？</string>
     <string name="onboarding_step_name_placeholder">你的名字</string>
-    <string name="onboarding_step_invite_friends_title">邀请朋友</string>
-    <string name="onboarding_step_invite_friends_description">一起训练，更容易坚持下去。</string>
-    <string name="onboarding_step_invite_friends_body">研究表明，与伙伴或群体一起训练，坚持度最高可提升 600%%</string>
     <string name="share_msg">我刚开始进行 4x4 间歇训练！和我一起试试 Norwy：https://play.google.com/store/apps/details?id=com.github.jibbo.norwegiantraining</string>
     <string name="welcome">欢迎 %1$s</string>
     <string name="home_next_up">你的锻炼</string>
@@ -113,7 +85,7 @@
     <string name="workout_intermediate_1">🎽 中级 1</string>
     <string name="workout_intermediate_2">💨 中级 2</string>
     <string name="workout_intermediate_3">🧠 中级 3</string>
-    <string name="workout_true_norwegian">"🇳🇴  真正的挪威人 4x4 "</string>
+    <string name="workout_true_norwegian">🇳🇴 正宗挪威 4x4</string>
     <string name="workout_expert_1">🏃‍♀️ 专家 1</string>
     <string name="workout_expert_2">💪 专家 2</string>
     <string name="free_trial_title">这是我们送给你的礼物！</string>
@@ -136,7 +108,6 @@
     <string name="thank_you_button">出发吧！</string>
     <string name="steps_today">今日步数</string>
     <string name="distance_today">今日距离</string>
-    <string name="steps_distance">%1$s 公里</string>
     <string name="calories_burned">消耗的卡路里</string>
 
     <string name="app_language">应用语言</string>
@@ -150,15 +121,12 @@
     <string name="cancel">取消</string>
     <string name="custom_workout_active_message">保存或删除自定义训练前，请先完成或关闭当前训练。</string>
     <string name="custom_workout_active_title">训练进行中</string>
-    <string name="custom_workout_clear_icon">X</string>
     <string name="custom_workout_create_title">创建自定义训练</string>
     <string name="custom_workout_default_name">自定义</string>
     <string name="custom_workout_delete">删除自定义训练</string>
     <string name="custom_workout_delete_message">此自定义训练将被永久删除。</string>
     <string name="custom_workout_delete_title">删除训练？</string>
-    <string name="custom_workout_edit_title">编辑自定义训练</string>
-    <string name="custom_workout_form_placeholder">训练详情会显示在这里。</string>
-    <string name="custom_workout_icon">图标</string>
+    <string name="custom_workout_edit_title">编辑训练</string>
     <string name="custom_workout_name">名称</string>
     <string name="custom_workout_rest_minutes">休息分钟</string>
     <string name="custom_workout_rest_seconds">休息秒数</string>
@@ -171,7 +139,7 @@
     <string name="empty">空</string>
     <string name="five">五</string>
     <string name="four">四</string>
-    <string name="home_edit_custom_workout">编辑自定义训练</string>
+    <string name="home_edit_workout">编辑训练</string>
     <string name="nine">九</string>
     <string name="one">一</string>
     <string name="save">保存</string>
@@ -181,5 +149,7 @@
     <string name="three">三</string>
     <string name="two">二</string>
     <string name="workout_kCal">🔥 %1$s 千卡</string>
-    <string name="workout_split">%1$s×%1$s</string>
+    <plurals name="skipped_phases">
+        <item quantity="other">跳过 %1$d 个阶段</item>
+    </plurals>
 </resources>

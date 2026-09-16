@@ -7,12 +7,14 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.longClick
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.jibbo.norwegiantraining.data.Difficulty
 import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
+import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo.FakeWorkoutTimerManager
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
 import com.github.jibbo.norwegiantraining.domain.GetRecommendedWorkoutId
@@ -20,6 +22,7 @@ import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.GetWeeklySessionsUseCase
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerState
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
@@ -42,23 +45,74 @@ class HomeWorkoutsScreenTest {
         composeRule.onNodeWithText("All Workouts").assertIsDisplayed()
         composeRule.onNodeWithText("+").assertIsDisplayed()
         composeRule.onNodeWithText("Recommended", substring = true).assertIsDisplayed()
-        composeRule.onNodeWithText("⭐ Newer").assertIsDisplayed()
-        composeRule.onNodeWithText("🧘 Older").assertIsDisplayed()
+        composeRule.onNodeWithText("Newer").assertIsDisplayed()
+        composeRule.onNodeWithText("Older").assertIsDisplayed()
         composeRule.onNodeWithText("Built-in").assertIsDisplayed()
         composeRule.onAllNodesWithText("Built-in").assertCountEquals(1)
 
-        val newerTop = composeRule.onNodeWithText("⭐ Newer").fetchSemanticsNode().boundsInRoot.top
-        val olderTop = composeRule.onNodeWithText("🧘 Older").fetchSemanticsNode().boundsInRoot.top
+        val newerTop = composeRule.onNodeWithText("Newer").fetchSemanticsNode().boundsInRoot.top
+        val olderTop = composeRule.onNodeWithText("Older").fetchSemanticsNode().boundsInRoot.top
         check(newerTop < olderTop)
     }
 
     @Test
-    fun customCardsExposeLongPressEditAndRenderIconNames() {
+    fun customCardsExposeLongPressEdit() {
         val viewModel = homeViewModel(repositoryWithWorkouts())
         setContent(viewModel)
         composeRule.waitForIdle()
 
-        composeRule.onNodeWithText("⭐ Newer")
+        composeRule.onNodeWithText("Newer")
+            .performTouchInput { longClick() }
+        check(
+            SemanticsActions.OnLongClick in composeRule.onNodeWithText("Newer")
+                .fetchSemanticsNode().config,
+        )
+    }
+
+    @Test
+    fun activeWorkoutPreventsLongPressEdit() {
+        val viewModel = homeViewModel(
+            repositoryWithWorkouts(),
+            FakeWorkoutTimerManager(
+                timerState = WorkoutTimerState(workoutId = 99L, isTimerRunning = true),
+            ),
+        )
+        setContent(viewModel)
+        composeRule.waitForIdle()
+
+        check(
+            SemanticsActions.OnLongClick !in composeRule.onNodeWithText("Newer")
+                .fetchSemanticsNode().config,
+        )
+    }
+
+    @Test
+    fun pausedWorkoutPreventsLongPressEdit() {
+        val viewModel = homeViewModel(
+            repositoryWithWorkouts(),
+            FakeWorkoutTimerManager(
+                timerState = WorkoutTimerState(
+                    workoutId = 99L,
+                    remainingTimeOnPauseMillis = 1_000L,
+                ),
+            ),
+        )
+        setContent(viewModel)
+        composeRule.waitForIdle()
+
+        check(
+            SemanticsActions.OnLongClick !in composeRule.onNodeWithText("Newer")
+                .fetchSemanticsNode().config,
+        )
+    }
+
+    @Test
+    fun builtInCardsAlsoExposeLongPressEdit() {
+        val viewModel = homeViewModel(repositoryWithWorkouts())
+        setContent(viewModel)
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithText("Built-in")
             .performTouchInput { longClick() }
     }
 
@@ -70,7 +124,10 @@ class HomeWorkoutsScreenTest {
         }
     }
 
-    private fun homeViewModel(repository: FakeWorkoutRepo): HomeViewModel {
+    private fun homeViewModel(
+        repository: FakeWorkoutRepo,
+        timerStateManager: FakeWorkoutTimerManager = FakeWorkoutTimerManager(),
+    ): HomeViewModel {
         val settings = FakeSettingsRepository()
         return HomeViewModel(
             getUsername = GetUsername(settings),
@@ -80,6 +137,7 @@ class HomeWorkoutsScreenTest {
             getRecommendedWorkoutId = GetRecommendedWorkoutId(settings),
             getWeeklySessions = GetWeeklySessionsUseCase(FakeSessionRepo()),
             analytics = FakeTracker(),
+            timerStateManager = timerStateManager,
         )
     }
 
@@ -101,7 +159,6 @@ class HomeWorkoutsScreenTest {
                     difficulty = Difficulty.BEGINNER,
                     content = "5m-30s-15s-5m",
                     isCustom = true,
-                    icon = "🧘",
                 ),
             )
             repository.insert(
@@ -111,7 +168,6 @@ class HomeWorkoutsScreenTest {
                     difficulty = Difficulty.BEGINNER,
                     content = "5m-30s-15s-5m",
                     isCustom = true,
-                    icon = "⭐",
                 ),
             )
             repository.insert(

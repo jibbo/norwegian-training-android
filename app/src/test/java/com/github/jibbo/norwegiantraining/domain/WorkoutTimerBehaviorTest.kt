@@ -43,9 +43,9 @@ class WorkoutTimerBehaviorTest {
 
     @Test
     fun `custom timer workout retains shared display label`() {
-        val workout = workout("5m-30s-15s-5m").copy(icon = "🔥", name = "Intervals")
+        val workout = workout("5m-30s-15s-5m").copy(name = "Intervals")
 
-        assertEquals("🔥 Intervals", workout.displayLabel())
+        assertEquals("Intervals", workout.displayLabel())
     }
 
     private fun workout(content: String) = Workout(

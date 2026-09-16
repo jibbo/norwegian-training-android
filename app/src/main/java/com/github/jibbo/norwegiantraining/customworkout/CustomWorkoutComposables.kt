@@ -111,9 +111,10 @@ fun CustomWorkoutFormScreen(
             TopAppBar(
                 title = { Text(stringResource(title)) },
                 actions = {
-                    if (state.mode == CustomWorkoutFormMode.EDIT) {
+                    if (state.mode == CustomWorkoutFormMode.EDIT && state.isCustom) {
                         IconButton(
                             onClick = viewModel::requestDelete,
+                            enabled = !isWorkoutActive,
                             modifier = Modifier
                                 .testTag("deleteAction")
                                 .semantics { contentDescription = deleteLabel },
@@ -140,8 +141,8 @@ fun CustomWorkoutFormScreen(
         CustomWorkoutFormShell(
             innerPadding = innerPadding,
             state = state,
+            enabled = !isWorkoutActive,
             onNameChange = viewModel::updateName,
-            onIconSelected = viewModel::updateIcon,
             onWorkMinutesChange = viewModel::updateWorkMinutes,
             onWorkSecondsChange = viewModel::updateWorkSeconds,
             onRestMinutesChange = viewModel::updateRestMinutes,
@@ -156,8 +157,8 @@ fun CustomWorkoutFormScreen(
 private fun CustomWorkoutFormShell(
     innerPadding: PaddingValues,
     state: CustomWorkoutFormState,
+    enabled: Boolean,
     onNameChange: (String) -> Unit,
-    onIconSelected: (String?) -> Unit,
     onWorkMinutesChange: (String) -> Unit,
     onWorkSecondsChange: (String) -> Unit,
     onRestMinutesChange: (String) -> Unit,
@@ -177,42 +178,30 @@ private fun CustomWorkoutFormShell(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Spacer(Modifier.weight(1f))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(
-                value = state.draft.icon.orEmpty(),
-                onValueChange = { onIconSelected(it.trim().takeIf(String::isNotBlank)) },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.ShortMessage,
-                ),
-                singleLine = true,
-                maxLines = 1,
-                label = { Text(stringResource(R.string.custom_workout_icon)) },
-                isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
-                modifier = Modifier.weight(0.3f)
-            )
-            OutlinedTextField(
+        OutlinedTextField(
                 value = state.draft.name,
                 onValueChange = onNameChange,
+                enabled = enabled,
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                 ),
                 label = { Text(stringResource(R.string.custom_workout_name)) },
                 isError = state.validationErrors.containsKey(CustomWorkoutField.NAME),
-                modifier = Modifier.weight(0.7f),
-            )
-        }
+                modifier = Modifier.fillMaxWidth(),
+        )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             DurationField(
                 value = state.draft.workMinutes,
                 label = R.string.custom_workout_work_minutes,
                 isError = state.validationErrors.containsKey(CustomWorkoutField.WORK_MINUTES),
+                enabled = enabled,
                 onValueChange = onWorkMinutesChange,
             )
             DurationField(
                 value = state.draft.workSeconds,
                 label = R.string.custom_workout_work_seconds,
                 isError = state.validationErrors.containsKey(CustomWorkoutField.WORK_SECONDS),
+                enabled = enabled,
                 onValueChange = onWorkSecondsChange,
             )
         }
@@ -221,18 +210,21 @@ private fun CustomWorkoutFormShell(
                 value = state.draft.restMinutes,
                 label = R.string.custom_workout_rest_minutes,
                 isError = state.validationErrors.containsKey(CustomWorkoutField.REST_MINUTES),
+                enabled = enabled,
                 onValueChange = onRestMinutesChange,
             )
             DurationField(
                 value = state.draft.restSeconds,
                 label = R.string.custom_workout_rest_seconds,
                 isError = state.validationErrors.containsKey(CustomWorkoutField.REST_SECONDS),
+                enabled = enabled,
                 onValueChange = onRestSecondsChange,
             )
         }
         OutlinedTextField(
             value = state.draft.rounds,
             onValueChange = onRoundsChange,
+            enabled = enabled,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Number
@@ -247,7 +239,7 @@ private fun CustomWorkoutFormShell(
         }
         Button(
             onClick = onSave,
-            enabled = !state.isSaving && !state.isLoading,
+            enabled = enabled && !state.isSaving && !state.isLoading,
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
@@ -293,8 +285,8 @@ private fun CustomWorkoutFormPreview() {
             CustomWorkoutFormShell(
                 innerPadding = innerPadding,
                 state = CustomWorkoutFormState(),
+                enabled = true,
                 onNameChange = {},
-                onIconSelected = {},
                 onWorkMinutesChange = {},
                 onWorkSecondsChange = {},
                 onRestMinutesChange = {},
@@ -311,11 +303,13 @@ private fun RowScope.DurationField(
     value: String,
     label: Int,
     isError: Boolean,
+    enabled: Boolean,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        enabled = enabled,
         label = { Text(stringResource(label)) },
         isError = isError,
         keyboardOptions = KeyboardOptions(

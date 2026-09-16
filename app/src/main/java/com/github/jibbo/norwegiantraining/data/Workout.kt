@@ -42,17 +42,16 @@ interface WorkoutDao {
         SET name = :name,
             difficulty = :difficulty,
             content = :content,
-            isCustom = 1,
-            icon = :icon
-        WHERE id = :id AND isCustom = 1
+            isCustom = :isCustom
+        WHERE id = :id
         """
     )
-    suspend fun updateCustomById(
+    suspend fun updateById(
         id: Long,
         name: String,
         difficulty: Difficulty,
         content: String,
-        icon: String?,
+        isCustom: Boolean,
     ): Int
 
     @Query("DELETE FROM Workout WHERE id = :id AND isCustom = 1")
@@ -70,7 +69,6 @@ data class Workout(
     @ColumnInfo(name = "difficulty") val difficulty: Difficulty,
     @ColumnInfo(name = "content") val content: String,
     @ColumnInfo(name = "isCustom") val isCustom: Boolean = false,
-    @ColumnInfo(name = "icon") val icon: String? = null,
 ) {
     @Ignore
     val totalTime = content.split("-")

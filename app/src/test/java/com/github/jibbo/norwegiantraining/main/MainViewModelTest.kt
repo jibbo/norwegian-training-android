@@ -73,6 +73,53 @@ class MainViewModelTest {
     }
 
     @Test
+    fun userFacingPhaseProgressExcludesSyntheticPhases() = runTest {
+        val viewModel = MainViewModel()
+        val totalInternalPhases = 6
+
+        viewModel.updateFromService(
+            WorkoutTimerState(
+                currentPhase = Phase(PhaseName.GET_READY, 1_000L),
+                currentPhaseIndex = 0,
+                totalPhases = totalInternalPhases,
+            )
+        )
+        assertEquals(0, viewModel.uiStates.value.currentPhaseIndex)
+        assertEquals(4, viewModel.uiStates.value.totalPhases)
+
+        viewModel.updateFromService(
+            WorkoutTimerState(
+                currentPhase = Phase(PhaseName.HARD_PHASE, 1_000L),
+                currentPhaseIndex = 2,
+                totalPhases = totalInternalPhases,
+            )
+        )
+        assertEquals(2, viewModel.uiStates.value.currentPhaseIndex)
+        assertEquals(4, viewModel.uiStates.value.totalPhases)
+
+        viewModel.updateFromService(
+            WorkoutTimerState(
+                currentPhase = Phase(PhaseName.REST_PHASE, 1_000L),
+                currentPhaseIndex = 4,
+                totalPhases = totalInternalPhases,
+            )
+        )
+        assertEquals(4, viewModel.uiStates.value.currentPhaseIndex)
+        assertEquals(4, viewModel.uiStates.value.totalPhases)
+
+        viewModel.updateFromService(
+            WorkoutTimerState(
+                currentPhase = Phase(PhaseName.COMPLETED, 0L),
+                currentPhaseIndex = 5,
+                totalPhases = totalInternalPhases,
+                isCompleted = true,
+            )
+        )
+        assertEquals(4, viewModel.uiStates.value.currentPhaseIndex)
+        assertEquals(4, viewModel.uiStates.value.totalPhases)
+    }
+
+    @Test
     fun requestCloseShowsConfirmationWhenTimerIsRunning() = runTest {
         val binder = RecordingService()
         val viewModel = MainViewModel()

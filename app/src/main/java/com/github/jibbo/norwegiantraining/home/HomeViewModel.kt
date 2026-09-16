@@ -11,6 +11,7 @@ import com.github.jibbo.norwegiantraining.domain.GetUsername
 import com.github.jibbo.norwegiantraining.domain.GetWeeklySessionsUseCase
 import com.github.jibbo.norwegiantraining.domain.IsFreeTrial
 import com.github.jibbo.norwegiantraining.domain.IsOnboardingCompleted
+import com.github.jibbo.norwegiantraining.service.WorkoutTimerManager
 import com.revenuecat.purchases.CustomerInfo
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.getCustomerInfoWith
@@ -31,6 +32,7 @@ class HomeViewModel @Inject constructor(
     private val getRecommendedWorkoutId: GetRecommendedWorkoutId,
     private val getWeeklySessions: GetWeeklySessionsUseCase,
     private val analytics: Analytics,
+    private val timerStateManager: WorkoutTimerManager,
 ) : ViewModel() {
 
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
@@ -38,6 +40,7 @@ class HomeViewModel @Inject constructor(
 
     private val states: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiStates = states.asStateFlow()
+    val timerState = timerStateManager.getWorkoutTimerState()
 
     private val isTrial = isFreeTrial()
     private var hasEntitlement = false
@@ -63,6 +66,10 @@ class HomeViewModel @Inject constructor(
             }
         } else {
             refreshUsername()
+            viewModelScope.launch {
+                val current = states.value as? UiState.Loaded ?: return@launch
+                states.value = current.copy(weeklySessions = getWeeklySessions())
+            }
         }
     }
 

@@ -148,12 +148,21 @@ class FakeSettingsRepository : SettingsRepository {
 class FakeSessionRepository : SessionRepository {
     private val sessions = mutableListOf<Session>()
     private val todaySession = MutableStateFlow<Session?>(null)
+    var manualInsertFailure: Throwable? = null
+    val rangeQueries = mutableListOf<Pair<Date, Date>>()
+
+    fun replaceSessions(replacement: List<Session>) {
+        sessions.clear()
+        sessions.addAll(replacement)
+    }
 
     override suspend fun getSessions(limit: Int, offset: Int): List<Session> =
         sessions.sortedByDescending { it.date }.drop(offset).take(limit)
 
     override suspend fun getSessionsInRange(from: Date, to: Date): List<Session> =
-        sessions.filter { it.date >= from && it.date <= to }
+        sessions.filter { it.date >= from && it.date <= to }.also {
+            rangeQueries += from to to
+        }
 
     override suspend fun upsertSession(session: Session): Long {
         val existingIndex = sessions.indexOfFirst { it.id == session.id && session.id != 0L }
@@ -172,11 +181,41 @@ class FakeSessionRepository : SessionRepository {
         return session.id
     }
 
+    override suspend fun insertManualSession(session: Session): Long {
+        manualInsertFailure?.let { throw it }
+        sessions.add(session)
+        todaySession.value = session
+        return session.id
+    }
+
     override suspend fun insertSessions(sessions: List<Session>) {
         this.sessions.addAll(sessions)
     }
 
     override suspend fun getTodaySession(): Session? = todaySession.value
+    override suspend fun getSession(id: Long): Session? = sessions.firstOrNull { it.id == id }
+
+    override suspend fun getNormalSessionForWorkoutInRange(workoutId: Long, from: Date, to: Date): Session? =
+        sessions.filter { it.id != 0L && !it.isManual && it.workoutId == workoutId && it.date >= from && it.date <= to }
+            .maxByOrNull { it.date }
+
+    override suspend fun getLegacyNormalSessionInRange(name: String, duration: Long, from: Date, to: Date): Session? =
+        sessions.filter { it.id != 0L && !it.isManual && it.workoutId == null && it.name == name && it.duration == duration && it.date >= from && it.date <= to }
+            .maxByOrNull { it.date }
+
+    override suspend fun incrementPhasesEnded(sessionId: Long): Session? {
+        val session = getSession(sessionId) ?: return null
+        val updated = session.copy(phasesEnded = session.phasesEnded + 1)
+        sessions[sessions.indexOf(session)] = updated
+        return updated
+    }
+
+    override suspend fun incrementSkipCount(sessionId: Long): Session? {
+        val session = getSession(sessionId) ?: return null
+        val updated = session.copy(skipCount = session.skipCount + 1)
+        sessions[sessions.indexOf(session)] = updated
+        return updated
+    }
 }
 
 class FakeWorkoutRepository : WorkoutRepository {
@@ -216,11 +255,11 @@ class FakeWorkoutRepository : WorkoutRepository {
         return stored.id
     }
 
-    override suspend fun updateCustom(workout: Workout): Boolean {
+    override suspend fun updateById(workout: Workout): Boolean {
         maybeFail()
-        val index = workouts.indexOfFirst { it.id == workout.id && it.isCustom }
+        val index = workouts.indexOfFirst { it.id == workout.id }
         if (index == -1) return false
-        workouts[index] = workout.copy(isCustom = true)
+        workouts[index] = workout
         publish()
         return true
     }
@@ -304,5 +343,9 @@ class FakeAnalytics : Analytics {
 
     override fun logRevenueCatError(name: String, message: String) {
         calls += "revenuecat_error:$name"
+    }
+
+    override fun logManualWorkoutLogged() {
+        calls += "manual_workout_logged"
     }
 }
