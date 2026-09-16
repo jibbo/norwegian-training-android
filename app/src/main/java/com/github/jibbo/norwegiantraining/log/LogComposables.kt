@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -72,6 +73,7 @@ import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -115,6 +117,7 @@ internal fun Logs(
     var sessionPendingDeletion by remember { mutableStateOf<Session?>(null) }
     var closeSheetAfterDeletion by remember { mutableStateOf(false) }
     var blockedSession by remember { mutableStateOf<Session?>(null) }
+    var hasDeletedSession by remember { mutableStateOf(false) }
     var todayHighlightToken by remember { mutableIntStateOf(0) }
     Column(
         modifier = Modifier
@@ -196,10 +199,11 @@ internal fun Logs(
                     ) { Text("+", style = Typography.headlineSmall) }
                 }
                 Spacer(Modifier.height(16.dp))
-                sessionsForDay.forEach { session ->
+                sessionsForDay.forEachIndexed { index, session ->
                     key(session.id) {
                         SessionLogRow(
                             session = session,
+                            showSwipeHint = index == 0 && !hasDeletedSession,
                             onRequestDelete = {
                                 if (session.id == activeSessionId) {
                                     blockedSession = session
@@ -246,7 +250,8 @@ internal fun Logs(
                 TextButton(onClick = {
                     sessionPendingDeletion = null
                     onDeleteSession(session) {
-                        if (closeSheetAfterDeletion) selectedDay = null
+                        hasDeletedSession = true
+                         if (closeSheetAfterDeletion) selectedDay = null
                     }
                 }) { Text(R.string.delete.localizable()) }
             },
@@ -273,13 +278,26 @@ internal fun Logs(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SessionLogRow(session: Session, onRequestDelete: () -> Unit) {
+private fun SessionLogRow(
+    session: Session,
+    showSwipeHint: Boolean,
+    onRequestDelete: () -> Unit,
+) {
+    val swipeHintOffset = remember { Animatable(0f) }
     val dismissState = androidx.compose.material3.rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart) onRequestDelete()
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                onRequestDelete()
+            }
             false
         },
     )
+    LaunchedEffect(showSwipeHint) {
+        if (!showSwipeHint) return@LaunchedEffect
+        swipeHintOffset.animateTo(-64f, tween(350))
+        delay(500)
+        swipeHintOffset.animateTo(0f, tween(350))
+    }
     SwipeToDismissBox(
         state = dismissState,
         enableDismissFromStartToEnd = false,
@@ -302,6 +320,7 @@ private fun SessionLogRow(session: Session, onRequestDelete: () -> Unit) {
             Row(
                 Modifier
                     .fillMaxWidth()
+                    .graphicsLayer { translationX = swipeHintOffset.value }
                     .background(color = BottomSheetDefaults.ContainerColor)
                     .padding(vertical = 8.dp), Arrangement.SpaceBetween
             ) {
