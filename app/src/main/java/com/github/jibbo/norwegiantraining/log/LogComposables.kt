@@ -76,17 +76,17 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.math.roundToInt
 
-internal fun Session.logName(): String = name.take(20) + if (name.length > 20) "…" else ""
+internal fun Session.logName(): String = name.take(15) + if (name.length > 15) "…" else ""
 
 internal fun Session.logDetails(): LogDetails? = when {
     isManual || workoutId == null -> null
-    getStatus() == SessionStatus.GOOD -> LogDetails.DurationAndCalories
-    else -> LogDetails.SkippedPhasesAndCalories
+    getStatus() == SessionStatus.GOOD && duration > 0L -> LogDetails.DurationAndCalories
+    else -> LogDetails.CompletedAndSkippedPhases
 }
 
 internal enum class LogDetails {
     DurationAndCalories,
-    SkippedPhasesAndCalories,
+    CompletedAndSkippedPhases,
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -178,15 +178,15 @@ internal fun Logs(
                             Text(
                                 when (session.logDetails()) {
                                     LogDetails.DurationAndCalories -> "${R.string.workout_time.localizable(session.duration.toString())} "
-                                    LogDetails.SkippedPhasesAndCalories -> pluralStringResource(
-                                        R.plurals.skipped_phases,
-                                        session.skipCount,
-                                        session.skipCount,
-                                    )
+                                    LogDetails.CompletedAndSkippedPhases ->
+                                        pluralStringResource(R.plurals.completed_phases, session.phasesEnded, session.phasesEnded) + ", " +
+                                            pluralStringResource(R.plurals.skipped_phases, session.skipCount, session.skipCount)
                                     null -> ""
-                                } + R.string.workout_kCal.localizable(
-                                    calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
-                                ),
+                                } + if (session.logDetails() == LogDetails.DurationAndCalories) {
+                                    R.string.workout_kCal.localizable(
+                                        calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
+                                    )
+                                } else "",
                                 style = Typography.bodyMedium,
                             )
                         }
@@ -197,7 +197,11 @@ internal fun Logs(
                     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), Arrangement.SpaceBetween) {
                         Text(R.string.calories_burned.localizable(), style = Typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
                         Text(
-                            R.string.workout_kCal.localizable(calculateTotalCalories(sessionsForDay).roundToInt()),
+                            R.string.workout_kCal.localizable(
+                                calculateTotalCalories(
+                                    sessionsForDay.filter { it.isManual || it.getStatus() == SessionStatus.GOOD },
+                                ).roundToInt(),
+                            ),
                             style = Typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                         )
                     }

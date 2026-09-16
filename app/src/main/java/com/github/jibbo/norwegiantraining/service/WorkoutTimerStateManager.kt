@@ -61,19 +61,19 @@ class WorkoutTimerStateManager @Inject constructor(
 
         val savedSession = savedState.sessionId?.let { sessionRepository.getSession(it) }
         val session = savedSession?.takeIf { it.workoutId == savedState.workoutId }
-            ?: findOrCreateLegacySession(workout)
+            ?: findLegacySession(workout)
         _state.value = savedState.copy(
             workoutName = workout.displayLabel(),
             totalPhases = phases.size,
-            sessionId = session.id,
+            sessionId = session?.id,
         )
-        if (savedState.sessionId != session.id) persistence.saveState(_state.value)
+        if (savedState.sessionId != session?.id) persistence.saveState(_state.value)
     }
 
     suspend fun startWorkout(workoutId: Long): Result<Unit> {
         return commandMutex.withLock {
             val currentState = _state.value
-            if (currentState.workoutId == workoutId && !currentState.isCompleted && currentState.sessionId != null) {
+            if (currentState.workoutId == workoutId && !currentState.isCompleted) {
                 return@withLock Result.success(Unit)
             }
 
@@ -81,13 +81,11 @@ class WorkoutTimerStateManager @Inject constructor(
                 ?: return@withLock Result.failure(WorkoutNotFoundException(workoutId))
             val phases = WorkoutToPhasesConverter.convert(workout)
                 .getOrElse { return@withLock Result.failure(it) }
-            val session = getSession(workout)
 
             val initialPhase =
                 Phase(PhaseName.GET_READY, WorkoutToPhasesConverter.GET_READY_COUNTDOWN_DURATION)
             val newState = WorkoutTimerState(
                 workoutId = workoutId,
-                sessionId = session.id,
                 workoutName = workout.displayLabel(),
                 currentPhaseIndex = 0,
                 totalPhases = phases.size,
@@ -152,8 +150,8 @@ class WorkoutTimerStateManager @Inject constructor(
     }
 
     private suspend fun moveToNextPhaseLocked(expectedPhaseIndex: Int? = null): Result<Unit> {
-        val currentState = _state.value
-        if (currentState.isCompleted || currentState.sessionId == null) return Result.success(Unit)
+        var currentState = _state.value
+        if (currentState.isCompleted) return Result.success(Unit)
         if (expectedPhaseIndex != null && currentState.currentPhaseIndex != expectedPhaseIndex) {
             return Result.failure(StalePhaseTransitionException)
         }
@@ -163,9 +161,17 @@ class WorkoutTimerStateManager @Inject constructor(
         val nextIndex = currentState.currentPhaseIndex + 1
 
         val isCompleted = nextPhase.name == PhaseName.COMPLETED
+        val sessionId = currentState.sessionId ?: run {
+            val workout = workoutRepository.getById(currentState.workoutId)
+                ?: return Result.failure(WorkoutNotFoundException(currentState.workoutId))
+            val session = getSession(workout)
+            currentState = currentState.copy(sessionId = session.id)
+            updateState(currentState)
+            session.id
+        }
 
         val progressionResult = if (isCompleted) {
-            workoutCompletedUseCase(currentState.workoutId, currentState.sessionId).progression
+            workoutCompletedUseCase(currentState.workoutId, sessionId).progression
         } else null
 
         updateState(
@@ -185,11 +191,18 @@ class WorkoutTimerStateManager @Inject constructor(
     suspend fun skipPhase(expectedPhaseIndex: Int? = null): Result<Unit> {
         return commandMutex.withLock {
             val currentState = _state.value
-            if (currentState.sessionId == null || currentState.isCompleted) return@withLock Result.success(Unit)
+            if (currentState.isCompleted) return@withLock Result.success(Unit)
             if (expectedPhaseIndex != null && currentState.currentPhaseIndex != expectedPhaseIndex) {
                 return@withLock Result.failure(StalePhaseTransitionException)
             }
-            skipPhaseUseCase(currentState.workoutId, currentState.sessionId)
+            val sessionId = currentState.sessionId ?: run {
+                val workout = workoutRepository.getById(currentState.workoutId)
+                    ?: return@withLock Result.failure(WorkoutNotFoundException(currentState.workoutId))
+                val session = getSession(workout)
+                updateState(currentState.copy(sessionId = session.id))
+                session.id
+            }
+            skipPhaseUseCase(currentState.workoutId, sessionId)
             moveToNextPhaseLocked()
         }
     }
@@ -224,10 +237,9 @@ class WorkoutTimerStateManager @Inject constructor(
     private suspend fun getSession(workout: com.github.jibbo.norwegiantraining.data.Workout) =
         getTodaySession.createSession(workout)
 
-    private suspend fun findOrCreateLegacySession(workout: com.github.jibbo.norwegiantraining.data.Workout) =
+    private suspend fun findLegacySession(workout: com.github.jibbo.norwegiantraining.data.Workout) =
         sessionRepository.getNormalSessionForWorkoutInRange(workout.id, startOfToday(), endOfToday())
             ?: sessionRepository.getLegacyNormalSessionInRange(workout.name, workout.totalTime.toLong(), startOfToday(), endOfToday())
-            ?: getSession(workout)
 
     private fun startOfToday(): Date {
         return Calendar.getInstance().apply {

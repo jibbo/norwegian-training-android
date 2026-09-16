@@ -169,4 +169,8 @@
         <item quantity="one">%1$d fase saltata</item>
         <item quantity="other">%1$d fasi saltate</item>
     </plurals>
+    <plurals name="completed_phases">
+        <item quantity="one">%1$d fase completata</item>
+        <item quantity="other">%1$d fasi completate</item>
+    </plurals>
 </resources>

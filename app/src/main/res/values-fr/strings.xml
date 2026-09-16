@@ -149,6 +149,10 @@
     <string name="three">trois</string>
     <string name="two">deux</string>
     <string name="workout_kCal">🔥 %1$s kcal</string>
+    <plurals name="completed_phases">
+        <item quantity="one">%1$d phase terminée</item>
+        <item quantity="other">%1$d phases terminées</item>
+    </plurals>
     <plurals name="skipped_phases">
         <item quantity="one">%1$d phase ignorée</item>
         <item quantity="other">%1$d phases ignorées</item>
