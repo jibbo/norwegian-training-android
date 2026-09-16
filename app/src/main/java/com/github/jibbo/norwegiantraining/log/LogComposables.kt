@@ -76,11 +76,11 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.math.roundToInt
 
-internal fun Session.logName(): String = name.take(20) + if (name.length > 20) "…" else ""
+internal fun Session.logName(): String = name.take(15) + if (name.length > 15) "…" else ""
 
 internal fun Session.logDetails(): LogDetails? = when {
     isManual || workoutId == null -> null
-    getStatus() == SessionStatus.GOOD -> LogDetails.DurationAndCalories
+    getStatus() == SessionStatus.GOOD && duration > 0L -> LogDetails.DurationAndCalories
     else -> LogDetails.CompletedAndSkippedPhases
 }
 
