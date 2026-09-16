@@ -24,31 +24,31 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,7 +58,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.AnimatedToolbar
 import com.github.jibbo.norwegiantraining.components.localizable
@@ -68,17 +67,17 @@ import com.github.jibbo.norwegiantraining.domain.calculateTotalCalories
 import com.github.jibbo.norwegiantraining.domain.toManualWorkoutType
 import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.Gray
-import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import com.github.jibbo.norwegiantraining.ui.theme.Primary
+import com.github.jibbo.norwegiantraining.ui.theme.Red
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 import com.github.jibbo.norwegiantraining.ui.theme.White
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
-import kotlinx.coroutines.launch
-import kotlin.random.Random
 import kotlin.math.roundToInt
 
 internal fun Session.logName(): String = name.take(15) + if (name.length > 15) "…" else ""
@@ -110,16 +109,21 @@ internal fun Logs(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val today = remember { LocalDate.now() }
-    val todayDate = remember(today) { Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()) }
+    val todayDate =
+        remember(today) { Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()) }
     var selectedDay by remember { mutableStateOf<Date?>(null) }
     var sessionPendingDeletion by remember { mutableStateOf<Session?>(null) }
     var closeSheetAfterDeletion by remember { mutableStateOf(false) }
     var blockedSession by remember { mutableStateOf<Session?>(null) }
     var todayHighlightToken by remember { mutableIntStateOf(0) }
     Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(
-            top = innerPadding.calculateTopPadding(), bottom = innerPadding.calculateBottomPadding(),
-        ),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding(),
+            ),
     ) {
         AnimatedToolbar(
             R.string.title_activity_logs.localizable(), listState, null,
@@ -127,8 +131,8 @@ internal fun Logs(
                 IconButton(
                     onClick = {
                         val monthItemIndex = 1 +
-                            (if (todayStatsUiState is TodayStatsUiState.Stats) 1 else 0) +
-                            today.monthValue - 1
+                                (if (todayStatsUiState is TodayStatsUiState.Stats) 1 else 0) +
+                                today.monthValue - 1
                         coroutineScope.launch {
                             listState.animateScrollToItem(monthItemIndex)
                             selectedDay = todayDate
@@ -145,22 +149,38 @@ internal fun Logs(
             },
         )
         LazyColumn(state = listState, modifier = Modifier.fillMaxWidth()) {
-            item { TodayStatsArea(todayStatsUiState, onHideTodayStats, onRequestPermissions, onOpenHealthConnect) }
+            item {
+                TodayStatsArea(
+                    todayStatsUiState,
+                    onHideTodayStats,
+                    onRequestPermissions,
+                    onOpenHealthConnect
+                )
+            }
             if (todayStatsUiState is TodayStatsUiState.Stats) {
-                item { Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    StepsCard(todayStatsUiState.steps)
-                    DistanceCard(todayStatsUiState.steps)
-                } }
+                item {
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        StepsCard(todayStatsUiState.steps)
+                        DistanceCard(todayStatsUiState.steps)
+                    }
+                }
             }
             items(12) { month ->
-                Month(month, uiState, todayDate, todayHighlightToken, { todayHighlightToken = 0 }) { selectedDay = it }
+                Month(
+                    month,
+                    uiState,
+                    todayDate,
+                    todayHighlightToken,
+                    { todayHighlightToken = 0 }) { selectedDay = it }
             }
         }
     }
     selectedDay?.let { day ->
-        val sessionsForDay = uiState.logs.values.filterNotNull().flatten().filter { it.date.isSameDay(day) }
+        val sessionsForDay =
+            uiState.logs.values.filterNotNull().flatten().filter { it.date.isSameDay(day) }
         ModalBottomSheet(
-            onDismissRequest = { selectedDay = null }, modifier = Modifier.testTag("sessions_for_day_sheet"),
+            onDismissRequest = { selectedDay = null },
+            modifier = Modifier.testTag("sessions_for_day_sheet"),
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
                 Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
@@ -168,8 +188,11 @@ internal fun Logs(
                     IconButton(
                         onClick = {
                             selectedDay = null
-                            onOpenManualWorkout(day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-                        }, modifier = Modifier.testTag("add_manual_workout_for_day"),
+                            onOpenManualWorkout(
+                                day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                            )
+                        },
+                        modifier = Modifier.testTag("add_manual_workout_for_day"),
                     ) { Text("+", style = Typography.headlineSmall) }
                 }
                 Spacer(Modifier.height(16.dp))
@@ -190,8 +213,16 @@ internal fun Logs(
                 }
                 if (sessionsForDay.isNotEmpty()) {
                     HorizontalDivider(Modifier.padding(vertical = 8.dp))
-                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), Arrangement.SpaceBetween) {
-                        Text(R.string.calories_burned.localizable(), style = Typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            R.string.calories_burned.localizable(),
+                            style = Typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                        )
                         Text(
                             R.string.workout_kCal.localizable(
                                 calculateTotalCalories(
@@ -219,7 +250,11 @@ internal fun Logs(
                     }
                 }) { Text(R.string.delete.localizable()) }
             },
-            dismissButton = { TextButton(onClick = { sessionPendingDeletion = null }) { Text(R.string.cancel.localizable()) } },
+            dismissButton = {
+                TextButton(onClick = {
+                    sessionPendingDeletion = null
+                }) { Text(R.string.cancel.localizable()) }
+            },
         )
     }
     blockedSession?.let { session ->
@@ -227,7 +262,11 @@ internal fun Logs(
             onDismissRequest = { blockedSession = null },
             title = { Text(R.string.log_delete_active_title.localizable()) },
             text = { Text(R.string.log_delete_active_message.localizable()) },
-            confirmButton = { TextButton(onClick = { blockedSession = null }) { Text(R.string.ok.localizable()) } },
+            confirmButton = {
+                TextButton(onClick = {
+                    blockedSession = null
+                }) { Text(R.string.ok.localizable()) }
+            },
         )
     }
 }
@@ -246,7 +285,10 @@ private fun SessionLogRow(session: Session, onRequestDelete: () -> Unit) {
         enableDismissFromStartToEnd = false,
         backgroundContent = {
             Box(
-                Modifier.fillMaxSize().background(Primary).padding(horizontal = 16.dp),
+                Modifier
+                    .fillMaxSize()
+                    .background(Red)
+                    .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.CenterEnd,
             ) {
                 Icon(
@@ -257,27 +299,55 @@ private fun SessionLogRow(session: Session, onRequestDelete: () -> Unit) {
             }
         },
         content = {
-            Row(Modifier.fillMaxWidth().background(Black).padding(vertical = 8.dp), Arrangement.SpaceBetween) {
-                Text(if (session.workoutId != null) session.logName() else session.name, style = Typography.bodyLarge)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .background(color = BottomSheetDefaults.ContainerColor)
+                    .padding(vertical = 8.dp), Arrangement.SpaceBetween
+            ) {
+                Text(
+                    if (session.workoutId != null) session.logName() else session.name,
+                    style = Typography.bodyLarge
+                )
                 if (session.isManual) {
                     Text(
                         "${R.string.workout_time.localizable(session.duration.toString())} " +
-                            R.string.workout_kCal.localizable(
-                                calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
-                            ),
+                                R.string.workout_kCal.localizable(
+                                    calculateCalories(
+                                        session.activityType.toManualWorkoutType(),
+                                        session.duration
+                                    ).roundToInt()
+                                ),
                         style = Typography.bodyMedium,
                     )
                 } else if (session.workoutId != null) {
                     Text(
                         when (session.logDetails()) {
-                            LogDetails.DurationAndCalories -> "${R.string.workout_time.localizable(session.duration.toString())} "
+                            LogDetails.DurationAndCalories -> "${
+                                R.string.workout_time.localizable(
+                                    session.duration.toString()
+                                )
+                            } "
+
                             LogDetails.CompletedAndSkippedPhases ->
-                                pluralStringResource(R.plurals.completed_phases, session.phasesEnded, session.phasesEnded) + ", " +
-                                    pluralStringResource(R.plurals.skipped_phases, session.skipCount, session.skipCount)
+                                pluralStringResource(
+                                    R.plurals.completed_phases,
+                                    session.phasesEnded,
+                                    session.phasesEnded
+                                ) + ", " +
+                                        pluralStringResource(
+                                            R.plurals.skipped_phases,
+                                            session.skipCount,
+                                            session.skipCount
+                                        )
+
                             null -> ""
                         } + if (session.logDetails() == LogDetails.DurationAndCalories) {
                             R.string.workout_kCal.localizable(
-                                calculateCalories(session.activityType.toManualWorkoutType(), session.duration).roundToInt()
+                                calculateCalories(
+                                    session.activityType.toManualWorkoutType(),
+                                    session.duration
+                                ).roundToInt()
                             )
                         } else "",
                         style = Typography.bodyMedium,
@@ -289,45 +359,126 @@ private fun SessionLogRow(session: Session, onRequestDelete: () -> Unit) {
 }
 
 @Composable
-private fun TodayStatsArea(state: TodayStatsUiState, onHide: () -> Unit, onRequest: () -> Unit, onOpen: () -> Unit) {
+private fun TodayStatsArea(
+    state: TodayStatsUiState,
+    onHide: () -> Unit,
+    onRequest: () -> Unit,
+    onOpen: () -> Unit
+) {
     when (state) {
         TodayStatsUiState.Hidden -> Unit
-        TodayStatsUiState.Loading -> ElevatedCard(Modifier.fillMaxWidth(), colors = CardDefaults.elevatedCardColors(containerColor = Gray)) {
-            Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+        TodayStatsUiState.Loading -> ElevatedCard(
+            Modifier.fillMaxWidth(),
+            colors = CardDefaults.elevatedCardColors(containerColor = Gray)
+        ) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) { CircularProgressIndicator() }
         }
+
         is TodayStatsUiState.Stats -> CaloriesCard(state.steps)
-        TodayStatsUiState.InstallHealthConnect -> HealthConnectCard(R.string.health_connect_install_message.localizable(), onOpen, onHide, "today_stats_install_health_connect_card")
-        TodayStatsUiState.RequestHealthConnectPermissions -> HealthConnectCard(R.string.health_connect_permission_message.localizable(), onRequest, onHide, "today_stats_permissions_card")
+        TodayStatsUiState.InstallHealthConnect -> HealthConnectCard(
+            R.string.health_connect_install_message.localizable(),
+            onOpen,
+            onHide,
+            "today_stats_install_health_connect_card"
+        )
+
+        TodayStatsUiState.RequestHealthConnectPermissions -> HealthConnectCard(
+            R.string.health_connect_permission_message.localizable(),
+            onRequest,
+            onHide,
+            "today_stats_permissions_card"
+        )
     }
 }
 
 @Composable
-private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: () -> Unit, tag: String) {
-    ElevatedCard(Modifier.fillMaxWidth().padding(bottom = 16.dp).testTag(tag), colors = CardDefaults.elevatedCardColors(containerColor = Gray)) {
+private fun HealthConnectCard(
+    message: String,
+    onCardClick: () -> Unit,
+    onHide: () -> Unit,
+    tag: String
+) {
+    ElevatedCard(
+        Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .testTag(tag),
+        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
+    ) {
         Column(Modifier.padding(16.dp)) {
-            Text(R.string.health_connect_title.localizable(), style = Typography.headlineSmall, color = Primary)
-            Spacer(Modifier.height(12.dp)); Text(message, style = Typography.bodyMedium, color = White)
-            Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.End) {
-                androidx.compose.material3.TextButton(onClick = onHide) { Text(R.string.hide.localizable()) }
-                androidx.compose.material3.TextButton(onClick = onCardClick) { Text(R.string.ok.localizable()) }
+            Text(
+                R.string.health_connect_title.localizable(),
+                style = Typography.headlineSmall,
+                color = Primary
+            )
+            Spacer(Modifier.height(12.dp)); Text(
+            message,
+            style = Typography.bodyMedium,
+            color = White
+        )
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = onHide) { Text(R.string.hide.localizable()) }
+                TextButton(onClick = onCardClick) { Text(R.string.ok.localizable()) }
             }
         }
     }
 }
 
-@Composable private fun StepsCard(steps: Long?) { MetricCard(steps?.toString() ?: "0", R.string.steps_today.localizable(), "steps_card") }
-@Composable private fun DistanceCard(steps: Long?) { MetricCard("%.2f".format(steps?.times(0.70)?.div(1000) ?: 0.0), R.string.distance_today.localizable(), "distance_card") }
-@Composable private fun CaloriesCard(steps: Long?) { MetricCard("%.2f".format(steps?.times(0.044) ?: 0.0), R.string.calories_burned.localizable(), "calories_card") }
-@Composable private fun MetricCard(value: String, label: String, tag: String) {
-    ElevatedCard(Modifier.padding(bottom = 16.dp).testTag(tag), colors = CardDefaults.elevatedCardColors(containerColor = Gray)) {
+@Composable
+private fun StepsCard(steps: Long?) {
+    MetricCard(steps?.toString() ?: "0", R.string.steps_today.localizable(), "steps_card")
+}
+
+@Composable
+private fun DistanceCard(steps: Long?) {
+    MetricCard(
+        "%.2f".format(steps?.times(0.70)?.div(1000) ?: 0.0),
+        R.string.distance_today.localizable(),
+        "distance_card"
+    )
+}
+
+@Composable
+private fun CaloriesCard(steps: Long?) {
+    MetricCard(
+        "%.2f".format(steps?.times(0.044) ?: 0.0),
+        R.string.calories_burned.localizable(),
+        "calories_card"
+    )
+}
+
+@Composable
+private fun MetricCard(value: String, label: String, tag: String) {
+    ElevatedCard(
+        Modifier
+            .padding(bottom = 16.dp)
+            .testTag(tag),
+        colors = CardDefaults.elevatedCardColors(containerColor = Gray)
+    ) {
         Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
-            Text(value, style = Typography.headlineMedium, color = Primary, fontWeight = FontWeight.Bold)
+            Text(
+                value,
+                style = Typography.headlineMedium,
+                color = Primary,
+                fontWeight = FontWeight.Bold
+            )
             Text(label, style = Typography.headlineSmall, color = White)
         }
     }
 }
 
-@Composable private fun Month(
+@Composable
+private fun Month(
     month: Int,
     uiState: UiState.Loaded,
     today: Date,
@@ -339,16 +490,31 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
         set(Calendar.MONTH, month)
         set(Calendar.DAY_OF_MONTH, 1)
     }
-    Text(SimpleDateFormat("MMMM").format(calendar.time).capitalizeFirstLetter(), Modifier.padding(horizontal = 4.dp))
+    Text(
+        SimpleDateFormat("MMMM").format(calendar.time).capitalizeFirstLetter(),
+        Modifier.padding(horizontal = 4.dp)
+    )
     FlowRow(Modifier.padding(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         for (i in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-            Day(calendar, i, uiState, month, today, todayHighlightToken, onTodayBlinkFinished, onDayClick)
+            Day(
+                calendar,
+                i,
+                uiState,
+                month,
+                today,
+                todayHighlightToken,
+                onTodayBlinkFinished,
+                onDayClick
+            )
         }
     }
-    Spacer(Modifier.fillMaxWidth().height(32.dp))
+    Spacer(Modifier
+        .fillMaxWidth()
+        .height(32.dp))
 }
 
-@Composable private fun Day(
+@Composable
+private fun Day(
     calendar: Calendar,
     index: Int,
     uiState: UiState.Loaded,
@@ -358,7 +524,10 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
     onTodayBlinkFinished: () -> Unit,
     onDayClick: (Date) -> Unit,
 ) {
-    calendar.set(Calendar.DAY_OF_MONTH, index); calendar.set(Calendar.HOUR_OF_DAY, 0); calendar.set(Calendar.MINUTE, 0); calendar.set(Calendar.SECOND, 0); calendar.set(Calendar.MILLISECOND, 0)
+    calendar.set(Calendar.DAY_OF_MONTH, index); calendar.set(Calendar.HOUR_OF_DAY, 0); calendar.set(
+        Calendar.MINUTE,
+        0
+    ); calendar.set(Calendar.SECOND, 0); calendar.set(Calendar.MILLISECOND, 0)
     val date = calendar.time
     val item = uiState.logs[month].orEmpty()
         .filter { it.date.isSameDay(date) }
@@ -392,11 +561,21 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
     val backgroundColor = item?.getStatus()?.getColor() ?: if (isToday) White else null
     val textColor = if (isToday) Black else White
     if (backgroundColor == null) {
-        Text(index.toString(), color = textColor, textAlign = TextAlign.Center, modifier = modifier.fillMaxSize())
+        Text(
+            index.toString(),
+            color = textColor,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxSize()
+        )
     } else {
         Box(modifier.background(backgroundColor.copy(alpha = blinkAlpha.value))) {
             if (item == null) {
-                Text(index.toString(), textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize(), color = textColor)
+                Text(
+                    index.toString(),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxSize(),
+                    color = textColor
+                )
             }
         }
     }
@@ -405,13 +584,25 @@ private fun HealthConnectCard(message: String, onCardClick: () -> Unit, onHide: 
 private fun Date.isSameDay(other: Date): Boolean {
     val first = Calendar.getInstance().apply { time = this@isSameDay }
     val second = Calendar.getInstance().apply { time = other }
-    return first.get(Calendar.YEAR) == second.get(Calendar.YEAR) && first.get(Calendar.DAY_OF_YEAR) == second.get(Calendar.DAY_OF_YEAR)
+    return first.get(Calendar.YEAR) == second.get(Calendar.YEAR) && first.get(Calendar.DAY_OF_YEAR) == second.get(
+        Calendar.DAY_OF_YEAR
+    )
 }
 
-private fun String.capitalizeFirstLetter() = if (isNotEmpty()) this[0].uppercase() + substring(1) else this
+private fun String.capitalizeFirstLetter() =
+    if (isNotEmpty()) this[0].uppercase() + substring(1) else this
 
 @Composable
 @androidx.compose.ui.tooling.preview.Preview
 private fun Preview() {
-    NorwegianTrainingTheme { Logs(PaddingValues(), UiState.Loaded(emptyMap()), TodayStatsUiState.Hidden, {}, {}, {}, {}) }
+    NorwegianTrainingTheme {
+        Logs(
+            PaddingValues(),
+            UiState.Loaded(emptyMap()),
+            TodayStatsUiState.Hidden,
+            {},
+            {},
+            {},
+            {})
+    }
 }
