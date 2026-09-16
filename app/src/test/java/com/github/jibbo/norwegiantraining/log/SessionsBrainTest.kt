@@ -23,7 +23,7 @@ class SessionsBrainTest {
     }
 
     @Test
-    fun identifiedSessionsShowSkippedPhasesForAlmostAndBadIncludingZero() {
+    fun identifiedSessionsShowSkippedPhasesForAlmostAndBad() {
         assertEquals(
             LogDetails.CompletedAndSkippedPhases,
             Session(workoutId = 1L, phasesEnded = 0, skipCount = 0).logDetails(),
@@ -31,6 +31,22 @@ class SessionsBrainTest {
         assertEquals(
             LogDetails.CompletedAndSkippedPhases,
             Session(workoutId = 1L, phasesEnded = 1, skipCount = 4).logDetails(),
+        )
+    }
+
+    @Test
+    fun goodSessionWithoutDurationShowsCompletedAndSkippedPhases() {
+        assertEquals(
+            LogDetails.CompletedAndSkippedPhases,
+            Session(workoutId = 1L, phasesEnded = 5, duration = 0L).logDetails(),
+        )
+    }
+
+    @Test
+    fun goodSessionWithPositiveDurationShowsDurationAndCalories() {
+        assertEquals(
+            LogDetails.DurationAndCalories,
+            Session(workoutId = 1L, phasesEnded = 5, duration = 30L).logDetails(),
         )
     }
 

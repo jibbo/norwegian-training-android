@@ -197,7 +197,11 @@ internal fun Logs(
                     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), Arrangement.SpaceBetween) {
                         Text(R.string.calories_burned.localizable(), style = Typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
                         Text(
-                            R.string.workout_kCal.localizable(calculateTotalCalories(sessionsForDay).roundToInt()),
+                            R.string.workout_kCal.localizable(
+                                calculateTotalCalories(
+                                    sessionsForDay.filter { it.isManual || it.getStatus() == SessionStatus.GOOD },
+                                ).roundToInt(),
+                            ),
                             style = Typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                         )
                     }
