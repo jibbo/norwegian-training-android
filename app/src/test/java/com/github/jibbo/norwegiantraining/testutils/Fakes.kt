@@ -194,6 +194,9 @@ class FakeSessionRepository : SessionRepository {
 
     override suspend fun getTodaySession(): Session? = todaySession.value
     override suspend fun getSession(id: Long): Session? = sessions.firstOrNull { it.id == id }
+    override suspend fun deleteSession(id: Long) {
+        sessions.removeIf { it.id == id }
+    }
 
     override suspend fun getNormalSessionForWorkoutInRange(workoutId: Long, from: Date, to: Date): Session? =
         sessions.filter { it.id != 0L && !it.isManual && it.workoutId == workoutId && it.date >= from && it.date <= to }

@@ -37,6 +37,9 @@ interface SessionDao {
     @Query("SELECT * FROM session WHERE id = :id")
     suspend fun getById(id: Long): Session?
 
+    @Query("DELETE FROM session WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
     @Query("SELECT * FROM session WHERE workout_id = :workoutId AND is_manual = 0 AND date BETWEEN :from AND :to ORDER BY date DESC LIMIT 1")
     suspend fun getNormalForWorkoutInRange(workoutId: Long, from: Long, to: Long): Session?
 

@@ -119,6 +119,10 @@
     <string name="language_italian">Italiano</string>
     <string name="language_chinese">中文</string>
     <string name="cancel">Annuler</string>
+    <string name="log_delete_title">Supprimer la séance ?</string>
+    <string name="log_delete_message">Cette séance sera définitivement supprimée.</string>
+    <string name="log_delete_active_title">Entraînement en cours</string>
+    <string name="log_delete_active_message">La séance actuelle ne peut pas être supprimée. Terminez ou fermez d’abord l’entraînement.</string>
     <string name="custom_workout_active_message">Terminez ou fermez l’entraînement actif avant d’enregistrer ou de supprimer un entraînement personnalisé.</string>
     <string name="custom_workout_active_title">Entraînement en cours</string>
     <string name="custom_workout_create_title">Créer un entraînement personnalisé</string>

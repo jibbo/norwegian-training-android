@@ -94,7 +94,9 @@ class LogActivity : BaseActivity() {
                                     todayStatsUiState.value = TodayStatsUiState.Hidden
                                 },
                                 onRequestPermissions = { healthPermissionsLauncher.launch(requiredHealthPermissions()) },
-                                onOpenHealthConnect = { openHealthConnectStore() }
+                                onOpenHealthConnect = { openHealthConnectStore() },
+                                activeSessionId = viewModel.activeSessionId.collectAsState().value,
+                                onDeleteSession = { session, onSuccess -> viewModel.deleteSession(session, onSuccess) },
                             )
                         }
                     }

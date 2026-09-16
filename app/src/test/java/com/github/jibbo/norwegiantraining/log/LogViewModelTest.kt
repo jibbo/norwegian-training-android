@@ -3,6 +3,7 @@ package com.github.jibbo.norwegiantraining.log
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.testutils.FakeSessionRepository
 import com.github.jibbo.norwegiantraining.testutils.MainDispatcherRule
+import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo.FakeWorkoutTimerManager
 import java.util.Date
 import java.util.Calendar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,7 +28,7 @@ class LogViewModelTest {
             )
         )
 
-        val viewModel = LogViewModel(repo)
+        val viewModel = LogViewModel(repo, FakeWorkoutTimerManager())
         advanceUntilIdle()
 
         val loaded = viewModel.uiState.value as UiState.Loaded
@@ -49,7 +50,7 @@ class LogViewModelTest {
         val oldSeptember = Session(id = 1, date = september)
         val octoberSession = Session(id = 2, date = october)
         repo.insertSessions(listOf(oldSeptember, octoberSession))
-        val viewModel = LogViewModel(repo)
+        val viewModel = LogViewModel(repo, FakeWorkoutTimerManager())
         advanceUntilIdle()
 
         val replacement = Session(id = 3, date = september)
@@ -64,5 +65,38 @@ class LogViewModelTest {
         val (from, to) = repo.rangeQueries.single()
         assertEquals(1, Calendar.getInstance().apply { time = from }.get(Calendar.DAY_OF_MONTH))
         assertEquals(30, Calendar.getInstance().apply { time = to }.get(Calendar.DAY_OF_MONTH))
+    }
+
+    @Test
+    fun deleteSessionRemovesItAndRefreshesItsMonth() = runTest {
+        val repo = FakeSessionRepository()
+        val session = Session(id = 7, date = Date())
+        repo.insertSessions(listOf(session))
+        val viewModel = LogViewModel(repo, FakeWorkoutTimerManager())
+        advanceUntilIdle()
+
+        viewModel.deleteSession(session)
+        advanceUntilIdle()
+
+        assertEquals(null, repo.getSession(session.id))
+        assertEquals(emptyList<Session>(), (viewModel.uiState.value as UiState.Loaded).logs[Calendar.getInstance().get(Calendar.MONTH)])
+    }
+
+    @Test
+    fun deleteSessionIsBlockedForActiveSession() = runTest {
+        val repo = FakeSessionRepository()
+        val session = Session(id = 7, date = Date())
+        repo.insertSessions(listOf(session))
+        val viewModel = LogViewModel(
+            repo,
+            FakeWorkoutTimerManager(timerState = com.github.jibbo.norwegiantraining.service.WorkoutTimerState(sessionId = session.id)),
+        )
+        advanceUntilIdle()
+
+        viewModel.deleteSession(session)
+        advanceUntilIdle()
+
+        assertEquals(session, repo.getSession(session.id))
+        assertEquals(true, viewModel.deleteBlocked.value)
     }
 }
