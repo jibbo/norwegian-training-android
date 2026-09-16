@@ -68,6 +68,7 @@ import com.github.jibbo.norwegiantraining.data.FakeSessionRepo
 import com.github.jibbo.norwegiantraining.data.FakeSettingsRepository
 import com.github.jibbo.norwegiantraining.data.FakeTracker
 import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo
+import com.github.jibbo.norwegiantraining.data.FakeWorkoutRepo.FakeWorkoutTimerManager
 import com.github.jibbo.norwegiantraining.data.Session
 import com.github.jibbo.norwegiantraining.data.Workout
 import com.github.jibbo.norwegiantraining.domain.GetAllWorkouts
@@ -294,6 +295,8 @@ private fun PortraitLayout(
         }
         is UiState.Loaded -> {
             val projection = state.workoutProjection
+            val timerState by viewModel.timerState.collectAsState()
+            val isEditingEnabled = timerState.workoutId == -1L || timerState.isCompleted
 
             Column(
                 modifier = Modifier
@@ -346,7 +349,7 @@ private fun PortraitLayout(
                     }
 
                     items(projection.yourWorkouts.size, { projection.yourWorkouts[it].id }) { index ->
-                        WorkoutCard(projection.yourWorkouts[index], viewModel)
+                        WorkoutCard(projection.yourWorkouts[index], viewModel, isEditingEnabled)
                     }
 
                     // All built-in workouts section spanning full width
@@ -360,7 +363,7 @@ private fun PortraitLayout(
                     }
 
                     items(projection.remainingBuiltIns.size, { projection.remainingBuiltIns[it].id }) { index ->
-                        WorkoutCard(projection.remainingBuiltIns[index], viewModel)
+                        WorkoutCard(projection.remainingBuiltIns[index], viewModel, isEditingEnabled)
                     }
                 }
             }
@@ -414,6 +417,8 @@ private fun NextUpWorkout(viewModel: HomeViewModel) {
         is UiState.Loading -> CircularProgressIndicator(modifier = Modifier.padding(12.dp))
         is UiState.Loaded -> {
             val projection = state.workoutProjection
+            val timerState by viewModel.timerState.collectAsState()
+            val isEditingEnabled = timerState.workoutId == -1L || timerState.isCompleted
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -438,7 +443,7 @@ private fun NextUpWorkout(viewModel: HomeViewModel) {
                     )
                 }
                 projection.yourWorkouts.forEach { workout ->
-                    WorkoutCard(workout, viewModel)
+                    WorkoutCard(workout, viewModel, isEditingEnabled)
                 }
             }
         }
@@ -454,6 +459,8 @@ private fun AllWorkouts(viewModel: HomeViewModel) {
 
         is UiState.Loaded -> {
             val builtInWorkouts = state.workoutProjection.remainingBuiltIns
+            val timerState by viewModel.timerState.collectAsState()
+            val isEditingEnabled = timerState.workoutId == -1L || timerState.isCompleted
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -468,7 +475,7 @@ private fun AllWorkouts(viewModel: HomeViewModel) {
                     )
                 }
                 items(builtInWorkouts.size, { builtInWorkouts[it].id }) { index ->
-                    WorkoutCard(builtInWorkouts[index], viewModel)
+                    WorkoutCard(builtInWorkouts[index], viewModel, isEditingEnabled)
                 }
             }
         }
@@ -604,6 +611,8 @@ internal fun Workouts(viewModel: HomeViewModel) {
 
         is UiState.Loaded -> {
             val projection = state.workoutProjection
+            val timerState by viewModel.timerState.collectAsState()
+            val isEditingEnabled = timerState.workoutId == -1L || timerState.isCompleted
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -627,7 +636,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
                     )
                 }
                 projection.yourWorkouts.forEach { workout ->
-                    WorkoutCard(workout, viewModel)
+                    WorkoutCard(workout, viewModel, isEditingEnabled)
                 }
                 Text(
                     text = R.string.home_all_workouts.localizable(),
@@ -641,7 +650,7 @@ internal fun Workouts(viewModel: HomeViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(projection.remainingBuiltIns.size, { projection.remainingBuiltIns[it].id }) { index ->
-                        WorkoutCard(projection.remainingBuiltIns[index], viewModel)
+                        WorkoutCard(projection.remainingBuiltIns[index], viewModel, isEditingEnabled)
                     }
                 }
             }
@@ -654,12 +663,17 @@ internal fun Workouts(viewModel: HomeViewModel) {
 private fun WorkoutCard(
     workout: Workout,
     viewModel: HomeViewModel,
+    isEditingEnabled: Boolean,
 ) {
     val cardShape = RoundedCornerShape(12.dp)
     val editLabel = stringResource(R.string.home_edit_workout)
     val interactionModifier = Modifier.combinedClickable(
         onClick = { viewModel.workoutClicked(workout.id) },
-        onLongClick = { viewModel.editWorkoutClicked(workout.id) },
+        onLongClick = if (isEditingEnabled) {
+            { viewModel.editWorkoutClicked(workout.id) }
+        } else {
+            null
+        },
         onLongClickLabel = editLabel,
     )
     ElevatedCard(
@@ -715,7 +729,8 @@ fun HomeViewPreview() {
                     IsOnboardingCompleted(settingsRepository),
                     GetRecommendedWorkoutId(settingsRepository),
                     getWeeklySessions,
-                    analytics
+                    analytics,
+                    FakeWorkoutTimerManager(),
                 ),
                 innerPadding
             )
