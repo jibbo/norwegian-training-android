@@ -25,8 +25,8 @@ android {
         applicationId = "com.github.jibbo.norwegiantraining"
         minSdk = 24
         targetSdk = 37
-        versionCode = 28
-        versionName = "4.0.3"
+        versionCode = 29
+        versionName = "4.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
