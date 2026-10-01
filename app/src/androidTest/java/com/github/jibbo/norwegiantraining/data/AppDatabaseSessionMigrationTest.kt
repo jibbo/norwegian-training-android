@@ -45,6 +45,28 @@ class AppDatabaseSessionMigrationTest {
         assertEquals(null, session.workoutId)
     }
 
+    @Test
+    fun migratesMalformedVersionFiveSessionMissingMetadata() {
+        val name = "session_migration_${System.nanoTime()}"
+        databaseName = name
+        createMalformedVersionFiveDatabase(name)
+
+        database = Room.databaseBuilder(context, AppDatabase::class.java, name)
+            .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
+            .build()
+
+        val session = runBlocking { database!!.recordDao().getAll().single() }
+
+        assertEquals(8, session.phasesEnded)
+        assertEquals(3, session.skipCount)
+        assertEquals(5678L, session.date.time)
+        assertFalse(session.isManual)
+        assertEquals("HIIT", session.name)
+        assertEquals(0L, session.duration)
+        assertEquals("CYCLING", session.activityType)
+        assertEquals(null, session.workoutId)
+    }
+
     private fun createVersionThreeDatabase(name: String) {
         val file = context.getDatabasePath(name)
         file.parentFile?.mkdirs()
@@ -77,6 +99,40 @@ class AppDatabaseSessionMigrationTest {
             "INSERT INTO Session (id, phases_ended, skip_count, date) VALUES (7, 7, 2, 1234)",
         )
         sqlite.execSQL("PRAGMA user_version = 3")
+        sqlite.close()
+    }
+
+    private fun createMalformedVersionFiveDatabase(name: String) {
+        val file = context.getDatabasePath(name)
+        file.parentFile?.mkdirs()
+        val sqlite = SQLiteDatabase.openOrCreateDatabase(file, null)
+        sqlite.execSQL(
+            "CREATE TABLE Session (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "phases_ended INTEGER NOT NULL, " +
+                "skip_count INTEGER NOT NULL, " +
+                "date INTEGER NOT NULL, " +
+                "activity_type INTEGER NOT NULL DEFAULT 5)",
+        )
+        sqlite.execSQL(
+            "CREATE TABLE Workout (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "name TEXT NOT NULL, " +
+                "difficulty INTEGER NOT NULL, " +
+                "content TEXT NOT NULL, " +
+                "isCustom INTEGER NOT NULL)",
+        )
+        sqlite.execSQL(
+            "CREATE TABLE room_master_table (" +
+                "id INTEGER PRIMARY KEY, identity_hash TEXT)",
+        )
+        sqlite.execSQL(
+            "INSERT INTO room_master_table (id, identity_hash) VALUES (42, '0956b11837db13f3e1016b66ed5cc0a8')",
+        )
+        sqlite.execSQL(
+            "INSERT INTO Session (id, phases_ended, skip_count, date, activity_type) VALUES (8, 8, 3, 5678, 2)",
+        )
+        sqlite.execSQL("PRAGMA user_version = 5")
         sqlite.close()
     }
 }

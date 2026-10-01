@@ -162,6 +162,30 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
 
 val MIGRATION_5_6 = object : Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
+        val hasIsManual = db.hasColumn("Session", "is_manual")
+        val hasName = db.hasColumn("Session", "name")
+        val hasDuration = db.hasColumn("Session", "duration")
+        val hasActivityType = db.hasColumn("Session", "activity_type")
+
+        val isManualExpression = if (hasIsManual) "is_manual" else "0"
+        val nameExpression = if (hasName) "name" else "'HIIT'"
+        val durationExpression = if (hasDuration) "duration" else "0"
+        val activityTypeExpression = if (hasActivityType) {
+            """
+                CASE activity_type
+                    WHEN 0 THEN 'RUN'
+                    WHEN 1 THEN 'STRENGTH_TRAINING'
+                    WHEN 2 THEN 'CYCLING'
+                    WHEN 3 THEN 'SWIMMING'
+                    WHEN 4 THEN 'WALKING'
+                    WHEN 5 THEN 'HIIT'
+                    ELSE 'HIIT'
+                END
+            """.trimIndent()
+        } else {
+            "'HIIT'"
+        }
+
         db.execSQL(
             """
             CREATE TABLE Session_new (
@@ -182,21 +206,26 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
                 id, phases_ended, skip_count, date, is_manual, name, duration, activity_type
             )
             SELECT
-                id, phases_ended, skip_count, date, is_manual, name, duration,
-                CASE activity_type
-                    WHEN 0 THEN 'RUN'
-                    WHEN 1 THEN 'STRENGTH_TRAINING'
-                    WHEN 2 THEN 'CYCLING'
-                    WHEN 3 THEN 'SWIMMING'
-                    WHEN 4 THEN 'WALKING'
-                    WHEN 5 THEN 'HIIT'
-                    ELSE 'HIIT'
-                END
+                id, phases_ended, skip_count, date, $isManualExpression, $nameExpression, $durationExpression,
+                $activityTypeExpression
             FROM Session
             """.trimIndent(),
         )
         db.execSQL("DROP TABLE Session")
         db.execSQL("ALTER TABLE Session_new RENAME TO Session")
+    }
+}
+
+private fun SupportSQLiteDatabase.hasColumn(tableName: String, columnName: String): Boolean {
+    val cursor = query("PRAGMA table_info(`$tableName`)")
+    return try {
+        val nameIndex = cursor.getColumnIndex("name")
+        while (cursor.moveToNext()) {
+            if (cursor.getString(nameIndex) == columnName) return true
+        }
+        false
+    } finally {
+        cursor.close()
     }
 }
 
@@ -218,7 +247,8 @@ class DatabaseModule {
         context,
         AppDatabase::class.java,
         "norwegiantrainingdb"
-    ).addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7).addCallback(callback).build()
+    ).addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+        .addCallback(callback).fallbackToDestructiveMigration(true).build()
 
     @Provides
     fun provideRecordDao(database: AppDatabase) = database.recordDao()
