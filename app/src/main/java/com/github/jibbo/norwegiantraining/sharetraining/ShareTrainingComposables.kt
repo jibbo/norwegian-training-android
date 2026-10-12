@@ -22,7 +22,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -95,27 +97,30 @@ fun ShareTrainingView(
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
             modifier = Modifier.fillMaxWidth().imePadding()
         ) {
-            OutlinedButton (onClick = onPickGallery) {
+            OutlinedIconButton(
+                onClick = onPickGallery,
+                modifier = Modifier.size(48.dp)
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.outline_photo_library_24),
                     contentDescription = R.string.gallery.localizable(),
                 )
             }
-            OutlinedButton (
+            OutlinedIconButton (
                 onClick = onShare,
                 enabled = state.canShare,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Primary,
-                    contentColor = Black,
-                ),
-                modifier = Modifier.padding(8.dp)
+                colors = IconButtonDefaults.iconButtonColors(),
+                modifier = Modifier.size(48.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.outline_ios_share_24),
                     contentDescription = R.string.share.localizable(),
                 )
             }
-            OutlinedButton ( onClick = onTakePhoto) {
+            OutlinedIconButton (
+                onClick = onTakePhoto,
+                modifier = Modifier.size(48.dp)
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.outline_camera_24),
                     contentDescription = R.string.camera.localizable(),
