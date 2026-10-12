@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.sharetraining
 
 import androidx.lifecycle.ViewModel
+import com.github.jibbo.norwegiantraining.components.removeEmoji
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +38,7 @@ class ShareTrainingViewModel @Inject constructor() : ViewModel() {
     ) {
         if (states.value.workoutName.isNotBlank()) return
         states.value = states.value.copy(
-            workoutName = workoutName.orEmpty(),
+            workoutName = workoutName.orEmpty().removeEmoji().replaceFirst(" ", ""),
             completedAtMillis = completedAtMillis.takeIf { it > 0L } ?: System.currentTimeMillis(),
             totalPhases = totalPhases.coerceAtLeast(0),
             workoutDurationMinutes = workoutDurationMinutes.coerceAtLeast(0),

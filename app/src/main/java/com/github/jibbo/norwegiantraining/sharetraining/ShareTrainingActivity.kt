@@ -80,7 +80,7 @@ class ShareTrainingActivity : BaseActivity() {
                     state = state,
                     text = ShareTrainingText(
                         brand = getString(R.string.app_name),
-                        fallbackWorkoutName = getString(R.string.workout_complete).removeEmoji().replaceFirst(" ", ""),
+                        fallbackWorkoutName = getString(R.string.workout_complete),
                         completedPhases = resources.getQuantityString(
                             R.plurals.training_phases_completed,
                             state.totalPhases,
