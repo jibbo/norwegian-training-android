@@ -25,6 +25,7 @@ import com.github.jibbo.norwegiantraining.main.MainViewModel.UiCommands
 import com.github.jibbo.norwegiantraining.service.WorkoutServiceBinder
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerAndroidService
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerService
+import com.github.jibbo.norwegiantraining.sharetraining.ShareTrainingActivity
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -150,12 +151,23 @@ class MainActivity : BaseActivity() {
                     is UiCommands.LevelUp -> navigateTo(LevelUpActivity::class.java) {
                         putExtra(LevelUpActivity.EXTRA_NEW_LEVEL, command.newLevel.name)
                     }
+                    is UiCommands.ShareTraining -> showShareTraining(command)
                 }
             }
         }
     }
 
     private fun closeToHome() {
+        finish()
+    }
+
+    private fun showShareTraining(command: UiCommands.ShareTraining) {
+        startActivity(Intent(this, ShareTrainingActivity::class.java).apply {
+            putExtra(ShareTrainingActivity.EXTRA_WORKOUT_NAME, command.workoutName)
+            putExtra(ShareTrainingActivity.EXTRA_COMPLETED_AT_MILLIS, command.completedAtMillis)
+            putExtra(ShareTrainingActivity.EXTRA_TOTAL_PHASES, command.totalPhases)
+            putExtra(ShareTrainingActivity.EXTRA_WORKOUT_DURATION_MINUTES, command.workoutDurationMinutes)
+        })
         finish()
     }
 

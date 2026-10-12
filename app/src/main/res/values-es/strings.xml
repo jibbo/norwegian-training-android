@@ -201,4 +201,15 @@
         <item quantity="one">%1$d fase omitida</item>
         <item quantity="other">%1$d fases omitidas</item>
     </plurals>
+    <string name="done">Listo</string>
+    <string name="gallery">Galería</string>
+    <string name="camera">Cámara</string>
+    <string name="share_training_title">Felicidades!</string>
+    <string name="share_training_subtitle">¡Comparte este logro con alguien que te importa!</string>
+    <string name="workout_complete">Entrenamiento completado</string>
+    <plurals name="training_phases_completed">
+        <item quantity="one">%1$d fase de entrenamiento completada</item>
+        <item quantity="other">%1$d fases de entrenamiento completadas</item>
+    </plurals>
+    <string name="no_share_app_found">No se encontró ninguna app para compartir.</string>
 </resources>

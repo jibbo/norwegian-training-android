@@ -43,6 +43,10 @@
             android:exported="false"
             android:theme="@style/Theme.NorwegianTraining" />
         <activity
+            android:name=".sharetraining.ShareTrainingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.NorwegianTraining" />
+        <activity
             android:name=".onboarding.OnboardingActivity"
             android:exported="false"
             android:theme="@style/Theme.NorwegianTraining"
@@ -97,6 +101,16 @@
         <receiver
             android:name=".alarm.AlarmReceiver"
             android:exported="true" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/share_file_paths" />
+        </provider>
 
         <!--
        For supported versions through Android 13, create an activity to show the rationale

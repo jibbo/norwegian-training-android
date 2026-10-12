@@ -20,7 +20,7 @@ data class ManualWorkoutDraft(
     val type: ManualWorkoutType? = null,
     val date: LocalDate = LocalDate.now(),
     val hours: String = "01",
-    val minutes: String = "30",
+    val minutes: String = "00",
 )
 
 enum class ManualWorkoutField {

@@ -25,6 +25,7 @@ data class WorkoutTimerState(
     val workoutId: Long = -1L,
     val sessionId: Long? = null,
     val workoutName: String = "",
+    val workoutDurationMinutes: Int = 0,
     val currentPhaseIndex: Int = 0,
     val totalPhases: Int = 0,
     val currentPhase: Phase = Phase(PhaseName.GET_READY, 0L),
@@ -45,6 +46,7 @@ class TimerStatePersistence @Inject constructor(
         val WORKOUT_ID = longPreferencesKey("workout_id")
         val SESSION_ID = longPreferencesKey("session_id")
         val WORKOUT_NAME = stringPreferencesKey("workout_name")
+        val WORKOUT_DURATION_MINUTES = intPreferencesKey("workout_duration_minutes")
         val CURRENT_PHASE_INDEX = intPreferencesKey("current_phase_index")
         val CURRENT_PHASE_NAME = stringPreferencesKey("current_phase_name")
         val CURRENT_PHASE_DURATION = longPreferencesKey("current_phase_duration")
@@ -61,6 +63,7 @@ class TimerStatePersistence @Inject constructor(
             if (state.sessionId == null) preferences.remove(Keys.SESSION_ID)
             else preferences[Keys.SESSION_ID] = state.sessionId
             preferences[Keys.WORKOUT_NAME] = state.workoutName
+            preferences[Keys.WORKOUT_DURATION_MINUTES] = state.workoutDurationMinutes
             preferences[Keys.CURRENT_PHASE_INDEX] = state.currentPhaseIndex
             preferences[Keys.CURRENT_PHASE_NAME] = state.currentPhase.name.name
             preferences[Keys.CURRENT_PHASE_DURATION] = state.currentPhase.durationMillis
@@ -89,6 +92,7 @@ class TimerStatePersistence @Inject constructor(
             workoutId = workoutId,
             sessionId = preferences[Keys.SESSION_ID],
             workoutName = preferences[Keys.WORKOUT_NAME] ?: "",
+            workoutDurationMinutes = preferences[Keys.WORKOUT_DURATION_MINUTES] ?: 0,
             currentPhaseIndex = preferences[Keys.CURRENT_PHASE_INDEX] ?: 0,
             currentPhase = Phase(phaseName, phaseDuration),
             targetTimeMillis = preferences[Keys.TARGET_TIME_MILLIS] ?: 0L,

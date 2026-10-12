@@ -10,3 +10,5 @@ import java.util.Locale
 
 @Composable
 fun Int.localizable(vararg args: Any): String = stringResource(this, *args)
+
+fun String.removeEmoji(): String = this.replace(Regex("\\p{So}"), "")

@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
@@ -225,8 +226,9 @@ internal fun ManualWorkoutScreen(
                         R.string.manual_workout_save.localizable().toUpperCase(Locale.current)
                     Text(
                         text = text,
-                        style = Typography.titleLarge,
-                        modifier = Modifier.padding(16.dp)
+                        style = Typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(6.dp)
                     )
                 }
             }

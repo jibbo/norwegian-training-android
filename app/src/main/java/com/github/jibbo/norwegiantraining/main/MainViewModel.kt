@@ -19,6 +19,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor() : ViewModel() {
 
     private var serviceBinder: WorkoutTimerService? = null
+    private var shareLaunchInProgress = false
 
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
     val uiEvents = events.asSharedFlow()
@@ -54,12 +55,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
             currentPhaseIndex = userFacingCurrentPhaseIndex,
             totalPhases = userFacingTotalPhases,
             workoutName = serviceState.workoutName,
+            workoutDurationMinutes = serviceState.workoutDurationMinutes,
             showConfetti = serviceState.isCompleted && !currentState.showConfetti,
             isServiceBound = currentState.isServiceBound,
             progressionResult = serviceState.progressionResult,
             showCloseWorkoutConfirmation = currentState.showCloseWorkoutConfirmation &&
                 (serviceState.isTimerRunning || serviceState.remainingTimeOnPauseMillis > 0)
         )
+
     }
 
     fun onMainButtonClicked(){
@@ -110,6 +113,21 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun shareClicked() {
+        if (!states.value.isCompleted || shareLaunchInProgress) return
+        shareLaunchInProgress = true
+        val command = UiCommands.ShareTraining(
+            workoutName = states.value.workoutName,
+            completedAtMillis = System.currentTimeMillis(),
+            totalPhases = states.value.totalPhases,
+            workoutDurationMinutes = states.value.workoutDurationMinutes,
+        )
+        viewModelScope.launch {
+            serviceBinder?.closeWorkout()
+            events.emit(command)
+        }
+    }
+
     fun requestCloseWorkout() {
         if (states.value.isTimerRunning || states.value.remainingTimeOnPauseMillis > 0) {
             states.value = states.value.copy(showCloseWorkoutConfirmation = true)
@@ -143,5 +161,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
     sealed class UiCommands {
         object CLOSE : UiCommands()
         data class LevelUp(val newLevel: FitnessLevel) : UiCommands()
+        data class ShareTraining(
+            val workoutName: String,
+            val completedAtMillis: Long,
+            val totalPhases: Int,
+            val workoutDurationMinutes: Int,
+        ) : UiCommands()
     }
 }

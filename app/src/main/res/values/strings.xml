@@ -12,6 +12,9 @@
     <string name="share">Share</string>
     <string name="buy">BUY</string>
     <string name="ok">OK</string>
+    <string name="done">Done</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
 
 
     <!-- Timer states -->
@@ -31,6 +34,16 @@
     <string name="stop_workout_confirmation_message">The timer is still running. Do you want to stop this workout?</string>
     <string name="stop_workout">Stop workout</string>
     <string name="keep_training">Keep training</string>
+
+    <!-- Share training -->
+    <string name="share_training_title">Congratulations!</string>
+    <string name="share_training_subtitle">Share this accomplishment with someone you care about!</string>
+    <string name="workout_complete">Workout complete</string>
+    <plurals name="training_phases_completed">
+        <item quantity="one">%1$d training phase completed</item>
+        <item quantity="other">%1$d training phases completed</item>
+    </plurals>
+    <string name="no_share_app_found">No app found for sharing.</string>
 
     <!-- Exercise descriptions -->
     <string name="get_ready_desc">Start with a warmup</string>
