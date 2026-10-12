@@ -229,7 +229,6 @@ private fun ShareTrainingPreview(state: ShareTrainingUiState, modifier: Modifier
         Box(
             Modifier
                 .fillMaxSize()
-                .padding(16.dp)
                 .background(
                     Brush.verticalGradient(
                         listOf(
@@ -237,6 +236,8 @@ private fun ShareTrainingPreview(state: ShareTrainingUiState, modifier: Modifier
                             Color.Black.copy(alpha = 0.88f)
                         )
                     )
+                    ,
+                    RoundedCornerShape(28.dp)
                 )
         )
         Column(
