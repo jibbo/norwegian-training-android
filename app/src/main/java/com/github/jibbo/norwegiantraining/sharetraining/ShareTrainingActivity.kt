@@ -7,8 +7,11 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.R
@@ -44,14 +47,18 @@ class ShareTrainingActivity : BaseActivity() {
         )
         setContent {
             val state by viewModel.uiStates.collectAsState()
-            NorwegianTrainingTheme(darkTheme = false) {
-                ShareTrainingView(
-                    state = state,
-                    onPickGallery = { pickImage.launch("image/*") },
-                    onTakePhoto = { launchCamera() },
-                    onShare = { share(state) },
-                    onDone = { finish() }
-                )
+            NorwegianTrainingTheme(darkTheme = true) {
+                Scaffold( modifier = Modifier
+                    .fillMaxSize()) { _ ->
+                    ShareTrainingView(
+                        state = state,
+                        onPickGallery = { pickImage.launch("image/*") },
+                        onTakePhoto = { launchCamera() },
+                        onShare = { share(state) },
+                        onDone = { finish() }
+                    )
+                }
+
             }
         }
     }

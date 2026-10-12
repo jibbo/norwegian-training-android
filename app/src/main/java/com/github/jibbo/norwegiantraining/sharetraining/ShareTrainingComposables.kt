@@ -10,16 +10,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,11 +37,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.ui.theme.Black
+import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
+import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
+import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 
 @Composable
@@ -49,45 +59,78 @@ fun ShareTrainingView(
     onDone: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
+        Modifier
             .fillMaxSize()
             .safeDrawingPadding()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
-        Text(R.string.share_training_title.localizable(), style = Typography.headlineLarge)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                R.string.share_training_title.localizable(),
+                style = Typography.headlineLarge,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = onDone) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_close_24),
+                    contentDescription = R.string.close.localizable()
+                )
+            }
+        }
         Text(
             R.string.share_training_subtitle.localizable(),
             style = Typography.bodyLarge,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Left,
             modifier = Modifier.padding(vertical = 8.dp)
         )
-        ShareTrainingPreview(state, Modifier.weight(1f).fillMaxWidth())
-        Spacer(Modifier.height(16.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-            OutlinedButton(onClick = onPickGallery, modifier = Modifier.weight(1f)) {
-                Text(R.string.gallery.localizable())
+        ShareTrainingPreview(
+            state, Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            modifier = Modifier.fillMaxWidth().imePadding()
+        ) {
+            IconButton (modifier = Modifier.size(48.dp), onClick = onPickGallery) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_photo_library_24),
+                    contentDescription = R.string.gallery.localizable(),
+                )
             }
-            OutlinedButton(onClick = onTakePhoto, modifier = Modifier.weight(1f)) {
-                Text(R.string.camera.localizable())
+            IconButton (
+                onClick = onShare,
+                enabled = state.canShare,
+                modifier = Modifier.size(48.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_ios_share_24),
+                    contentDescription = R.string.share.localizable(),
+                )
+            }
+            IconButton (modifier = Modifier.size(48.dp), onClick = onTakePhoto) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_camera_24),
+                    contentDescription = R.string.camera.localizable(),
+                )
             }
         }
-        Button(onClick = onShare, enabled = state.canShare, modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
-            Text(R.string.share.localizable())
-        }
-        OutlinedButton(onClick = onDone, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            Text(R.string.done.localizable())
-        }
+
     }
+
+
 }
 
 @Composable
 private fun ShareTrainingPreview(state: ShareTrainingUiState, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .aspectRatio(9f / 16f)
+            .aspectRatio(9f / 14f)
             .clip(RoundedCornerShape(28.dp))
-            .background(Color.DarkGray)
+            .background(DarkPrimary)
     ) {
         val context = LocalContext.current
         val bitmap by remember(state.backgroundUri) {
@@ -97,7 +140,8 @@ private fun ShareTrainingPreview(state: ShareTrainingUiState, modifier: Modifier
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
                     } else {
-                        context.contentResolver.openInputStream(uri).use { BitmapFactory.decodeStream(it) }
+                        context.contentResolver.openInputStream(uri)
+                            .use { BitmapFactory.decodeStream(it) }
                     }
                 }.getOrNull()
             })
@@ -113,10 +157,26 @@ private fun ShareTrainingPreview(state: ShareTrainingUiState, modifier: Modifier
         Box(
             Modifier
                 .fillMaxSize()
-                .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.88f))))
+                .padding(16.dp)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.88f)
+                        )
+                    )
+                )
         )
-        Column(Modifier.align(Alignment.BottomStart).padding(24.dp)) {
-            Text(R.string.app_name.localizable(), color = Color.White, style = Typography.titleMedium)
+        Column(
+            Modifier
+                .align(Alignment.BottomStart)
+                .padding(24.dp)
+        ) {
+            Text(
+                R.string.app_name.localizable(),
+                color = Color.White,
+                style = Typography.titleMedium
+            )
             Text(
                 state.workoutName.ifBlank { R.string.workout_complete.localizable() },
                 color = Color.White,
@@ -136,6 +196,30 @@ private fun ShareTrainingPreview(state: ShareTrainingUiState, modifier: Modifier
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 360, heightDp = 800)
+@Composable
+private fun ShareTrainingViewPreview() {
+    NorwegianTrainingTheme(darkTheme = true) {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+        ) { _ ->
+            ShareTrainingView(
+                state = ShareTrainingUiState(
+                    workoutName = "Beginner 1",
+                    completedAtMillis = 1_700_000_000_000L,
+                    totalPhases = 4,
+                    backgroundUri = null,
+                ),
+                onPickGallery = {},
+                onTakePhoto = {},
+                onShare = {},
+                onDone = {},
+            )
         }
     }
 }
