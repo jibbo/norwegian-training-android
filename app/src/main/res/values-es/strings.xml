@@ -47,6 +47,7 @@
     <string name="announce_pause">Entrenamiento pausado</string>
     <string name="app_paused">Entrenamiento pausado</string>
     <string name="vibration">Vibración al iniciar/pausar el temporizador</string>
+    <string name="timer_bell_sound">Sonido de campana cuando el temporizador llega a cero</string>
     <string name="title_privacy_section">Privacidad</string>
     <string name="enable_analytics">Recopilación de datos</string>
     <string name="enable_analytics_description">Nos ayuda a mejorar la app según las funciones y opciones más populares</string>

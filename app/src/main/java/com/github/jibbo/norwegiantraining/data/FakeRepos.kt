@@ -79,6 +79,12 @@ class FakeSettingsRepository : SettingsRepository {
 
     override fun getVibrationEnabled(): Boolean = false
 
+    override fun setTimerBellEnabled(enabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getTimerBellEnabled(): Boolean = true
+
     override fun setAnalyticsEnabled(enabled: Boolean) {
         TODO("Not yet implemented")
     }

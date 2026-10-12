@@ -8,6 +8,8 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
@@ -53,6 +55,8 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
 
     private var countDownTimer: CountDownTimer? = null
     private var binder: WorkoutServiceBinder? = null
+    private var soundPool: SoundPool? = null
+    private var timerBellSoundId: Int = 0
 
     private var lastSpokenSeconds = -1
 
@@ -66,6 +70,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         createNotificationChannel()
         startForegroundWithNotification()
         initializeTTS()
+        initializeTimerBell()
 
         serviceScope.launch {
             try {
@@ -134,6 +139,8 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
     override fun onDestroy() {
         Log.d(TAG, "Service onDestroy")
         countDownTimer?.cancel()
+        soundPool?.release()
+        soundPool = null
         tts?.stop()
         tts?.shutdown()
         serviceScope.cancel()
@@ -265,6 +272,7 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         Log.d(TAG, "Handling phase transition from alarm")
         val transition = stateManager.moveToNextPhase(expectedPhaseIndex)
         if (transition.isFailure) return
+        playTimerBell()
         countDownTimer?.cancel()
         cancelAlarm()
 
@@ -356,6 +364,24 @@ class WorkoutTimerAndroidService : Service(), WorkoutTimerService {
         if (stateManager.shouldAnnouncePhaseDesc()) {
             speak(getString(phaseName.description()), flush = false)
         }
+    }
+
+    private fun initializeTimerBell() {
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(1)
+            .setAudioAttributes(audioAttributes)
+            .build()
+        timerBellSoundId = soundPool?.load(this, R.raw.timer_bell, 1) ?: 0
+    }
+
+    private fun playTimerBell() {
+        if (!settingsRepository.getTimerBellEnabled()) return
+        if (timerBellSoundId == 0) return
+        soundPool?.play(timerBellSoundId, 1f, 1f, 1, 0, 1f)
     }
 
     private fun initializeTTS() {

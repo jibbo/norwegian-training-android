@@ -176,6 +176,19 @@ private fun GeneralCard(viewModel: SettingsViewModel) {
                 })
             }
             Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            ) {
+                Text(
+                    text = R.string.timer_bell_sound.localizable(),
+                    style = Typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                MySwitch(checked = state.value.timerBellEnabled, onCheckedChange = {
+                    viewModel.setTimerBellEnabled(it)
+                })
+            }
+            Row(
                 verticalAlignment = Alignment.Top, modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 val context = LocalContext.current

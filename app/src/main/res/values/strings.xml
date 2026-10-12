@@ -67,6 +67,7 @@
     <string name="announce_one_minute">One minute remaining</string>
     <string name="announce_pause">Workout paused</string>
     <string name="vibration">Vibration on timer start/pause</string>
+    <string name="timer_bell_sound">Bell sound when timer reaches zero</string>
     <string name="title_privacy_section">Privacy</string>
     <string name="enable_analytics">Data Collection</string>
     <string name="enable_analytics_description">It lets us improve the app based on which features and options are popular</string>

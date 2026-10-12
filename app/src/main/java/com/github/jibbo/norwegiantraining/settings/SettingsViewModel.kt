@@ -38,6 +38,7 @@ internal class SettingsViewModel @Inject constructor(
             announceOneMinute = settingsRepository.getAnnounceOneMinute(),
             announcePause = settingsRepository.getAnnouncePause(),
             vibrationEnabled = settingsRepository.getVibrationEnabled(),
+            timerBellEnabled = settingsRepository.getTimerBellEnabled(),
             showTodayStatsInActivitySection = settingsRepository.getShowTodayStatsInActivitySection(),
             isCrashReportingEnabled = settingsRepository.getCrashReportingEnabled(),
             isAnalyticsEnabled = settingsRepository.getAnalyticsEnabled(),
@@ -112,6 +113,11 @@ internal class SettingsViewModel @Inject constructor(
     fun setVibrationEnabled(enabled: Boolean) {
         settingsRepository.setVibrationEnabled(enabled)
         uiStates.value = uiStates.value.copy(vibrationEnabled = enabled)
+    }
+
+    fun setTimerBellEnabled(enabled: Boolean) {
+        settingsRepository.setTimerBellEnabled(enabled)
+        uiStates.value = uiStates.value.copy(timerBellEnabled = enabled)
     }
 
     fun setShowTodayStatsInActivitySection(enabled: Boolean) {

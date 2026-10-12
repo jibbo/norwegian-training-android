@@ -15,6 +15,7 @@ data class UiState(
     val announceOneMinute: Boolean,
     val announcePause: Boolean,
     val vibrationEnabled: Boolean,
+    val timerBellEnabled: Boolean,
     val showTodayStatsInActivitySection: Boolean,
     val isCrashReportingEnabled: Boolean,
     val isAnalyticsEnabled: Boolean,
