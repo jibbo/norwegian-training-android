@@ -18,6 +18,7 @@ data class ShareTrainingText(
     val brand: String,
     val fallbackWorkoutName: String,
     val completedPhases: String,
+    val duration: String,
 )
 
 object ShareTrainingBitmap {
@@ -105,6 +106,10 @@ object ShareTrainingBitmap {
         canvas.drawText(state.workoutName.ifBlank { text.fallbackWorkoutName }, left, y, title)
         y += 78f
         canvas.drawText(state.formattedDate, left, y, subtitle)
+        if (text.duration.isNotBlank()) {
+            y += 68f
+            canvas.drawText(text.duration, left, y, subtitle)
+        }
         if (state.totalPhases > 0) {
             y += 68f
             canvas.drawText(text.completedPhases, left, y, subtitle)

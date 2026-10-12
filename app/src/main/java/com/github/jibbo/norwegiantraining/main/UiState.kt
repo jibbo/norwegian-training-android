@@ -13,6 +13,7 @@ data class UiState(
     val currentPhaseIndex: Int = 0,
     val totalPhases: Int = 0,
     val workoutName: String = "",
+    val workoutDurationMinutes: Int = 0,
     val showConfetti: Boolean = false,
     val isServiceBound: Boolean = false,
     val progressionResult: ProgressionResult? = null,

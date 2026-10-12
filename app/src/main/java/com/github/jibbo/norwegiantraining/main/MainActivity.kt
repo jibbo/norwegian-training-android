@@ -166,7 +166,9 @@ class MainActivity : BaseActivity() {
             putExtra(ShareTrainingActivity.EXTRA_WORKOUT_NAME, command.workoutName)
             putExtra(ShareTrainingActivity.EXTRA_COMPLETED_AT_MILLIS, command.completedAtMillis)
             putExtra(ShareTrainingActivity.EXTRA_TOTAL_PHASES, command.totalPhases)
+            putExtra(ShareTrainingActivity.EXTRA_WORKOUT_DURATION_MINUTES, command.workoutDurationMinutes)
         })
+        finish()
     }
 
     private fun navigateTo(

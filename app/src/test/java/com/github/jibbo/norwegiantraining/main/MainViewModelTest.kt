@@ -122,13 +122,15 @@ class MainViewModelTest {
     }
 
     @Test
-    fun completedWorkoutEmitsShareTrainingCommand() = runTest {
+    fun completedWorkoutDoesNotShareUntilShareClicked() = runTest {
+        val binder = RecordingService()
         val viewModel = MainViewModel()
-        val event = async { viewModel.uiEvents.first() }
+        viewModel.bindToService(binder)
 
         viewModel.updateFromService(
             WorkoutTimerState(
                 workoutName = "Beginner 1",
+                workoutDurationMinutes = 25,
                 currentPhase = Phase(PhaseName.COMPLETED, 0L),
                 totalPhases = 6,
                 isCompleted = true,
@@ -136,10 +138,34 @@ class MainViewModelTest {
         )
         advanceUntilIdle()
 
+        assertTrue(binder.calls.isEmpty())
+    }
+
+    @Test
+    fun shareClickedEmitsShareTrainingCommandAndClosesWorkout() = runTest {
+        val binder = RecordingService()
+        val viewModel = MainViewModel()
+        viewModel.bindToService(binder)
+        val event = async { viewModel.uiEvents.first() }
+
+        viewModel.updateFromService(
+            WorkoutTimerState(
+                workoutName = "Beginner 1",
+                workoutDurationMinutes = 25,
+                currentPhase = Phase(PhaseName.COMPLETED, 0L),
+                totalPhases = 6,
+                isCompleted = true,
+            )
+        )
+        viewModel.shareClicked()
+        advanceUntilIdle()
+
         val command = event.await() as MainViewModel.UiCommands.ShareTraining
         assertEquals("Beginner 1", command.workoutName)
         assertEquals(4, command.totalPhases)
+        assertEquals(25, command.workoutDurationMinutes)
         assertTrue(command.completedAtMillis > 0L)
+        assertEquals(listOf("close"), binder.calls)
     }
 
     @Test

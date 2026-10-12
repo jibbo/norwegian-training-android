@@ -12,6 +12,7 @@ data class ShareTrainingUiState(
     val workoutName: String = "",
     val completedAtMillis: Long = 0L,
     val totalPhases: Int = 0,
+    val workoutDurationMinutes: Int = 0,
     val backgroundUri: String? = null,
 ) {
     val canShare: Boolean = backgroundUri != null
@@ -28,12 +29,18 @@ class ShareTrainingViewModel @Inject constructor() : ViewModel() {
     private val states = MutableStateFlow(ShareTrainingUiState())
     val uiStates = states.asStateFlow()
 
-    fun initialize(workoutName: String?, completedAtMillis: Long, totalPhases: Int) {
+    fun initialize(
+        workoutName: String?,
+        completedAtMillis: Long,
+        totalPhases: Int,
+        workoutDurationMinutes: Int,
+    ) {
         if (states.value.workoutName.isNotBlank()) return
         states.value = states.value.copy(
             workoutName = workoutName.orEmpty(),
             completedAtMillis = completedAtMillis.takeIf { it > 0L } ?: System.currentTimeMillis(),
             totalPhases = totalPhases.coerceAtLeast(0),
+            workoutDurationMinutes = workoutDurationMinutes.coerceAtLeast(0),
         )
     }
 

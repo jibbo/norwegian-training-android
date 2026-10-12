@@ -255,6 +255,14 @@ private fun ShareTrainingPreview(state: ShareTrainingUiState, modifier: Modifier
                 modifier = Modifier.padding(top = 12.dp)
             )
             Text(state.formattedDate, color = Color.White, style = Typography.titleMedium)
+            if (state.workoutDurationMinutes > 0) {
+                Text(
+                    R.string.workout_time.localizable(state.workoutDurationMinutes.toString()),
+                    color = Color.White,
+                    style = Typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
             if (state.totalPhases > 0) {
                 Text(
                     pluralStringResource(
@@ -284,6 +292,7 @@ private fun ShareTrainingViewPreview() {
                     workoutName = "Beginner 1",
                     completedAtMillis = 1_700_000_000_000L,
                     totalPhases = 4,
+                    workoutDurationMinutes = 25,
                     backgroundUri = null,
                 ),
                 onPickGallery = {},

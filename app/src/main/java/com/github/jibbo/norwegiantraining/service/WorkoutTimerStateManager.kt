@@ -64,6 +64,7 @@ class WorkoutTimerStateManager @Inject constructor(
             ?: findLegacySession(workout)
         _state.value = savedState.copy(
             workoutName = workout.displayLabel(),
+            workoutDurationMinutes = workout.totalTime,
             totalPhases = phases.size,
             sessionId = session?.id,
         )
@@ -87,6 +88,7 @@ class WorkoutTimerStateManager @Inject constructor(
             val newState = WorkoutTimerState(
                 workoutId = workoutId,
                 workoutName = workout.displayLabel(),
+                workoutDurationMinutes = workout.totalTime,
                 currentPhaseIndex = 0,
                 totalPhases = phases.size,
                 currentPhase = initialPhase,

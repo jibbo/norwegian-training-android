@@ -44,6 +44,7 @@ class ShareTrainingActivity : BaseActivity() {
             workoutName = intent.getStringExtra(EXTRA_WORKOUT_NAME),
             completedAtMillis = intent.getLongExtra(EXTRA_COMPLETED_AT_MILLIS, System.currentTimeMillis()),
             totalPhases = intent.getIntExtra(EXTRA_TOTAL_PHASES, 0),
+            workoutDurationMinutes = intent.getIntExtra(EXTRA_WORKOUT_DURATION_MINUTES, 0),
         )
         setContent {
             val state by viewModel.uiStates.collectAsState()
@@ -83,6 +84,9 @@ class ShareTrainingActivity : BaseActivity() {
                             state.totalPhases,
                             state.totalPhases,
                         ),
+                        duration = state.workoutDurationMinutes.takeIf { it > 0 }?.let {
+                            getString(R.string.workout_time, it.toString())
+                        }.orEmpty(),
                     ),
                 )
                 val shareUri = createCacheUri("training_share.png")
@@ -115,5 +119,6 @@ class ShareTrainingActivity : BaseActivity() {
         const val EXTRA_WORKOUT_NAME = "extra_workout_name"
         const val EXTRA_COMPLETED_AT_MILLIS = "extra_completed_at_millis"
         const val EXTRA_TOTAL_PHASES = "extra_total_phases"
+        const val EXTRA_WORKOUT_DURATION_MINUTES = "extra_workout_duration_minutes"
     }
 }

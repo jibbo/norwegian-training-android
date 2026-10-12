@@ -14,12 +14,14 @@ class ShareTrainingViewModelTest {
             workoutName = "Beginner 1",
             completedAtMillis = 1_700_000_000_000L,
             totalPhases = 6,
+            workoutDurationMinutes = 30,
         )
 
         val state = viewModel.uiStates.value
         assertEquals("Beginner 1", state.workoutName)
         assertEquals(1_700_000_000_000L, state.completedAtMillis)
         assertEquals(6, state.totalPhases)
+        assertEquals(30, state.workoutDurationMinutes)
         assertFalse(state.canShare)
         assertTrue(state.formattedDate.isNotBlank())
     }
@@ -27,7 +29,7 @@ class ShareTrainingViewModelTest {
     @Test
     fun backgroundSelectionEnablesShare() {
         val viewModel = ShareTrainingViewModel()
-        viewModel.initialize("Workout", 1_700_000_000_000L, 4)
+        viewModel.initialize("Workout", 1_700_000_000_000L, 4, 20)
 
         viewModel.onBackgroundSelected("content://image/1")
 
@@ -39,11 +41,12 @@ class ShareTrainingViewModelTest {
     fun initializeSanitizesInvalidValues() {
         val viewModel = ShareTrainingViewModel()
 
-        viewModel.initialize(null, -1L, -3)
+        viewModel.initialize(null, -1L, -3, -5)
 
         val state = viewModel.uiStates.value
         assertEquals("", state.workoutName)
         assertTrue(state.completedAtMillis > 0L)
         assertEquals(0, state.totalPhases)
+        assertEquals(0, state.workoutDurationMinutes)
     }
 }

@@ -22,6 +22,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -89,24 +91,69 @@ internal fun MainView(
                 targetValue = if (state.isTimerRunning) Red else Primary,
                 label = "ButtonBackgroundColorAnimation"
             )
-            Button(
-                onClick = {
-                    mainViewModel.onMainButtonClicked()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = animatedBackgroundColor),
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .imePadding()
-            ) {
-                val text = state.mainButtonText.localizable().uppercase()
-                val textColor: Color = if (state.isTimerRunning) White else Black
-                Text(
-                    text = text,
-                    style = Typography.titleLarge,
-                    color = textColor,
-                    modifier = Modifier.padding(16.dp)
-                )
+            if (state.isCompleted) {
+                OutlinedButton (
+                    onClick = { mainViewModel.shareClicked() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Black,
+                        contentColor = White
+                    ),
+                    modifier = Modifier
+                        .padding(6.dp)
+                        .fillMaxWidth()
+                        .imePadding()
+                ) {
+                    Icon(
+                        painterResource(R.drawable.outline_ios_share_24),
+                        contentDescription = R.string.share.localizable(),
+                    )
+                    Text(
+                        text = R.string.share.localizable().uppercase(),
+                        style = Typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(6.dp)
+                    )
+                }
+                Button(
+                    onClick = {
+                        mainViewModel.onMainButtonClicked()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = animatedBackgroundColor),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .imePadding()
+                ) {
+                    val text = state.mainButtonText.localizable().uppercase()
+                    val textColor: Color = if (state.isTimerRunning) White else Black
+                    Text(
+                        text = text,
+                        style = Typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = textColor,
+                        modifier = Modifier.padding(6.dp)
+                    )
+                }
+            }else{
+                Button(
+                    onClick = {
+                        mainViewModel.onMainButtonClicked()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = animatedBackgroundColor),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .imePadding()
+                ) {
+                    val text = state.mainButtonText.localizable().uppercase()
+                    val textColor: Color = if (state.isTimerRunning) White else Black
+                    Text(
+                        text = text,
+                        style = Typography.titleLarge,
+                        color = textColor,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
 
             if (mainViewModel.showSkipButton()) {
