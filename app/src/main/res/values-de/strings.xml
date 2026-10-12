@@ -42,6 +42,7 @@
     <string name="announce_pause">Training pausiert</string>
     <string name="app_paused">Training pausiert</string>
     <string name="vibration">Vibration bei Timer-Start/Pause</string>
+    <string name="timer_bell_sound">Glockenton, wenn der Timer null erreicht</string>
     <string name="title_privacy_section">Datenschutz</string>
     <string name="enable_analytics">Nutzungsdaten</string>
     <string name="enable_analytics_description">Damit können wir die App anhand der beliebtesten Funktionen und Optionen verbessern.</string>

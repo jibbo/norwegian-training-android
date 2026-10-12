@@ -60,13 +60,14 @@
     <string name="title_profile_section">Profile</string>
     <string name="your_name">Your name</string>
     <string name="fitness_level_label">Fitness level</string>
-    <string name="title_tts_section">Vocal hints</string>
+    <string name="title_tts_section">Vocal Cues</string>
     <string name="announce_phase">Phase name</string>
     <string name="announce_phase_description">Phase description</string>
     <string name="announce_countdown">Countdown before phase ends</string>
     <string name="announce_one_minute">One minute remaining</string>
     <string name="announce_pause">Workout paused</string>
     <string name="vibration">Vibration on timer start/pause</string>
+    <string name="timer_bell_sound">Bell sound when timer reaches zero</string>
     <string name="title_privacy_section">Privacy</string>
     <string name="enable_analytics">Data Collection</string>
     <string name="enable_analytics_description">It lets us improve the app based on which features and options are popular</string>
@@ -134,7 +135,7 @@
     <string name="manual_workout_type_hiit">HIIT</string>
     <string name="manual_workout_title">Log workout</string>
     <string name="manual_workout_type">Workout type</string>
-    <string name="manual_workout_duration">Workout duration</string>
+    <string name="manual_workout_duration">Worfkout duration</string>
     <string name="manual_workout_date">Date</string>
     <string name="manual_workout_duration_hours">Hours</string>
     <string name="manual_workout_duration_minutes">Minutes</string>

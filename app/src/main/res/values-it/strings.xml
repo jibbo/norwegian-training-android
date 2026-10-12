@@ -46,6 +46,7 @@
     <string name="announce_pause">Allenamento in pausa</string>
     <string name="app_paused">Allenamento in pausa</string>
     <string name="vibration">Vibrazione all\'avvio/in pausa del timer</string>
+    <string name="timer_bell_sound">Campanella quando il timer arriva a zero</string>
     <string name="title_privacy_section">Privacy</string>
     <string name="enable_analytics">Raccolta Dati</string>
     <string name="enable_analytics_description">Ci permette di migliorare l\'app in base a quali funzionalità e opzioni sono popolari</string>

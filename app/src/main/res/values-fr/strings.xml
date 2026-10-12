@@ -42,6 +42,7 @@
     <string name="announce_pause">Entraînement en pause</string>
     <string name="app_paused">Entraînement en pause</string>
     <string name="vibration">Vibration au démarrage/pause du minuteur</string>
+    <string name="timer_bell_sound">Son de cloche lorsque le minuteur atteint zéro</string>
     <string name="title_privacy_section">Confidentialité</string>
     <string name="enable_analytics">Collecte de données</string>
     <string name="enable_analytics_description">Cela nous permet d’améliorer l’application en fonction des fonctionnalités et options les plus populaires.</string>

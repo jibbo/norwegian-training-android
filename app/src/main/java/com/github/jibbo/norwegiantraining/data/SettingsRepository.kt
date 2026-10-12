@@ -33,6 +33,8 @@ interface SettingsRepository {
     fun getAnnouncePause(): Boolean
     fun setVibrationEnabled(enabled: Boolean)
     fun getVibrationEnabled(): Boolean
+    fun setTimerBellEnabled(enabled: Boolean)
+    fun getTimerBellEnabled(): Boolean
     fun setAnalyticsEnabled(enabled: Boolean)
     fun getAnalyticsEnabled(): Boolean
     fun setCrashReportingEnabled(enabled: Boolean)
@@ -106,6 +108,12 @@ class SharedPreferencesSettingsRepository @Inject constructor(
     }
 
     override fun getVibrationEnabled(): Boolean = sp.getBoolean(KEY_VIBRATION_ENABLED, true)
+
+    override fun setTimerBellEnabled(enabled: Boolean) {
+        sp.edit { putBoolean(KEY_TIMER_BELL_ENABLED, enabled) }
+    }
+
+    override fun getTimerBellEnabled(): Boolean = sp.getBoolean(KEY_TIMER_BELL_ENABLED, true)
 
     override fun setAnalyticsEnabled(enabled: Boolean) {
         sp.edit { putBoolean(KEY_ANALYTICS_ENABLED, enabled) }
@@ -234,6 +242,7 @@ class SharedPreferencesSettingsRepository @Inject constructor(
         const val KEY_LAST_WORKOUT_ID = "last_workout_id"
         const val KEY_APP_LANGUAGE_CODE = "app_language"
         const val KEY_VIBRATION_ENABLED = "vibration_enabled"
+        const val KEY_TIMER_BELL_ENABLED = "timer_bell_enabled"
         const val KEY_SHOW_TODAY_STATS_IN_ACTIVITY_SECTION = "show_today_stats_in_activity_section"
 
         fun isEuUser(context: Context): Boolean {

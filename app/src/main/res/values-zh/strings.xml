@@ -42,6 +42,7 @@
     <string name="announce_pause">训练已暂停</string>
     <string name="app_paused">训练已暂停</string>
     <string name="vibration">计时器开始/暂停时振动</string>
+    <string name="timer_bell_sound">计时器归零时播放铃声</string>
     <string name="title_privacy_section">隐私</string>
     <string name="enable_analytics">分析数据</string>
     <string name="enable_analytics_description">通过分享匿名数据帮助改进应用</string>
