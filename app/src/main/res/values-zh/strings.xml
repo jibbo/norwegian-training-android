@@ -185,8 +185,8 @@
     <string name="done">完成</string>
     <string name="gallery">图库</string>
     <string name="camera">相机</string>
-    <string name="share_training_title">分享你的训练</string>
-    <string name="share_training_subtitle">选择一张照片，添加你已完成的训练，并分享给朋友。</string>
+    <string name="share_training_title">恭喜!</string>
+    <string name="share_training_subtitle">与在乎的人分享这份成就！</string>
     <string name="workout_complete">训练完成</string>
     <plurals name="training_phases_completed">
         <item quantity="other">已完成 %1$d 个训练阶段</item>

@@ -95,23 +95,27 @@ fun ShareTrainingView(
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
             modifier = Modifier.fillMaxWidth().imePadding()
         ) {
-            IconButton (modifier = Modifier.size(48.dp), onClick = onPickGallery) {
+            OutlinedButton (onClick = onPickGallery) {
                 Icon(
                     painter = painterResource(R.drawable.outline_photo_library_24),
                     contentDescription = R.string.gallery.localizable(),
                 )
             }
-            IconButton (
+            OutlinedButton (
                 onClick = onShare,
                 enabled = state.canShare,
-                modifier = Modifier.size(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Primary,
+                    contentColor = Black,
+                ),
+                modifier = Modifier.padding(8.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.outline_ios_share_24),
                     contentDescription = R.string.share.localizable(),
                 )
             }
-            IconButton (modifier = Modifier.size(48.dp), onClick = onTakePhoto) {
+            OutlinedButton ( onClick = onTakePhoto) {
                 Icon(
                     painter = painterResource(R.drawable.outline_camera_24),
                     contentDescription = R.string.camera.localizable(),

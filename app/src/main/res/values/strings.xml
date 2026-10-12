@@ -36,8 +36,8 @@
     <string name="keep_training">Keep training</string>
 
     <!-- Share training -->
-    <string name="share_training_title">Share your workout</string>
-    <string name="share_training_subtitle">Choose a photo, add your completed workout, and share it with a friend.</string>
+    <string name="share_training_title">Congratulations!</string>
+    <string name="share_training_subtitle">Share this accomplishment with someone you care about!</string>
     <string name="workout_complete">Workout complete</string>
     <plurals name="training_phases_completed">
         <item quantity="one">%1$d training phase completed</item>

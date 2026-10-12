@@ -203,8 +203,8 @@
     <string name="done">Fatto</string>
     <string name="gallery">Galleria</string>
     <string name="camera">Fotocamera</string>
-    <string name="share_training_title">Condividi il tuo allenamento</string>
-    <string name="share_training_subtitle">Scegli una foto, aggiungi l’allenamento completato e condividilo con un amico.</string>
+    <string name="share_training_title">Complimenti!</string>
+    <string name="share_training_subtitle">Condividi questo traguardo con qualcuno a cui tieni!</string>
     <string name="workout_complete">Allenamento completato</string>
     <plurals name="training_phases_completed">
         <item quantity="one">%1$d fase di allenamento completata</item>

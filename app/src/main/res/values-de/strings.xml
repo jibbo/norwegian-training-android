@@ -187,8 +187,8 @@
     <string name="done">Fertig</string>
     <string name="gallery">Galerie</string>
     <string name="camera">Kamera</string>
-    <string name="share_training_title">Training teilen</string>
-    <string name="share_training_subtitle">Wähle ein Foto, füge dein abgeschlossenes Training hinzu und teile es mit einem Freund.</string>
+    <string name="share_training_title">Glückwunsch!</string>
+    <string name="share_training_subtitle">Teile diesen Erfolg mit jemandem, der dir wichtig ist!</string>
     <string name="workout_complete">Training abgeschlossen</string>
     <plurals name="training_phases_completed">
         <item quantity="one">%1$d Trainingsphase abgeschlossen</item>
