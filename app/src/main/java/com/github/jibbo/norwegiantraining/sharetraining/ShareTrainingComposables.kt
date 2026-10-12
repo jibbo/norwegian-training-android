@@ -8,9 +8,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -18,12 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,10 +46,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
-import com.github.jibbo.norwegiantraining.ui.theme.Black
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
-import com.github.jibbo.norwegiantraining.ui.theme.Primary
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
 
 @Composable
@@ -60,77 +58,141 @@ fun ShareTrainingView(
     onShare: () -> Unit,
     onDone: () -> Unit,
 ) {
-    Column(
+    BoxWithConstraints(
         Modifier
             .fillMaxSize()
             .safeDrawingPadding()
             .padding(16.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                R.string.share_training_title.localizable(),
-                style = Typography.headlineLarge,
-                modifier = Modifier.weight(1f)
-            )
-            IconButton(onClick = onDone) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_close_24),
-                    contentDescription = R.string.close.localizable()
-                )
-            }
-        }
-        Text(
-            R.string.share_training_subtitle.localizable(),
-            style = Typography.bodyLarge,
-            textAlign = TextAlign.Left,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-        ShareTrainingPreview(
-            state, Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
-            modifier = Modifier.fillMaxWidth().imePadding()
-        ) {
-            OutlinedIconButton(
-                onClick = onPickGallery,
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_photo_library_24),
-                    contentDescription = R.string.gallery.localizable(),
-                )
-            }
-            OutlinedIconButton (
-                onClick = onShare,
-                enabled = state.canShare,
-                colors = IconButtonDefaults.iconButtonColors(),
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_ios_share_24),
-                    contentDescription = R.string.share.localizable(),
-                )
-            }
-            OutlinedIconButton (
-                onClick = onTakePhoto,
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_camera_24),
-                    contentDescription = R.string.camera.localizable(),
-                )
-            }
-        }
+        val isLandscape = maxWidth > maxHeight
 
+        if (isLandscape) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .imePadding()
+                ) {
+                    ShareTrainingHeader(onDone = onDone)
+                    Text(
+                        R.string.share_training_subtitle.localizable(),
+                        style = Typography.bodyLarge,
+                        textAlign = TextAlign.Left,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                    Spacer(Modifier.weight(1f))
+                    ShareTrainingActions(
+                        canShare = state.canShare,
+                        onPickGallery = onPickGallery,
+                        onShare = onShare,
+                        onTakePhoto = onTakePhoto,
+                    )
+                }
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
+                    ShareTrainingPreview(
+                        state = state,
+                        modifier = Modifier.fillMaxHeight()
+                    )
+                }
+            }
+        } else {
+            Column(Modifier.fillMaxSize()) {
+                ShareTrainingHeader(onDone = onDone)
+                Text(
+                    R.string.share_training_subtitle.localizable(),
+                    style = Typography.bodyLarge,
+                    textAlign = TextAlign.Left,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                ShareTrainingPreview(
+                    state, Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                )
+                ShareTrainingActions(
+                    canShare = state.canShare,
+                    onPickGallery = onPickGallery,
+                    onShare = onShare,
+                    onTakePhoto = onTakePhoto,
+                )
+            }
+        }
     }
+}
 
+@Composable
+private fun ShareTrainingHeader(onDone: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            R.string.share_training_title.localizable(),
+            style = Typography.headlineLarge,
+            modifier = Modifier.weight(1f)
+        )
+        IconButton(onClick = onDone) {
+            Icon(
+                painter = painterResource(R.drawable.outline_close_24),
+                contentDescription = R.string.close.localizable()
+            )
+        }
+    }
+}
 
+@Composable
+private fun ShareTrainingActions(
+    canShare: Boolean,
+    onPickGallery: () -> Unit,
+    onShare: () -> Unit,
+    onTakePhoto: () -> Unit,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+        modifier = Modifier
+            .fillMaxWidth()
+            .imePadding()
+    ) {
+        OutlinedIconButton(
+            onClick = onPickGallery,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.outline_photo_library_24),
+                contentDescription = R.string.gallery.localizable(),
+            )
+        }
+        OutlinedIconButton(
+            onClick = onShare,
+            enabled = canShare,
+            colors = IconButtonDefaults.iconButtonColors(),
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.outline_ios_share_24),
+                contentDescription = R.string.share.localizable(),
+            )
+        }
+        OutlinedIconButton(
+            onClick = onTakePhoto,
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.outline_camera_24),
+                contentDescription = R.string.camera.localizable(),
+            )
+        }
+    }
 }
 
 @Composable
