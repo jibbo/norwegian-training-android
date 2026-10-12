@@ -60,7 +60,7 @@
     <string name="title_profile_section">Profile</string>
     <string name="your_name">Your name</string>
     <string name="fitness_level_label">Fitness level</string>
-    <string name="title_tts_section">Vocal hints</string>
+    <string name="title_tts_section">Vocal Cues</string>
     <string name="announce_phase">Phase name</string>
     <string name="announce_phase_description">Phase description</string>
     <string name="announce_countdown">Countdown before phase ends</string>
@@ -135,7 +135,7 @@
     <string name="manual_workout_type_hiit">HIIT</string>
     <string name="manual_workout_title">Log workout</string>
     <string name="manual_workout_type">Workout type</string>
-    <string name="manual_workout_duration">Workout duration</string>
+    <string name="manual_workout_duration">Worfkout duration</string>
     <string name="manual_workout_date">Date</string>
     <string name="manual_workout_duration_hours">Hours</string>
     <string name="manual_workout_duration_minutes">Minutes</string>
