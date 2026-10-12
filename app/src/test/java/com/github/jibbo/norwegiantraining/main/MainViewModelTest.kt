@@ -8,8 +8,10 @@ import com.github.jibbo.norwegiantraining.service.WorkoutTimerService
 import com.github.jibbo.norwegiantraining.service.WorkoutTimerState
 import com.github.jibbo.norwegiantraining.testutils.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -117,6 +119,27 @@ class MainViewModelTest {
         )
         assertEquals(4, viewModel.uiStates.value.currentPhaseIndex)
         assertEquals(4, viewModel.uiStates.value.totalPhases)
+    }
+
+    @Test
+    fun completedWorkoutEmitsShareTrainingCommand() = runTest {
+        val viewModel = MainViewModel()
+        val event = async { viewModel.uiEvents.first() }
+
+        viewModel.updateFromService(
+            WorkoutTimerState(
+                workoutName = "Beginner 1",
+                currentPhase = Phase(PhaseName.COMPLETED, 0L),
+                totalPhases = 6,
+                isCompleted = true,
+            )
+        )
+        advanceUntilIdle()
+
+        val command = event.await() as MainViewModel.UiCommands.ShareTraining
+        assertEquals("Beginner 1", command.workoutName)
+        assertEquals(4, command.totalPhases)
+        assertTrue(command.completedAtMillis > 0L)
     }
 
     @Test

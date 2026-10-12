@@ -184,4 +184,15 @@
         <item quantity="one">%1$d übersprungene Phase</item>
         <item quantity="other">%1$d übersprungene Phasen</item>
     </plurals>
+    <string name="done">Fertig</string>
+    <string name="gallery">Galerie</string>
+    <string name="camera">Kamera</string>
+    <string name="share_training_title">Training teilen</string>
+    <string name="share_training_subtitle">Wähle ein Foto, füge dein abgeschlossenes Training hinzu und teile es mit einem Freund.</string>
+    <string name="workout_complete">Training abgeschlossen</string>
+    <plurals name="training_phases_completed">
+        <item quantity="one">%1$d Trainingsphase abgeschlossen</item>
+        <item quantity="other">%1$d Trainingsphasen abgeschlossen</item>
+    </plurals>
+    <string name="no_share_app_found">Keine App zum Teilen gefunden.</string>
 </resources>

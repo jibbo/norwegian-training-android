@@ -23,6 +23,7 @@ class FakeSettingsRepository : SettingsRepository {
     private var announceOneMinute = true
     private var announcePause = true
     private var vibrationEnabled = true
+    private var timerBellEnabled = true
     private var analyticsEnabled = true
     private var crashReportingEnabled = true
     private var onboardingCompleted = false
@@ -75,6 +76,12 @@ class FakeSettingsRepository : SettingsRepository {
     }
 
     override fun getVibrationEnabled(): Boolean = vibrationEnabled
+
+    override fun setTimerBellEnabled(enabled: Boolean) {
+        timerBellEnabled = enabled
+    }
+
+    override fun getTimerBellEnabled(): Boolean = timerBellEnabled
 
     override fun setAnalyticsEnabled(enabled: Boolean) {
         analyticsEnabled = enabled

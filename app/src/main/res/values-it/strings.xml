@@ -200,4 +200,15 @@
         <item quantity="one">%1$d fase completata</item>
         <item quantity="other">%1$d fasi completate</item>
     </plurals>
+    <string name="done">Fatto</string>
+    <string name="gallery">Galleria</string>
+    <string name="camera">Fotocamera</string>
+    <string name="share_training_title">Condividi il tuo allenamento</string>
+    <string name="share_training_subtitle">Scegli una foto, aggiungi l’allenamento completato e condividilo con un amico.</string>
+    <string name="workout_complete">Allenamento completato</string>
+    <plurals name="training_phases_completed">
+        <item quantity="one">%1$d fase di allenamento completata</item>
+        <item quantity="other">%1$d fasi di allenamento completate</item>
+    </plurals>
+    <string name="no_share_app_found">Nessuna app trovata per la condivisione.</string>
 </resources>

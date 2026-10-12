@@ -19,6 +19,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor() : ViewModel() {
 
     private var serviceBinder: WorkoutTimerService? = null
+    private var shareShownForCompletedWorkout = false
 
     private val events: MutableSharedFlow<UiCommands> = MutableSharedFlow()
     val uiEvents = events.asSharedFlow()
@@ -60,6 +61,20 @@ class MainViewModel @Inject constructor() : ViewModel() {
             showCloseWorkoutConfirmation = currentState.showCloseWorkoutConfirmation &&
                 (serviceState.isTimerRunning || serviceState.remainingTimeOnPauseMillis > 0)
         )
+        if (serviceState.isCompleted && !shareShownForCompletedWorkout) {
+            shareShownForCompletedWorkout = true
+            viewModelScope.launch {
+                events.emit(
+                    UiCommands.ShareTraining(
+                        workoutName = serviceState.workoutName,
+                        completedAtMillis = System.currentTimeMillis(),
+                        totalPhases = userFacingTotalPhases,
+                    )
+                )
+            }
+        } else if (!serviceState.isCompleted) {
+            shareShownForCompletedWorkout = false
+        }
     }
 
     fun onMainButtonClicked(){
@@ -143,5 +158,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
     sealed class UiCommands {
         object CLOSE : UiCommands()
         data class LevelUp(val newLevel: FitnessLevel) : UiCommands()
+        data class ShareTraining(
+            val workoutName: String,
+            val completedAtMillis: Long,
+            val totalPhases: Int,
+        ) : UiCommands()
     }
 }
