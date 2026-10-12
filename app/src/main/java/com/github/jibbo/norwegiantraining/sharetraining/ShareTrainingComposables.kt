@@ -179,7 +179,7 @@ private fun ShareTrainingActions(
             modifier = Modifier.size(48.dp)
         ) {
             Icon(
-                painter = painterResource(R.drawable.outline_ios_share_24),
+                painter = painterResource(R.drawable.baseline_share_24),
                 contentDescription = R.string.share.localizable(),
             )
         }
@@ -243,6 +243,10 @@ private fun ShareTrainingPreview(state: ShareTrainingUiState, modifier: Modifier
                 .align(Alignment.BottomStart)
                 .padding(24.dp)
         ) {
+            Icon(
+                painterResource(R.drawable.ic_launcher_monochrome),
+                contentDescription = null,
+            )
             Text(
                 R.string.app_name.localizable(),
                 color = Color.White,

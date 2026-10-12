@@ -104,7 +104,7 @@ internal fun MainView(
                         .imePadding()
                 ) {
                     Icon(
-                        painterResource(R.drawable.outline_ios_share_24),
+                        painterResource(R.drawable.baseline_share_24),
                         contentDescription = R.string.share.localizable(),
                     )
                     Text(
