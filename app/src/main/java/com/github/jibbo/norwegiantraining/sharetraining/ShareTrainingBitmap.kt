@@ -1,6 +1,7 @@
 package com.github.jibbo.norwegiantraining.sharetraining
 
 import android.content.ContentResolver
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -12,6 +13,8 @@ import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import androidx.core.content.ContextCompat
+import com.github.jibbo.norwegiantraining.R
 import java.io.InputStream
 
 data class ShareTrainingText(
@@ -26,6 +29,7 @@ object ShareTrainingBitmap {
     const val HEIGHT = 1920
 
     fun create(
+        context: Context,
         contentResolver: ContentResolver,
         state: ShareTrainingUiState,
         text: ShareTrainingText,
@@ -33,7 +37,7 @@ object ShareTrainingBitmap {
         val bitmap = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         drawBackground(canvas, contentResolver, state.backgroundUri)
-        drawOverlay(canvas, state, text)
+        drawOverlay(canvas, state, text, context)
         return bitmap
     }
 
@@ -70,7 +74,12 @@ object ShareTrainingBitmap {
         }
     }
 
-    private fun drawOverlay(canvas: Canvas, state: ShareTrainingUiState, text: ShareTrainingText) {
+    private fun drawOverlay(
+        canvas: Canvas,
+        state: ShareTrainingUiState,
+        text: ShareTrainingText,
+        context: Context,
+    ) {
         val gradient = Paint().apply {
             shader = LinearGradient(
                 0f,
@@ -101,7 +110,7 @@ object ShareTrainingBitmap {
 
         val left = 72f
         var y = HEIGHT - 420f
-        canvas.drawText(text.brand, left, y, small)
+        drawBrand(canvas, context, text.brand, left, y, small)
         y += 120f
         canvas.drawText(state.workoutName.ifBlank { text.fallbackWorkoutName }, left, y, title)
         y += 78f
@@ -114,5 +123,24 @@ object ShareTrainingBitmap {
             y += 68f
             canvas.drawText(text.completedPhases, left, y, subtitle)
         }
+    }
+
+    private fun drawBrand(
+        canvas: Canvas,
+        context: Context,
+        brand: String,
+        left: Float,
+        baseline: Float,
+        paint: Paint,
+    ) {
+        val logoHeight = 54
+        val logoWidth = 68
+        val logoTop = (baseline - logoHeight + 4).toInt()
+        ContextCompat.getDrawable(context, R.drawable.ic_launcher_monochrome_trimmed)?.mutate()?.apply {
+            setTint(Color.WHITE)
+            setBounds(left.toInt(), logoTop, left.toInt() + logoWidth, logoTop + logoHeight)
+            draw(canvas)
+        }
+        canvas.drawText(brand, left + logoWidth + 18f, baseline, paint)
     }
 }

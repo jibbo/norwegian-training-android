@@ -16,6 +16,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.BaseActivity
+import com.github.jibbo.norwegiantraining.components.removeEmoji
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -74,18 +75,19 @@ class ShareTrainingActivity : BaseActivity() {
         lifecycleScope.launch {
             val uri = withContext(Dispatchers.IO) {
                 val bitmap = ShareTrainingBitmap.create(
+                    context = this@ShareTrainingActivity,
                     contentResolver = contentResolver,
                     state = state,
                     text = ShareTrainingText(
                         brand = getString(R.string.app_name),
-                        fallbackWorkoutName = getString(R.string.workout_complete),
+                        fallbackWorkoutName = getString(R.string.workout_complete).removeEmoji().replaceFirst(" ", ""),
                         completedPhases = resources.getQuantityString(
                             R.plurals.training_phases_completed,
                             state.totalPhases,
                             state.totalPhases,
                         ),
                         duration = state.workoutDurationMinutes.takeIf { it > 0 }?.let {
-                            getString(R.string.workout_time, it.toString())
+                            getString(R.string.workout_time, it.toString()).removeEmoji().replaceFirst(" ", "")
                         }.orEmpty(),
                     ),
                 )

@@ -1,5 +1,6 @@
 package com.github.jibbo.norwegiantraining.sharetraining
 
+import com.github.jibbo.norwegiantraining.components.removeEmoji
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

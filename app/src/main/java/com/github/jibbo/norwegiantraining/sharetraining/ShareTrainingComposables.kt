@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.jibbo.norwegiantraining.R
 import com.github.jibbo.norwegiantraining.components.localizable
+import com.github.jibbo.norwegiantraining.components.removeEmoji
 import com.github.jibbo.norwegiantraining.ui.theme.DarkPrimary
 import com.github.jibbo.norwegiantraining.ui.theme.NorwegianTrainingTheme
 import com.github.jibbo.norwegiantraining.ui.theme.Typography
@@ -243,25 +244,28 @@ private fun ShareTrainingPreview(state: ShareTrainingUiState, modifier: Modifier
                 .align(Alignment.BottomStart)
                 .padding(24.dp)
         ) {
-            Icon(
-                painterResource(R.drawable.ic_launcher_monochrome),
-                contentDescription = null,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painterResource(R.drawable.ic_launcher_monochrome_trimmed),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    R.string.app_name.localizable(),
+                    color = Color.White,
+                    style = Typography.titleMedium,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
             Text(
-                R.string.app_name.localizable(),
-                color = Color.White,
-                style = Typography.titleMedium
-            )
-            Text(
-                state.workoutName.ifBlank { R.string.workout_complete.localizable() },
+                state.workoutName.ifBlank { R.string.workout_complete.localizable() }.removeEmoji().replaceFirst(" ", ""),
                 color = Color.White,
                 style = Typography.headlineLarge,
-                modifier = Modifier.padding(top = 12.dp)
             )
             Text(state.formattedDate, color = Color.White, style = Typography.titleMedium)
             if (state.workoutDurationMinutes > 0) {
                 Text(
-                    R.string.workout_time.localizable(state.workoutDurationMinutes.toString()),
+                    R.string.workout_time.localizable(state.workoutDurationMinutes.toString()).removeEmoji().replaceFirst(" ", ""),
                     color = Color.White,
                     style = Typography.bodyLarge,
                     modifier = Modifier.padding(top = 8.dp)
