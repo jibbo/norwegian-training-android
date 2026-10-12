@@ -82,7 +82,7 @@ import java.util.Calendar
 import java.util.Date
 import kotlin.math.roundToInt
 
-internal fun Session.logName(): String = name.take(15) + if (name.length > 15) "…" else ""
+internal fun Session.logName(): String = name.take(20) + if (name.length > 20) "…" else ""
 
 internal fun Session.logDetails(): LogDetails? = when {
     isManual || workoutId == null -> null
