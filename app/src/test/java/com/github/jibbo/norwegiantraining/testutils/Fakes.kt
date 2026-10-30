@@ -33,6 +33,13 @@ class FakeSettingsRepository : SettingsRepository {
     private var lastWorkoutId: Long? = null
     private var appLanguage: Locale? = null
     private var showTodayStatsInActivitySection = true
+    private var timerBellEnabled = true
+
+    override fun setTimerBellEnabled(enabled: Boolean) {
+        timerBellEnabled = enabled
+    }
+
+    override fun getTimerBellEnabled(): Boolean = timerBellEnabled
 
     override fun setUserName(name: String?) {
         userName = name

@@ -14,6 +14,42 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class AppDatabaseMigrationTest {
     @Test
+    fun migrate3To4WhenWorkoutTableIsMissingCreatesTable() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val helper = FrameworkSQLiteOpenHelperFactory().create(
+            SupportSQLiteOpenHelper.Configuration.builder(context)
+                .name(TEST_DATABASE)
+                .callback(Version3WithoutWorkoutCallback())
+                .build(),
+        )
+        val database = helper.writableDatabase
+
+        try {
+            database.execSQL(
+                "INSERT INTO Session (id, phases_ended, skip_count, date) VALUES (?, ?, ?, ?)",
+                arrayOf<Any?>(1L, 5, 0, 1_700_000_000_000L),
+            )
+
+            MIGRATION_3_4.migrate(database)
+
+            database.query("SELECT COUNT(*) FROM Workout").use { cursor ->
+                assertTrue(cursor.moveToFirst())
+                assertEquals(0, cursor.getInt(0))
+            }
+            database.query("PRAGMA table_info(Workout)").use { cursor ->
+                val columns = buildList {
+                    while (cursor.moveToNext()) add(cursor.getString(1))
+                }
+                assertTrue(columns.contains("isCustom"))
+            }
+        } finally {
+            database.close()
+            helper.close()
+            context.deleteDatabase(TEST_DATABASE)
+        }
+    }
+
+    @Test
     fun migrate3To4PreservesRowsAndAddsCustomDefaults() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val helper = FrameworkSQLiteOpenHelperFactory().create(
@@ -79,6 +115,23 @@ class AppDatabaseMigrationTest {
             helper.close()
             context.deleteDatabase(TEST_DATABASE)
         }
+    }
+
+    private class Version3WithoutWorkoutCallback : SupportSQLiteOpenHelper.Callback(3) {
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE Session (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    phases_ended INTEGER NOT NULL,
+                    skip_count INTEGER NOT NULL,
+                    date INTEGER NOT NULL
+                )
+                """.trimIndent(),
+            )
+        }
+
+        override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) = Unit
     }
 
     private class Version3Callback : SupportSQLiteOpenHelper.Callback(3) {

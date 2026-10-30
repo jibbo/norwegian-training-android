@@ -150,7 +150,28 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 
 val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE Workout ADD COLUMN isCustom INTEGER NOT NULL DEFAULT 0")
+        val tableName = when {
+            db.hasTable("Workout") -> "Workout"
+            db.hasTable("workout") -> "workout"
+            else -> null
+        }
+        if (tableName != null) {
+            if (!db.hasColumn(tableName, "isCustom")) {
+                db.execSQL("ALTER TABLE `$tableName` ADD COLUMN isCustom INTEGER NOT NULL DEFAULT 0")
+            }
+        } else {
+            db.execSQL(
+                """
+                CREATE TABLE Workout (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    name TEXT NOT NULL,
+                    difficulty INTEGER NOT NULL,
+                    content TEXT NOT NULL,
+                    isCustom INTEGER NOT NULL DEFAULT 0
+                )
+                """.trimIndent()
+            )
+        }
     }
 }
 
@@ -213,6 +234,15 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
         )
         db.execSQL("DROP TABLE Session")
         db.execSQL("ALTER TABLE Session_new RENAME TO Session")
+    }
+}
+
+private fun SupportSQLiteDatabase.hasTable(tableName: String): Boolean {
+    val cursor = query("SELECT name FROM sqlite_master WHERE type='table' AND name = '$tableName'")
+    return try {
+        cursor.moveToFirst()
+    } finally {
+        cursor.close()
     }
 }
 
